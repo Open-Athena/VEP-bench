@@ -214,5 +214,8 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
+# Generated static site artifact
+_site/
+
 # Streamlit
 .streamlit/secrets.toml
