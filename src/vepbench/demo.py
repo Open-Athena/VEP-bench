@@ -1,7 +1,5 @@
 """Reproducible synthetic result used to exercise the static explorer."""
 
-from __future__ import annotations
-
 import itertools
 import json
 from collections.abc import Mapping

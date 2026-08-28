@@ -1,7 +1,5 @@
 """Deterministic multiple-choice question generation."""
 
-from __future__ import annotations
-
 import hashlib
 import json
 import string

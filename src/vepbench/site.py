@@ -1,7 +1,5 @@
 """Validate committed benchmark data and assemble the static Pages artifact."""
 
-from __future__ import annotations
-
 import hashlib
 import json
 import shutil
