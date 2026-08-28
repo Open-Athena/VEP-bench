@@ -15,6 +15,9 @@ rather than aiming to be a contamination-resistant benchmark:
   reasoning are stored in this repository; and
 - a static GitHub Pages site makes results inspectable without a backend.
 
+The public explorer is deployed at
+[openathena.ai/VEPBench](https://openathena.ai/VEPBench/).
+
 Questions normally identify a variant or allele change without supplying
 external annotations. Results may therefore reflect a mixture of variant
 knowledge, nomenclature interpretation, memorization, and biological inference.
@@ -66,10 +69,14 @@ exactly. A missing or unknown choice ID scores zero as a parse error. API errors
 have a null score and make the run incomplete instead of counting as scientific
 errors.
 
-Each result snapshots the exact prompt, choices, and expected answer alongside
-the raw provider response. Provider-exposed reasoning is preserved when
-available and is otherwise null; it is not presented as guaranteed access to a
-model's private chain of thought.
+Each result snapshots the complete generated question alongside the raw
+provider response. Its question fingerprint is recomputed from that embedded
+snapshot, so historical runs remain valid and inspectable after the current
+question set changes. Results also record the originating question-set size;
+complete runs are accepted only when the embedded snapshots reproduce the set
+digest. Provider-exposed reasoning is preserved when available and is otherwise
+null; it is not presented as guaranteed access to a model's private chain of
+thought.
 
 JSON Schema cannot enforce that `answer_choice_id` occurs exactly once in
 `choices`. The builder and tests must enforce this cross-field invariant, unique

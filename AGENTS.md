@@ -53,8 +53,8 @@ These instructions apply to the entire VEPBench repository.
 - Record API failures with a null score and mark the run incomplete. A completed
   response with a missing or invalid final answer receives an exact-match score
   of zero and a parse error.
-- Pin every result to both the complete question-set digest and its individual
-  question digest. Keep the prompt, choices, and expected answer in the result
+- Pin every result to the complete question-set digest and size, plus its
+  individual question digest. Keep the full generated question in the result
   snapshot so historical runs remain independently inspectable.
 
 ## Change discipline

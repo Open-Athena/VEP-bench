@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import itertools
 import json
 from collections.abc import Mapping
 from datetime import UTC, datetime
@@ -33,7 +34,7 @@ def build_demo_result(
     response = json.loads(Path(response_path).read_text(encoding="utf-8"))
     if not isinstance(response, dict):
         raise BuildError(f"{response_path}: fixture response must be a JSON object")
-    ticks = iter((0.0, 0.125))
+    ticks = itertools.count(start=0.0, step=0.125)
     return evaluate_file(
         questions_path=questions_path,
         question_schema_path=question_schema_path,

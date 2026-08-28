@@ -33,7 +33,13 @@ class BuildError(ValueError):
 def canonical_json(value: Any) -> str:
     """Return the canonical JSON representation used for record fingerprints."""
 
-    return json.dumps(value, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
+    return json.dumps(
+        value,
+        allow_nan=False,
+        ensure_ascii=False,
+        separators=(",", ":"),
+        sort_keys=True,
+    )
 
 
 def sha256_json(value: Any) -> str:

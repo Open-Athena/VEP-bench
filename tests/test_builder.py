@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import json
+import math
 from pathlib import Path
 
 import pytest
@@ -11,6 +12,7 @@ from vepbench.builder import (
     BuildError,
     build_file,
     build_questions,
+    canonical_json,
     load_template,
     read_jsonl,
     validate_question,
@@ -47,6 +49,11 @@ def test_build_is_byte_identical(tmp_path: Path) -> None:
     assert first_digest == second_digest
     assert first.read_bytes() == second.read_bytes()
     assert first.read_bytes().endswith(b"\n")
+
+
+def test_canonical_json_rejects_non_finite_numbers() -> None:
+    with pytest.raises(ValueError, match="Out of range float values"):
+        canonical_json({"temperature": math.nan})
 
 
 def test_committed_questions_match_builder(tmp_path: Path) -> None:

@@ -59,9 +59,14 @@ h1 { max-width: 850px; margin: 0; font-family: Georgia, "Times New Roman", serif
 .bar-value { min-width: 84px; text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
 
 .run-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
-.run-card { padding: 23px; background: var(--panel); border: 1px solid var(--line); }
+.run-card { padding: 23px; color: inherit; text-align: left; background: var(--panel); border: 1px solid var(--line); cursor: pointer; }
+.run-card:hover, .run-card:focus-visible { border-color: var(--green); box-shadow: 0 5px 16px rgba(20,88,71,.08); }
 .run-card h3 { margin: 8px 0 3px; overflow-wrap: anywhere; }
 .run-meta { margin: 0 0 20px; color: var(--muted); font-size: .85rem; }
+.run-facts { display: grid; gap: 7px; margin: 16px 0; }
+.run-facts div { display: flex; justify-content: space-between; gap: 14px; }
+.run-facts dt { color: var(--muted); }
+.run-facts dd { margin: 0; text-align: right; }
 .run-score { display: flex; align-items: baseline; justify-content: space-between; border-top: 1px solid var(--line); padding-top: 17px; }
 .run-score strong { font-family: Georgia, serif; font-size: 2.2rem; }
 .pill { display: inline-block; padding: 4px 8px; color: var(--green); background: var(--green-soft); border-radius: 999px; font-size: .7rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
@@ -80,6 +85,7 @@ h1 { max-width: 850px; margin: 0; font-family: Georgia, "Times New Roman", serif
 .outcome { align-self: center; min-width: 80px; text-align: right; font-weight: 800; }
 .outcome.correct { color: var(--green); }
 .outcome.incorrect, .outcome.api_error { color: var(--red); }
+.outcome.parse_failure { color: #7b5a00; }
 .empty { padding: 30px; color: var(--muted); text-align: center; background: var(--panel); border: 1px dashed var(--line); }
 
 .table-wrap { overflow-x: auto; background: var(--panel); border: 1px solid var(--line); }
@@ -90,6 +96,8 @@ tbody tr:last-child td { border-bottom: 0; }
 .matrix-cell { text-align: center; font-size: 1.05rem; font-weight: 900; }
 .matrix-cell.correct { color: var(--green); background: var(--green-soft); }
 .matrix-cell.incorrect, .matrix-cell.api_error { color: var(--red); background: var(--red-soft); }
+.matrix-cell.parse_failure { color: #6a4d00; background: #fff0b8; }
+.matrix-cell.version_mismatch { color: #315a75; background: #e1edf4; }
 .matrix-question { min-width: 250px; }
 .matrix-model { min-width: 150px; text-transform: none; letter-spacing: 0; }
 .matrix-model small { display: block; margin-top: 3px; font-weight: 500; }
@@ -106,11 +114,20 @@ dialog::backdrop { background: rgba(8,26,21,.72); }
 .prompt, pre { padding: 16px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; background: #efede4; border-left: 3px solid var(--yellow); }
 .choice { display: flex; gap: 9px; padding: 8px 0; border-bottom: 1px solid var(--line); }
 .choice.answer { color: var(--green); font-weight: 750; }
+.choice.selected { background: #fff0b8; }
+.choice.answer.selected { border-left: 3px solid var(--green); padding-left: 8px; }
 .detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .detail-grid div { padding: 11px; background: #efede4; }
 .detail-grid dt { color: var(--muted); font-size: .7rem; text-transform: uppercase; }
 .detail-grid dd { margin: 3px 0 0; overflow-wrap: anywhere; }
 details summary { cursor: pointer; font-weight: 700; }
+.callout { padding: 12px 14px; background: #efede4; border-left: 3px solid var(--yellow); }
+.callout.error { color: var(--red); background: var(--red-soft); }
+.response-list { display: grid; gap: 10px; }
+.response-item { border: 1px solid var(--line); }
+.response-item summary { display: flex; justify-content: space-between; gap: 16px; padding: 13px; }
+.response-body { padding: 0 14px 14px; }
+.response-body h4 { margin-bottom: 6px; }
 .footer { display: flex; justify-content: space-between; gap: 20px; padding-block: 27px 40px; color: var(--muted); border-top: 1px solid var(--line); font-size: .8rem; }
 
 @media (max-width: 760px) {

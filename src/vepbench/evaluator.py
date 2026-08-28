@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import http.client
 import json
+import math
 import re
 import time
 import urllib.error
@@ -13,7 +15,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Protocol
 
-from jsonschema import Draft202012Validator
+from jsonschema import Draft202012Validator, FormatChecker
 
 from .builder import (
     BuildError,
@@ -25,7 +27,7 @@ from .builder import (
 )
 
 OPENROUTER_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions"
-FINAL_ANSWER = re.compile(r"^FINAL:\s*([A-Za-z0-9_-]+)\s*$", re.MULTILINE)
+FINAL_ANSWER = re.compile(r"^FINAL:[ \t]*([A-Za-z0-9_-]+)[ \t]*\r?$", re.MULTILINE)
 RECORD_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]*$")
 
 
@@ -68,12 +70,17 @@ class OpenRouterTransport:
             with urllib.request.urlopen(request, timeout=self.timeout) as response:
                 payload = response.read()
         except urllib.error.HTTPError as exc:
-            payload = exc.read()
+            try:
+                payload = exc.read()
+            except (TimeoutError, http.client.HTTPException, OSError):
+                payload = b""
             raw = _decode_json_object(payload)
             message = _provider_error_message(raw) or f"OpenRouter returned HTTP {exc.code}"
             raise ProviderError(message, status_code=exc.code, raw_response=raw) from exc
         except urllib.error.URLError as exc:
             raise ProviderError(f"OpenRouter request failed: {exc.reason}") from exc
+        except (TimeoutError, http.client.HTTPException, OSError) as exc:
+            raise ProviderError(f"OpenRouter request failed: {exc}") from exc
 
         raw = _decode_json_object(payload)
         if raw is None:
@@ -138,6 +145,8 @@ def evaluate_file(
         raise BuildError("model_id must be non-empty")
     if max_tokens < 1:
         raise BuildError("max_tokens must be positive")
+    if not math.isfinite(temperature):
+        raise BuildError("temperature must be finite")
 
     questions_file = Path(questions_path)
     questions = read_jsonl(questions_file)
@@ -153,7 +162,9 @@ def evaluate_file(
         raise BuildError(f"{questions_file}: duplicate question IDs")
     result_schema = json.loads(Path(result_schema_path).read_text(encoding="utf-8"))
     Draft202012Validator.check_schema(result_schema)
-    result_validator = Draft202012Validator(result_schema)
+    result_validator = Draft202012Validator(
+        result_schema, format_checker=FormatChecker()
+    )
 
     output_path = Path(output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -191,6 +202,7 @@ def evaluate_file(
                     raw=raw,
                     question=question,
                     question_set_sha256=question_set_sha256,
+                    question_set_size=len(questions),
                     run_id=run_id,
                     model_id=model_id,
                     generation_parameters=generation_parameters,
@@ -204,6 +216,7 @@ def evaluate_file(
                     error=exc,
                     question=question,
                     question_set_sha256=question_set_sha256,
+                    question_set_size=len(questions),
                     run_id=run_id,
                     model_id=model_id,
                     generation_parameters=generation_parameters,
@@ -232,6 +245,10 @@ def validate_result(
         raise BuildError(f"{result.get('question_id', '<unknown>')}: {details}")
 
     question = result["question"]
+    if result["question_id"] != question["question_id"]:
+        raise BuildError(f"{result['question_id']}: embedded question_id does not match")
+    if result["question_sha256"] != sha256_json(question):
+        raise BuildError(f"{result['question_id']}: question digest does not match snapshot")
     choice_ids = [choice["choice_id"] for choice in question["choices"]]
     if len(choice_ids) != len(set(choice_ids)):
         raise BuildError(f"{result['question_id']}: result choice IDs must be unique")
@@ -239,6 +256,49 @@ def validate_result(
         raise BuildError(
             f"{result['question_id']}: result answer_choice_id must identify exactly one choice"
         )
+    for choice in question["choices"]:
+        rendered = f"{choice['choice_id']}. {choice['text']}"
+        if question["prompt"].count(rendered) != 1:
+            raise BuildError(
+                f"{result['question_id']}: result prompt must contain choice "
+                f"{rendered!r} exactly once"
+            )
+
+    status = result["response"]["status"]
+    if status == "completed":
+        expected = score_multiple_choice(
+            result["response"]["content"],
+            set(choice_ids),
+            question["answer_choice_id"],
+        )
+        expected_scoring = {
+            "metric": "exact_match",
+            "parsed_answer": expected.parsed_answer,
+            "value": expected.value,
+            "correct": expected.correct,
+            "parse_error": expected.parse_error,
+        }
+        if result["scoring"] != expected_scoring:
+            raise BuildError(f"{result['question_id']}: stored score does not match response")
+        if result["error"] is not None:
+            raise BuildError(f"{result['question_id']}: completed response must not have error")
+    else:
+        expected_scoring = {
+            "metric": "exact_match",
+            "parsed_answer": None,
+            "value": None,
+            "correct": None,
+            "parse_error": None,
+        }
+        if result["scoring"] != expected_scoring:
+            raise BuildError(f"{result['question_id']}: API error must have null scoring")
+        if any(
+            result["response"][field] is not None
+            for field in ("content", "reasoning", "finish_reason")
+        ):
+            raise BuildError(f"{result['question_id']}: API error has completion data")
+        if not isinstance(result["error"], Mapping):
+            raise BuildError(f"{result['question_id']}: API error must include error details")
 
 
 def _completed_result(
@@ -246,6 +306,7 @@ def _completed_result(
     raw: dict[str, Any],
     question: Mapping[str, Any],
     question_set_sha256: str,
+    question_set_size: int,
     run_id: str,
     model_id: str,
     generation_parameters: Mapping[str, Any],
@@ -261,13 +322,7 @@ def _completed_result(
         {choice["choice_id"] for choice in question["choices"]},
         question["answer_choice_id"],
     )
-    provider = raw.get("provider")
-    if provider is None:
-        metadata = raw.get("openrouter_metadata")
-        if isinstance(metadata, dict):
-            provider = metadata.get("provider")
-    if provider is not None and not isinstance(provider, str):
-        provider = canonical_json(provider)
+    provider = _extract_provider(raw)
 
     usage = raw.get("usage")
     if not isinstance(usage, dict):
@@ -275,6 +330,7 @@ def _completed_result(
     return _result_base(
         question=question,
         question_set_sha256=question_set_sha256,
+        question_set_size=question_set_size,
         run_id=run_id,
         model_id=model_id,
         upstream_provider=provider,
@@ -305,6 +361,7 @@ def _error_result(
     error: ProviderError,
     question: Mapping[str, Any],
     question_set_sha256: str,
+    question_set_size: int,
     run_id: str,
     model_id: str,
     generation_parameters: Mapping[str, Any],
@@ -314,6 +371,7 @@ def _error_result(
     return _result_base(
         question=question,
         question_set_sha256=question_set_sha256,
+        question_set_size=question_set_size,
         run_id=run_id,
         model_id=model_id,
         upstream_provider=None,
@@ -347,6 +405,7 @@ def _result_base(
     *,
     question: Mapping[str, Any],
     question_set_sha256: str,
+    question_set_size: int,
     run_id: str,
     model_id: str,
     upstream_provider: str | None,
@@ -363,16 +422,10 @@ def _result_base(
         "question_id": question["question_id"],
         "question_sha256": sha256_json(question),
         "question_set_sha256": question_set_sha256,
+        "question_set_size": question_set_size,
         "completion_index": 0,
         "evaluated_at": evaluated_at.astimezone(UTC).isoformat().replace("+00:00", "Z"),
-        "question": {
-            "task_type": question["task_type"],
-            "prompt": question["prompt"],
-            "choices": question["choices"],
-            "answer_choice_id": question["answer_choice_id"],
-            "task_family": question["metadata"]["task_family"],
-            "tags": question["metadata"].get("tags", []),
-        },
+        "question": dict(question),
         "model": {
             "gateway": "openrouter",
             "model_id": model_id,
@@ -406,15 +459,54 @@ def _extract_reasoning(message: Mapping[str, Any]) -> str | None:
     details = message.get("reasoning_details")
     if not isinstance(details, list):
         return None
-    summaries = [
-        detail.get("summary")
-        for detail in details
-        if isinstance(detail, dict)
-        and detail.get("type") == "reasoning.summary"
-        and isinstance(detail.get("summary"), str)
-        and detail.get("summary")
-    ]
-    return "\n\n".join(summaries) or None
+    exposed: list[str] = []
+    for detail in details:
+        if not isinstance(detail, dict):
+            continue
+        if detail.get("type") == "reasoning.summary":
+            value = detail.get("summary")
+        elif detail.get("type") == "reasoning.text":
+            value = detail.get("text")
+        else:
+            continue
+        if isinstance(value, str) and value:
+            exposed.append(value)
+    return "\n\n".join(exposed) or None
+
+
+def _extract_provider(raw: Mapping[str, Any]) -> str | None:
+    provider = raw.get("provider")
+    metadata = raw.get("openrouter_metadata")
+    if provider is None and isinstance(metadata, dict):
+        provider = metadata.get("provider")
+        endpoints = metadata.get("endpoints")
+        if provider is None and isinstance(endpoints, dict):
+            available = endpoints.get("available")
+            if isinstance(available, list):
+                selected = next(
+                    (
+                        endpoint.get("provider")
+                        for endpoint in available
+                        if isinstance(endpoint, dict) and endpoint.get("selected") is True
+                    ),
+                    None,
+                )
+                provider = selected
+        if provider is None:
+            attempts = metadata.get("attempts")
+            if isinstance(attempts, list):
+                successful = [
+                    attempt.get("provider")
+                    for attempt in attempts
+                    if isinstance(attempt, dict)
+                    and isinstance(attempt.get("status"), int)
+                    and 200 <= attempt["status"] < 300
+                ]
+                if successful:
+                    provider = successful[-1]
+    if provider is None:
+        return None
+    return provider if isinstance(provider, str) else canonical_json(provider)
 
 
 def _decode_json_object(payload: bytes) -> dict[str, Any] | None:

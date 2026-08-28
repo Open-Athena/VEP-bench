@@ -11,6 +11,7 @@
     "question_id",
     "question_sha256",
     "question_set_sha256",
+    "question_set_size",
     "completion_index",
     "evaluated_at",
     "question",
@@ -41,6 +42,10 @@
     "question_set_sha256": {
       "$ref": "#/$defs/sha256"
     },
+    "question_set_size": {
+      "type": "integer",
+      "minimum": 1
+    },
     "completion_index": {
       "type": "integer",
       "minimum": 0
@@ -50,11 +55,28 @@
       "format": "date-time"
     },
     "question": {
-      "description": "Immutable snapshot of the scored model input and answer.",
+      "description": "Complete immutable generated question that was scored.",
       "type": "object",
       "additionalProperties": false,
-      "required": ["task_type", "prompt", "choices", "answer_choice_id", "task_family"],
+      "required": [
+        "schema_version",
+        "question_id",
+        "task_type",
+        "prompt",
+        "choices",
+        "answer_choice_id",
+        "provenance",
+        "metadata"
+      ],
       "properties": {
+        "schema_version": {
+          "const": "1.0"
+        },
+        "question_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+          "maxLength": 200
+        },
         "task_type": {
           "const": "multiple_choice"
         },
@@ -72,20 +94,59 @@
         },
         "answer_choice_id": {
           "type": "string",
-          "minLength": 1
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "maxLength": 40
         },
-        "task_family": {
-          "type": "string",
-          "minLength": 1
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_dataset",
+            "source_record_id",
+            "template_id",
+            "template_version"
+          ],
+          "properties": {
+            "source_dataset": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source_record_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source_record_sha256": {
+              "$ref": "#/$defs/sha256"
+            },
+            "template_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "template_version": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
         },
-        "tags": {
-          "type": "array",
-          "default": [],
-          "items": {
-            "type": "string",
-            "minLength": 1
-          },
-          "uniqueItems": true
+        "metadata": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["task_family"],
+          "properties": {
+            "task_family": {
+              "type": "string",
+              "minLength": 1
+            },
+            "tags": {
+              "type": "array",
+              "default": [],
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true
+            }
+          }
         }
       }
     },
@@ -223,6 +284,12 @@
                 "const": null
               },
               "correct": {
+                "const": null
+              },
+              "parsed_answer": {
+                "const": null
+              },
+              "parse_error": {
                 "const": null
               }
             }
