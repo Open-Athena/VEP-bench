@@ -1,0 +1,304 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://open-athena.github.io/VEPBench/schemas/result.schema.json",
+  "title": "VEPBench evaluation result",
+  "description": "One model completion and deterministic score in a results JSONL file.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "run_id",
+    "question_id",
+    "question_sha256",
+    "question_set_sha256",
+    "question_set_size",
+    "completion_index",
+    "evaluated_at",
+    "question",
+    "model",
+    "generation_parameters",
+    "response",
+    "scoring",
+    "usage",
+    "error"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+      "maxLength": 200
+    },
+    "question_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+      "maxLength": 200
+    },
+    "question_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "question_set_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "question_set_size": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "completion_index": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "evaluated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "question": {
+      "description": "Complete immutable generated question that was scored.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "question_id",
+        "task_type",
+        "prompt",
+        "choices",
+        "answer_choice_id",
+        "provenance",
+        "metadata"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "1.0"
+        },
+        "question_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+          "maxLength": 200
+        },
+        "task_type": {
+          "const": "multiple_choice"
+        },
+        "prompt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "choices": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/choice"
+          }
+        },
+        "answer_choice_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "maxLength": 40
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_dataset",
+            "source_record_id",
+            "template_id",
+            "template_version"
+          ],
+          "properties": {
+            "source_dataset": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source_record_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source_record_sha256": {
+              "$ref": "#/$defs/sha256"
+            },
+            "template_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "template_version": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["task_family"],
+          "properties": {
+            "task_family": {
+              "type": "string",
+              "minLength": 1
+            },
+            "tags": {
+              "type": "array",
+              "default": [],
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true
+            }
+          }
+        }
+      }
+    },
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gateway", "model_id", "upstream_provider"],
+      "properties": {
+        "gateway": {
+          "const": "openrouter"
+        },
+        "model_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model_revision": {
+          "type": ["string", "null"]
+        },
+        "upstream_provider": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "generation_parameters": {
+      "description": "The non-secret request parameters that can affect the completion.",
+      "type": "object"
+    },
+    "response": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "content",
+        "reasoning",
+        "finish_reason",
+        "latency_seconds",
+        "raw"
+      ],
+      "properties": {
+        "status": {
+          "enum": ["completed", "api_error"]
+        },
+        "content": {
+          "type": ["string", "null"]
+        },
+        "reasoning": {
+          "description": "Provider-exposed reasoning text or summary, when available.",
+          "type": ["string", "null"]
+        },
+        "finish_reason": {
+          "type": ["string", "null"]
+        },
+        "latency_seconds": {
+          "type": ["number", "null"],
+          "minimum": 0
+        },
+        "raw": {
+          "description": "Complete JSON response returned by OpenRouter, or null on transport failure.",
+          "type": ["object", "null"]
+        }
+      }
+    },
+    "scoring": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["metric", "parsed_answer", "value", "correct", "parse_error"],
+      "properties": {
+        "metric": {
+          "const": "exact_match"
+        },
+        "parsed_answer": {
+          "type": ["string", "null"]
+        },
+        "value": {
+          "type": ["integer", "null"],
+          "enum": [0, 1, null]
+        },
+        "correct": {
+          "type": ["boolean", "null"]
+        },
+        "parse_error": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "usage": {
+      "description": "Token, cost, and related usage fields returned by the gateway.",
+      "type": "object"
+    },
+    "error": {
+      "type": ["object", "null"]
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "choice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["choice_id", "text"],
+      "properties": {
+        "choice_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "maxLength": 40
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "response": {
+            "properties": {
+              "status": {
+                "const": "api_error"
+              }
+            },
+            "required": ["status"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "scoring": {
+            "properties": {
+              "value": {
+                "const": null
+              },
+              "correct": {
+                "const": null
+              },
+              "parsed_answer": {
+                "const": null
+              },
+              "parse_error": {
+                "const": null
+              }
+            }
+          },
+          "error": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  ]
+}

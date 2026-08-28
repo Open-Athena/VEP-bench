@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Explore reproducible VEPBench model evaluations.">
+    <title>VEPBench explorer</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#content">Skip to results</a>
+    <header class="masthead">
+      <div class="shell header-row">
+        <a class="brand" href="#overview" aria-label="VEPBench overview">
+          <span class="brand-mark" aria-hidden="true">V</span>
+          <span>VEPBench</span>
+        </a>
+        <a class="repo-link" href="https://github.com/Open-Athena/VEPBench">View source ↗</a>
+      </div>
+      <div class="shell hero">
+        <p class="eyebrow">Tool-free genetic variant effect prediction</p>
+        <h1>What do language models know<br>before they reach for a tool?</h1>
+        <p class="lede">A small, deterministic, and inspectable benchmark. Questions, answer keys, model outputs, and provider-exposed reasoning are versioned together.</p>
+        <p class="notice"><strong>Development benchmark.</strong> The current data may be public, synthetic, and unsuitable for comparing production systems.</p>
+      </div>
+    </header>
+
+    <nav class="view-nav" aria-label="Explorer views">
+      <div class="shell nav-row">
+        <a href="#overview" data-view="overview">Overview</a>
+        <a href="#runs" data-view="runs">Runs</a>
+        <a href="#questions" data-view="questions">Questions</a>
+        <a href="#matrix" data-view="matrix">Matrix</a>
+      </div>
+    </nav>
+
+    <main id="content" class="shell content" tabindex="-1">
+      <div id="status" class="status" role="status">Loading benchmark data…</div>
+      <div id="view" hidden></div>
+      <noscript>This explorer requires JavaScript to read the committed JSONL files.</noscript>
+    </main>
+
+    <footer class="shell footer">
+      <span>Open Athena · VEPBench</span>
+      <span>Static data, no tracking, no backend.</span>
+    </footer>
+
+    <dialog id="detail-dialog" aria-labelledby="detail-title">
+      <div class="dialog-head">
+        <div>
+          <p class="eyebrow" id="detail-kind">Question detail</p>
+          <h2 id="detail-title"></h2>
+        </div>
+        <button class="icon-button" id="close-dialog" type="button" aria-label="Close detail">×</button>
+      </div>
+      <div id="detail-body"></div>
+    </dialog>
+  </body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "template_id": "mc-effect-v1",
+  "template_version": "1.0",
+  "prompt": "Answer this genetic variant effect prediction question without using tools or internet access.\n\nVariant: {variant}\n\n{question}\n\nChoices:\n{choices}\n\nYou may explain your reasoning. End your response with exactly one line in the form:\nFINAL: <choice-id>"
+}
