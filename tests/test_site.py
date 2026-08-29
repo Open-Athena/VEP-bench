@@ -1,62 +1,19 @@
-import copy
 import hashlib
 from pathlib import Path
 
 import pytest
 
 from vepbench.builder import BuildError, canonical_json, read_jsonl, sha256_json
-from vepbench.demo import build_demo_result
 from vepbench.site import build_site
 
 ROOT = Path(__file__).resolve().parents[1]
-QUESTIONS = ROOT / "benchmark/questions.jsonl"
+QUESTIONS = ROOT / "tests/fixtures/synthetic-questions.jsonl"
 QUESTION_SCHEMA = ROOT / "schemas/question.schema.json"
 RESULT_SCHEMA = ROOT / "schemas/result.schema.json"
-RESULTS = ROOT / "results"
+RESULTS = ROOT / "tests/fixtures/results"
+PUBLIC_QUESTIONS = ROOT / "benchmark/questions.jsonl"
+PUBLIC_RESULTS = ROOT / "results"
 ASSETS = ROOT / "web"
-
-
-def test_committed_demo_result_is_reproducible(tmp_path: Path) -> None:
-    rebuilt = tmp_path / "synthetic-demo.jsonl"
-    summary = build_demo_result(
-        questions_path=QUESTIONS,
-        question_schema_path=QUESTION_SCHEMA,
-        result_schema_path=RESULT_SCHEMA,
-        response_path=ROOT / "data/fixtures/synthetic-openrouter-response.json",
-        output=rebuilt,
-    )
-
-    assert summary.is_complete
-    assert rebuilt.read_bytes() == (RESULTS / "synthetic-demo.jsonl").read_bytes()
-
-
-def test_demo_timer_supports_more_than_one_question(tmp_path: Path) -> None:
-    questions = read_jsonl(QUESTIONS)
-    second = copy.deepcopy(questions[0])
-    second["question_id"] = "mc-effect-v1:synthetic-002"
-    second["provenance"]["source_record_id"] = "synthetic-002"
-    questions.append(second)
-    questions_path = tmp_path / "questions.jsonl"
-    questions_path.write_text(
-        "".join(f"{canonical_json(question)}\n" for question in questions),
-        encoding="utf-8",
-        newline="\n",
-    )
-
-    output = tmp_path / "synthetic-demo.jsonl"
-    summary = build_demo_result(
-        questions_path=questions_path,
-        question_schema_path=QUESTION_SCHEMA,
-        result_schema_path=RESULT_SCHEMA,
-        response_path=ROOT / "data/fixtures/synthetic-openrouter-response.json",
-        output=output,
-    )
-
-    assert summary.completed == 2
-    assert [record["response"]["latency_seconds"] for record in read_jsonl(output)] == [
-        0.125,
-        0.125,
-    ]
 
 
 def test_site_build_validates_and_copies_raw_artifacts(tmp_path: Path) -> None:
@@ -83,6 +40,28 @@ def test_site_build_validates_and_copies_raw_artifacts(tmp_path: Path) -> None:
     ).read_bytes()
     assert (output / "index.html").is_file()
     assert (output / "app.js").is_file()
+
+
+def test_public_site_builds_with_committed_results(tmp_path: Path) -> None:
+    manifest = build_site(
+        questions_path=PUBLIC_QUESTIONS,
+        question_schema_path=QUESTION_SCHEMA,
+        results_dir=PUBLIC_RESULTS,
+        result_schema_path=RESULT_SCHEMA,
+        assets_dir=ASSETS,
+        output=tmp_path / "site",
+    )
+
+    assert manifest["questions"]["records"] == 190
+    assert len(manifest["results"]) == 1
+    result = manifest["results"][0]
+    assert result["run_id"] == "gpt-5.6-luna-medium-parallel-20260829"
+    assert result["records"] == 190
+    assert result["complete"] is True
+    assert result["current_question_set"] is True
+    assert result["questions_covered"] == 190
+    assert result["questions_expected"] == 190
+    assert result["api_errors"] == 0
 
 
 def test_site_build_rejects_result_with_wrong_question_digest(tmp_path: Path) -> None:

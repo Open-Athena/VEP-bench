@@ -8,6 +8,7 @@ import time
 import urllib.error
 import urllib.request
 from collections.abc import Callable, Mapping
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -121,6 +122,32 @@ def score_multiple_choice(
     return Score(selected, int(correct), correct, None)
 
 
+def validate_generation_parameters(parameters: Mapping[str, Any]) -> None:
+    """Validate parameters that are merged into an OpenRouter request."""
+
+    reserved = {"messages", "model", "n", "stream"} & parameters.keys()
+    if reserved:
+        raise BuildError(f"generation parameters contain reserved field(s): {sorted(reserved)}")
+    for name in ("max_tokens", "max_completion_tokens"):
+        if name in parameters and (
+            isinstance(parameters[name], bool)
+            or not isinstance(parameters[name], int)
+            or parameters[name] < 1
+        ):
+            raise BuildError(f"{name} must be a positive integer")
+    if "temperature" in parameters and (
+        isinstance(parameters["temperature"], bool)
+        or not isinstance(parameters["temperature"], int | float)
+        or not math.isfinite(parameters["temperature"])
+    ):
+        raise BuildError("temperature must be finite")
+    if "seed" in parameters and (
+        isinstance(parameters["seed"], bool) or not isinstance(parameters["seed"], int)
+    ):
+        raise BuildError("seed must be an integer")
+    canonical_json(dict(parameters))
+
+
 def evaluate_file(
     *,
     questions_path: str | Path,
@@ -130,21 +157,28 @@ def evaluate_file(
     run_id: str,
     model_id: str,
     api_key: str,
-    temperature: float = 0.0,
-    max_tokens: int = 4096,
-    reasoning_effort: str | None = None,
+    generation_parameters: Mapping[str, Any] | None = None,
     transport: CompletionTransport | None = None,
     now: Callable[[], datetime] | None = None,
     monotonic: Callable[[], float] | None = None,
+    progress: Callable[[int, int, int], None] | None = None,
+    concurrency: int = 1,
 ) -> EvaluationSummary:
     if not RECORD_ID.fullmatch(run_id) or len(run_id) > 200:
         raise BuildError(f"invalid run_id {run_id!r}")
     if not model_id:
         raise BuildError("model_id must be non-empty")
-    if max_tokens < 1:
-        raise BuildError("max_tokens must be positive")
-    if not math.isfinite(temperature):
-        raise BuildError("temperature must be finite")
+    if concurrency < 1:
+        raise BuildError("concurrency must be positive")
+    if generation_parameters is None:
+        resolved_parameters: dict[str, Any] = {
+            "temperature": 0.0,
+            "max_tokens": 4096,
+        }
+    else:
+        validate_generation_parameters(generation_parameters)
+        resolved_parameters = json.loads(canonical_json(dict(generation_parameters)))
+    validate_generation_parameters(resolved_parameters)
 
     questions_file = Path(questions_path)
     questions = read_jsonl(questions_file)
@@ -173,58 +207,59 @@ def evaluate_file(
     clock = now or (lambda: datetime.now(UTC))
     timer = monotonic or time.monotonic
     question_set_sha256 = sha256_file(questions_file)
-    generation_parameters: dict[str, Any] = {
-        "temperature": temperature,
-        "max_tokens": max_tokens,
-    }
-    if reasoning_effort is not None:
-        generation_parameters["reasoning"] = {
-            "effort": reasoning_effort,
-            "exclude": False,
-        }
-
     completed = 0
     api_errors = 0
+
+    def evaluate_question(question: Mapping[str, Any]) -> tuple[dict[str, Any], bool]:
+        request_body: dict[str, Any] = {
+            "model": model_id,
+            "messages": [{"role": "user", "content": question["prompt"]}],
+            **resolved_parameters,
+        }
+        started = timer()
+        try:
+            raw = client.complete(request_body, api_key)
+            latency = timer() - started
+            result = completed_result(
+                raw=raw,
+                question=question,
+                question_set_sha256=question_set_sha256,
+                question_set_size=len(questions),
+                run_id=run_id,
+                model_id=model_id,
+                generation_parameters=resolved_parameters,
+                evaluated_at=clock(),
+                latency_seconds=latency,
+            )
+            return result, False
+        except ProviderError as exc:
+            latency = timer() - started
+            result = error_result(
+                error=exc,
+                question=question,
+                question_set_sha256=question_set_sha256,
+                question_set_size=len(questions),
+                run_id=run_id,
+                model_id=model_id,
+                generation_parameters=resolved_parameters,
+                evaluated_at=clock(),
+                latency_seconds=latency,
+            )
+            return result, True
+
     with output_path.open("x", encoding="utf-8", newline="\n") as output_file:
-        for question in questions:
-            request_body: dict[str, Any] = {
-                "model": model_id,
-                "messages": [{"role": "user", "content": question["prompt"]}],
-                **generation_parameters,
-            }
-            started = timer()
-            try:
-                raw = client.complete(request_body, api_key)
-                latency = timer() - started
-                result = _completed_result(
-                    raw=raw,
-                    question=question,
-                    question_set_sha256=question_set_sha256,
-                    question_set_size=len(questions),
-                    run_id=run_id,
-                    model_id=model_id,
-                    generation_parameters=generation_parameters,
-                    evaluated_at=clock(),
-                    latency_seconds=latency,
-                )
-                completed += 1
-            except ProviderError as exc:
-                latency = timer() - started
-                result = _error_result(
-                    error=exc,
-                    question=question,
-                    question_set_sha256=question_set_sha256,
-                    question_set_size=len(questions),
-                    run_id=run_id,
-                    model_id=model_id,
-                    generation_parameters=generation_parameters,
-                    evaluated_at=clock(),
-                    latency_seconds=latency,
-                )
-                api_errors += 1
-            validate_result(result, result_validator)
-            output_file.write(f"{canonical_json(result)}\n")
-            output_file.flush()
+        with ThreadPoolExecutor(max_workers=concurrency) as executor:
+            evaluated = executor.map(evaluate_question, questions, buffersize=concurrency)
+            for result, api_error in evaluated:
+                if api_error:
+                    api_errors += 1
+                else:
+                    completed += 1
+                validate_result(result, result_validator)
+                output_file.write(f"{canonical_json(result)}\n")
+                output_file.flush()
+                if progress is not None:
+                    progress(completed + api_errors, len(questions), api_errors)
 
     return EvaluationSummary(run_id, output_path, completed, api_errors)
 
@@ -299,7 +334,7 @@ def validate_result(
             raise BuildError(f"{result['question_id']}: API error must include error details")
 
 
-def _completed_result(
+def completed_result(
     *,
     raw: dict[str, Any],
     question: Mapping[str, Any],
@@ -309,7 +344,8 @@ def _completed_result(
     model_id: str,
     generation_parameters: Mapping[str, Any],
     evaluated_at: datetime,
-    latency_seconds: float,
+    latency_seconds: float | None,
+    provider_response: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     choice, message = _first_choice(raw)
     content = message.get("content")
@@ -340,7 +376,7 @@ def _completed_result(
             "reasoning": _extract_reasoning(message),
             "finish_reason": choice.get("finish_reason"),
             "latency_seconds": latency_seconds,
-            "raw": raw,
+            "raw": raw if provider_response is None else provider_response,
         },
         scoring={
             "metric": "exact_match",
@@ -354,7 +390,7 @@ def _completed_result(
     )
 
 
-def _error_result(
+def error_result(
     *,
     error: ProviderError,
     question: Mapping[str, Any],
@@ -364,7 +400,7 @@ def _error_result(
     model_id: str,
     generation_parameters: Mapping[str, Any],
     evaluated_at: datetime,
-    latency_seconds: float,
+    latency_seconds: float | None,
 ) -> dict[str, Any]:
     return _result_base(
         question=question,

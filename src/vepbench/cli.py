@@ -7,9 +7,10 @@ from collections.abc import Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 
+from .batch import collect_batch_file, refresh_batch_state, submit_batch_file
 from .builder import BuildError, build_file
-from .demo import build_demo_result
-from .evaluator import evaluate_file
+from .evaluator import ProviderError, evaluate_file
+from .model_profile import load_model_profile
 from .site import build_site
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -23,12 +24,12 @@ def build_parser() -> argparse.ArgumentParser:
     build.add_argument(
         "--source",
         type=Path,
-        default=PROJECT_ROOT / "data/sources/synthetic.jsonl",
+        default=PROJECT_ROOT / "data/sources/chr17-vep-consequences.jsonl",
     )
     build.add_argument(
         "--template",
         type=Path,
-        default=PROJECT_ROOT / "templates/multiple_choice.json",
+        default=PROJECT_ROOT / "templates/vep_most_severe_consequence.json",
     )
     build.add_argument(
         "--schema",
@@ -44,7 +45,13 @@ def build_parser() -> argparse.ArgumentParser:
     evaluate = subparsers.add_parser(
         "evaluate", help="evaluate benchmark questions through OpenRouter"
     )
-    evaluate.add_argument("--model", required=True, help="OpenRouter model ID")
+    model_source = evaluate.add_mutually_exclusive_group(required=True)
+    model_source.add_argument("--model", help="OpenRouter model ID")
+    model_source.add_argument(
+        "--model-profile",
+        type=Path,
+        help="versioned YAML model profile",
+    )
     evaluate.add_argument(
         "--questions",
         type=Path,
@@ -62,21 +69,51 @@ def build_parser() -> argparse.ArgumentParser:
     )
     evaluate.add_argument("--output", type=Path)
     evaluate.add_argument("--run-id")
-    evaluate.add_argument("--temperature", type=float, default=0.0)
-    evaluate.add_argument("--max-tokens", type=int, default=4096)
+    evaluate.add_argument(
+        "--direct",
+        action="store_true",
+        help="send bounded parallel requests instead of submitting a batch",
+    )
+    evaluate.add_argument(
+        "--batch-state",
+        type=Path,
+        help="local state path for the asynchronous batch submission",
+    )
+    evaluate.add_argument(
+        "--concurrency",
+        type=int,
+        default=8,
+        help="maximum in-flight requests with --direct (default: 8)",
+    )
+    evaluate.add_argument("--temperature", type=float)
+    evaluate.add_argument("--max-tokens", type=int)
     evaluate.add_argument(
         "--reasoning-effort",
         choices=("minimal", "low", "medium", "high", "xhigh", "max"),
     )
-    demo = subparsers.add_parser(
-        "build-demo-result", help="build the offline synthetic explorer result"
+    batch_status = subparsers.add_parser(
+        "batch-status", help="refresh the status of a submitted OpenRouter batch"
     )
-    demo.add_argument(
-        "--output",
+    batch_status.add_argument("--state", type=Path, required=True)
+    batch_collect = subparsers.add_parser(
+        "batch-collect", help="collect and score a completed OpenRouter batch"
+    )
+    batch_collect.add_argument("--state", type=Path, required=True)
+    batch_collect.add_argument(
+        "--questions",
         type=Path,
-        default=PROJECT_ROOT / "results/synthetic-demo.jsonl",
+        default=PROJECT_ROOT / "benchmark/questions.jsonl",
     )
-
+    batch_collect.add_argument(
+        "--schema",
+        type=Path,
+        default=PROJECT_ROOT / "schemas/question.schema.json",
+    )
+    batch_collect.add_argument(
+        "--result-schema",
+        type=Path,
+        default=PROJECT_ROOT / "schemas/result.schema.json",
+    )
     site = subparsers.add_parser("site", help="validate data and build the static site")
     site.add_argument("--output", type=Path, default=PROJECT_ROOT / "_site")
     return parser
@@ -96,38 +133,92 @@ def main(argv: Sequence[str] | None = None) -> int:
             api_key = os.environ.get("OPENROUTER_API_KEY")
             if not api_key:
                 raise BuildError("OPENROUTER_API_KEY is not set")
+            if args.model_profile is not None:
+                profile = load_model_profile(args.model_profile)
+                model_id = profile.model_id
+                profile_label = profile.label
+                generation_parameters = dict(profile.generation_parameters)
+            else:
+                model_id = args.model
+                profile_label = args.model
+                generation_parameters = {"temperature": 0.0, "max_tokens": 4096}
+            if args.temperature is not None:
+                generation_parameters["temperature"] = args.temperature
+            if args.max_tokens is not None:
+                generation_parameters["max_tokens"] = args.max_tokens
+            if args.reasoning_effort is not None:
+                generation_parameters["reasoning"] = {
+                    "effort": args.reasoning_effort,
+                    "exclude": False,
+                }
             timestamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
-            model_slug = re.sub(r"[^A-Za-z0-9._-]+", "-", args.model).strip("-")
+            model_slug = re.sub(r"[^A-Za-z0-9._-]+", "-", profile_label).strip("-")
             run_id = args.run_id or f"{model_slug}-{timestamp}"
             output = args.output or PROJECT_ROOT / "results" / f"{run_id}.jsonl"
+            if not args.direct:
+                state_path = args.batch_state or (
+                    PROJECT_ROOT / ".vepbench" / "batches" / f"{run_id}.json"
+                )
+                batch = submit_batch_file(
+                    questions_path=args.questions,
+                    question_schema_path=args.schema,
+                    state_path=state_path,
+                    result_output=output,
+                    run_id=run_id,
+                    model_id=model_id,
+                    api_key=api_key,
+                    generation_parameters=generation_parameters,
+                )
+                print(
+                    f"submitted {batch.requests} request(s) as OpenRouter batch "
+                    f"{batch.batch_id} ({batch.status}); state: {batch.state_path}"
+                )
+                return 0
             summary = evaluate_file(
                 questions_path=args.questions,
                 question_schema_path=args.schema,
                 result_schema_path=args.result_schema,
                 output=output,
                 run_id=run_id,
-                model_id=args.model,
+                model_id=model_id,
                 api_key=api_key,
-                temperature=args.temperature,
-                max_tokens=args.max_tokens,
-                reasoning_effort=args.reasoning_effort,
+                generation_parameters=generation_parameters,
+                progress=lambda done, total, errors: print(
+                    f"evaluated {done}/{total} ({errors} API error(s))", flush=True
+                ),
+                concurrency=args.concurrency,
             )
             print(
                 f"wrote {summary.completed + summary.api_errors} result(s) to "
                 f"{summary.output} ({summary.api_errors} API error(s))"
             )
             return 0 if summary.is_complete else 1
-        if args.command == "build-demo-result":
-            summary = build_demo_result(
-                questions_path=PROJECT_ROOT / "benchmark/questions.jsonl",
-                question_schema_path=PROJECT_ROOT / "schemas/question.schema.json",
-                result_schema_path=PROJECT_ROOT / "schemas/result.schema.json",
-                response_path=PROJECT_ROOT
-                / "data/fixtures/synthetic-openrouter-response.json",
-                output=args.output,
+        if args.command == "batch-status":
+            api_key = os.environ.get("OPENROUTER_API_KEY")
+            if not api_key:
+                raise BuildError("OPENROUTER_API_KEY is not set")
+            batch = refresh_batch_state(state_path=args.state, api_key=api_key)
+            print(
+                f"batch {batch.batch_id}: {batch.status} "
+                f"(completed={batch.completed}, failed={batch.failed}, total={batch.total})"
             )
-            print(f"wrote {summary.completed} synthetic result(s) to {summary.output}")
             return 0
+        if args.command == "batch-collect":
+            api_key = os.environ.get("OPENROUTER_API_KEY")
+            if not api_key:
+                raise BuildError("OPENROUTER_API_KEY is not set")
+            summary = collect_batch_file(
+                state_path=args.state,
+                questions_path=args.questions,
+                question_schema_path=args.schema,
+                result_schema_path=args.result_schema,
+                api_key=api_key,
+            )
+            print(
+                f"wrote {summary.completed + summary.api_errors} result(s) to "
+                f"{summary.output} ({summary.api_errors} API error(s))"
+            )
+            return 0 if summary.is_complete else 1
         if args.command == "site":
             manifest = build_site(
                 questions_path=PROJECT_ROOT / "benchmark/questions.jsonl",
@@ -142,7 +233,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 f"and {len(manifest['results'])} run(s)"
             )
             return 0
-    except (BuildError, OSError) as exc:
+    except (BuildError, ProviderError, OSError) as exc:
         parser.error(str(exc))
     return 2
 

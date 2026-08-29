@@ -20,7 +20,7 @@ from vepbench.evaluator import (
 )
 
 ROOT = Path(__file__).resolve().parents[1]
-QUESTIONS = ROOT / "benchmark/questions.jsonl"
+QUESTIONS = ROOT / "tests/fixtures/synthetic-questions.jsonl"
 QUESTION_SCHEMA = ROOT / "schemas/question.schema.json"
 RESULT_SCHEMA = ROOT / "schemas/result.schema.json"
 FIXED_TIME = datetime(2026, 8, 28, 12, 0, tzinfo=UTC)
@@ -131,6 +131,7 @@ def test_completed_evaluation_is_valid_and_preserves_response(tmp_path: Path) ->
     assert result["model"]["upstream_provider"] == "ExampleProvider"
     assert result["question_set_size"] == 1
     assert result["evaluated_at"] == "2026-08-28T12:00:00Z"
+    assert result["generation_parameters"] == {"max_tokens": 4096, "temperature": 0.0}
     assert "test-secret" not in output.read_text(encoding="utf-8")
     assert transport.requests[0][0]["messages"][0]["content"] == result["question"]["prompt"]
 
@@ -205,6 +206,34 @@ def test_reasoning_summary_is_extracted(tmp_path: Path) -> None:
     assert _load_one(output)["response"]["reasoning"] == (
         "Summary exposed by the provider\n\nText exposed by the provider"
     )
+
+
+def test_generation_parameters_can_omit_temperature(tmp_path: Path) -> None:
+    transport = FakeTransport(
+        {"choices": [{"finish_reason": "stop", "message": {"content": "FINAL: B"}}]}
+    )
+    output = tmp_path / "run.jsonl"
+    parameters = {
+        "max_tokens": 1024,
+        "seed": 20260829,
+        "reasoning": {"effort": "medium", "exclude": False},
+    }
+
+    evaluate_file(
+        questions_path=QUESTIONS,
+        question_schema_path=QUESTION_SCHEMA,
+        result_schema_path=RESULT_SCHEMA,
+        output=output,
+        run_id="profile-run",
+        model_id="example/model",
+        api_key="test-secret",
+        generation_parameters=parameters,
+        transport=transport,
+        now=lambda: FIXED_TIME,
+    )
+
+    assert "temperature" not in transport.requests[0][0]
+    assert _load_one(output)["generation_parameters"] == parameters
 
 
 @pytest.mark.parametrize(
@@ -324,19 +353,19 @@ def test_transport_normalizes_read_failures(
 
 
 @pytest.mark.parametrize(
-    ("run_id", "max_tokens", "temperature", "message"),
+    ("run_id", "parameters", "message"),
     [
-        ("invalid run id", 4096, 0.0, "invalid run_id"),
-        ("valid-run", 0, 0.0, "max_tokens must be positive"),
-        ("valid-run", 4096, math.nan, "temperature must be finite"),
-        ("valid-run", 4096, math.inf, "temperature must be finite"),
+        ("invalid run id", {"max_tokens": 4096}, "invalid run_id"),
+        ("valid-run", {"max_tokens": 0}, "max_tokens must be a positive integer"),
+        ("valid-run", {"temperature": math.nan}, "temperature must be finite"),
+        ("valid-run", {"temperature": math.inf}, "temperature must be finite"),
+        ("valid-run", {"model": "other/model"}, "reserved field"),
     ],
 )
 def test_invalid_run_settings_fail_before_a_provider_call(
     tmp_path: Path,
     run_id: str,
-    max_tokens: int,
-    temperature: float,
+    parameters: dict[str, Any],
     message: str,
 ) -> None:
     transport = FakeTransport({})
@@ -350,8 +379,27 @@ def test_invalid_run_settings_fail_before_a_provider_call(
             run_id=run_id,
             model_id="example/model",
             api_key="test-secret",
-            max_tokens=max_tokens,
-            temperature=temperature,
+            generation_parameters=parameters,
+            transport=transport,
+            now=lambda: FIXED_TIME,
+        )
+
+    assert transport.requests == []
+
+
+def test_invalid_concurrency_fails_before_a_provider_call(tmp_path: Path) -> None:
+    transport = FakeTransport({})
+
+    with pytest.raises(BuildError, match="concurrency must be positive"):
+        evaluate_file(
+            questions_path=QUESTIONS,
+            question_schema_path=QUESTION_SCHEMA,
+            result_schema_path=RESULT_SCHEMA,
+            output=tmp_path / "run.jsonl",
+            run_id="valid-run",
+            model_id="example/model",
+            api_key="test-secret",
+            concurrency=0,
             transport=transport,
             now=lambda: FIXED_TIME,
         )

@@ -18,9 +18,46 @@ rather than aiming to be a contamination-resistant benchmark:
 The public explorer is deployed at
 [openathena.ai/VEPBench](https://openathena.ai/VEPBench/).
 
-Questions normally identify a variant or allele change without supplying
-external annotations. Results may therefore reflect a mixture of variant
-knowledge, nomenclature interpretation, memorization, and biological inference.
+## Current task
+
+The committed development set contains 190 chromosome 17 SNVs. Each question
+asks for the Ensembl VEP most severe consequence from a 1,001-base window of
+the human GRCh38 reference genome and a centered local VCF record. See the
+[complete example prompt](EXAMPLE_PROMPT.md).
+
+Labels come from
+[`songlab/hg38-variant-consequences`](https://huggingface.co/datasets/songlab/hg38-variant-consequences),
+pinned to revision `eb3022cc6797b9369cca16af72ff3c4197df343a`. They were
+generated with VEP release 109.1 and the flags `--most_severe --distance 1000`;
+`consequence_cre` is not used. Reference sequence comes from
+[`marin-dna/human-genome`](https://huggingface.co/datasets/marin-dna/human-genome),
+pinned to revision `11b9433582981bb929af333bc6422f10a8fd71b4`.
+
+There are 19 final choices and exactly 10 questions per choice. Intronic,
+intergenic, upstream-gene, and downstream-gene consequences are collapsed into
+one choice because the prompt omits genomic coordinates and transcript
+annotations. Its 10 questions are deterministically composed of three
+`intergenic_variant`, three `intron_variant`, two `upstream_gene_variant`, and
+two `downstream_gene_variant` examples. The other chr17 consequences remain
+separate. The full preparation configuration, raw counts, source composition,
+and artifact digest are recorded in the
+[source manifest](data/sources/chr17-vep-consequences.manifest.json).
+
+Every reference window is uppercased and restricted to A/C/G/T. The original
+chromosome and genomic position remain in provenance for auditing but are not
+included in the model-visible prompt. Instead, the prompt names the sequence
+contig `window` and places the SNV at local position 501. It explicitly states:
+
+```text
+Reference genome: human GRCh38
+VEP version: release 109.1
+VEP flags: --most_severe --distance 1000
+```
+
+This input is still underdetermined relative to a real VEP run: transcript
+annotations are deliberately absent. The task therefore measures inference
+from local sequence context and model priors, not exact reconstruction of VEP
+from all of VEP's inputs.
 
 ## Workflow
 
@@ -86,35 +123,85 @@ choice IDs, and agreement between the structured choices and rendered prompt.
 
 Python environments and dependencies are managed with
 [`uv`](https://docs.astral.sh/uv/). Install the locked development environment,
-build the synthetic benchmark fixture, and run the offline tests with:
+rebuild the committed questions, and run the offline checks with:
 
 ```bash
 uv sync --locked --group dev
 uv run --locked vepbench build
-uv run --locked vepbench build-demo-result --output /tmp/synthetic-demo.jsonl
+uv run --locked python scripts/validate_vep_consequence_artifacts.py
 uv run --locked pytest
 uv run --locked ruff check .
 uv run --locked vepbench site --output /tmp/vepbench-site
 ```
 
-The committed `benchmark/questions.jsonl` is generated; do not edit it directly.
-The committed `results/synthetic-demo.jsonl` is also generated and is clearly
-labelled as a mock OpenRouter response for exercising the explorer. Neither is
-real benchmark evidence.
+The committed `data/sources/chr17-vep-consequences.jsonl`, its manifest, and
+`benchmark/questions.jsonl` are generated; do not edit them directly. The first
+real baseline is committed as
+[`results/gpt-5.6-luna-medium-parallel-20260829.jsonl`](results/gpt-5.6-luna-medium-parallel-20260829.jsonl).
+It contains all 190 OpenAI GPT-5.6 Luna responses with no API errors. Strict
+exact-match scoring gives 15/190 (7.9%); 72 responses failed the required final
+line format and therefore correctly score zero. Small synthetic artifacts under
+`tests/fixtures/` exist only for offline unit tests.
 
-To run a real evaluation, export an OpenRouter key locally and name the exact
-OpenRouter model ID:
+### Rebuilding the source data
+
+Production preparation is an explicit networked operation and is not run in CI.
+It needs an authenticated Hugging Face token in `HF_TOKEN` or the standard
+local Hugging Face token cache, AWS credentials available to SkyPilot, and
+substantially more memory than a normal development machine. Run:
+
+```bash
+bash scripts/run_prepare_vep_consequence_sky.sh
+```
+
+The launcher creates a named on-demand EC2 instance with automatic teardown,
+passes `HF_TOKEN` as a SkyPilot secret, downloads only the pinned 383 MB chr17
+Parquet file, and loads its five required columns with Polars. That file
+contains 248,760,612 rows after decoding, so the checked-in SkyPilot task asks
+for 256 GiB of RAM for the grouped candidate selection. It copies back only
+the compact source JSONL and manifest, validates them locally, rebuilds the
+questions, and terminates the instance.
+
+Sampling is reproducible: preparation uses seed `2026082800` and a versioned
+integer rank over `(chrom, pos, ref, alt)`, retains a bounded candidate pool per
+source consequence, and sorts final records by source record ID. Reference
+windows that are not exactly 1,001 uppercase A/C/G/T bases or whose center does
+not match REF are skipped with deterministic backfill. Any underfilled class is
+a hard error.
+
+To run a reproducible evaluation, export an OpenRouter key locally and select a
+versioned model profile. Profiles contain only the exact OpenRouter model ID and
+generation parameters; question paths, output paths, run IDs, and secrets remain
+run-specific:
 
 ```bash
 export OPENROUTER_API_KEY=...
-uv run --locked vepbench evaluate --model provider/model-id
+uv run --locked vepbench evaluate \
+  --model-profile configs/models/openai-gpt-5.6-luna-medium.yaml
 ```
 
-Evaluation is sequential and non-streaming. The command refuses to overwrite an
-existing run, appends and flushes one result at a time, and exits non-zero when
-an API error leaves the run scientifically incomplete. It never sends answer
-keys to the provider. No test or GitHub Actions workflow reads the API key or
-makes model calls.
+Evaluation submits the whole question set through OpenRouter's asynchronous Batch
+API by default and records local state under `.vepbench/batches/`. Refresh a
+submitted batch with `vepbench batch-status --state <state.json>`, then materialize
+its canonical scored JSONL with `vepbench batch-collect --state <state.json>`.
+Use `--direct` when a model has no live batch endpoint; it uses eight concurrent
+requests by default while still writing results in deterministic question order.
+Set `--concurrency 1` for a strictly sequential diagnostic. For an ad hoc model,
+`--model provider/model-id` remains available with defaults of `temperature: 0.0`
+and `max_tokens: 4096`. CLI generation arguments override profile values, and
+every fully resolved non-secret request parameter is recorded in the result JSONL.
+
+On 2026-08-29, OpenRouter advertised a Luna batch model but its live Batch API
+rejected both the documented base model ID and the `:batch` slug as lacking a
+batch endpoint. The committed Luna baseline therefore used `--direct
+--concurrency 16`; native batch submission remains the default for models whose
+batch endpoint is live.
+
+Direct evaluation is non-streaming and bounded-parallel. The command refuses to
+overwrite an existing run, writes results in deterministic question order,
+flushes one result at a time, and exits non-zero when an API error leaves the run
+scientifically incomplete. It never sends answer keys to the provider. No test
+or GitHub Actions workflow reads the API key or makes model calls.
 
 GitHub Actions validates the generated fixtures, tests every committed result,
 and assembles the Pages artifact from `web/`, `benchmark/`, and `results/`.
