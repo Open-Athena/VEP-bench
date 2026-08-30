@@ -31,10 +31,20 @@ common=(
   --dump-dom "http://127.0.0.1:$port/questions.html" \
   >"$output_dir/questions.dom.html"
 
-grep -q '14.7%' "$output_dir/leaderboard.dom.html"
-grep -q '190 records match the current filters' "$output_dir/questions.dom.html"
-grep -q 'Model-visible prompt' "$output_dir/questions.dom.html"
-grep -q '&gt;window' "$output_dir/questions.dom.html"
+status=0
+for check in \
+  'leaderboard.dom.html|14.7%' \
+  'questions.dom.html|190 records match the current filters' \
+  'questions.dom.html|Model-visible prompt' \
+  'questions.dom.html|&gt;window'
+do
+  file=${check%%|*}
+  pattern=${check#*|}
+  if ! grep -q "$pattern" "$output_dir/$file"; then
+    echo "missing rendered DOM pattern in $file: $pattern" >&2
+    status=1
+  fi
+done
 
 "$chrome" "${common[@]}" --window-size=1440,1200 \
   --screenshot="$output_dir/leaderboard-desktop.png" \
@@ -51,3 +61,5 @@ grep -q '&gt;window' "$output_dir/questions.dom.html"
 "$chrome" "${common[@]}" --force-dark-mode --window-size=1440,1600 \
   --screenshot="$output_dir/questions-dark.png" \
   "http://127.0.0.1:$port/questions.html"
+
+exit "$status"

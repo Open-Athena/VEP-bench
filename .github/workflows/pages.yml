@@ -63,6 +63,7 @@ jobs:
           path: _site
 
       - name: Upload browser QA
+        if: always()
         uses: actions/upload-artifact@v5
         with:
           name: vepbench-browser-qa
