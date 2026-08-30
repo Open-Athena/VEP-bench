@@ -100,7 +100,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="validate and continue an interrupted ordered result file (requires --direct)",
     )
     evaluate.add_argument("--temperature", type=float)
-    evaluate.add_argument("--max-tokens", type=int)
+    evaluate.add_argument(
+        "--max-tokens",
+        type=int,
+        help="completion ceiling for ad hoc --model runs (benchmark profiles own this)",
+    )
     evaluate.add_argument(
         "--reasoning-effort",
         choices=("minimal", "low", "medium", "high", "xhigh", "max"),
@@ -146,6 +150,13 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(f"wrote {count} question(s) to {args.output} (sha256 {digest})")
             return 0
         if args.command == "evaluate":
+            if args.model_profile is not None and args.task_profile is None:
+                raise BuildError("--model-profile requires --task-profile")
+            if args.task_profile is not None and args.max_tokens is not None:
+                raise BuildError(
+                    "--max-tokens cannot override a task profile; update the versioned "
+                    "task profile instead"
+                )
             api_key = os.environ.get("OPENROUTER_API_KEY")
             if not api_key:
                 raise BuildError("OPENROUTER_API_KEY is not set")

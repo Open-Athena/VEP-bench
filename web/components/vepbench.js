@@ -7,23 +7,14 @@ const markdown = new MarkdownIt({
   typographer: false
 });
 
-export function scored(records) {
-  return records.filter((record) => record.scoring.value !== null);
-}
-
-export function runCorrect(run) {
-  return run.records_data.filter((record) => record.scoring.correct === true).length;
-}
-
-export function accuracy(records) {
-  const scoredRecords = scored(records);
-  if (!scoredRecords.length) return null;
-  return scoredRecords.filter((record) => record.scoring.correct === true).length / scoredRecords.length;
-}
-
-export function formatFailures(records) {
-  return records.filter((record) => record.scoring.parse_error !== null).length;
-}
+export {
+  accuracy,
+  formatFailures,
+  formatRunLabel,
+  leaderboardRows,
+  runCorrect,
+  scored
+} from "./benchmark-data.js";
 
 export function formatInteger(value) {
   return Number(value ?? 0).toLocaleString("en-US");
@@ -33,59 +24,10 @@ export function formatPercent(value) {
   return value === null ? "—" : `${(value * 100).toFixed(1)}%`;
 }
 
-export function formatRunLabel(run) {
-  const record = run.records_data[0];
-  const model = modelName(
-    record?.model.model_id ?? "unknown model",
-    record?.generation_parameters
-  );
-  const provider = record?.model.upstream_provider ?? "provider not reported";
-  return `${model} · ${provider}`;
-}
-
 export function questionUrl(questionId, runId = null, path = "./questions.html") {
   const parameters = new URLSearchParams({question: questionId});
   if (runId) parameters.set("run", runId);
   return `${path}?${parameters}`;
-}
-
-function modelName(modelId, generationParameters) {
-  const name = modelId.split("/").at(-1) ?? modelId;
-  const displayName = name === "gpt-5.6-luna" ? "GPT 5.6 Luna" : name;
-  const effort = generationParameters?.reasoning?.effort;
-  return effort ? `${displayName} (${effort})` : displayName;
-}
-
-export function leaderboardRows(runs) {
-  const groups = new Map();
-  for (const run of runs.filter((run) => run.current_task_version && run.complete)) {
-    const record = run.records_data[0];
-    const modelId = record?.model.model_id ?? "unknown";
-    const provider = record?.model.upstream_provider ?? "not reported";
-    const effort = record?.generation_parameters?.reasoning?.effort ?? null;
-    const key = JSON.stringify([modelId, provider, effort]);
-    const group = groups.get(key) ?? {
-      model_cell: {
-        model: modelName(modelId, record?.generation_parameters),
-        provider
-      },
-      records_data: []
-    };
-    group.records_data.push(...run.records_data);
-    groups.set(key, group);
-  }
-
-  return Array.from(groups.values())
-    .map((group) => ({
-      ...group,
-      accuracy: accuracy(group.records_data),
-      format_failures: formatFailures(group.records_data)
-    }))
-    .sort((a, b) =>
-      (b.accuracy ?? -1) - (a.accuracy ?? -1)
-      || a.model_cell.model.localeCompare(b.model_cell.model)
-      || a.model_cell.provider.localeCompare(b.model_cell.provider)
-    );
 }
 
 function accuracyMeter(value) {

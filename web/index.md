@@ -9,7 +9,7 @@ import {
 } from "./components/vepbench.js";
 
 const explorer = await FileAttachment("data/explorer.json").json();
-const rows = leaderboardRows(explorer.task_runs);
+const rows = leaderboardRows(explorer.task_runs, explorer.questions);
 ```
 
 # Leaderboard

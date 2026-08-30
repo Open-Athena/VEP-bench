@@ -88,7 +88,7 @@ IDs support durable links such as
 `questions.html?question=<question-id>&run=<run-id>` without generating a page
 per question or response. The explorer does not require a database or backend.
 
-The task profile owns the shared 128,000-token completion ceiling. Luna model
+The task profile owns the shared 262,144-token (2^18) completion ceiling. Luna model
 profiles contain model-specific settings only; the low, medium, and high profiles
 set their corresponding reasoning efforts. The explorer labels runs by reasoning
 effort so comparisons remain distinguishable even when they use the same model
@@ -230,9 +230,11 @@ Use `--direct` when a model has no live batch endpoint; it uses eight concurrent
 requests by default while still writing results in deterministic question order.
 Set `--concurrency 1` for a strictly sequential diagnostic. For an ad hoc model,
 `--model provider/model-id` remains available with defaults of `temperature: 0.0`
-and `max_tokens: 4096`. CLI generation arguments override profile values. Every
-fully resolved non-secret request parameter is copied into each result record for
-reproducibility even when its source of truth is the task profile.
+and `max_tokens: 4096`. Temperature and reasoning CLI arguments may override
+profile values, while benchmark completion ceilings can only be changed in the
+versioned task profile. Every fully resolved non-secret request parameter is
+copied into each result record for reproducibility even when its source of truth
+is the task profile.
 
 On 2026-08-29, OpenRouter advertised a Luna batch model but its live Batch API
 rejected both the documented base model ID and the `:batch` slug as lacking a

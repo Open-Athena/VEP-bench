@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "observable": "observable"
+    "observable": "observable",
+    "test": "node web/components/benchmark-data.test.js"
   },
   "devDependencies": {
     "@observablehq/framework": "1.13.4",

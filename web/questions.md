@@ -11,14 +11,13 @@ import {
   outcomeBadge,
   questionRecord
 } from "./components/vepbench.js";
+import {groupCurrentRuns} from "./components/benchmark-data.js";
 
 const explorer = await FileAttachment("data/explorer.json").json();
 const parameters = new URLSearchParams(location.search);
 const requestedQuestionId = parameters.get("question");
 const requestedRunId = parameters.get("run");
-const currentRuns = explorer.task_runs
-  .filter((candidate) => candidate.current_task_version && candidate.complete)
-  .sort((a, b) => a.run_id.localeCompare(b.run_id));
+const currentRuns = groupCurrentRuns(explorer.task_runs);
 const requestedRun = currentRuns.find((candidate) => candidate.run_id === requestedRunId);
 const missingRun = requestedRunId && !requestedRun
   ? {kind: "missing", label: `Unavailable run · ${requestedRunId}`, run_id: requestedRunId}
