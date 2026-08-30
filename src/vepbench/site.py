@@ -173,7 +173,7 @@ def build_site(
         f"{canonical_json(manifest)}\n", encoding="utf-8", newline="\n"
     )
     explorer = {
-        "schema_version": "1.0",
+        "schema_version": "1.1",
         "manifest": manifest,
         "questions": questions,
         "task_runs": explorer_task_runs,

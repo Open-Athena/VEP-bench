@@ -42,8 +42,10 @@ def test_site_build_validates_and_copies_raw_artifacts(tmp_path: Path) -> None:
     ).read_bytes()
     assert (output / "index.md").is_file()
     assert (output / "tasks.md").is_file()
+    assert (output / "questions.md").is_file()
     assert (output / "tasks/consequence-classification.md").is_file()
     explorer = json.loads((output / "data/explorer.json").read_text())
+    assert explorer["schema_version"] == "1.1"
     assert explorer["questions"] == read_jsonl(QUESTIONS)
     assert "runs" not in explorer
     assert explorer["task_runs"][0]["records_data"] == read_jsonl(
@@ -170,7 +172,7 @@ def test_public_site_builds_with_committed_results(tmp_path: Path) -> None:
     )
 
     assert manifest["questions"]["records"] == 190
-    assert len(manifest["results"]) == 2
+    assert len(manifest["results"]) == 4
     by_run_id = {result["run_id"]: result for result in manifest["results"]}
     historical_result = by_run_id["gpt-5.6-luna-medium-parallel-20260829"]
     assert historical_result["records"] == 190
@@ -194,6 +196,15 @@ def test_public_site_builds_with_committed_results(tmp_path: Path) -> None:
         PUBLIC_RESULTS / "gpt-5.6-luna-medium-prompt-v1.1-20260830.jsonl"
     )[0]
     assert current["question"]["provenance"]["template_version"] == "1.1"
+    for effort in ("low", "high"):
+        run_id = f"gpt-5.6-luna-{effort}-prompt-v1.1-20260830"
+        comparison = by_run_id[run_id]
+        assert comparison["records"] == 190
+        assert comparison["complete"] is True
+        assert comparison["current_question_set"] is True
+        assert comparison["questions_covered"] == 190
+        assert comparison["questions_expected"] == 190
+        assert comparison["api_errors"] == 0
 
 
 def test_site_build_rejects_result_with_wrong_question_digest(tmp_path: Path) -> None:

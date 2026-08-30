@@ -7,23 +7,14 @@ const markdown = new MarkdownIt({
   typographer: false
 });
 
-export function scored(records) {
-  return records.filter((record) => record.scoring.value !== null);
-}
-
-export function runCorrect(run) {
-  return run.records_data.filter((record) => record.scoring.correct === true).length;
-}
-
-export function accuracy(records) {
-  const scoredRecords = scored(records);
-  if (!scoredRecords.length) return null;
-  return scoredRecords.filter((record) => record.scoring.correct === true).length / scoredRecords.length;
-}
-
-export function formatFailures(records) {
-  return records.filter((record) => record.scoring.parse_error !== null).length;
-}
+export {
+  accuracy,
+  formatFailures,
+  formatRunLabel,
+  leaderboardRows,
+  runCorrect,
+  scored
+} from "./benchmark-data.js";
 
 export function formatInteger(value) {
   return Number(value ?? 0).toLocaleString("en-US");
@@ -33,116 +24,96 @@ export function formatPercent(value) {
   return value === null ? "—" : `${(value * 100).toFixed(1)}%`;
 }
 
-export function formatRunLabel(run) {
-  const model = run.records_data[0]?.model.model_id ?? "unknown model";
-  const provider = run.records_data[0]?.model.upstream_provider ?? "provider not reported";
-  return `${model} · ${provider}`;
-}
-
-function taskForRun(run) {
-  if (run.task_family === "vep_most_severe_consequence") {
-    return {
-      id: "consequence-classification",
-      name: "Consequence classification",
-      path: "./tasks/consequence-classification.html"
-    };
-  }
-  return {id: "unknown", name: "Unclassified task", path: "./tasks.html"};
-}
-
-function modelName(modelId) {
-  const name = modelId.split("/").at(-1) ?? modelId;
-  if (name === "gpt-5.6-luna") return "GPT-5.6 Luna";
-  return name;
-}
-
-export function leaderboardRows(runs) {
-  const ranked = runs
-    .filter((run) => run.current_task_version && run.complete)
-    .map((run) => {
-      const task = taskForRun(run);
-      return {
-        ...run,
-        task: {
-          ...task,
-          path: `${task.path}?run=${encodeURIComponent(run.run_id)}`
-        },
-        model_cell: {
-          model: modelName(run.records_data[0]?.model.model_id ?? "unknown"),
-          provider: run.records_data[0]?.model.upstream_provider ?? "not reported"
-        },
-        correct: `${runCorrect(run)}/${scored(run.records_data).length}`,
-        accuracy: accuracy(run.records_data),
-        format_failures: formatFailures(run.records_data)
-      };
-    })
-    .sort((a, b) =>
-      a.task.name.localeCompare(b.task.name)
-      || (b.accuracy ?? -1) - (a.accuracy ?? -1)
-      || a.run_id.localeCompare(b.run_id)
-    );
-  let taskId = null;
-  let rank = 0;
-  return ranked.map((run) => {
-    rank = run.task.id === taskId ? rank + 1 : 1;
-    taskId = run.task.id;
-    return {...run, rank};
-  });
-}
-
-function link(label, href) {
-  const anchor = document.createElement("a");
-  anchor.href = href;
-  anchor.textContent = label;
-  return anchor;
+export function questionUrl(questionId, runId = null, path = "./questions.html") {
+  const parameters = new URLSearchParams({question: questionId});
+  if (runId) parameters.set("run", runId);
+  return `${path}?${parameters}`;
 }
 
 function accuracyMeter(value) {
   const wrapper = document.createElement("span");
+  wrapper.style.display = "inline-flex";
+  wrapper.style.alignItems = "center";
+  wrapper.style.gap = "0.6rem";
+  wrapper.style.width = "100%";
+  wrapper.style.minWidth = "0";
+  wrapper.style.whiteSpace = "nowrap";
   const label = document.createElement("strong");
   label.textContent = formatPercent(value);
+  label.style.flex = "0 0 4.5rem";
+  label.style.textAlign = "right";
   const meter = document.createElement("meter");
   meter.min = 0;
   meter.max = 1;
   meter.value = value;
+  meter.style.flex = "1 1 0";
+  meter.style.width = "0";
+  meter.style.minWidth = "0";
+  meter.style.height = "1rem";
   meter.setAttribute("aria-label", `${formatPercent(value)} exact-match accuracy`);
-  wrapper.append(label, " ", meter);
+  wrapper.append(label, meter);
   return wrapper;
 }
 
-export function leaderboardTable(rows, Inputs) {
-  return Inputs.table(rows, {
-    columns: ["task", "rank", "model_cell", "correct", "accuracy"],
-    header: {
-      task: "Task",
-      rank: "Rank",
-      model_cell: "Model / provider",
-      correct: "Correct",
-      accuracy: "Accuracy"
-    },
-    format: {
-      task: (value) => link(value.name, value.path),
-      rank: (value) => String(value).padStart(2, "0"),
-      model_cell: (value) => {
-        const wrapper = document.createElement("span");
-        const strong = document.createElement("strong");
-        strong.textContent = value.model;
-        const small = document.createElement("small");
-        small.textContent = value.provider;
-        wrapper.append(strong, " · ", small);
-        return wrapper;
-      },
-      accuracy: accuracyMeter
-    },
-    width: {
-      task: 210,
-      rank: 55,
-      model_cell: 200,
-      correct: 80,
-      accuracy: 210
-    },
-    select: false
-  });
+export function leaderboardTable(rows) {
+  const table = document.createElement("div");
+  table.setAttribute("role", "table");
+  table.setAttribute("aria-label", "VEPBench leaderboard");
+  table.style.width = "100%";
+  table.style.maxWidth = "100%";
+  table.style.minWidth = "0";
+  table.style.overflow = "hidden";
+
+  const gridColumns = "minmax(0, 2fr) minmax(0, 3fr)";
+  const makeRow = () => {
+    const row = document.createElement("div");
+    row.setAttribute("role", "row");
+    row.style.display = "grid";
+    row.style.gridTemplateColumns = gridColumns;
+    row.style.alignItems = "center";
+    row.style.columnGap = "1rem";
+    row.style.minWidth = "0";
+    row.style.padding = "0.4rem 0.75rem";
+    row.style.borderBottom = "1px solid var(--theme-foreground-faintest, #ddd)";
+    return row;
+  };
+
+  const header = makeRow();
+  const modelHeader = document.createElement("strong");
+  modelHeader.setAttribute("role", "columnheader");
+  modelHeader.textContent = "Model";
+  const scoreHeader = document.createElement("strong");
+  scoreHeader.setAttribute("role", "columnheader");
+  scoreHeader.textContent = "Score";
+  scoreHeader.style.textAlign = "center";
+  header.append(modelHeader, scoreHeader);
+  table.append(header);
+
+  for (const rowData of rows) {
+    const row = makeRow();
+    const modelCell = document.createElement("span");
+    modelCell.setAttribute("role", "cell");
+    modelCell.style.minWidth = "0";
+    modelCell.style.overflow = "hidden";
+    modelCell.style.textOverflow = "ellipsis";
+    modelCell.style.whiteSpace = "nowrap";
+    modelCell.title = `${rowData.model_cell.model} · ${rowData.model_cell.provider}`;
+    const model = document.createElement("strong");
+    model.textContent = rowData.model_cell.model;
+    const provider = document.createElement("small");
+    provider.textContent = rowData.model_cell.provider;
+    modelCell.append(model, " · ", provider);
+
+    const scoreCell = document.createElement("span");
+    scoreCell.setAttribute("role", "cell");
+    scoreCell.style.minWidth = "0";
+    scoreCell.style.overflow = "hidden";
+    scoreCell.append(accuracyMeter(rowData.accuracy));
+    row.append(modelCell, scoreCell);
+    table.append(row);
+  }
+
+  return table;
 }
 
 function choiceText(question, choiceId) {
@@ -150,13 +121,12 @@ function choiceText(question, choiceId) {
 }
 
 export function resultOutcome(result) {
-  if (result.response.status === "api_error") return "API error";
   if (result.scoring.parse_error !== null) return "Format failure";
   return result.scoring.correct ? "Correct" : "Incorrect";
 }
 
-export function entriesForRun(run) {
-  return run.records_data.map((result, index) => ({
+export function entryForResult(result, index, run) {
+  return {
     question_id: result.question_id,
     question_label: `Q${String(index + 1).padStart(3, "0")}`,
     variant: result.question.provenance.source_record_id,
@@ -166,7 +136,11 @@ export function entriesForRun(run) {
     question: result.question,
     result,
     run
-  }));
+  };
+}
+
+export function entriesForRun(run) {
+  return run.records_data.map((result, index) => entryForResult(result, index, run));
 }
 
 export function entriesForQuestions(questions) {
@@ -211,94 +185,94 @@ function markdownNode(source) {
   return node;
 }
 
-function definitionList(rows) {
-  const list = element("dl");
-  for (const [term, value] of rows) {
-    const row = element("div");
-    row.append(element("dt", null, term), element("dd", null, value));
-    list.append(row);
-  }
-  return list;
-}
-
-function recordCard(title, body, className = "") {
-  const card = element("section", `card ${className}`.trim());
-  card.append(element("h2", null, title), body);
-  return card;
-}
-
-function disclosure(summary, content, className = "") {
-  const details = element("details", className);
-  details.append(element("summary", null, summary), content);
-  return details;
-}
-
 export function questionRecord(entry) {
-  const {question, result} = entry;
+  const {question, result, run} = entry;
   const root = element("article");
-  const header = element("div", "card");
-  const heading = element("div");
-  heading.append(
-    element("em", null, "Selected assay record"),
-    element("h2", null, entry.question_label),
-    element("p", null, question.provenance.source_record_id)
-  );
-  header.append(heading, outcomeBadge(entry.outcome));
-  root.append(header);
+  root.style.width = "100%";
+  root.style.minWidth = "0";
 
-  const metadataRows = [
-    ["Reference answer", `${question.answer_choice_id} · ${entry.answer}`]
-  ];
-  if (result) {
-    metadataRows.push(
-      ["Parsed prediction", `${result.scoring.parsed_answer ?? "—"} · ${entry.prediction}`],
-      ["Score", result.scoring.value === null ? "unscored" : String(result.scoring.value)],
-      ["Finish reason", result.response.finish_reason ?? "—"],
-      ["Model", result.model.model_id],
-      ["Provider", result.model.upstream_provider ?? "not reported"],
-      ["Evaluated", result.evaluated_at],
-      ["Question digest", result.question_sha256]
-    );
-  } else {
-    metadataRows.push(
-      ["Evaluation", "No complete current run"],
-      ["Question ID", question.question_id]
-    );
-  }
-  const metadata = definitionList(metadataRows);
-  root.append(recordCard("Record metadata", metadata));
-  root.append(recordCard("Model-visible prompt", markdownNode(question.prompt)));
+  const comparison = element("div", "grid grid-cols-2");
+  comparison.style.width = "100%";
+  comparison.style.minWidth = "0";
+  comparison.style.gridAutoRows = "1fr";
+  comparison.style.alignItems = "stretch";
+
+  const questionColumn = element("section", "card vepbench-record-card");
+  questionColumn.style.minWidth = "0";
+  const questionHeader = element("div");
+  questionHeader.style.display = "flex";
+  questionHeader.style.alignItems = "baseline";
+  questionHeader.style.justifyContent = "space-between";
+  questionHeader.style.gap = "1rem";
+  questionHeader.append(
+    element("h2", null, "Question"),
+    element("span", "muted", entry.question_label)
+  );
+  const reference = element(
+    "p",
+    "muted",
+    `Reference answer: ${question.answer_choice_id} · ${entry.answer}`
+  );
+  const questionBody = markdownNode(question.prompt);
+  questionBody.className = "vepbench-record-content";
+  questionColumn.append(questionHeader, reference, questionBody);
 
   const responseBody = result?.response.content
     ? markdownNode(result.response.content)
     : element(
       "p",
       "muted",
-      result ? "No completed response content." : "This question has not been evaluated by a complete current run."
+      result
+        ? "No completed response content."
+        : run
+          ? "This evaluation run does not contain a response for this question."
+          : "No complete evaluation runs are available."
     );
-  root.append(recordCard("Observed response", responseBody));
 
-  if (result?.response.reasoning) {
-    root.append(disclosure(
-      "Provider-exposed reasoning",
-      markdownNode(result.response.reasoning)
-    ));
+  const answerColumn = element("section", "card vepbench-record-card");
+  answerColumn.style.minWidth = "0";
+  const answerHeader = element("div");
+  answerHeader.style.display = "flex";
+  answerHeader.style.alignItems = "baseline";
+  answerHeader.style.justifyContent = "space-between";
+  answerHeader.style.gap = "1rem";
+  answerHeader.append(
+    element("h2", null, "Answer"),
+    outcomeBadge(entry.outcome)
+  );
+  const prediction = element(
+    "p",
+    "muted",
+    `Parsed prediction: ${result?.scoring.parsed_answer ?? "—"} · ${entry.prediction}`
+  );
+  const answerBody = element("div", "vepbench-record-content");
+  answerBody.append(responseBody);
+
+  const reasoningSection = element("section");
+  reasoningSection.style.borderTop = "1px solid var(--theme-foreground-faintest)";
+  reasoningSection.style.marginTop = "1.25rem";
+  reasoningSection.style.paddingTop = "0.75rem";
+  reasoningSection.append(element("h3", null, "Reasoning"));
+  const reasoningBody = result?.response.reasoning
+    ? markdownNode(result.response.reasoning)
+    : element("p", "muted", "No provider-exposed reasoning was supplied.");
+  reasoningSection.append(reasoningBody);
+  answerBody.append(reasoningSection);
+  answerColumn.append(answerHeader, prediction, answerBody);
+
+  comparison.append(questionColumn, answerColumn);
+  root.append(comparison);
+
+  const footer = element("p", "muted");
+  footer.style.fontSize = "0.85rem";
+  footer.style.margin = "0.75rem 0 0";
+  footer.append(
+    "Question ID ",
+    element("code", null, question.question_id)
+  );
+  if (run) {
+    footer.append(" · Run ", element("code", null, run.run_id));
   }
-
-  if (result) {
-    const raw = element("pre");
-    raw.append(element("code", null, JSON.stringify(result.response.raw, null, 2)));
-    root.append(disclosure("Raw provider response", raw));
-
-    const parameters = element("pre");
-    parameters.append(element("code", null, JSON.stringify({
-      generation_parameters: result.generation_parameters,
-      usage: result.usage,
-      latency_seconds: result.response.latency_seconds,
-      run_id: result.run_id,
-      question_set_sha256: result.question_set_sha256
-    }, null, 2)));
-    root.append(disclosure("Request and usage metadata", parameters));
-  }
+  root.append(footer);
   return root;
 }

@@ -33,18 +33,31 @@ common=(
 "$chrome" "${common[@]}" --window-size=1440,1600 \
   --dump-dom "http://127.0.0.1:$port/tasks/consequence-classification.html" \
   >"$output_dir/task.dom.html"
+"$chrome" "${common[@]}" --window-size=1440,1600 \
+  --dump-dom "http://127.0.0.1:$port/questions.html?question=vep-most-severe-v1%3A17%3A10511998%3AT%3AC&run=gpt-5.6-luna-medium-prompt-v1.1-20260830" \
+  >"$output_dir/question.dom.html"
 
 status=0
 for check in \
+  'leaderboard.dom.html|>Leaderboard<' \
+  'leaderboard.dom.html|>Model<' \
+  'leaderboard.dom.html|>Score<' \
   'leaderboard.dom.html|14.7%' \
-  'leaderboard.dom.html|Consequence classification' \
-  'leaderboard.dom.html|consequence-classification.html?run=gpt-5.6-luna-medium-prompt-v1.1-20260830' \
+  'leaderboard.dom.html|GPT 5.6 Luna (medium)' \
+  'leaderboard.dom.html|https://github.com/Open-Athena/VEPBench' \
+  'leaderboard.dom.html|View source' \
   'tasks.dom.html|Browse benchmark tasks' \
   'tasks.dom.html|Open task' \
+  'task.dom.html|Leaderboard' \
   'task.dom.html|Task version' \
-  'task.dom.html|records match the current filters' \
-  'task.dom.html|Model-visible prompt' \
-  'task.dom.html|&gt;window'
+  'task.dom.html|questions match the current filters' \
+  'task.dom.html|questions.html?question=vep-most-severe-v1%3A17%3A10511998%3AT%3AC' \
+  'question.dom.html|vep-most-severe-v1:17:10511998:T:C' \
+  'question.dom.html|>Question<' \
+  'question.dom.html|>Answer<' \
+  'question.dom.html|>Reasoning<' \
+  'question.dom.html|FINAL: C17' \
+  'question.dom.html|&gt;window'
 do
   file=${check%%|*}
   pattern=${check#*|}
@@ -54,44 +67,70 @@ do
   fi
 done
 
-explorer_data=$(find "$site_dir/_file/data" -maxdepth 1 -name 'explorer.*.json' -print -quit)
-if [[ -z "$explorer_data" ]]; then
-  echo "could not locate built explorer attachment" >&2
+if grep -q '>Correct<' "$output_dir/leaderboard.dom.html"; then
+  echo "unexpected Correct column in leaderboard.dom.html" >&2
   status=1
-else
-  cp "$explorer_data" "$output_dir/explorer-with-results.json"
-  python3 - "$explorer_data" <<'PY'
-import json
-import pathlib
-import sys
-
-path = pathlib.Path(sys.argv[1])
-explorer = json.loads(path.read_text(encoding="utf-8"))
-explorer["task_runs"] = []
-path.write_text(json.dumps(explorer, separators=(",", ":")) + "\n", encoding="utf-8")
-PY
-  "$chrome" "${common[@]}" --window-size=1440,1600 \
-    --dump-dom "http://127.0.0.1:$port/tasks/consequence-classification.html" \
-    >"$output_dir/task-no-results.dom.html"
-  for pattern in 'No complete current evaluations' 'Not evaluated' 'Model-visible prompt'; do
-    if ! grep -q "$pattern" "$output_dir/task-no-results.dom.html"; then
-      echo "missing no-results DOM pattern: $pattern" >&2
-      status=1
-    fi
-  done
-  if grep -q 'observablehq--error' "$output_dir/task-no-results.dom.html"; then
-    echo "rendered Observable error in task-no-results.dom.html" >&2
-    status=1
-  fi
-  cp "$output_dir/explorer-with-results.json" "$explorer_data"
 fi
 
-for file in leaderboard.dom.html tasks.dom.html task.dom.html; do
+if grep -q '>Task<' "$output_dir/leaderboard.dom.html"; then
+  echo "unexpected Task column in leaderboard.dom.html" >&2
+  status=1
+fi
+
+if grep -q '>Rank<' "$output_dir/leaderboard.dom.html"; then
+  echo "unexpected Rank column in leaderboard.dom.html" >&2
+  status=1
+fi
+
+if grep -q 'Model performance across all VEPBench tasks' "$output_dir/leaderboard.dom.html"; then
+  echo "unexpected leaderboard explainer in leaderboard.dom.html" >&2
+  status=1
+fi
+
+for pattern in 'Evaluation run' 'Model prediction' '>Outcome<'; do
+  if grep -q "$pattern" "$output_dir/task.dom.html"; then
+    echo "unexpected response-oriented task detail in task.dom.html: $pattern" >&2
+    status=1
+  fi
+done
+
+for file in leaderboard.dom.html tasks.dom.html task.dom.html question.dom.html; do
   if grep -q 'observablehq--error' "$output_dir/$file"; then
     echo "rendered Observable error in $file" >&2
     status=1
   fi
 done
+
+for file in leaderboard.dom.html task.dom.html question.dom.html; do
+  for pattern in 'API errors' 'errors remain unscored'; do
+    if grep -q "$pattern" "$output_dir/$file"; then
+      echo "unexpected operational detail in $file: $pattern" >&2
+      status=1
+    fi
+  done
+done
+
+if grep -q '>null<' "$output_dir/question.dom.html"; then
+  echo "unexpected null placeholder in question.dom.html" >&2
+  status=1
+fi
+
+if grep -q 'Question only' "$output_dir/question.dom.html"; then
+  echo "unexpected Question only mode in question.dom.html" >&2
+  status=1
+fi
+
+for pattern in 'Raw provider response' 'Request and usage metadata'; do
+  if grep -q "$pattern" "$output_dir/question.dom.html"; then
+    echo "unexpected technical disclosure in question.dom.html: $pattern" >&2
+    status=1
+  fi
+done
+
+if grep -q 'No complete evaluation runs are available' "$output_dir/question.dom.html"; then
+  echo "unexpected missing-response state in question.dom.html" >&2
+  status=1
+fi
 
 "$chrome" "${common[@]}" --window-size=1440,1200 \
   --screenshot="$output_dir/leaderboard-desktop.png" \
