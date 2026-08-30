@@ -33,9 +33,10 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: "24"
+          cache: npm
 
       - name: Install Observable Framework
-        run: npm install
+        run: npm ci
 
       - name: Run offline tests
         run: uv run --locked pytest
@@ -56,9 +57,7 @@ jobs:
         uses: actions/upload-artifact@v5
         with:
           name: vepbench-explorer
-          path: |
-            _site
-            package-lock.json
+          path: _site
 
       - name: Configure Pages
         if: github.event_name != 'pull_request'

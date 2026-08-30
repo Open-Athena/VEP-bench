@@ -3,6 +3,7 @@
 import argparse
 import os
 import re
+import shutil
 import subprocess
 import tempfile
 from collections.abc import Sequence
@@ -238,7 +239,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             if not observable.is_file():
                 raise BuildError("Observable Framework is not installed; run `npm ci`")
             with tempfile.TemporaryDirectory(prefix="vepbench-observable-") as temporary:
-                source = Path(temporary) / "source"
+                project = Path(temporary)
+                source = project / "web"
                 manifest = build_site(
                     questions_path=PROJECT_ROOT / "benchmark/questions.jsonl",
                     question_schema_path=PROJECT_ROOT / "schemas/question.schema.json",
@@ -247,17 +249,17 @@ def main(argv: Sequence[str] | None = None) -> int:
                     assets_dir=PROJECT_ROOT / "web",
                     output=source,
                 )
+                shutil.copy2(
+                    PROJECT_ROOT / "observablehq.config.js",
+                    project / "observablehq.config.js",
+                )
                 completed = subprocess.run(
-                    [
-                        str(observable),
-                        "build",
-                        "--root",
-                        str(source),
-                    ],
-                    cwd=PROJECT_ROOT,
+                    [str(observable), "build"],
+                    cwd=project,
                     check=False,
                     env={
                         **os.environ,
+                        "OBSERVABLE_TELEMETRY_DISABLE": "true",
                         "VEPBENCH_OBSERVABLE_OUTPUT": str(args.output.resolve()),
                     },
                 )
