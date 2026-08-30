@@ -83,8 +83,16 @@ calls run only from an explicitly invoked local command, never from tests or CI.
 
 The Observable Framework explorer opens on the leaderboard and provides a
 searchable, filterable table of individual prompts and responses, available
-provider-exposed reasoning, and request metadata. It does not require a database
-or backend.
+provider-exposed reasoning, and exact-match results. Globally unique question
+IDs support durable links such as
+`questions.html?question=<question-id>&run=<run-id>` without generating a page
+per question or response. The explorer does not require a database or backend.
+
+The task profile owns the shared 262,144-token (2^18) completion ceiling. Luna model
+profiles contain model-specific settings only; the low, medium, and high profiles
+set their corresponding reasoning efforts. The explorer labels runs by reasoning
+effort so comparisons remain distinguishable even when they use the same model
+ID.
 
 The `openai-gpt-5.6-luna-medium-flex.yaml` model profile requests OpenAI's Flex
 service tier through OpenRouter. Flex uses the ordinary request API but receives
@@ -190,14 +198,28 @@ not match REF are skipped with deterministic backfill. Any underfilled class is
 a hard error.
 
 To run a reproducible evaluation, export an OpenRouter key locally and select a
-versioned model profile. Profiles contain only the exact OpenRouter model ID and
-generation parameters; question paths, output paths, run IDs, and secrets remain
-run-specific:
+versioned task profile and model profile. The task profile owns settings shared
+across all model runs, including the maximum completion-token budget; model
+profiles contain only model-specific parameters. Question paths, output paths,
+run IDs, and secrets remain run-specific:
 
 ```bash
 export OPENROUTER_API_KEY=...
 uv run --locked vepbench evaluate \
+  --task-profile configs/tasks/vep-most-severe-consequence.yaml \
   --model-profile configs/models/openai-gpt-5.6-luna-medium.yaml
+```
+
+For direct low- and high-reasoning comparison runs, use:
+
+```bash
+uv run --locked vepbench evaluate --direct \
+  --task-profile configs/tasks/vep-most-severe-consequence.yaml \
+  --model-profile configs/models/openai-gpt-5.6-luna-low.yaml
+
+uv run --locked vepbench evaluate --direct \
+  --task-profile configs/tasks/vep-most-severe-consequence.yaml \
+  --model-profile configs/models/openai-gpt-5.6-luna-high.yaml
 ```
 
 Evaluation submits the whole question set through OpenRouter's asynchronous Batch
@@ -208,8 +230,11 @@ Use `--direct` when a model has no live batch endpoint; it uses eight concurrent
 requests by default while still writing results in deterministic question order.
 Set `--concurrency 1` for a strictly sequential diagnostic. For an ad hoc model,
 `--model provider/model-id` remains available with defaults of `temperature: 0.0`
-and `max_tokens: 4096`. CLI generation arguments override profile values, and
-every fully resolved non-secret request parameter is recorded in the result JSONL.
+and `max_tokens: 4096`. Temperature and reasoning CLI arguments may override
+profile values, while benchmark completion ceilings can only be changed in the
+versioned task profile. Every fully resolved non-secret request parameter is
+copied into each result record for reproducibility even when its source of truth
+is the task profile.
 
 On 2026-08-29, OpenRouter advertised a Luna batch model but its live Batch API
 rejected both the documented base model ID and the `:batch` slug as lacking a

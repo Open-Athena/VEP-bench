@@ -1,0 +1,9 @@
+# Fast, low-reasoning GPT-5.6 Luna comparison.
+schema_version: "1.0"
+label: gpt-5.6-luna-low
+model: openai/gpt-5.6-luna
+generation:
+  seed: 20260829
+  reasoning:
+    effort: low
+    exclude: false

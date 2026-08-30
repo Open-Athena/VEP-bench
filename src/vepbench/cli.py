@@ -11,10 +11,11 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from .batch import collect_batch_file, refresh_batch_state, submit_batch_file
-from .builder import BuildError, build_file
+from .builder import BuildError, build_file, read_jsonl
 from .evaluator import ProviderError, evaluate_file
 from .model_profile import load_model_profile
 from .site import build_site
+from .task_profile import load_task_profile
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
@@ -61,6 +62,11 @@ def build_parser() -> argparse.ArgumentParser:
         default=PROJECT_ROOT / "benchmark/questions.jsonl",
     )
     evaluate.add_argument(
+        "--task-profile",
+        type=Path,
+        help="versioned task-level evaluation settings",
+    )
+    evaluate.add_argument(
         "--schema",
         type=Path,
         default=PROJECT_ROOT / "schemas/question.schema.json",
@@ -94,7 +100,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="validate and continue an interrupted ordered result file (requires --direct)",
     )
     evaluate.add_argument("--temperature", type=float)
-    evaluate.add_argument("--max-tokens", type=int)
+    evaluate.add_argument(
+        "--max-tokens",
+        type=int,
+        help="completion ceiling for ad hoc --model runs (benchmark profiles own this)",
+    )
     evaluate.add_argument(
         "--reasoning-effort",
         choices=("minimal", "low", "medium", "high", "xhigh", "max"),
@@ -140,18 +150,54 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(f"wrote {count} question(s) to {args.output} (sha256 {digest})")
             return 0
         if args.command == "evaluate":
+            if args.model_profile is not None and args.task_profile is None:
+                raise BuildError("--model-profile requires --task-profile")
+            if args.task_profile is not None and args.max_tokens is not None:
+                raise BuildError(
+                    "--max-tokens cannot override a task profile; update the versioned "
+                    "task profile instead"
+                )
             api_key = os.environ.get("OPENROUTER_API_KEY")
             if not api_key:
                 raise BuildError("OPENROUTER_API_KEY is not set")
+            if args.task_profile is not None:
+                task_profile = load_task_profile(args.task_profile)
+                question_families = {
+                    question.get("metadata", {}).get("task_family")
+                    for question in read_jsonl(args.questions)
+                }
+                if None in question_families:
+                    raise BuildError(
+                        f"{args.questions}: question is missing metadata.task_family"
+                    )
+                if question_families != {task_profile.task_family}:
+                    raise BuildError(
+                        f"{args.questions}: task families "
+                        f"{sorted(question_families, key=str)} "
+                        f"do not match task profile {task_profile.task_family!r}"
+                    )
+                generation_parameters = dict(task_profile.generation_parameters)
+            else:
+                generation_parameters = {}
             if args.model_profile is not None:
                 profile = load_model_profile(args.model_profile)
                 model_id = profile.model_id
                 profile_label = profile.label
-                generation_parameters = dict(profile.generation_parameters)
+                overlapping = (
+                    generation_parameters.keys()
+                    & profile.generation_parameters.keys()
+                )
+                if overlapping:
+                    raise BuildError(
+                        "task and model profiles define the same generation parameter(s): "
+                        f"{sorted(overlapping)}"
+                    )
+                generation_parameters.update(profile.generation_parameters)
             else:
                 model_id = args.model
                 profile_label = args.model
-                generation_parameters = {"temperature": 0.0, "max_tokens": 4096}
+                generation_parameters.setdefault("temperature", 0.0)
+                generation_parameters.setdefault("max_tokens", 4096)
             if args.temperature is not None:
                 generation_parameters["temperature"] = args.temperature
             if args.max_tokens is not None:
