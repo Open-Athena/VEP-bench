@@ -217,6 +217,9 @@ __marimo__/
 # Generated static site artifact
 _site/
 
+# Local JavaScript dependencies
+node_modules/
+
 # Local resumable evaluation state
 .vepbench/
 

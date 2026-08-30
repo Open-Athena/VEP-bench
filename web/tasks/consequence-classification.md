@@ -5,12 +5,8 @@ title: Consequence classification
 ```js
 import {
   entriesForQuestions,
-  entriesForRun,
   formatInteger,
-  formatRunLabel,
-  outcomeBadge,
-  questionRecord,
-  runCorrect
+  questionUrl
 } from "../components/vepbench.js";
 
 const explorer = await FileAttachment("../data/explorer.json").json();
@@ -18,16 +14,6 @@ const taskFamily = "vep_most_severe_consequence";
 const taskQuestions = explorer.questions.filter(
   (question) => question.metadata.task_family === taskFamily
 );
-const orderedRuns = explorer.task_runs
-  .filter((candidate) => (
-    candidate.task_family === taskFamily
-    && candidate.current_task_version
-    && candidate.complete
-  ))
-  .sort((a, b) => a.run_id.localeCompare(b.run_id));
-const requestedRunId = new URLSearchParams(location.search).get("run");
-const defaultRun = orderedRuns.find((candidate) => candidate.run_id === requestedRunId)
-  ?? orderedRuns[0];
 const consequenceCount = new Set(taskQuestions[0]?.choices.map((choice) => choice.text)).size;
 ```
 
@@ -39,92 +25,44 @@ Predict the Ensembl VEP most severe consequence for a human GRCh38 SNV using onl
 
 ## Task design
 
-<div class="grid grid-cols-4">
-  <div class="card">
-    <h2>${formatInteger(taskQuestions.length)} questions</h2>
-    <p>10 per consequence class</p>
-  </div>
-  <div class="card">
-    <h2>${consequenceCount} consequence classes</h2>
-    <p>balanced development set</p>
-  </div>
-  <div class="card">
-    <h2>1,001 bp window</h2>
-    <p>variant centered at position 501</p>
-  </div>
-  <div class="card">
-    <h2>Exact-match scoring</h2>
-    <p>last valid FINAL line</p>
-  </div>
+<div class="card">
+  <p><strong>${formatInteger(taskQuestions.length)} questions</strong> across ${consequenceCount} balanced consequence classes, with 10 examples per class. Each question uses a 1,001 bp window centered on the variant and is scored by exact match against its last valid <code>FINAL</code> line.</p>
+  <p>Models see a chromosome 17 SNV in local VCF form, the human GRCh38 reference window, and VEP release 109.1 with <code>--most_severe --distance 1000</code>. Transcript annotations are intentionally omitted. Intergenic, intronic, upstream, and downstream consequences are combined into one class.</p>
+  <dl>
+    <div><dt>Task version</dt><dd>1.1</dd></div>
+    <div><dt>Questions</dt><dd>Public development set</dd></div>
+    <div><dt>Explorer</dt><dd>Static; no backend or hidden state</dd></div>
+  </dl>
 </div>
 
-<div class="grid grid-cols-2">
-  <div class="card">
-    <h2>Model-visible inputs</h2>
-    <dl>
-      <div><dt>Reference</dt><dd>Homo sapiens GRCh38</dd></div>
-      <div><dt>Region</dt><dd>Chromosome 17</dd></div>
-      <div><dt>Variant</dt><dd>Centered SNV in local VCF</dd></div>
-      <div><dt>VEP</dt><dd>release 109.1</dd></div>
-      <div><dt>Flags</dt><dd><code>--most_severe --distance 1000</code></dd></div>
-    </dl>
-  </div>
-  <div class="card">
-    <h2>Interpretation</h2>
-    <dl>
-      <div><dt>Task version</dt><dd>1.1</dd></div>
-      <div><dt>Questions</dt><dd>Public development set</dd></div>
-      <div><dt>Annotations</dt><dd>Transcript annotations intentionally omitted</dd></div>
-      <div><dt>Collapsed class</dt><dd>Intergenic, intronic, upstream, and downstream</dd></div>
-      <div><dt>Explorer</dt><dd>Static; no backend or hidden state</dd></div>
-    </dl>
-  </div>
-</div>
+## Questions
 
-## Results and records
-
-Browse the current task questions, optionally with the predictions from a complete committed evaluation run. Select one row to inspect the full model-visible prompt and observed response.
+Browse the current task questions and open one to inspect it in detail.
 
 ```js
-const run = orderedRuns.length
-  ? view(Inputs.select(orderedRuns, {
-      label: "Evaluation run",
-      value: defaultRun,
-      format: formatRunLabel
-    }))
-  : null;
+const entries = entriesForQuestions(taskQuestions).map(
+  (entry) => ({
+    ...entry,
+    question_link: {
+      label: entry.question_label,
+      href: questionUrl(entry.question_id, null, "../questions.html")
+    }
+  })
+);
 ```
-
-```js
-const entries = run ? entriesForRun(run) : entriesForQuestions(taskQuestions);
-const formatFailureCount = run?.records_data.filter(
-  (record) => record.scoring.parse_error !== null
-).length ?? 0;
-const resultSummary = run
-  ? html`<div class="grid grid-cols-4">
-      <div class="card"><h2>${runCorrect(run)} correct</h2><p>of ${formatInteger(run.questions_expected)} questions</p></div>
-      <div class="card"><h2>${((runCorrect(run) / run.questions_expected) * 100).toFixed(1)}% accuracy</h2><p>deterministic exact match</p></div>
-      <div class="card"><h2>${formatFailureCount} format ${formatFailureCount === 1 ? "failure" : "failures"}</h2><p>completed but invalid final answer</p></div>
-      <div class="card"><h2>${run.api_errors} API errors</h2><p>errors remain unscored</p></div>
-    </div>`
-  : html`<div class="note" label="No complete current evaluations">The current questions remain browsable below. Incomplete runs and runs against older task versions are not ranked or shown as current results.</div>`;
-```
-
-${resultSummary}
 
 ```js
 const filters = view(Inputs.form({
   search: Inputs.search(entries, {
     label: "Find a question",
     placeholder: "Question ID, variant, consequence, or choice…",
-    columns: ["question_label", "variant", "answer", "prediction", "outcome"]
+    columns: [
+      "question_id",
+      "question_label",
+      "variant",
+      "answer"
+    ]
   }),
-  outcome: Inputs.select(
-    run
-      ? ["All outcomes", "Correct", "Incorrect", "Format failure", "API error"]
-      : ["All outcomes", "Not evaluated"],
-    {label: "Outcome"}
-  ),
   consequence: Inputs.select([
     "All consequences",
     ...[...new Set(entries.map((entry) => entry.answer))].sort()
@@ -134,35 +72,26 @@ const filters = view(Inputs.form({
 
 ```js
 const visibleEntries = filters.search.filter((entry) =>
-  (filters.outcome === "All outcomes" || entry.outcome === filters.outcome)
-  && (filters.consequence === "All consequences" || entry.answer === filters.consequence)
+  filters.consequence === "All consequences" || entry.answer === filters.consequence
 );
 ```
 
-<p class="muted">${formatInteger(visibleEntries.length)} records match the current filters · select a row using its checkbox</p>
+<p class="muted">${formatInteger(visibleEntries.length)} questions match the current filters</p>
 
-```js
-const selected = view(Inputs.table(visibleEntries, {
-  columns: ["question_label", "variant", "answer", "prediction", "outcome"],
+${Inputs.table(visibleEntries, {
+  columns: ["question_link", "variant", "answer"],
   header: {
-    question_label: "Question",
+    question_link: "Question",
     variant: "Source variant",
-    answer: "Reference consequence",
-    prediction: "Model prediction",
-    outcome: "Outcome"
+    answer: "Reference consequence"
   },
-  format: {outcome: outcomeBadge},
+  format: {
+    question_link: (value) => html`<a href=${value.href}>${value.label}</a>`
+  },
   width: {
-    question_label: 70,
+    question_link: 70,
     variant: 130,
-    answer: 260,
-    prediction: 260,
-    outcome: 90
+    answer: 260
   },
-  multiple: false,
-  required: false,
-  value: visibleEntries[0]
-}));
-```
-
-${selected ? questionRecord(selected) : html`<div class="note" label="No record selected">Select a question row above to inspect it.</div>`}
+  select: false
+})}
