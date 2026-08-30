@@ -86,12 +86,15 @@ const run = view(Inputs.select(orderedRuns, {
 
 ```js
 const entries = entriesForRun(run);
+const formatFailureCount = run.records_data.filter(
+  (record) => record.scoring.parse_error !== null
+).length;
 ```
 
 <div class="grid grid-cols-4">
   <div class="card"><h2>${runCorrect(run)} correct</h2><p>of ${formatInteger(run.questions_expected)} questions</p></div>
   <div class="card"><h2>${((runCorrect(run) / run.questions_expected) * 100).toFixed(1)}% accuracy</h2><p>deterministic exact match</p></div>
-  <div class="card"><h2>${run.records_data.filter((record) => record.scoring.parse_error !== null).length} format failures</h2><p>completed but invalid final answer</p></div>
+  <div class="card"><h2>${formatFailureCount} format ${formatFailureCount === 1 ? "failure" : "failures"}</h2><p>completed but invalid final answer</p></div>
   <div class="card"><h2>${run.api_errors} API errors</h2><p>errors remain unscored</p></div>
 </div>
 
@@ -100,7 +103,7 @@ const filters = view(Inputs.form({
   search: Inputs.search(entries, {
     label: "Find a question",
     placeholder: "Question ID, variant, consequence, or choice…",
-    columns: ["question_id", "variant", "answer", "prediction", "outcome"]
+    columns: ["question_label", "variant", "answer", "prediction", "outcome"]
   }),
   outcome: Inputs.select(
     ["All outcomes", "Correct", "Incorrect", "Format failure", "API error"],
@@ -124,9 +127,9 @@ const visibleEntries = filters.search.filter((entry) =>
 
 ```js
 const selected = view(Inputs.table(visibleEntries, {
-  columns: ["question_id", "variant", "answer", "prediction", "outcome"],
+  columns: ["question_label", "variant", "answer", "prediction", "outcome"],
   header: {
-    question_id: "Question",
+    question_label: "Question",
     variant: "Source variant",
     answer: "Reference consequence",
     prediction: "Model prediction",

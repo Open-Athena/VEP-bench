@@ -51,6 +51,12 @@ function taskForRun(run) {
   return {id: "unknown", name: "Unclassified task", path: "./tasks.html"};
 }
 
+function modelName(modelId) {
+  const name = modelId.split("/").at(-1) ?? modelId;
+  if (name === "gpt-5.6-luna") return "GPT-5.6 Luna";
+  return name;
+}
+
 export function leaderboardRows(runs) {
   const ranked = runs
     .filter((run) => run.current_question_set)
@@ -59,7 +65,7 @@ export function leaderboardRows(runs) {
         ...run,
         task: taskForRun(run),
         model_cell: {
-          model: run.records_data[0]?.model.model_id ?? "unknown",
+          model: modelName(run.records_data[0]?.model.model_id ?? "unknown"),
           provider: run.records_data[0]?.model.upstream_provider ?? "not reported"
         },
         correct: `${runCorrect(run)}/${scored(run.records_data).length}`,
@@ -91,15 +97,13 @@ function link(label, href) {
 
 export function leaderboardTable(rows, Inputs) {
   return Inputs.table(rows, {
-    columns: ["task", "rank", "model_cell", "correct", "accuracy", "format_failures", "api_errors", "inspect"],
+    columns: ["task", "rank", "model_cell", "correct", "accuracy", "inspect"],
     header: {
       task: "Task",
       rank: "Rank",
       model_cell: "Model / provider",
       correct: "Correct",
       accuracy: "Accuracy",
-      format_failures: "Format",
-      api_errors: "API",
       inspect: "Records"
     },
     format: {
@@ -135,8 +139,9 @@ export function resultOutcome(result) {
 }
 
 export function entriesForRun(run) {
-  return run.records_data.map((result) => ({
+  return run.records_data.map((result, index) => ({
     question_id: result.question_id,
+    question_label: `Q${String(index + 1).padStart(3, "0")}`,
     variant: result.question.provenance.source_record_id,
     answer: choiceText(result.question, result.question.answer_choice_id),
     prediction: choiceText(result.question, result.scoring.parsed_answer),
@@ -198,7 +203,7 @@ export function questionRecord(entry) {
   const heading = element("div");
   heading.append(
     element("em", null, "Selected assay record"),
-    element("h2", null, question.question_id),
+    element("h2", null, entry.question_label),
     element("p", null, question.provenance.source_record_id)
   );
   header.append(heading, outcomeBadge(entry.outcome));
