@@ -163,6 +163,7 @@ def evaluate_file(
     monotonic: Callable[[], float] | None = None,
     progress: Callable[[int, int, int], None] | None = None,
     concurrency: int = 1,
+    resume: bool = False,
 ) -> EvaluationSummary:
     if not RECORD_ID.fullmatch(run_id) or len(run_id) > 200:
         raise BuildError(f"invalid run_id {run_id!r}")
@@ -200,15 +201,31 @@ def evaluate_file(
 
     output_path = Path(output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    if output_path.exists():
+    if output_path.exists() and not resume:
         raise BuildError(f"refusing to overwrite existing run file {output_path}")
 
     client = transport or OpenRouterTransport()
     clock = now or (lambda: datetime.now(UTC))
     timer = monotonic or time.monotonic
     question_set_sha256 = sha256_file(questions_file)
-    completed = 0
-    api_errors = 0
+    existing = _validated_resume_prefix(
+        output_path=output_path,
+        questions=questions,
+        result_validator=result_validator,
+        run_id=run_id,
+        model_id=model_id,
+        generation_parameters=resolved_parameters,
+        question_set_sha256=question_set_sha256,
+    ) if resume else []
+    completed = sum(
+        result["response"]["status"] == "completed" for result in existing
+    )
+    api_errors = sum(
+        result["response"]["status"] == "api_error" for result in existing
+    )
+    pending_questions = questions[len(existing):]
+    if progress is not None and existing:
+        progress(len(existing), len(questions), api_errors)
 
     def evaluate_question(question: Mapping[str, Any]) -> tuple[dict[str, Any], bool]:
         request_body: dict[str, Any] = {
@@ -247,9 +264,12 @@ def evaluate_file(
             )
             return result, True
 
-    with output_path.open("x", encoding="utf-8", newline="\n") as output_file:
+    mode = "a" if output_path.exists() else "x"
+    with output_path.open(mode, encoding="utf-8", newline="\n") as output_file:
         with ThreadPoolExecutor(max_workers=concurrency) as executor:
-            evaluated = executor.map(evaluate_question, questions, buffersize=concurrency)
+            evaluated = executor.map(
+                evaluate_question, pending_questions, buffersize=concurrency
+            )
             for result, api_error in evaluated:
                 if api_error:
                     api_errors += 1
@@ -262,6 +282,50 @@ def evaluate_file(
                     progress(completed + api_errors, len(questions), api_errors)
 
     return EvaluationSummary(run_id, output_path, completed, api_errors)
+
+
+def _validated_resume_prefix(
+    *,
+    output_path: Path,
+    questions: list[dict[str, Any]],
+    result_validator: Draft202012Validator,
+    run_id: str,
+    model_id: str,
+    generation_parameters: Mapping[str, Any],
+    question_set_sha256: str,
+) -> list[dict[str, Any]]:
+    """Return a validated ordered prefix from an interrupted direct run."""
+
+    if not output_path.exists() or output_path.stat().st_size == 0:
+        return []
+    records = read_jsonl(output_path)
+    if len(records) > len(questions):
+        raise BuildError(
+            f"cannot resume {output_path}: result count exceeds question count"
+        )
+    for index, result in enumerate(records):
+        validate_result(result, result_validator)
+        question = questions[index]
+        expected = {
+            "run_id": run_id,
+            "question_id": question["question_id"],
+            "question_set_sha256": question_set_sha256,
+            "question_set_size": len(questions),
+            "question": question,
+            "generation_parameters": dict(generation_parameters),
+        }
+        observed = {field: result.get(field) for field in expected}
+        if observed != expected:
+            raise BuildError(
+                f"cannot resume {output_path}: record {index + 1} does not match "
+                "the requested run and ordered question set"
+            )
+        if result["model"]["model_id"] != model_id:
+            raise BuildError(
+                f"cannot resume {output_path}: record {index + 1} uses model "
+                f"{result['model']['model_id']!r}, expected {model_id!r}"
+            )
+    return records
 
 
 def validate_result(

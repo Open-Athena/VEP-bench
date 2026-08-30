@@ -81,9 +81,17 @@ Only model-visible prompts cross the API boundary. Answer keys remain local and
 are applied by the deterministic scorer after each response returns. Paid model
 calls run only from an explicitly invoked local command, never from tests or CI.
 
-The static explorer shows model summaries, per-family accuracy,
-individual prompts and responses, available provider-exposed reasoning, and a
-question-by-model comparison matrix. It will not require a database or backend.
+The Observable Framework explorer opens on the leaderboard and provides a
+searchable, filterable table of individual prompts and responses, available
+provider-exposed reasoning, and request metadata. It does not require a database
+or backend.
+
+The `openai-gpt-5.6-luna-medium-flex.yaml` model profile requests OpenAI's Flex
+service tier through OpenRouter. Flex uses the ordinary request API but receives
+the same 50% token discount as batch processing in exchange for higher latency
+and lower availability. OpenRouter's asynchronous Batch API remains the CLI
+default; use the Flex profile with `--direct` when Luna's advertised batch route
+is unavailable.
 
 ## Data contracts
 
@@ -129,6 +137,7 @@ rebuild the committed questions, and run the offline checks with:
 
 ```bash
 uv sync --locked --group dev
+npm ci
 uv run --locked vepbench build
 uv run --locked python scripts/validate_vep_consequence_artifacts.py
 uv run --locked pytest
@@ -143,9 +152,15 @@ real baseline is committed as
 It contains all 190 OpenAI GPT-5.6 Luna responses with no API errors. Strict
 exact-match scoring gives 15/190 (7.9%); 72 responses failed the required final
 line format and therefore correctly score zero. That run used prompt template
-version 1.0 and is retained as a historical result; the current version 1.1
-prompt gives more explicit final-line instructions. Small synthetic artifacts
-under `tests/fixtures/` exist only for offline unit tests.
+version 1.0 and is retained as a historical result.
+
+The current prompt v1.1 evaluation is committed as
+[`results/gpt-5.6-luna-medium-prompt-v1.1-20260830.jsonl`](results/gpt-5.6-luna-medium-prompt-v1.1-20260830.jsonl).
+It also contains all 190 responses with no API errors. Exact-match scoring gives
+28/190 (14.7%), with one format failure and no length-limited completions. The
+format-only prompt revision therefore reduced invalid final lines from 72 to 1;
+both versions remain selectable in the explorer. Small synthetic artifacts under
+`tests/fixtures/` exist only for offline unit tests.
 
 ### Rebuilding the source data
 
@@ -208,7 +223,8 @@ scientifically incomplete. It never sends answer keys to the provider. No test
 or GitHub Actions workflow reads the API key or makes model calls.
 
 GitHub Actions validates the generated fixtures, tests every committed result,
-and assembles the Pages artifact from `web/`, `benchmark/`, and `results/`.
+and compiles the Observable Pages artifact from `web/`, `benchmark/`, and
+`results/`.
 Implementation work is tracked in GitHub issues rather than as a roadmap here.
 
 VEPBench is a public development set for now. If it becomes a formal benchmark,

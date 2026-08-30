@@ -3,6 +3,8 @@
 import argparse
 import os
 import re
+import subprocess
+import tempfile
 from collections.abc import Sequence
 from datetime import UTC, datetime
 from pathlib import Path
@@ -85,6 +87,11 @@ def build_parser() -> argparse.ArgumentParser:
         default=8,
         help="maximum in-flight requests with --direct (default: 8)",
     )
+    evaluate.add_argument(
+        "--resume",
+        action="store_true",
+        help="validate and continue an interrupted ordered result file (requires --direct)",
+    )
     evaluate.add_argument("--temperature", type=float)
     evaluate.add_argument("--max-tokens", type=int)
     evaluate.add_argument(
@@ -114,7 +121,9 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=PROJECT_ROOT / "schemas/result.schema.json",
     )
-    site = subparsers.add_parser("site", help="validate data and build the static site")
+    site = subparsers.add_parser(
+        "site", help="validate data and build the Observable static explorer"
+    )
     site.add_argument("--output", type=Path, default=PROJECT_ROOT / "_site")
     return parser
 
@@ -156,6 +165,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             run_id = args.run_id or f"{model_slug}-{timestamp}"
             output = args.output or PROJECT_ROOT / "results" / f"{run_id}.jsonl"
             if not args.direct:
+                if args.resume:
+                    raise BuildError("--resume requires --direct")
                 state_path = args.batch_state or (
                     PROJECT_ROOT / ".vepbench" / "batches" / f"{run_id}.json"
                 )
@@ -187,6 +198,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     f"evaluated {done}/{total} ({errors} API error(s))", flush=True
                 ),
                 concurrency=args.concurrency,
+                resume=args.resume,
             )
             print(
                 f"wrote {summary.completed + summary.api_errors} result(s) to "
@@ -220,14 +232,38 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
             return 0 if summary.is_complete else 1
         if args.command == "site":
-            manifest = build_site(
-                questions_path=PROJECT_ROOT / "benchmark/questions.jsonl",
-                question_schema_path=PROJECT_ROOT / "schemas/question.schema.json",
-                results_dir=PROJECT_ROOT / "results",
-                result_schema_path=PROJECT_ROOT / "schemas/result.schema.json",
-                assets_dir=PROJECT_ROOT / "web",
-                output=args.output,
-            )
+            if args.output.exists() and any(args.output.iterdir()):
+                raise BuildError(f"refusing to overwrite non-empty site directory {args.output}")
+            observable = PROJECT_ROOT / "node_modules/.bin/observable"
+            if not observable.is_file():
+                raise BuildError("Observable Framework is not installed; run `npm ci`")
+            with tempfile.TemporaryDirectory(prefix="vepbench-observable-") as temporary:
+                source = Path(temporary) / "source"
+                manifest = build_site(
+                    questions_path=PROJECT_ROOT / "benchmark/questions.jsonl",
+                    question_schema_path=PROJECT_ROOT / "schemas/question.schema.json",
+                    results_dir=PROJECT_ROOT / "results",
+                    result_schema_path=PROJECT_ROOT / "schemas/result.schema.json",
+                    assets_dir=PROJECT_ROOT / "web",
+                    output=source,
+                )
+                completed = subprocess.run(
+                    [
+                        str(observable),
+                        "build",
+                        "--root",
+                        str(source),
+                        "--output",
+                        str(args.output.resolve()),
+                    ],
+                    cwd=PROJECT_ROOT,
+                    check=False,
+                )
+                if completed.returncode != 0:
+                    raise BuildError(
+                        f"Observable Framework build failed with exit code "
+                        f"{completed.returncode}"
+                    )
             print(
                 f"built {args.output} with {manifest['questions']['records']} question(s) "
                 f"and {len(manifest['results'])} run(s)"

@@ -10,7 +10,7 @@ from typing import Any
 import pytest
 from jsonschema import Draft202012Validator, FormatChecker
 
-from vepbench.builder import BuildError, read_jsonl
+from vepbench.builder import BuildError, canonical_json, read_jsonl
 from vepbench.evaluator import (
     OpenRouterTransport,
     ProviderError,
@@ -134,6 +134,78 @@ def test_completed_evaluation_is_valid_and_preserves_response(tmp_path: Path) ->
     assert result["generation_parameters"] == {"max_tokens": 4096, "temperature": 0.0}
     assert "test-secret" not in output.read_text(encoding="utf-8")
     assert transport.requests[0][0]["messages"][0]["content"] == result["question"]["prompt"]
+
+
+def test_direct_evaluation_resumes_a_validated_ordered_prefix(tmp_path: Path) -> None:
+    first = read_jsonl(QUESTIONS)[0]
+    second = copy.deepcopy(first)
+    second["question_id"] = "mc-effect-v1:synthetic-002"
+    second["provenance"]["source_record_id"] = "synthetic-002"
+    questions = tmp_path / "questions.jsonl"
+    questions.write_text(
+        "".join(f"{canonical_json(question)}\n" for question in (first, second)),
+        encoding="utf-8",
+        newline="\n",
+    )
+    raw = {
+        "model": "example/model",
+        "provider": "ExampleProvider",
+        "choices": [{"finish_reason": "stop", "message": {"content": "FINAL: B"}}],
+    }
+
+    class InterruptAfterOne:
+        def __init__(self) -> None:
+            self.calls = 0
+
+        def complete(
+            self, request_body: dict[str, Any], api_key: str
+        ) -> dict[str, Any]:
+            self.calls += 1
+            if self.calls == 2:
+                raise KeyboardInterrupt
+            return raw
+
+    output = tmp_path / "interrupted.jsonl"
+    with pytest.raises(KeyboardInterrupt):
+        evaluate_file(
+            questions_path=questions,
+            question_schema_path=QUESTION_SCHEMA,
+            result_schema_path=RESULT_SCHEMA,
+            output=output,
+            run_id="resumable-run",
+            model_id="example/model",
+            api_key="test-secret",
+            transport=InterruptAfterOne(),
+            now=lambda: FIXED_TIME,
+        )
+    assert [row["question_id"] for row in read_jsonl(output)] == [
+        "mc-effect-v1:synthetic-001"
+    ]
+
+    resumed_transport = FakeTransport(raw)
+    progress: list[tuple[int, int, int]] = []
+    summary = evaluate_file(
+        questions_path=questions,
+        question_schema_path=QUESTION_SCHEMA,
+        result_schema_path=RESULT_SCHEMA,
+        output=output,
+        run_id="resumable-run",
+        model_id="example/model",
+        api_key="test-secret",
+        transport=resumed_transport,
+        now=lambda: FIXED_TIME,
+        resume=True,
+        progress=lambda done, total, errors: progress.append((done, total, errors)),
+    )
+
+    assert summary.completed == 2
+    assert summary.api_errors == 0
+    assert len(resumed_transport.requests) == 1
+    assert [row["question_id"] for row in read_jsonl(output)] == [
+        "mc-effect-v1:synthetic-001",
+        "mc-effect-v1:synthetic-002",
+    ]
+    assert progress == [(1, 2, 0), (2, 2, 0)]
 
 
 def test_api_error_is_valid_and_marks_run_incomplete(tmp_path: Path) -> None:

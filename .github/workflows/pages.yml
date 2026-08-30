@@ -29,6 +29,14 @@ jobs:
       - name: Install locked dependencies
         run: uv sync --locked --group dev
 
+      - name: Install Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: Install Observable Framework
+        run: npm install
+
       - name: Run offline tests
         run: uv run --locked pytest
 
@@ -43,6 +51,14 @@ jobs:
 
       - name: Build validated static site
         run: uv run --locked vepbench site --output _site
+
+      - name: Upload explorer preview
+        uses: actions/upload-artifact@v5
+        with:
+          name: vepbench-explorer
+          path: |
+            _site
+            package-lock.json
 
       - name: Configure Pages
         if: github.event_name != 'pull_request'

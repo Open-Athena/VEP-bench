@@ -1,4 +1,5 @@
 import hashlib
+import json
 from pathlib import Path
 
 import pytest
@@ -38,8 +39,13 @@ def test_site_build_validates_and_copies_raw_artifacts(tmp_path: Path) -> None:
     assert (output / "data/results/synthetic-demo.jsonl").read_bytes() == (
         RESULTS / "synthetic-demo.jsonl"
     ).read_bytes()
-    assert (output / "index.html").is_file()
-    assert (output / "app.js").is_file()
+    assert (output / "index.md").is_file()
+    assert (output / "questions.md").is_file()
+    explorer = json.loads((output / "data/explorer.json").read_text())
+    assert explorer["questions"] == read_jsonl(QUESTIONS)
+    assert explorer["runs"][0]["records_data"] == read_jsonl(
+        RESULTS / "synthetic-demo.jsonl"
+    )
 
 
 def test_public_site_builds_with_committed_results(tmp_path: Path) -> None:
@@ -53,19 +59,30 @@ def test_public_site_builds_with_committed_results(tmp_path: Path) -> None:
     )
 
     assert manifest["questions"]["records"] == 190
-    assert len(manifest["results"]) == 1
-    result = manifest["results"][0]
-    assert result["run_id"] == "gpt-5.6-luna-medium-parallel-20260829"
-    assert result["records"] == 190
-    assert result["complete"] is True
-    assert result["current_question_set"] is False
-    assert result["questions_covered"] == 190
-    assert result["questions_expected"] == 190
-    assert result["api_errors"] == 0
+    assert len(manifest["results"]) == 2
+    by_run_id = {result["run_id"]: result for result in manifest["results"]}
+    historical_result = by_run_id["gpt-5.6-luna-medium-parallel-20260829"]
+    assert historical_result["records"] == 190
+    assert historical_result["complete"] is True
+    assert historical_result["current_question_set"] is False
+    assert historical_result["questions_covered"] == 190
+    assert historical_result["questions_expected"] == 190
+    assert historical_result["api_errors"] == 0
+    current_result = by_run_id["gpt-5.6-luna-medium-prompt-v1.1-20260830"]
+    assert current_result["records"] == 190
+    assert current_result["complete"] is True
+    assert current_result["current_question_set"] is True
+    assert current_result["questions_covered"] == 190
+    assert current_result["questions_expected"] == 190
+    assert current_result["api_errors"] == 0
     historical = read_jsonl(
         PUBLIC_RESULTS / "gpt-5.6-luna-medium-parallel-20260829.jsonl"
     )[0]
     assert historical["question"]["provenance"]["template_version"] == "1.0"
+    current = read_jsonl(
+        PUBLIC_RESULTS / "gpt-5.6-luna-medium-prompt-v1.1-20260830.jsonl"
+    )[0]
+    assert current["question"]["provenance"]["template_version"] == "1.1"
 
 
 def test_site_build_rejects_result_with_wrong_question_digest(tmp_path: Path) -> None:

@@ -1,4 +1,4 @@
-"""Validate committed benchmark data and assemble the static Pages artifact."""
+"""Validate committed benchmark data and assemble Observable source data."""
 
 import hashlib
 import json
@@ -28,7 +28,7 @@ def build_site(
     assets_dir: str | Path,
     output: str | Path,
 ) -> dict[str, Any]:
-    """Build a self-contained static artifact while validating all public data."""
+    """Stage validated data and Observable source files for a static build."""
 
     questions_file = Path(questions_path)
     questions = read_jsonl(questions_file)
@@ -42,6 +42,7 @@ def build_site(
 
     question_set_sha256 = sha256_file(questions_file)
     result_files: list[dict[str, Any]] = []
+    explorer_runs: list[dict[str, Any]] = []
     validated_result_files: list[Path] = []
     seen_run_ids: set[str] = set()
     source_results_dir = Path(results_dir)
@@ -64,19 +65,19 @@ def build_site(
             api_errors = sum(
                 record["response"]["status"] == "api_error" for record in records
             )
-            result_files.append(
-                {
-                    "path": f"data/results/{result_file.name}",
-                    "sha256": sha256_file(result_file),
-                    "records": len(records),
-                    "run_id": run_id,
-                    "complete": validation["source_set_complete"] and api_errors == 0,
-                    "current_question_set": validation["current_question_set"],
-                    "questions_covered": len(question_ids_in_run),
-                    "questions_expected": validation["questions_expected"],
-                    "api_errors": api_errors,
-                }
-            )
+            result_summary = {
+                "path": f"data/results/{result_file.name}",
+                "sha256": sha256_file(result_file),
+                "records": len(records),
+                "run_id": run_id,
+                "complete": validation["source_set_complete"] and api_errors == 0,
+                "current_question_set": validation["current_question_set"],
+                "questions_covered": len(question_ids_in_run),
+                "questions_expected": validation["questions_expected"],
+                "api_errors": api_errors,
+            }
+            result_files.append(result_summary)
+            explorer_runs.append({**result_summary, "records_data": records})
 
     output_dir = Path(output)
     if output_dir.exists() and any(output_dir.iterdir()):
@@ -84,9 +85,14 @@ def build_site(
     output_dir.mkdir(parents=True, exist_ok=True)
 
     assets = Path(assets_dir)
-    for source in sorted(assets.iterdir()):
+    for source in sorted(assets.rglob("*")):
+        relative = source.relative_to(assets)
+        if any(part.startswith(".") for part in relative.parts):
+            continue
         if source.is_file():
-            shutil.copy2(source, output_dir / source.name)
+            destination = output_dir / relative
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, destination)
 
     data_dir = output_dir / "data"
     result_output_dir = data_dir / "results"
@@ -106,6 +112,15 @@ def build_site(
     }
     (data_dir / "manifest.json").write_text(
         f"{canonical_json(manifest)}\n", encoding="utf-8", newline="\n"
+    )
+    explorer = {
+        "schema_version": "1.0",
+        "manifest": manifest,
+        "questions": questions,
+        "runs": explorer_runs,
+    }
+    (data_dir / "explorer.json").write_text(
+        f"{canonical_json(explorer)}\n", encoding="utf-8", newline="\n"
     )
     return manifest
 
