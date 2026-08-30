@@ -83,7 +83,6 @@ function link(label, href) {
   const anchor = document.createElement("a");
   anchor.href = href;
   anchor.textContent = label;
-  anchor.className = "table-link";
   return anchor;
 }
 
@@ -106,12 +105,11 @@ export function leaderboardTable(rows, Inputs) {
       rank: (value) => String(value).padStart(2, "0"),
       model_cell: (value) => {
         const wrapper = document.createElement("span");
-        wrapper.className = "model-cell";
         const strong = document.createElement("strong");
         strong.textContent = value.model;
         const small = document.createElement("small");
         small.textContent = value.provider;
-        wrapper.append(strong, small);
+        wrapper.append(strong, " · ", small);
         return wrapper;
       },
       accuracy: formatPercent,
@@ -119,10 +117,6 @@ export function leaderboardTable(rows, Inputs) {
       cost: formatCost,
       inspect: (runId) => link("Open", `./questions.html?run=${encodeURIComponent(runId)}`)
     },
-    align: {rank: "left", correct: "right", accuracy: "right", format_failures: "right", api_errors: "right", tokens: "right", cost: "right"},
-    width: {rank: 55, model_cell: 245, prompt_set: 125, correct: 85, accuracy: 90, format_failures: 75, api_errors: 55, tokens: 95, cost: 75, inspect: 70},
-    layout: "fixed",
-    rows: Math.max(2, rows.length),
     select: false
   });
 }
@@ -165,15 +159,15 @@ function element(tag, className, text) {
   return node;
 }
 
-function markdownNode(source, className) {
-  const node = element("div", className);
+function markdownNode(source) {
+  const node = element("div");
   node.innerHTML = markdown.render(source ?? "");
   for (const anchor of node.querySelectorAll("a")) anchor.rel = "noreferrer";
   return node;
 }
 
 function definitionList(rows) {
-  const list = element("dl", "record-metadata");
+  const list = element("dl");
   for (const [term, value] of rows) {
     const row = element("div");
     row.append(element("dt", null, term), element("dd", null, value));
@@ -217,18 +211,18 @@ export function questionRecord(entry) {
     ["Evaluated", result.evaluated_at],
     ["Question digest", result.question_sha256]
   ]);
-  root.append(recordCard("Record metadata", metadata, "metadata-card"));
-  root.append(recordCard("Model-visible prompt", markdownNode(question.prompt, "rendered-markdown prompt-markdown"), "prompt-card"));
+  root.append(recordCard("Record metadata", metadata));
+  root.append(recordCard("Model-visible prompt", markdownNode(question.prompt)));
 
   const responseBody = result.response.content
-    ? markdownNode(result.response.content, "rendered-markdown response-markdown")
+    ? markdownNode(result.response.content)
     : element("p", "muted", "No completed response content.");
-  root.append(recordCard("Observed response", responseBody, "response-card"));
+  root.append(recordCard("Observed response", responseBody));
 
   if (result.response.reasoning) {
     root.append(disclosure(
       "Provider-exposed reasoning",
-      markdownNode(result.response.reasoning, "rendered-markdown reasoning-markdown")
+      markdownNode(result.response.reasoning)
     ));
   }
 

@@ -46,6 +46,13 @@ do
   fi
 done
 
+for file in leaderboard.dom.html questions.dom.html; do
+  if grep -q 'observablehq--error' "$output_dir/$file"; then
+    echo "rendered Observable error in $file" >&2
+    status=1
+  fi
+done
+
 "$chrome" "${common[@]}" --window-size=1440,1200 \
   --screenshot="$output_dir/leaderboard-desktop.png" \
   "http://127.0.0.1:$port/index.html"
