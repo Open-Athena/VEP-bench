@@ -45,13 +45,15 @@ def test_site_build_validates_and_copies_raw_artifacts(tmp_path: Path) -> None:
     assert (output / "tasks/consequence-classification.md").is_file()
     explorer = json.loads((output / "data/explorer.json").read_text())
     assert explorer["questions"] == read_jsonl(QUESTIONS)
-    assert explorer["runs"][0]["records_data"] == read_jsonl(
+    assert "runs" not in explorer
+    assert explorer["task_runs"][0]["records_data"] == read_jsonl(
         RESULTS / "synthetic-demo.jsonl"
     )
     assert explorer["task_runs"][0]["task_family"] == (
         explorer["questions"][0]["metadata"]["task_family"]
     )
     assert explorer["task_runs"][0]["complete"] is True
+    assert explorer["task_runs"][0]["current_task_version"] is True
     assert explorer["task_runs"][0]["questions_expected"] == 1
 
 
@@ -111,6 +113,50 @@ def test_site_groups_mixed_result_file_by_structured_task_family(
     assert all(run["records"] == 1 for run in task_runs.values())
     assert all(run["questions_expected"] == 1 for run in task_runs.values())
     assert all(run["complete"] is True for run in task_runs.values())
+    assert all(run["current_task_version"] is True for run in task_runs.values())
+
+    historical_results = deepcopy(results)
+    historical_second_question = deepcopy(second_question)
+    historical_second_question["prompt"] += "\n\nHistorical wording."
+    historical_results[1]["question"] = historical_second_question
+    historical_results[1]["question_sha256"] = sha256_json(
+        historical_second_question
+    )
+    historical_payload = "".join(
+        f"{canonical_json(question)}\n"
+        for question in [first_question, historical_second_question]
+    )
+    historical_sha256 = hashlib.sha256(historical_payload.encode()).hexdigest()
+    for result in historical_results:
+        result["question_set_sha256"] = historical_sha256
+    historical_dir = tmp_path / "historical-results"
+    historical_dir.mkdir()
+    (historical_dir / "historical-mixed-task-run.jsonl").write_text(
+        "".join(f"{canonical_json(result)}\n" for result in historical_results),
+        encoding="utf-8",
+        newline="\n",
+    )
+
+    historical_manifest = build_site(
+        questions_path=questions_path,
+        question_schema_path=QUESTION_SCHEMA,
+        results_dir=historical_dir,
+        result_schema_path=RESULT_SCHEMA,
+        assets_dir=ASSETS,
+        output=tmp_path / "historical-site",
+    )
+    assert historical_manifest["results"][0]["current_question_set"] is False
+
+    historical_explorer = json.loads(
+        (tmp_path / "historical-site/data/explorer.json").read_text()
+    )
+    historical_task_runs = {
+        run["task_family"]: run for run in historical_explorer["task_runs"]
+    }
+    first_task_family = first_question["metadata"]["task_family"]
+    assert historical_task_runs[first_task_family]["current_task_version"] is True
+    assert historical_task_runs[first_task_family]["complete"] is True
+    assert historical_task_runs["second_synthetic_task"]["current_task_version"] is False
 
 
 def test_public_site_builds_with_committed_results(tmp_path: Path) -> None:

@@ -58,7 +58,7 @@ function modelName(modelId) {
 
 export function leaderboardRows(runs) {
   const ranked = runs
-    .filter((run) => run.current_question_set && run.complete)
+    .filter((run) => run.current_task_version && run.complete)
     .map((run) => {
       const task = taskForRun(run);
       return {

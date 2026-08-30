@@ -40,13 +40,17 @@ def build_site(
         raise BuildError(f"{questions_file}: duplicate question IDs")
     for question in questions:
         validate_question(question, question_schema)
+    current_tasks: dict[str, dict[str, Mapping[str, Any]]] = {}
+    for question in questions:
+        current_tasks.setdefault(question["metadata"]["task_family"], {})[
+            question["question_id"]
+        ] = question
     current_task_sizes = Counter(
         question["metadata"]["task_family"] for question in questions
     )
 
     question_set_sha256 = sha256_file(questions_file)
     result_files: list[dict[str, Any]] = []
-    explorer_runs: list[dict[str, Any]] = []
     explorer_task_runs: list[dict[str, Any]] = []
     validated_result_files: list[Path] = []
     seen_run_ids: set[str] = set()
@@ -82,7 +86,6 @@ def build_site(
                 "api_errors": api_errors,
             }
             result_files.append(result_summary)
-            explorer_runs.append({**result_summary, "records_data": records})
             task_families = sorted(
                 {record["question"]["metadata"]["task_family"] for record in records}
             )
@@ -95,11 +98,18 @@ def build_site(
                 task_question_ids = {
                     record["question_id"] for record in task_records
                 }
+                task_questions = {
+                    record["question_id"]: record["question"]
+                    for record in task_records
+                }
+                current_task_version = task_questions == current_tasks.get(
+                    task_family, {}
+                )
                 task_api_errors = sum(
                     record["response"]["status"] == "api_error"
                     for record in task_records
                 )
-                if validation["current_question_set"]:
+                if current_task_version:
                     task_questions_expected: int | None = current_task_sizes.get(
                         task_family, 0
                     )
@@ -119,7 +129,7 @@ def build_site(
                         "run_id": run_id,
                         "task_family": task_family,
                         "complete": task_complete,
-                        "current_question_set": validation["current_question_set"],
+                        "current_task_version": current_task_version,
                         "questions_covered": len(task_question_ids),
                         "questions_expected": task_questions_expected,
                         "api_errors": task_api_errors,
@@ -166,7 +176,6 @@ def build_site(
         "schema_version": "1.0",
         "manifest": manifest,
         "questions": questions,
-        "runs": explorer_runs,
         "task_runs": explorer_task_runs,
     }
     (data_dir / "explorer.json").write_text(

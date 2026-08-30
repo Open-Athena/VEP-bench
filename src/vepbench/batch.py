@@ -462,13 +462,26 @@ def _write_new_json(path: Path, value: Mapping[str, Any]) -> None:
 
 
 def _replace_json(path: Path, value: Mapping[str, Any]) -> None:
-    temporary = path.with_suffix(f"{path.suffix}.tmp")
-    with temporary.open("x", encoding="utf-8", newline="\n") as output:
-        output.write(f"{canonical_json(value)}\n")
-        output.flush()
-        os.fsync(output.fileno())
-    temporary.replace(path)
-    _fsync_directory(path.parent)
+    temporary_path: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            newline="\n",
+            dir=path.parent,
+            prefix=f".{path.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as output:
+            temporary_path = Path(output.name)
+            output.write(f"{canonical_json(value)}\n")
+            output.flush()
+            os.fsync(output.fileno())
+        temporary_path.replace(path)
+        _fsync_directory(path.parent)
+    finally:
+        if temporary_path is not None:
+            temporary_path.unlink(missing_ok=True)
 
 
 def _fsync_directory(path: Path) -> None:

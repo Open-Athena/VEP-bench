@@ -21,7 +21,7 @@ const taskQuestions = explorer.questions.filter(
 const orderedRuns = explorer.task_runs
   .filter((candidate) => (
     candidate.task_family === taskFamily
-    && candidate.current_question_set
+    && candidate.current_task_version
     && candidate.complete
   ))
   .sort((a, b) => a.run_id.localeCompare(b.run_id));

@@ -421,6 +421,11 @@ def completed_result(
     content = message.get("content")
     if content is not None and not isinstance(content, str):
         raise ProviderError("OpenRouter response content is not a string", raw_response=raw)
+    finish_reason = choice.get("finish_reason")
+    if finish_reason is not None and not isinstance(finish_reason, str):
+        raise ProviderError(
+            "OpenRouter response finish_reason is not a string", raw_response=raw
+        )
     score = score_multiple_choice(
         content,
         {choice["choice_id"] for choice in question["choices"]},
@@ -444,7 +449,7 @@ def completed_result(
             "status": "completed",
             "content": content,
             "reasoning": _extract_reasoning(message),
-            "finish_reason": choice.get("finish_reason"),
+            "finish_reason": finish_reason,
             "latency_seconds": latency_seconds,
             "raw": raw if provider_response is None else provider_response,
         },

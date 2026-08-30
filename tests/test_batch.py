@@ -89,22 +89,31 @@ class MixedCompletedBatchTransport(FakeBatchTransport):
         malformed["custom_id"] = custom_ids[1]
         malformed["id"] = custom_ids[1]
         malformed["response"]["body"]["choices"] = []
+        invalid_field = deepcopy(valid)
+        invalid_field["custom_id"] = custom_ids[2]
+        invalid_field["id"] = custom_ids[2]
+        invalid_field["response"]["body"]["choices"][0]["finish_reason"] = 123
         return {
             "id": batch_id,
             "status": "completed",
-            "request_counts": {"total": 2, "completed": 2, "failed": 0},
-            "results": [valid, malformed],
+            "request_counts": {"total": 3, "completed": 3, "failed": 0},
+            "results": [valid, malformed, invalid_field],
         }
 
 
-def _two_question_file(tmp_path: Path) -> Path:
+def _three_question_file(tmp_path: Path) -> Path:
     first = read_jsonl(QUESTIONS)[0]
     second = deepcopy(first)
     second["question_id"] = "mc-effect-v1:synthetic-002"
     second["provenance"]["source_record_id"] = "synthetic-002"
-    output = tmp_path / "two-questions.jsonl"
+    third = deepcopy(first)
+    third["question_id"] = "mc-effect-v1:synthetic-003"
+    third["provenance"]["source_record_id"] = "synthetic-003"
+    output = tmp_path / "three-questions.jsonl"
     output.write_text(
-        "".join(f"{canonical_json(question)}\n" for question in [first, second]),
+        "".join(
+            f"{canonical_json(question)}\n" for question in [first, second, third]
+        ),
         encoding="utf-8",
         newline="\n",
     )
@@ -151,6 +160,8 @@ def test_submit_batch_persists_non_secret_resumable_state(tmp_path: Path) -> Non
     assert state["generation_parameters"] == parameters
     assert "test-secret" not in state_path.read_text(encoding="utf-8")
 
+    stale_temporary = state_path.with_suffix(f"{state_path.suffix}.tmp")
+    stale_temporary.write_text("stale interrupted update\n", encoding="utf-8")
     status = refresh_batch_state(
         state_path=state_path,
         api_key="test-secret",
@@ -161,6 +172,7 @@ def test_submit_batch_persists_non_secret_resumable_state(tmp_path: Path) -> Non
     refreshed = json.loads(state_path.read_text(encoding="utf-8"))
     assert refreshed["raw_status"]["request_counts"]["total"] == 1
     assert "test-secret" not in state_path.read_text(encoding="utf-8")
+    assert stale_temporary.read_text(encoding="utf-8") == "stale interrupted update\n"
 
 
 def test_submit_batch_persists_pending_state_before_provider_call(tmp_path: Path) -> None:
@@ -238,7 +250,7 @@ def test_collect_batch_writes_sorted_schema_valid_results(tmp_path: Path) -> Non
 
 
 def test_collect_batch_records_malformed_success_as_api_error(tmp_path: Path) -> None:
-    questions = _two_question_file(tmp_path)
+    questions = _three_question_file(tmp_path)
     transport = MixedCompletedBatchTransport()
     state_path = tmp_path / "state.json"
     result_output = tmp_path / "result.jsonl"
@@ -264,12 +276,15 @@ def test_collect_batch_records_malformed_success_as_api_error(tmp_path: Path) ->
         now=datetime(2026, 8, 29, 13, 0, tzinfo=UTC),
     )
 
-    assert (summary.completed, summary.api_errors) == (1, 1)
+    assert (summary.completed, summary.api_errors) == (1, 2)
     records = read_jsonl(result_output)
     assert [record["response"]["status"] for record in records] == [
         "completed",
+        "api_error",
         "api_error",
     ]
     assert records[1]["error"]["status_code"] == 200
     assert "no completion choice" in records[1]["error"]["message"]
     assert records[1]["response"]["raw"]["custom_id"] == records[1]["question_id"]
+    assert "finish_reason is not a string" in records[2]["error"]["message"]
+    assert records[2]["response"]["raw"]["custom_id"] == records[2]["question_id"]
