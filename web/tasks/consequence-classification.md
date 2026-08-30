@@ -136,6 +136,13 @@ const selected = view(Inputs.table(visibleEntries, {
     outcome: "Outcome"
   },
   format: {outcome: outcomeBadge},
+  width: {
+    question_label: 70,
+    variant: 130,
+    answer: 260,
+    prediction: 260,
+    outcome: 90
+  },
   multiple: false,
   required: false,
   value: visibleEntries[0]

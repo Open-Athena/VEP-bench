@@ -95,6 +95,19 @@ function link(label, href) {
   return anchor;
 }
 
+function accuracyMeter(value) {
+  const wrapper = document.createElement("span");
+  const label = document.createElement("strong");
+  label.textContent = formatPercent(value);
+  const meter = document.createElement("meter");
+  meter.min = 0;
+  meter.max = 1;
+  meter.value = value;
+  meter.setAttribute("aria-label", `${formatPercent(value)} exact-match accuracy`);
+  wrapper.append(label, " ", meter);
+  return wrapper;
+}
+
 export function leaderboardTable(rows, Inputs) {
   return Inputs.table(rows, {
     columns: ["task", "rank", "model_cell", "correct", "accuracy", "inspect"],
@@ -118,11 +131,19 @@ export function leaderboardTable(rows, Inputs) {
         wrapper.append(strong, " · ", small);
         return wrapper;
       },
-      accuracy: formatPercent,
+      accuracy: accuracyMeter,
       inspect: (runId) => {
         const run = rows.find((candidate) => candidate.run_id === runId);
         return link("Open", `${run.task.path}?run=${encodeURIComponent(runId)}`);
       }
+    },
+    width: {
+      task: 210,
+      rank: 55,
+      model_cell: 200,
+      correct: 80,
+      accuracy: 210,
+      inspect: 70
     },
     select: false
   });
