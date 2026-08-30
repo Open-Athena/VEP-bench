@@ -117,7 +117,7 @@ export function leaderboardTable(rows, Inputs) {
       accuracy: formatPercent,
       tokens: formatInteger,
       cost: formatCost,
-      inspect: (runId) => link("Open", `./questions?run=${encodeURIComponent(runId)}`)
+      inspect: (runId) => link("Open", `./questions.html?run=${encodeURIComponent(runId)}`)
     },
     align: {rank: "left", correct: "right", accuracy: "right", format_failures: "right", api_errors: "right", tokens: "right", cost: "right"},
     width: {rank: 55, model_cell: 245, prompt_set: 125, correct: 85, accuracy: 90, format_failures: 75, api_errors: 55, tokens: 95, cost: 75, inspect: 70},

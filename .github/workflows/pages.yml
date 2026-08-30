@@ -53,11 +53,20 @@ jobs:
       - name: Build validated static site
         run: uv run --locked vepbench site --output _site
 
+      - name: Run browser smoke QA
+        run: bash scripts/browser_qa.sh _site browser-qa
+
       - name: Upload explorer preview
         uses: actions/upload-artifact@v5
         with:
           name: vepbench-explorer
           path: _site
+
+      - name: Upload browser QA
+        uses: actions/upload-artifact@v5
+        with:
+          name: vepbench-browser-qa
+          path: browser-qa
 
       - name: Configure Pages
         if: github.event_name != 'pull_request'

@@ -90,4 +90,4 @@ ${historical && currentRun ? html`<div class="note comparison-note" label="Promp
   </div>
 </div>
 
-<a class="primary-link" href="./questions">Inspect questions and responses →</a>
+<a class="primary-link" href="./questions.html">Inspect questions and responses →</a>
