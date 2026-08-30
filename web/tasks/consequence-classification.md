@@ -100,16 +100,17 @@ const entries = run ? entriesForRun(run) : entriesForQuestions(taskQuestions);
 const formatFailureCount = run?.records_data.filter(
   (record) => record.scoring.parse_error !== null
 ).length ?? 0;
+const resultSummary = run
+  ? html`<div class="grid grid-cols-4">
+      <div class="card"><h2>${runCorrect(run)} correct</h2><p>of ${formatInteger(run.questions_expected)} questions</p></div>
+      <div class="card"><h2>${((runCorrect(run) / run.questions_expected) * 100).toFixed(1)}% accuracy</h2><p>deterministic exact match</p></div>
+      <div class="card"><h2>${formatFailureCount} format ${formatFailureCount === 1 ? "failure" : "failures"}</h2><p>completed but invalid final answer</p></div>
+      <div class="card"><h2>${run.api_errors} API errors</h2><p>errors remain unscored</p></div>
+    </div>`
+  : html`<div class="note" label="No complete current evaluations">The current questions remain browsable below. Incomplete runs and runs against older task versions are not ranked or shown as current results.</div>`;
 ```
 
-${run ? html`
-<div class="grid grid-cols-4">
-  <div class="card"><h2>${runCorrect(run)} correct</h2><p>of ${formatInteger(run.questions_expected)} questions</p></div>
-  <div class="card"><h2>${((runCorrect(run) / run.questions_expected) * 100).toFixed(1)}% accuracy</h2><p>deterministic exact match</p></div>
-  <div class="card"><h2>${formatFailureCount} format ${formatFailureCount === 1 ? "failure" : "failures"}</h2><p>completed but invalid final answer</p></div>
-  <div class="card"><h2>${run.api_errors} API errors</h2><p>errors remain unscored</p></div>
-</div>
-` : html`<div class="note" label="No complete current evaluations">The current questions remain browsable below. Incomplete runs and runs against older task versions are not ranked or shown as current results.</div>`}
+${resultSummary}
 
 ```js
 const filters = view(Inputs.form({
