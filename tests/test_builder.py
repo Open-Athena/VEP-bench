@@ -71,6 +71,22 @@ def test_example_prompt_matches_first_committed_question() -> None:
     assert f"\n\n{first_question['prompt']}\n" in example
 
 
+def test_production_prompt_has_unambiguous_final_line_instructions(
+    schema: dict,
+) -> None:
+    questions = build_questions(
+        read_jsonl(PRODUCTION_SOURCE), load_template(PRODUCTION_TEMPLATE), schema
+    )
+    prompt = questions[0]["prompt"]
+
+    assert questions[0]["provenance"]["template_version"] == "1.1"
+    assert "Example: `FINAL: C07`" in prompt
+    assert (
+        "Do not include the consequence name, a period, or any other text "
+        "on that line." in prompt
+    )
+
+
 def test_generated_question_satisfies_schema(
     generated_question: dict, schema: dict
 ) -> None:

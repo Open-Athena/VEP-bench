@@ -95,16 +95,18 @@ LF line endings. A question-set fingerprint is the lowercase SHA-256 digest of
 the complete file. A per-question fingerprint is computed from compact JSON
 with recursively sorted keys and no trailing newline.
 
-Every multiple-choice prompt asks the model to end with:
+Every multiple-choice prompt asks the model to end with a line containing only:
 
 ```text
 FINAL: <choice-id>
 ```
 
-The scorer uses the last well-formed `FINAL:` line and compares its choice ID
-exactly. A missing or unknown choice ID scores zero as a parse error. API errors
-have a null score and make the run incomplete instead of counting as scientific
-errors.
+The production VEP prompt also gives a concrete `FINAL: C07` formatting example
+and explicitly prohibits adding the consequence name, punctuation, or other text
+to that line. The scorer uses the last well-formed `FINAL:` line and compares its
+choice ID exactly. A missing or unknown choice ID scores zero as a parse error.
+API errors have a null score and make the run incomplete instead of counting as
+scientific errors.
 
 Each result snapshots the complete generated question alongside the raw
 provider response. Its question fingerprint is recomputed from that embedded
@@ -140,8 +142,10 @@ real baseline is committed as
 [`results/gpt-5.6-luna-medium-parallel-20260829.jsonl`](results/gpt-5.6-luna-medium-parallel-20260829.jsonl).
 It contains all 190 OpenAI GPT-5.6 Luna responses with no API errors. Strict
 exact-match scoring gives 15/190 (7.9%); 72 responses failed the required final
-line format and therefore correctly score zero. Small synthetic artifacts under
-`tests/fixtures/` exist only for offline unit tests.
+line format and therefore correctly score zero. That run used prompt template
+version 1.0 and is retained as a historical result; the current version 1.1
+prompt gives more explicit final-line instructions. Small synthetic artifacts
+under `tests/fixtures/` exist only for offline unit tests.
 
 ### Rebuilding the source data
 

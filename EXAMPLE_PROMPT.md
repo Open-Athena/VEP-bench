@@ -55,5 +55,8 @@ C17. stop_lost
 C18. stop_retained_variant
 C19. synonymous_variant
 
-You may explain your reasoning. End your response with exactly one line in the form:
-FINAL: <choice-id>
+You may explain your reasoning.
+
+Your final line must contain only the word `FINAL`, a colon, a space, and the choice ID.
+Example: `FINAL: C07`
+Do not include the consequence name, a period, or any other text on that line.

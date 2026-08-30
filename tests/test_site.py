@@ -58,10 +58,14 @@ def test_public_site_builds_with_committed_results(tmp_path: Path) -> None:
     assert result["run_id"] == "gpt-5.6-luna-medium-parallel-20260829"
     assert result["records"] == 190
     assert result["complete"] is True
-    assert result["current_question_set"] is True
+    assert result["current_question_set"] is False
     assert result["questions_covered"] == 190
     assert result["questions_expected"] == 190
     assert result["api_errors"] == 0
+    historical = read_jsonl(
+        PUBLIC_RESULTS / "gpt-5.6-luna-medium-parallel-20260829.jsonl"
+    )[0]
+    assert historical["question"]["provenance"]["template_version"] == "1.0"
 
 
 def test_site_build_rejects_result_with_wrong_question_digest(tmp_path: Path) -> None:
