@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import http.client
 import json
+import os
+import tempfile
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -29,6 +31,7 @@ from .evaluator import (
     error_result,
     validate_generation_parameters,
     validate_result,
+    validate_run_id,
 )
 
 OPENROUTER_BATCHES_ENDPOINT = "https://openrouter.ai/api/beta/batches"
@@ -140,8 +143,7 @@ def submit_batch_file(
 ) -> BatchSubmissionSummary:
     """Validate a question set, submit it as one batch, and persist resumable state."""
 
-    if not run_id:
-        raise BuildError("run_id must be non-empty")
+    validate_run_id(run_id)
     if not model_id:
         raise BuildError("model_id must be non-empty")
     validate_generation_parameters(generation_parameters)
@@ -183,20 +185,12 @@ def submit_batch_file(
         "model": model_id,
         "requests": requests,
     }
-    raw = (transport or OpenRouterBatchTransport()).create(request_body, api_key)
-    batch_id = raw.get("id")
-    if not isinstance(batch_id, str) or not batch_id:
-        raise ProviderError("OpenRouter batch response has no batch ID", raw_response=raw)
-    status = raw.get("status")
-    if not isinstance(status, str) or not status:
-        raise ProviderError("OpenRouter batch response has no status", raw_response=raw)
-
     submitted_at = now or datetime.now(UTC)
     state = {
         "schema_version": "1.0",
         "run_id": run_id,
-        "batch_id": batch_id,
-        "status": status,
+        "batch_id": None,
+        "status": "submitting",
         "submitted_at": submitted_at.astimezone(UTC).isoformat().replace("+00:00", "Z"),
         "endpoint": "/v1/chat/completions",
         "model_id": model_id,
@@ -205,10 +199,38 @@ def submit_batch_file(
         "question_set_size": len(questions),
         "question_ids": question_ids,
         "result_output": str(output_file),
-        "raw_submission": raw,
+        "raw_submission": None,
     }
     state_file.parent.mkdir(parents=True, exist_ok=True)
-    state_file.write_text(f"{canonical_json(state)}\n", encoding="utf-8", newline="\n")
+    _write_new_json(state_file, state)
+
+    try:
+        raw = (transport or OpenRouterBatchTransport()).create(request_body, api_key)
+    except ProviderError as exc:
+        state["status"] = "submission_error"
+        state["submission_error"] = {
+            "message": str(exc),
+            "status_code": exc.status_code,
+            "raw_response": exc.raw_response,
+        }
+        _replace_json(state_file, state)
+        raise
+    state["raw_submission"] = raw
+    batch_id = raw.get("id")
+    if not isinstance(batch_id, str) or not batch_id:
+        state["status"] = "submission_response_invalid"
+        _replace_json(state_file, state)
+        raise ProviderError("OpenRouter batch response has no batch ID", raw_response=raw)
+    status = raw.get("status")
+    if not isinstance(status, str) or not status:
+        state["batch_id"] = batch_id
+        state["status"] = "submission_response_invalid"
+        _replace_json(state_file, state)
+        raise ProviderError("OpenRouter batch response has no status", raw_response=raw)
+
+    state["batch_id"] = batch_id
+    state["status"] = status
+    _replace_json(state_file, state)
     return BatchSubmissionSummary(
         run_id=run_id,
         batch_id=batch_id,
@@ -236,7 +258,10 @@ def refresh_batch_state(
         raise BuildError(f"{state_file}: unsupported batch state")
     batch_id = state.get("batch_id")
     if not isinstance(batch_id, str) or not batch_id:
-        raise BuildError(f"{state_file}: missing batch_id")
+        raise BuildError(
+            f"{state_file}: batch submission has no batch_id; "
+            "inspect the preserved submission state before retrying"
+        )
 
     raw = (transport or OpenRouterBatchTransport()).retrieve(batch_id, api_key)
     if raw.get("id") != batch_id:
@@ -250,9 +275,7 @@ def refresh_batch_state(
 
     state["status"] = status
     state["raw_status"] = raw
-    temporary = state_file.with_suffix(f"{state_file.suffix}.tmp")
-    temporary.write_text(f"{canonical_json(state)}\n", encoding="utf-8", newline="\n")
-    temporary.replace(state_file)
+    _replace_json(state_file, state)
     return BatchStatusSummary(
         batch_id=batch_id,
         status=status,
@@ -339,47 +362,121 @@ def collect_batch_file(
     collected_at = now or datetime.now(UTC)
     completed = 0
     api_errors = 0
-    with output_path.open("x", encoding="utf-8", newline="\n") as output_file:
-        for question in questions:
-            item = batch_items[question["question_id"]]
-            response = item.get("response")
-            body = response.get("body") if isinstance(response, Mapping) else None
-            status_code = response.get("status_code") if isinstance(response, Mapping) else None
-            if status_code == 200 and isinstance(body, dict) and item.get("error") is None:
-                result = completed_result(
-                    raw=body,
-                    provider_response=item,
-                    question=question,
-                    question_set_sha256=state["question_set_sha256"],
-                    question_set_size=state["question_set_size"],
-                    run_id=run_id,
-                    model_id=model_id,
-                    generation_parameters=parameters,
-                    evaluated_at=_response_time(body, collected_at),
-                    latency_seconds=None,
+    temporary_path: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            newline="\n",
+            dir=output_path.parent,
+            prefix=f".{output_path.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as output_file:
+            temporary_path = Path(output_file.name)
+            for question in questions:
+                item = batch_items[question["question_id"]]
+                response = item.get("response")
+                body = response.get("body") if isinstance(response, Mapping) else None
+                status_code = (
+                    response.get("status_code") if isinstance(response, Mapping) else None
                 )
-                completed += 1
-            else:
-                error = ProviderError(
-                    _batch_item_error(item),
-                    status_code=status_code if isinstance(status_code, int) else None,
-                    raw_response=item,
-                )
-                result = error_result(
-                    error=error,
-                    question=question,
-                    question_set_sha256=state["question_set_sha256"],
-                    question_set_size=state["question_set_size"],
-                    run_id=run_id,
-                    model_id=model_id,
-                    generation_parameters=parameters,
-                    evaluated_at=collected_at,
-                    latency_seconds=None,
-                )
-                api_errors += 1
-            validate_result(result, result_validator)
-            output_file.write(f"{canonical_json(result)}\n")
+                result: dict[str, Any]
+                if (
+                    status_code == 200
+                    and isinstance(body, dict)
+                    and item.get("error") is None
+                ):
+                    try:
+                        result = completed_result(
+                            raw=body,
+                            provider_response=item,
+                            question=question,
+                            question_set_sha256=state["question_set_sha256"],
+                            question_set_size=state["question_set_size"],
+                            run_id=run_id,
+                            model_id=model_id,
+                            generation_parameters=parameters,
+                            evaluated_at=_response_time(body, collected_at),
+                            latency_seconds=None,
+                        )
+                    except ProviderError as exc:
+                        error = ProviderError(
+                            f"Unusable successful batch response: {exc}",
+                            status_code=200,
+                            raw_response=item,
+                        )
+                        result = error_result(
+                            error=error,
+                            question=question,
+                            question_set_sha256=state["question_set_sha256"],
+                            question_set_size=state["question_set_size"],
+                            run_id=run_id,
+                            model_id=model_id,
+                            generation_parameters=parameters,
+                            evaluated_at=collected_at,
+                            latency_seconds=None,
+                        )
+                        api_errors += 1
+                    else:
+                        completed += 1
+                else:
+                    error = ProviderError(
+                        _batch_item_error(item),
+                        status_code=status_code if isinstance(status_code, int) else None,
+                        raw_response=item,
+                    )
+                    result = error_result(
+                        error=error,
+                        question=question,
+                        question_set_sha256=state["question_set_sha256"],
+                        question_set_size=state["question_set_size"],
+                        run_id=run_id,
+                        model_id=model_id,
+                        generation_parameters=parameters,
+                        evaluated_at=collected_at,
+                        latency_seconds=None,
+                    )
+                    api_errors += 1
+                validate_result(result, result_validator)
+                output_file.write(f"{canonical_json(result)}\n")
+            output_file.flush()
+            os.fsync(output_file.fileno())
+        try:
+            os.link(temporary_path, output_path)
+        except FileExistsError as exc:
+            raise BuildError(f"refusing to overwrite existing run file {output_path}") from exc
+        _fsync_directory(output_path.parent)
+    finally:
+        if temporary_path is not None:
+            temporary_path.unlink(missing_ok=True)
     return EvaluationSummary(run_id, output_path, completed, api_errors)
+
+
+def _write_new_json(path: Path, value: Mapping[str, Any]) -> None:
+    with path.open("x", encoding="utf-8", newline="\n") as output:
+        output.write(f"{canonical_json(value)}\n")
+        output.flush()
+        os.fsync(output.fileno())
+    _fsync_directory(path.parent)
+
+
+def _replace_json(path: Path, value: Mapping[str, Any]) -> None:
+    temporary = path.with_suffix(f"{path.suffix}.tmp")
+    with temporary.open("x", encoding="utf-8", newline="\n") as output:
+        output.write(f"{canonical_json(value)}\n")
+        output.flush()
+        os.fsync(output.fileno())
+    temporary.replace(path)
+    _fsync_directory(path.parent)
+
+
+def _fsync_directory(path: Path) -> None:
+    descriptor = os.open(path, os.O_RDONLY)
+    try:
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
 
 
 def _decode_json_object(payload: bytes) -> dict[str, Any] | None:

@@ -148,6 +148,13 @@ def validate_generation_parameters(parameters: Mapping[str, Any]) -> None:
     canonical_json(dict(parameters))
 
 
+def validate_run_id(run_id: str) -> None:
+    """Validate a run identifier before any provider request is made."""
+
+    if not RECORD_ID.fullmatch(run_id) or len(run_id) > 200:
+        raise BuildError(f"invalid run_id {run_id!r}")
+
+
 def evaluate_file(
     *,
     questions_path: str | Path,
@@ -165,8 +172,7 @@ def evaluate_file(
     concurrency: int = 1,
     resume: bool = False,
 ) -> EvaluationSummary:
-    if not RECORD_ID.fullmatch(run_id) or len(run_id) > 200:
-        raise BuildError(f"invalid run_id {run_id!r}")
+    validate_run_id(run_id)
     if not model_id:
         raise BuildError("model_id must be non-empty")
     if concurrency < 1:

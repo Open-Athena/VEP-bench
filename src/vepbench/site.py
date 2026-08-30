@@ -3,6 +3,7 @@
 import hashlib
 import json
 import shutil
+from collections import Counter
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
@@ -39,10 +40,14 @@ def build_site(
         raise BuildError(f"{questions_file}: duplicate question IDs")
     for question in questions:
         validate_question(question, question_schema)
+    current_task_sizes = Counter(
+        question["metadata"]["task_family"] for question in questions
+    )
 
     question_set_sha256 = sha256_file(questions_file)
     result_files: list[dict[str, Any]] = []
     explorer_runs: list[dict[str, Any]] = []
+    explorer_task_runs: list[dict[str, Any]] = []
     validated_result_files: list[Path] = []
     seen_run_ids: set[str] = set()
     source_results_dir = Path(results_dir)
@@ -78,6 +83,50 @@ def build_site(
             }
             result_files.append(result_summary)
             explorer_runs.append({**result_summary, "records_data": records})
+            task_families = sorted(
+                {record["question"]["metadata"]["task_family"] for record in records}
+            )
+            for task_family in task_families:
+                task_records = [
+                    record
+                    for record in records
+                    if record["question"]["metadata"]["task_family"] == task_family
+                ]
+                task_question_ids = {
+                    record["question_id"] for record in task_records
+                }
+                task_api_errors = sum(
+                    record["response"]["status"] == "api_error"
+                    for record in task_records
+                )
+                if validation["current_question_set"]:
+                    task_questions_expected: int | None = current_task_sizes.get(
+                        task_family, 0
+                    )
+                elif validation["source_set_complete"]:
+                    task_questions_expected = len(task_question_ids)
+                else:
+                    task_questions_expected = None
+                task_complete = (
+                    task_questions_expected is not None
+                    and len(task_question_ids) == task_questions_expected
+                    and task_api_errors == 0
+                )
+                explorer_task_runs.append(
+                    {
+                        "path": result_summary["path"],
+                        "sha256": result_summary["sha256"],
+                        "run_id": run_id,
+                        "task_family": task_family,
+                        "complete": task_complete,
+                        "current_question_set": validation["current_question_set"],
+                        "questions_covered": len(task_question_ids),
+                        "questions_expected": task_questions_expected,
+                        "api_errors": task_api_errors,
+                        "records": len(task_records),
+                        "records_data": task_records,
+                    }
+                )
 
     output_dir = Path(output)
     if output_dir.exists() and any(output_dir.iterdir()):
@@ -118,6 +167,7 @@ def build_site(
         "manifest": manifest,
         "questions": questions,
         "runs": explorer_runs,
+        "task_runs": explorer_task_runs,
     }
     (data_dir / "explorer.json").write_text(
         f"{canonical_json(explorer)}\n", encoding="utf-8", newline="\n"

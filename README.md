@@ -159,8 +159,9 @@ The current prompt v1.1 evaluation is committed as
 It also contains all 190 responses with no API errors. Exact-match scoring gives
 28/190 (14.7%), with one format failure and no length-limited completions. The
 format-only prompt revision therefore reduced invalid final lines from 72 to 1;
-both versions remain selectable in the explorer. Small synthetic artifacts under
-`tests/fixtures/` exist only for offline unit tests.
+the explorer shows only evaluations against the latest task version, while the
+older result remains committed for historical audit. Small synthetic artifacts
+under `tests/fixtures/` exist only for offline unit tests.
 
 ### Rebuilding the source data
 

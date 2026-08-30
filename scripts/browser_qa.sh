@@ -38,6 +38,7 @@ status=0
 for check in \
   'leaderboard.dom.html|14.7%' \
   'leaderboard.dom.html|Consequence classification' \
+  'leaderboard.dom.html|consequence-classification.html?run=gpt-5.6-luna-medium-prompt-v1.1-20260830' \
   'tasks.dom.html|Browse benchmark tasks' \
   'tasks.dom.html|Open task' \
   'task.dom.html|Task version' \
@@ -52,6 +53,38 @@ do
     status=1
   fi
 done
+
+explorer_data=$(find "$site_dir/_file/data" -maxdepth 1 -name 'explorer.*.json' -print -quit)
+if [[ -z "$explorer_data" ]]; then
+  echo "could not locate built explorer attachment" >&2
+  status=1
+else
+  cp "$explorer_data" "$output_dir/explorer-with-results.json"
+  python3 - "$explorer_data" <<'PY'
+import json
+import pathlib
+import sys
+
+path = pathlib.Path(sys.argv[1])
+explorer = json.loads(path.read_text(encoding="utf-8"))
+explorer["task_runs"] = []
+path.write_text(json.dumps(explorer, separators=(",", ":")) + "\n", encoding="utf-8")
+PY
+  "$chrome" "${common[@]}" --window-size=1440,1600 \
+    --dump-dom "http://127.0.0.1:$port/tasks/consequence-classification.html" \
+    >"$output_dir/task-no-results.dom.html"
+  for pattern in 'No complete current evaluations' 'Not evaluated' 'Model-visible prompt'; do
+    if ! grep -q "$pattern" "$output_dir/task-no-results.dom.html"; then
+      echo "missing no-results DOM pattern: $pattern" >&2
+      status=1
+    fi
+  done
+  if grep -q 'observablehq--error' "$output_dir/task-no-results.dom.html"; then
+    echo "rendered Observable error in task-no-results.dom.html" >&2
+    status=1
+  fi
+  cp "$output_dir/explorer-with-results.json" "$explorer_data"
+fi
 
 for file in leaderboard.dom.html tasks.dom.html task.dom.html; do
   if grep -q 'observablehq--error' "$output_dir/$file"; then

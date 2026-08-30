@@ -40,8 +40,7 @@ export function formatRunLabel(run) {
 }
 
 function taskForRun(run) {
-  const questionId = run.records_data[0]?.question_id ?? "";
-  if (questionId.startsWith("vep-most-severe-v1:")) {
+  if (run.task_family === "vep_most_severe_consequence") {
     return {
       id: "consequence-classification",
       name: "Consequence classification",
@@ -59,11 +58,15 @@ function modelName(modelId) {
 
 export function leaderboardRows(runs) {
   const ranked = runs
-    .filter((run) => run.current_question_set)
+    .filter((run) => run.current_question_set && run.complete)
     .map((run) => {
+      const task = taskForRun(run);
       return {
         ...run,
-        task: taskForRun(run),
+        task: {
+          ...task,
+          path: `${task.path}?run=${encodeURIComponent(run.run_id)}`
+        },
         model_cell: {
           model: modelName(run.records_data[0]?.model.model_id ?? "unknown"),
           provider: run.records_data[0]?.model.upstream_provider ?? "not reported"
@@ -166,10 +169,30 @@ export function entriesForRun(run) {
   }));
 }
 
+export function entriesForQuestions(questions) {
+  return questions.map((question, index) => ({
+    question_id: question.question_id,
+    question_label: `Q${String(index + 1).padStart(3, "0")}`,
+    variant: question.provenance.source_record_id,
+    answer: choiceText(question, question.answer_choice_id),
+    prediction: "—",
+    outcome: "Not evaluated",
+    question,
+    result: null,
+    run: null
+  }));
+}
+
 export function outcomeBadge(value) {
   const badge = document.createElement("span");
-  const color = value === "Correct" ? "green" : value === "Format failure" ? "yellow" : "red";
-  badge.className = color;
+  const color = value === "Correct"
+    ? "green"
+    : value === "Format failure"
+      ? "yellow"
+      : value === "Not evaluated"
+        ? ""
+        : "red";
+  if (color) badge.className = color;
   badge.textContent = value;
   return badge;
 }
@@ -223,43 +246,59 @@ export function questionRecord(entry) {
   header.append(heading, outcomeBadge(entry.outcome));
   root.append(header);
 
-  const metadata = definitionList([
-    ["Reference answer", `${question.answer_choice_id} · ${entry.answer}`],
-    ["Parsed prediction", `${result.scoring.parsed_answer ?? "—"} · ${entry.prediction}`],
-    ["Score", result.scoring.value === null ? "unscored" : String(result.scoring.value)],
-    ["Finish reason", result.response.finish_reason ?? "—"],
-    ["Model", result.model.model_id],
-    ["Provider", result.model.upstream_provider ?? "not reported"],
-    ["Evaluated", result.evaluated_at],
-    ["Question digest", result.question_sha256]
-  ]);
+  const metadataRows = [
+    ["Reference answer", `${question.answer_choice_id} · ${entry.answer}`]
+  ];
+  if (result) {
+    metadataRows.push(
+      ["Parsed prediction", `${result.scoring.parsed_answer ?? "—"} · ${entry.prediction}`],
+      ["Score", result.scoring.value === null ? "unscored" : String(result.scoring.value)],
+      ["Finish reason", result.response.finish_reason ?? "—"],
+      ["Model", result.model.model_id],
+      ["Provider", result.model.upstream_provider ?? "not reported"],
+      ["Evaluated", result.evaluated_at],
+      ["Question digest", result.question_sha256]
+    );
+  } else {
+    metadataRows.push(
+      ["Evaluation", "No complete current run"],
+      ["Question ID", question.question_id]
+    );
+  }
+  const metadata = definitionList(metadataRows);
   root.append(recordCard("Record metadata", metadata));
   root.append(recordCard("Model-visible prompt", markdownNode(question.prompt)));
 
-  const responseBody = result.response.content
+  const responseBody = result?.response.content
     ? markdownNode(result.response.content)
-    : element("p", "muted", "No completed response content.");
+    : element(
+      "p",
+      "muted",
+      result ? "No completed response content." : "This question has not been evaluated by a complete current run."
+    );
   root.append(recordCard("Observed response", responseBody));
 
-  if (result.response.reasoning) {
+  if (result?.response.reasoning) {
     root.append(disclosure(
       "Provider-exposed reasoning",
       markdownNode(result.response.reasoning)
     ));
   }
 
-  const raw = element("pre");
-  raw.append(element("code", null, JSON.stringify(result.response.raw, null, 2)));
-  root.append(disclosure("Raw provider response", raw));
+  if (result) {
+    const raw = element("pre");
+    raw.append(element("code", null, JSON.stringify(result.response.raw, null, 2)));
+    root.append(disclosure("Raw provider response", raw));
 
-  const parameters = element("pre");
-  parameters.append(element("code", null, JSON.stringify({
-    generation_parameters: result.generation_parameters,
-    usage: result.usage,
-    latency_seconds: result.response.latency_seconds,
-    run_id: result.run_id,
-    question_set_sha256: result.question_set_sha256
-  }, null, 2)));
-  root.append(disclosure("Request and usage metadata", parameters));
+    const parameters = element("pre");
+    parameters.append(element("code", null, JSON.stringify({
+      generation_parameters: result.generation_parameters,
+      usage: result.usage,
+      latency_seconds: result.response.latency_seconds,
+      run_id: result.run_id,
+      question_set_sha256: result.question_set_sha256
+    }, null, 2)));
+    root.append(disclosure("Request and usage metadata", parameters));
+  }
   return root;
 }

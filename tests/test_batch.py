@@ -1,10 +1,13 @@
 import json
+from copy import deepcopy
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+import pytest
+
 from vepbench.batch import collect_batch_file, refresh_batch_state, submit_batch_file
-from vepbench.builder import read_jsonl
+from vepbench.builder import BuildError, canonical_json, read_jsonl
 
 ROOT = Path(__file__).resolve().parents[1]
 QUESTIONS = ROOT / "tests/fixtures/synthetic-questions.jsonl"
@@ -62,6 +65,52 @@ class CompletedBatchTransport(FakeBatchTransport):
         }
 
 
+class StateObservingTransport(FakeBatchTransport):
+    def __init__(self, state_path: Path) -> None:
+        super().__init__()
+        self.state_path = state_path
+
+    def create(self, request_body: dict[str, Any], api_key: str) -> dict[str, Any]:
+        state = json.loads(self.state_path.read_text(encoding="utf-8"))
+        assert state["status"] == "submitting"
+        assert state["batch_id"] is None
+        return super().create(request_body, api_key)
+
+
+class MixedCompletedBatchTransport(FakeBatchTransport):
+    def retrieve(self, batch_id: str, api_key: str) -> dict[str, Any]:
+        custom_ids = [
+            request["custom_id"] for request in self.requests[0][0]["requests"]
+        ]
+        valid = CompletedBatchTransport().retrieve(batch_id, api_key)["results"][0]
+        valid["custom_id"] = custom_ids[0]
+        valid["id"] = custom_ids[0]
+        malformed = deepcopy(valid)
+        malformed["custom_id"] = custom_ids[1]
+        malformed["id"] = custom_ids[1]
+        malformed["response"]["body"]["choices"] = []
+        return {
+            "id": batch_id,
+            "status": "completed",
+            "request_counts": {"total": 2, "completed": 2, "failed": 0},
+            "results": [valid, malformed],
+        }
+
+
+def _two_question_file(tmp_path: Path) -> Path:
+    first = read_jsonl(QUESTIONS)[0]
+    second = deepcopy(first)
+    second["question_id"] = "mc-effect-v1:synthetic-002"
+    second["provenance"]["source_record_id"] = "synthetic-002"
+    output = tmp_path / "two-questions.jsonl"
+    output.write_text(
+        "".join(f"{canonical_json(question)}\n" for question in [first, second]),
+        encoding="utf-8",
+        newline="\n",
+    )
+    return output
+
+
 def test_submit_batch_persists_non_secret_resumable_state(tmp_path: Path) -> None:
     transport = FakeBatchTransport()
     state_path = tmp_path / "state.json"
@@ -114,6 +163,44 @@ def test_submit_batch_persists_non_secret_resumable_state(tmp_path: Path) -> Non
     assert "test-secret" not in state_path.read_text(encoding="utf-8")
 
 
+def test_submit_batch_persists_pending_state_before_provider_call(tmp_path: Path) -> None:
+    state_path = tmp_path / "state.json"
+    transport = StateObservingTransport(state_path)
+
+    submit_batch_file(
+        questions_path=QUESTIONS,
+        question_schema_path=QUESTION_SCHEMA,
+        state_path=state_path,
+        result_output=tmp_path / "result.jsonl",
+        run_id="batch-run",
+        model_id="example/model",
+        api_key="test-secret",
+        generation_parameters={"max_tokens": 128},
+        transport=transport,
+    )
+
+    assert json.loads(state_path.read_text(encoding="utf-8"))["batch_id"] == "batch-test"
+
+
+def test_submit_batch_rejects_invalid_run_id_before_provider_call(tmp_path: Path) -> None:
+    transport = FakeBatchTransport()
+
+    with pytest.raises(BuildError, match="invalid run_id"):
+        submit_batch_file(
+            questions_path=QUESTIONS,
+            question_schema_path=QUESTION_SCHEMA,
+            state_path=tmp_path / "state.json",
+            result_output=tmp_path / "result.jsonl",
+            run_id="invalid run id",
+            model_id="example/model",
+            api_key="test-secret",
+            generation_parameters={"max_tokens": 128},
+            transport=transport,
+        )
+
+    assert transport.requests == []
+
+
 def test_collect_batch_writes_sorted_schema_valid_results(tmp_path: Path) -> None:
     transport = CompletedBatchTransport()
     state_path = tmp_path / "state.json"
@@ -148,3 +235,41 @@ def test_collect_batch_writes_sorted_schema_valid_results(tmp_path: Path) -> Non
     assert result["response"]["raw"]["custom_id"] == "mc-effect-v1:synthetic-001"
     assert result["response"]["raw"]["response"]["body"]["id"] == "generation-test"
     assert result["usage"] == {"prompt_tokens": 20, "completion_tokens": 8}
+
+
+def test_collect_batch_records_malformed_success_as_api_error(tmp_path: Path) -> None:
+    questions = _two_question_file(tmp_path)
+    transport = MixedCompletedBatchTransport()
+    state_path = tmp_path / "state.json"
+    result_output = tmp_path / "result.jsonl"
+    submit_batch_file(
+        questions_path=questions,
+        question_schema_path=QUESTION_SCHEMA,
+        state_path=state_path,
+        result_output=result_output,
+        run_id="batch-run",
+        model_id="example/model",
+        api_key="test-secret",
+        generation_parameters={"max_tokens": 128},
+        transport=transport,
+    )
+
+    summary = collect_batch_file(
+        state_path=state_path,
+        questions_path=questions,
+        question_schema_path=QUESTION_SCHEMA,
+        result_schema_path=ROOT / "schemas/result.schema.json",
+        api_key="test-secret",
+        transport=transport,
+        now=datetime(2026, 8, 29, 13, 0, tzinfo=UTC),
+    )
+
+    assert (summary.completed, summary.api_errors) == (1, 1)
+    records = read_jsonl(result_output)
+    assert [record["response"]["status"] for record in records] == [
+        "completed",
+        "api_error",
+    ]
+    assert records[1]["error"]["status_code"] == 200
+    assert "no completion choice" in records[1]["error"]["message"]
+    assert records[1]["response"]["raw"]["custom_id"] == records[1]["question_id"]

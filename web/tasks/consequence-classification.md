@@ -4,6 +4,7 @@ title: Consequence classification
 
 ```js
 import {
+  entriesForQuestions,
   entriesForRun,
   formatInteger,
   formatRunLabel,
@@ -13,13 +14,21 @@ import {
 } from "../components/vepbench.js";
 
 const explorer = await FileAttachment("../data/explorer.json").json();
-const orderedRuns = explorer.runs
-  .filter((candidate) => candidate.current_question_set)
+const taskFamily = "vep_most_severe_consequence";
+const taskQuestions = explorer.questions.filter(
+  (question) => question.metadata.task_family === taskFamily
+);
+const orderedRuns = explorer.task_runs
+  .filter((candidate) => (
+    candidate.task_family === taskFamily
+    && candidate.current_question_set
+    && candidate.complete
+  ))
   .sort((a, b) => a.run_id.localeCompare(b.run_id));
 const requestedRunId = new URLSearchParams(location.search).get("run");
 const defaultRun = orderedRuns.find((candidate) => candidate.run_id === requestedRunId)
   ?? orderedRuns[0];
-const consequenceCount = new Set(explorer.questions[0]?.choices.map((choice) => choice.text)).size;
+const consequenceCount = new Set(taskQuestions[0]?.choices.map((choice) => choice.text)).size;
 ```
 
 *Assay 01 · sequence-context multiple choice*
@@ -32,7 +41,7 @@ Predict the Ensembl VEP most severe consequence for a human GRCh38 SNV using onl
 
 <div class="grid grid-cols-4">
   <div class="card">
-    <h2>${formatInteger(explorer.questions.length)} questions</h2>
+    <h2>${formatInteger(taskQuestions.length)} questions</h2>
     <p>10 per consequence class</p>
   </div>
   <div class="card">
@@ -74,29 +83,33 @@ Predict the Ensembl VEP most severe consequence for a human GRCh38 SNV using onl
 
 ## Results and records
 
-Choose a committed evaluation run, search or filter its task records, then select one row to inspect the full model-visible prompt and observed response.
+Browse the current task questions, optionally with the predictions from a complete committed evaluation run. Select one row to inspect the full model-visible prompt and observed response.
 
 ```js
-const run = view(Inputs.select(orderedRuns, {
-  label: "Evaluation run",
-  value: defaultRun,
-  format: formatRunLabel
-}));
+const run = orderedRuns.length
+  ? view(Inputs.select(orderedRuns, {
+      label: "Evaluation run",
+      value: defaultRun,
+      format: formatRunLabel
+    }))
+  : null;
 ```
 
 ```js
-const entries = entriesForRun(run);
-const formatFailureCount = run.records_data.filter(
+const entries = run ? entriesForRun(run) : entriesForQuestions(taskQuestions);
+const formatFailureCount = run?.records_data.filter(
   (record) => record.scoring.parse_error !== null
-).length;
+).length ?? 0;
 ```
 
+${run ? html`
 <div class="grid grid-cols-4">
   <div class="card"><h2>${runCorrect(run)} correct</h2><p>of ${formatInteger(run.questions_expected)} questions</p></div>
   <div class="card"><h2>${((runCorrect(run) / run.questions_expected) * 100).toFixed(1)}% accuracy</h2><p>deterministic exact match</p></div>
   <div class="card"><h2>${formatFailureCount} format ${formatFailureCount === 1 ? "failure" : "failures"}</h2><p>completed but invalid final answer</p></div>
   <div class="card"><h2>${run.api_errors} API errors</h2><p>errors remain unscored</p></div>
 </div>
+` : html`<div class="note" label="No complete current evaluations">The current questions remain browsable below. Incomplete runs and runs against older task versions are not ranked or shown as current results.</div>`}
 
 ```js
 const filters = view(Inputs.form({
@@ -106,7 +119,9 @@ const filters = view(Inputs.form({
     columns: ["question_label", "variant", "answer", "prediction", "outcome"]
   }),
   outcome: Inputs.select(
-    ["All outcomes", "Correct", "Incorrect", "Format failure", "API error"],
+    run
+      ? ["All outcomes", "Correct", "Incorrect", "Format failure", "API error"]
+      : ["All outcomes", "Not evaluated"],
     {label: "Outcome"}
   ),
   consequence: Inputs.select([

@@ -1,5 +1,6 @@
 import hashlib
 import json
+from copy import deepcopy
 from pathlib import Path
 
 import pytest
@@ -47,6 +48,69 @@ def test_site_build_validates_and_copies_raw_artifacts(tmp_path: Path) -> None:
     assert explorer["runs"][0]["records_data"] == read_jsonl(
         RESULTS / "synthetic-demo.jsonl"
     )
+    assert explorer["task_runs"][0]["task_family"] == (
+        explorer["questions"][0]["metadata"]["task_family"]
+    )
+    assert explorer["task_runs"][0]["complete"] is True
+    assert explorer["task_runs"][0]["questions_expected"] == 1
+
+
+def test_site_groups_mixed_result_file_by_structured_task_family(
+    tmp_path: Path,
+) -> None:
+    first_question = read_jsonl(QUESTIONS)[0]
+    second_question = deepcopy(first_question)
+    second_question["question_id"] = "mc-effect-v1:synthetic-002"
+    second_question["metadata"]["task_family"] = "second_synthetic_task"
+    second_question["provenance"]["source_record_id"] = "synthetic-002"
+    questions = [first_question, second_question]
+    questions_path = tmp_path / "questions.jsonl"
+    question_set_payload = "".join(
+        f"{canonical_json(question)}\n" for question in questions
+    )
+    questions_path.write_text(
+        question_set_payload,
+        encoding="utf-8",
+        newline="\n",
+    )
+    question_set_sha256 = hashlib.sha256(question_set_payload.encode()).hexdigest()
+
+    first_result = read_jsonl(RESULTS / "synthetic-demo.jsonl")[0]
+    second_result = deepcopy(first_result)
+    results = [first_result, second_result]
+    for result, question in zip(results, questions, strict=True):
+        result["run_id"] = "mixed-task-run"
+        result["question_id"] = question["question_id"]
+        result["question"] = question
+        result["question_sha256"] = sha256_json(question)
+        result["question_set_sha256"] = question_set_sha256
+        result["question_set_size"] = 2
+    results_dir = tmp_path / "results"
+    results_dir.mkdir()
+    (results_dir / "mixed-task-run.jsonl").write_text(
+        "".join(f"{canonical_json(result)}\n" for result in results),
+        encoding="utf-8",
+        newline="\n",
+    )
+
+    build_site(
+        questions_path=questions_path,
+        question_schema_path=QUESTION_SCHEMA,
+        results_dir=results_dir,
+        result_schema_path=RESULT_SCHEMA,
+        assets_dir=ASSETS,
+        output=tmp_path / "site",
+    )
+
+    explorer = json.loads((tmp_path / "site/data/explorer.json").read_text())
+    task_runs = {run["task_family"]: run for run in explorer["task_runs"]}
+    assert set(task_runs) == {
+        first_question["metadata"]["task_family"],
+        "second_synthetic_task",
+    }
+    assert all(run["records"] == 1 for run in task_runs.values())
+    assert all(run["questions_expected"] == 1 for run in task_runs.values())
+    assert all(run["complete"] is True for run in task_runs.values())
 
 
 def test_public_site_builds_with_committed_results(tmp_path: Path) -> None:
