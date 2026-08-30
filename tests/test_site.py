@@ -40,7 +40,8 @@ def test_site_build_validates_and_copies_raw_artifacts(tmp_path: Path) -> None:
         RESULTS / "synthetic-demo.jsonl"
     ).read_bytes()
     assert (output / "index.md").is_file()
-    assert (output / "questions.md").is_file()
+    assert (output / "tasks.md").is_file()
+    assert (output / "tasks/consequence-classification.md").is_file()
     explorer = json.loads((output / "data/explorer.json").read_text())
     assert explorer["questions"] == read_jsonl(QUESTIONS)
     assert explorer["runs"][0]["records_data"] == read_jsonl(

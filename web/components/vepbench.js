@@ -33,50 +33,53 @@ export function formatPercent(value) {
   return value === null ? "—" : `${(value * 100).toFixed(1)}%`;
 }
 
-export function formatCost(value) {
-  return value ? `$${value.toFixed(3)}` : "—";
-}
-
-export function runTemplateVersion(run) {
-  return run.records_data[0]?.question.provenance.template_version ?? "?";
-}
-
 export function formatRunLabel(run) {
   const model = run.records_data[0]?.model.model_id ?? "unknown model";
-  const state = run.current_question_set ? "current" : "historical";
-  return `${model} · prompt v${runTemplateVersion(run)} · ${state}`;
+  const provider = run.records_data[0]?.model.upstream_provider ?? "provider not reported";
+  return `${model} · ${provider}`;
 }
 
-function runUsage(run) {
-  return run.records_data.reduce((total, record) => {
-    const usage = record.usage ?? {};
-    total.tokens += usage.total_tokens ?? 0;
-    total.cost += usage.cost ?? 0;
-    return total;
-  }, {tokens: 0, cost: 0});
+function taskForRun(run) {
+  const questionId = run.records_data[0]?.question_id ?? "";
+  if (questionId.startsWith("vep-most-severe-v1:")) {
+    return {
+      id: "consequence-classification",
+      name: "Consequence classification",
+      path: "./tasks/consequence-classification.html"
+    };
+  }
+  return {id: "unknown", name: "Unclassified task", path: "./tasks.html"};
 }
 
 export function leaderboardRows(runs) {
-  return runs
+  const ranked = runs
+    .filter((run) => run.current_question_set)
     .map((run) => {
-      const usage = runUsage(run);
       return {
         ...run,
+        task: taskForRun(run),
         model_cell: {
           model: run.records_data[0]?.model.model_id ?? "unknown",
           provider: run.records_data[0]?.model.upstream_provider ?? "not reported"
         },
-        prompt_set: `v${runTemplateVersion(run)} · ${run.current_question_set ? "current" : "historical"}`,
         correct: `${runCorrect(run)}/${scored(run.records_data).length}`,
         accuracy: accuracy(run.records_data),
         format_failures: formatFailures(run.records_data),
-        tokens: usage.tokens,
-        cost: usage.cost,
         inspect: run.run_id
       };
     })
-    .sort((a, b) => (b.accuracy ?? -1) - (a.accuracy ?? -1) || a.run_id.localeCompare(b.run_id))
-    .map((run, index) => ({...run, rank: index + 1}));
+    .sort((a, b) =>
+      a.task.name.localeCompare(b.task.name)
+      || (b.accuracy ?? -1) - (a.accuracy ?? -1)
+      || a.run_id.localeCompare(b.run_id)
+    );
+  let taskId = null;
+  let rank = 0;
+  return ranked.map((run) => {
+    rank = run.task.id === taskId ? rank + 1 : 1;
+    taskId = run.task.id;
+    return {...run, rank};
+  });
 }
 
 function link(label, href) {
@@ -88,20 +91,19 @@ function link(label, href) {
 
 export function leaderboardTable(rows, Inputs) {
   return Inputs.table(rows, {
-    columns: ["rank", "model_cell", "prompt_set", "correct", "accuracy", "format_failures", "api_errors", "tokens", "cost", "inspect"],
+    columns: ["task", "rank", "model_cell", "correct", "accuracy", "format_failures", "api_errors", "inspect"],
     header: {
+      task: "Task",
       rank: "Rank",
       model_cell: "Model / provider",
-      prompt_set: "Prompt set",
       correct: "Correct",
       accuracy: "Accuracy",
       format_failures: "Format",
       api_errors: "API",
-      tokens: "Tokens",
-      cost: "Cost",
       inspect: "Records"
     },
     format: {
+      task: (value) => link(value.name, value.path),
       rank: (value) => String(value).padStart(2, "0"),
       model_cell: (value) => {
         const wrapper = document.createElement("span");
@@ -113,9 +115,10 @@ export function leaderboardTable(rows, Inputs) {
         return wrapper;
       },
       accuracy: formatPercent,
-      tokens: formatInteger,
-      cost: formatCost,
-      inspect: (runId) => link("Open", `./questions.html?run=${encodeURIComponent(runId)}`)
+      inspect: (runId) => {
+        const run = rows.find((candidate) => candidate.run_id === runId);
+        return link("Open", `${run.task.path}?run=${encodeURIComponent(runId)}`);
+      }
     },
     select: false
   });
@@ -189,14 +192,14 @@ function disclosure(summary, content, className = "") {
 }
 
 export function questionRecord(entry) {
-  const {question, result, run} = entry;
+  const {question, result} = entry;
   const root = element("article");
   const header = element("div", "card");
   const heading = element("div");
   heading.append(
     element("em", null, "Selected assay record"),
     element("h2", null, question.question_id),
-    element("p", null, `${question.provenance.source_record_id} · prompt v${runTemplateVersion(run)}`)
+    element("p", null, question.provenance.source_record_id)
   );
   header.append(heading, outcomeBadge(entry.outcome));
   root.append(header);

@@ -28,15 +28,22 @@ common=(
   --dump-dom "http://127.0.0.1:$port/index.html" \
   >"$output_dir/leaderboard.dom.html"
 "$chrome" "${common[@]}" --window-size=1440,1600 \
-  --dump-dom "http://127.0.0.1:$port/questions.html" \
-  >"$output_dir/questions.dom.html"
+  --dump-dom "http://127.0.0.1:$port/tasks.html" \
+  >"$output_dir/tasks.dom.html"
+"$chrome" "${common[@]}" --window-size=1440,1600 \
+  --dump-dom "http://127.0.0.1:$port/tasks/consequence-classification.html" \
+  >"$output_dir/task.dom.html"
 
 status=0
 for check in \
   'leaderboard.dom.html|14.7%' \
-  'questions.dom.html|190 records match the current filters' \
-  'questions.dom.html|Model-visible prompt' \
-  'questions.dom.html|&gt;window'
+  'leaderboard.dom.html|Consequence classification' \
+  'tasks.dom.html|Browse benchmark tasks' \
+  'tasks.dom.html|Open task' \
+  'task.dom.html|Task version' \
+  'task.dom.html|records match the current filters' \
+  'task.dom.html|Model-visible prompt' \
+  'task.dom.html|&gt;window'
 do
   file=${check%%|*}
   pattern=${check#*|}
@@ -46,7 +53,7 @@ do
   fi
 done
 
-for file in leaderboard.dom.html questions.dom.html; do
+for file in leaderboard.dom.html tasks.dom.html task.dom.html; do
   if grep -q 'observablehq--error' "$output_dir/$file"; then
     echo "rendered Observable error in $file" >&2
     status=1
@@ -57,16 +64,19 @@ done
   --screenshot="$output_dir/leaderboard-desktop.png" \
   "http://127.0.0.1:$port/index.html"
 "$chrome" "${common[@]}" --window-size=1440,1600 \
-  --screenshot="$output_dir/questions-desktop.png" \
-  "http://127.0.0.1:$port/questions.html"
+  --screenshot="$output_dir/tasks-desktop.png" \
+  "http://127.0.0.1:$port/tasks.html"
+"$chrome" "${common[@]}" --window-size=1440,1600 \
+  --screenshot="$output_dir/task-desktop.png" \
+  "http://127.0.0.1:$port/tasks/consequence-classification.html"
 "$chrome" "${common[@]}" --window-size=390,844 \
-  --screenshot="$output_dir/questions-mobile.png" \
-  "http://127.0.0.1:$port/questions.html"
+  --screenshot="$output_dir/task-mobile.png" \
+  "http://127.0.0.1:$port/tasks/consequence-classification.html"
 "$chrome" "${common[@]}" --force-dark-mode --window-size=1440,1200 \
   --screenshot="$output_dir/leaderboard-dark.png" \
   "http://127.0.0.1:$port/index.html"
 "$chrome" "${common[@]}" --force-dark-mode --window-size=1440,1600 \
-  --screenshot="$output_dir/questions-dark.png" \
-  "http://127.0.0.1:$port/questions.html"
+  --screenshot="$output_dir/task-dark.png" \
+  "http://127.0.0.1:$port/tasks/consequence-classification.html"
 
 exit "$status"
