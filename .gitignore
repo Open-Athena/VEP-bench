@@ -217,5 +217,8 @@ __marimo__/
 # Generated static site artifact
 _site/
 
+# Local resumable evaluation state
+.vepbench/
+
 # Streamlit
 .streamlit/secrets.toml
