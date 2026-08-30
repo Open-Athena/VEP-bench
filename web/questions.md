@@ -69,30 +69,28 @@ const tableInput = Inputs.table(visibleEntries, {
 const selected = Generators.input(tableInput);
 ```
 
-<div class="page-kicker">ASSAY RECORDS · PROMPTS AND RESPONSES</div>
+*Assay records · prompts and responses*
 
 # Questions
 
 Choose a committed evaluation run, search or filter its question records, then select one row to inspect the full model-visible prompt and observed response.
 
-<div class="run-strip">
-  <span><strong>${run.current_question_set ? "CURRENT" : "HISTORICAL"}</strong> prompt v${runTemplateVersion(run)}</span>
-  <span>${formatInteger(run.records)} / ${formatInteger(run.questions_expected)} responses</span>
-  <span>${runCorrect(run)} correct</span>
-  <span>${run.api_errors} API errors</span>
+<div class="grid grid-cols-4">
+  <div class="card"><h2>${run.current_question_set ? "Current" : "Historical"} prompt</h2><p>version ${runTemplateVersion(run)}</p></div>
+  <div class="card"><h2>${formatInteger(run.records)} responses</h2><p>of ${formatInteger(run.questions_expected)} expected</p></div>
+  <div class="card"><h2>${runCorrect(run)} correct</h2><p>deterministic exact match</p></div>
+  <div class="card"><h2>${run.api_errors} API errors</h2><p>errors remain unscored</p></div>
 </div>
 
-<div class="filter-grid-native">
+<div class="grid grid-cols-4">
   ${runInput}
   ${searchInput}
   ${outcomeInput}
   ${consequenceInput}
 </div>
 
-<div class="section-note">${formatInteger(visibleEntries.length)} records match the current filters · select a row using its checkbox</div>
+<p class="muted">${formatInteger(visibleEntries.length)} records match the current filters · select a row using its checkbox</p>
 
-<div class="card table-card question-table">
-  ${tableInput}
-</div>
+${tableInput}
 
 ${selected ? questionRecord(selected) : html`<div class="note" label="No record selected">Select a question row above to inspect it.</div>`}

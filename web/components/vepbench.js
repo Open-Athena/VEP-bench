@@ -152,7 +152,8 @@ export function entriesForRun(run) {
 
 export function outcomeBadge(value) {
   const badge = document.createElement("span");
-  badge.className = `outcome-badge ${value.toLowerCase().replaceAll(" ", "-")}`;
+  const color = value === "Correct" ? "green" : value === "Format failure" ? "yellow" : "red";
+  badge.className = color;
   badge.textContent = value;
   return badge;
 }
@@ -182,24 +183,24 @@ function definitionList(rows) {
 }
 
 function recordCard(title, body, className = "") {
-  const card = element("section", `card record-card ${className}`.trim());
+  const card = element("section", `card ${className}`.trim());
   card.append(element("h2", null, title), body);
   return card;
 }
 
 function disclosure(summary, content, className = "") {
-  const details = element("details", `record-disclosure ${className}`.trim());
+  const details = element("details", className);
   details.append(element("summary", null, summary), content);
   return details;
 }
 
 export function questionRecord(entry) {
   const {question, result, run} = entry;
-  const root = element("article", "question-record");
-  const header = element("div", "record-header");
+  const root = element("article");
+  const header = element("div", "card");
   const heading = element("div");
   heading.append(
-    element("span", "record-kicker", "SELECTED ASSAY RECORD"),
+    element("em", null, "Selected assay record"),
     element("h2", null, question.question_id),
     element("p", null, `${question.provenance.source_record_id} · prompt v${runTemplateVersion(run)}`)
   );
@@ -231,11 +232,11 @@ export function questionRecord(entry) {
     ));
   }
 
-  const raw = element("pre", "raw-json");
+  const raw = element("pre");
   raw.append(element("code", null, JSON.stringify(result.response.raw, null, 2)));
   root.append(disclosure("Raw provider response", raw));
 
-  const parameters = element("pre", "raw-json");
+  const parameters = element("pre");
   parameters.append(element("code", null, JSON.stringify({
     generation_parameters: result.generation_parameters,
     usage: result.usage,

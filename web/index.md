@@ -20,7 +20,7 @@ const consequenceCount = new Set(explorer.questions[0]?.choices.map((choice) => 
 const historical = rows.find((run) => !run.current_question_set);
 ```
 
-<div class="page-kicker">ASSAY 01 · MOST SEVERE CONSEQUENCE</div>
+*Assay 01 · most severe consequence*
 
 # Leaderboard
 
@@ -28,34 +28,28 @@ Model performance on 190 balanced chromosome 17 SNVs from the human GRCh38 refer
 
 <div class="grid grid-cols-4 assay-metrics">
   <div class="card">
-    <h2>Questions</h2>
-    <span class="big-number">${formatInteger(explorer.questions.length)}</span>
+    <h2>${formatInteger(explorer.questions.length)} questions</h2>
     <p>10 per consequence class</p>
   </div>
   <div class="card">
-    <h2>Consequence classes</h2>
-    <span class="big-number">${consequenceCount}</span>
+    <h2>${consequenceCount} consequence classes</h2>
     <p>balanced development set</p>
   </div>
   <div class="card">
-    <h2>Sequence window</h2>
-    <span class="big-number">1,001 bp</span>
+    <h2>1,001 bp window</h2>
     <p>variant centered at position 501</p>
   </div>
   <div class="card">
-    <h2>Scoring</h2>
-    <span class="big-number">Exact</span>
+    <h2>Exact-match scoring</h2>
     <p>last valid FINAL line</p>
   </div>
 </div>
 
 ## Model results
 
-<div class="section-note">${rows.length} committed runs · ranked by exact-match accuracy · API failures remain unscored</div>
+<p class="muted">${rows.length} committed runs · ranked by exact-match accuracy · API failures remain unscored</p>
 
-<div class="card table-card">
-  ${leaderboardTable(rows, Inputs)}
-</div>
+${leaderboardTable(rows, Inputs)}
 
 ${historical && currentRun ? html`<div class="note comparison-note" label="Prompt format study">
   The current v${runTemplateVersion(currentRun)} prompt reduced format failures from
@@ -90,4 +84,4 @@ ${historical && currentRun ? html`<div class="note comparison-note" label="Promp
   </div>
 </div>
 
-<a class="primary-link" href="./questions.html">Inspect questions and responses →</a>
+[Inspect questions and responses →](./questions.html)

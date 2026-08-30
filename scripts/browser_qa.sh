@@ -45,3 +45,9 @@ grep -q '&gt;window' "$output_dir/questions.dom.html"
 "$chrome" "${common[@]}" --window-size=390,844 \
   --screenshot="$output_dir/questions-mobile.png" \
   "http://127.0.0.1:$port/questions.html"
+"$chrome" "${common[@]}" --force-dark-mode --window-size=1440,1200 \
+  --screenshot="$output_dir/leaderboard-dark.png" \
+  "http://127.0.0.1:$port/index.html"
+"$chrome" "${common[@]}" --force-dark-mode --window-size=1440,1600 \
+  --screenshot="$output_dir/questions-dark.png" \
+  "http://127.0.0.1:$port/questions.html"
