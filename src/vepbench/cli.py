@@ -253,11 +253,13 @@ def main(argv: Sequence[str] | None = None) -> int:
                         "build",
                         "--root",
                         str(source),
-                        "--output",
-                        str(args.output.resolve()),
                     ],
                     cwd=PROJECT_ROOT,
                     check=False,
+                    env={
+                        **os.environ,
+                        "VEPBENCH_OBSERVABLE_OUTPUT": str(args.output.resolve()),
+                    },
                 )
                 if completed.returncode != 0:
                     raise BuildError(

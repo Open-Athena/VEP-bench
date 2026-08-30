@@ -1,7 +1,7 @@
 export default {
   title: "VEPBench",
   root: "web",
-  output: "dist",
+  output: process.env.VEPBENCH_OBSERVABLE_OUTPUT ?? "dist",
   style: "styles.css",
   sidebar: false,
   pager: false,
