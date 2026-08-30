@@ -29,6 +29,15 @@ jobs:
       - name: Install locked dependencies
         run: uv sync --locked --group dev
 
+      - name: Install Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install Observable Framework
+        run: npm ci
+
       - name: Run offline tests
         run: uv run --locked pytest
 
@@ -37,13 +46,28 @@ jobs:
 
       - name: Verify generated benchmark artifacts
         run: |
+          uv run --locked python scripts/validate_vep_consequence_artifacts.py
           uv run --locked vepbench build --output /tmp/questions.jsonl
           cmp benchmark/questions.jsonl /tmp/questions.jsonl
-          uv run --locked vepbench build-demo-result --output /tmp/synthetic-demo.jsonl
-          cmp results/synthetic-demo.jsonl /tmp/synthetic-demo.jsonl
 
       - name: Build validated static site
         run: uv run --locked vepbench site --output _site
+
+      - name: Run browser smoke QA
+        run: bash scripts/browser_qa.sh _site browser-qa
+
+      - name: Upload explorer preview
+        uses: actions/upload-artifact@v5
+        with:
+          name: vepbench-explorer
+          path: _site
+
+      - name: Upload browser QA
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: vepbench-browser-qa
+          path: browser-qa
 
       - name: Configure Pages
         if: github.event_name != 'pull_request'

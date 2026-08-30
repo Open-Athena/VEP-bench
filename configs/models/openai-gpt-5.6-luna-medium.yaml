@@ -1,0 +1,13 @@
+# OpenRouter configuration for the initial VEPBench baseline. OpenRouter's
+# catalog currently maps this routable ID to canonical slug
+# openai/gpt-5.6-luna-20260709.
+# Temperature is intentionally omitted because this model does not advertise it.
+schema_version: "1.0"
+label: gpt-5.6-luna-medium
+model: openai/gpt-5.6-luna
+generation:
+  max_tokens: 16384
+  seed: 20260829
+  reasoning:
+    effort: medium
+    exclude: false

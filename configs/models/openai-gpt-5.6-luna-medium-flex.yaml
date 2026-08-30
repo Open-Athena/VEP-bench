@@ -1,0 +1,13 @@
+# OpenRouter configuration for cost-optimized GPT-5.6 Luna evaluation.
+# OpenAI Flex is billed at half the default service-tier rate in exchange for
+# higher latency and lower availability.
+schema_version: "1.0"
+label: gpt-5.6-luna-medium-flex
+model: openai/gpt-5.6-luna
+generation:
+  max_tokens: 16384
+  seed: 20260829
+  reasoning:
+    effort: medium
+    exclude: false
+  service_tier: flex

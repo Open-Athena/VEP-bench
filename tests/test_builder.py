@@ -17,8 +17,11 @@ from vepbench.builder import (
 )
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "data/sources/synthetic.jsonl"
-TEMPLATE = ROOT / "templates/multiple_choice.json"
+SOURCE = ROOT / "tests/fixtures/synthetic-source.jsonl"
+TEMPLATE = ROOT / "tests/fixtures/synthetic-template.json"
+PRODUCTION_SOURCE = ROOT / "data/sources/chr17-vep-consequences.jsonl"
+PRODUCTION_TEMPLATE = ROOT / "templates/vep_most_severe_consequence.json"
+EXAMPLE_PROMPT = ROOT / "EXAMPLE_PROMPT.md"
 SCHEMA = ROOT / "schemas/question.schema.json"
 
 
@@ -56,9 +59,32 @@ def test_canonical_json_rejects_non_finite_numbers() -> None:
 
 def test_committed_questions_match_builder(tmp_path: Path) -> None:
     rebuilt = tmp_path / "questions.jsonl"
-    build_file(SOURCE, TEMPLATE, SCHEMA, rebuilt)
+    build_file(PRODUCTION_SOURCE, PRODUCTION_TEMPLATE, SCHEMA, rebuilt)
 
     assert rebuilt.read_bytes() == (ROOT / "benchmark/questions.jsonl").read_bytes()
+
+
+def test_example_prompt_matches_first_committed_question() -> None:
+    first_question = read_jsonl(ROOT / "benchmark/questions.jsonl")[0]
+    example = EXAMPLE_PROMPT.read_text(encoding="utf-8")
+
+    assert f"\n\n{first_question['prompt']}\n" in example
+
+
+def test_production_prompt_has_unambiguous_final_line_instructions(
+    schema: dict,
+) -> None:
+    questions = build_questions(
+        read_jsonl(PRODUCTION_SOURCE), load_template(PRODUCTION_TEMPLATE), schema
+    )
+    prompt = questions[0]["prompt"]
+
+    assert questions[0]["provenance"]["template_version"] == "1.1"
+    assert "Example: `FINAL: C07`" in prompt
+    assert (
+        "Do not include the consequence name, a period, or any other text "
+        "on that line." in prompt
+    )
 
 
 def test_generated_question_satisfies_schema(
