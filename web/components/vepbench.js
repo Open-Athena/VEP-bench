@@ -70,8 +70,7 @@ export function leaderboardRows(runs) {
         },
         correct: `${runCorrect(run)}/${scored(run.records_data).length}`,
         accuracy: accuracy(run.records_data),
-        format_failures: formatFailures(run.records_data),
-        inspect: run.run_id
+        format_failures: formatFailures(run.records_data)
       };
     })
     .sort((a, b) =>
@@ -110,14 +109,13 @@ function accuracyMeter(value) {
 
 export function leaderboardTable(rows, Inputs) {
   return Inputs.table(rows, {
-    columns: ["task", "rank", "model_cell", "correct", "accuracy", "inspect"],
+    columns: ["task", "rank", "model_cell", "correct", "accuracy"],
     header: {
       task: "Task",
       rank: "Rank",
       model_cell: "Model / provider",
       correct: "Correct",
-      accuracy: "Accuracy",
-      inspect: "Records"
+      accuracy: "Accuracy"
     },
     format: {
       task: (value) => link(value.name, value.path),
@@ -131,19 +129,14 @@ export function leaderboardTable(rows, Inputs) {
         wrapper.append(strong, " · ", small);
         return wrapper;
       },
-      accuracy: accuracyMeter,
-      inspect: (runId) => {
-        const run = rows.find((candidate) => candidate.run_id === runId);
-        return link("Open", `${run.task.path}?run=${encodeURIComponent(runId)}`);
-      }
+      accuracy: accuracyMeter
     },
     width: {
       task: 210,
       rank: 55,
       model_cell: 200,
       correct: 80,
-      accuracy: 210,
-      inspect: 70
+      accuracy: 210
     },
     select: false
   });
