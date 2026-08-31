@@ -21,7 +21,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Install uv
-        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
         with:
           version: "0.12.5"
           enable-cache: true
@@ -30,7 +30,7 @@ jobs:
         run: uv sync --locked --group dev
 
       - name: Install Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: "24"
           cache: npm
@@ -60,21 +60,21 @@ jobs:
         run: bash scripts/browser_qa.sh _site browser-qa
 
       - name: Upload explorer preview
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: vepbench-explorer
           path: _site
 
       - name: Upload browser QA
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: vepbench-browser-qa
           path: browser-qa
 
       - name: Configure Pages
         if: github.event_name != 'pull_request'
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Upload Pages artifact
         if: github.event_name != 'pull_request'
