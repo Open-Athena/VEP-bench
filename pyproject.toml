@@ -23,7 +23,7 @@ prepare = [
 ]
 dev = [
     { include-group = "prepare" },
-    "pytest>=8.3,<9",
+    "pytest>=8.3,<10",
     "ruff>=0.16.5",
 ]
 
