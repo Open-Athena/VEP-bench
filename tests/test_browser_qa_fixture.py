@@ -28,13 +28,9 @@ def test_browser_qa_fixture_is_complete_and_offline(tmp_path: Path) -> None:
     assert manifest == validate_version(output, version_name="main")
     config = json.loads((site / "data/config.json").read_text(encoding="utf-8"))
     assert config["data_base_url"] == base_url
-    runs = json.loads(
-        (output / "versions/main/runs.json").read_text(encoding="utf-8")
-    )
+    runs = json.loads((output / "versions/main/runs.json").read_text(encoding="utf-8"))
     assert runs["runs"][0]["coverage"]["complete"] is True
-    answer_path = next(
-        (output / "versions/main/answers/browser-qa").glob("*.json.gz")
-    )
+    answer_path = next((output / "versions/main/answers/browser-qa").glob("*.json.gz"))
     answer = json.loads(gzip.decompress(answer_path.read_bytes()))
     assert answer["scoring"] == {
         "correct": False,

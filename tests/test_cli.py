@@ -29,8 +29,6 @@ def test_build_command_writes_questions_and_manifest(
 
     assert status == 0
     assert "wrote 1 question(s)" in capsys.readouterr().out
-    manifest = json.loads(
-        (tmp_path / "questions.manifest.json").read_text(encoding="utf-8")
-    )
+    manifest = json.loads((tmp_path / "questions.manifest.json").read_text(encoding="utf-8"))
     assert manifest["records"] == 1
     assert manifest["path"] == "questions.jsonl"

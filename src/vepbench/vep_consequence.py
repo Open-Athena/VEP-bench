@@ -23,8 +23,7 @@ CHROM_CODES = {str(index): index for index in range(1, 23)} | {
 RANK_MULTIPLIER = 1_000_003
 RANK_MODULUS = 2_147_483_647
 COLLAPSED_LABEL = (
-    "intergenic_variant / intron_variant / upstream_gene_variant / "
-    "downstream_gene_variant"
+    "intergenic_variant / intron_variant / upstream_gene_variant / downstream_gene_variant"
 )
 COLLAPSE_MAP = {
     "downstream_gene_variant": COLLAPSED_LABEL,
@@ -138,19 +137,15 @@ def scan_candidate_pools(
             low_memory=True,
         )
         report(
-            f"loaded {frame.height:,} rows "
-            f"({frame.estimated_size() / (1024**3):.1f} GiB estimated)"
+            f"loaded {frame.height:,} rows ({frame.estimated_size() / (1024**3):.1f} GiB estimated)"
         )
-        frame = (
-            frame.with_columns(
-                pl.col("chrom").cast(pl.String),
-                pl.col("pos").cast(pl.Int64),
-                pl.col("ref").cast(pl.String).str.to_uppercase(),
-                pl.col("alt").cast(pl.String).str.to_uppercase(),
-                pl.col("consequence").cast(pl.String),
-            )
-            .with_columns(_stable_rank_expression(seed).alias("_sample_rank"))
-        )
+        frame = frame.with_columns(
+            pl.col("chrom").cast(pl.String),
+            pl.col("pos").cast(pl.Int64),
+            pl.col("ref").cast(pl.String).str.to_uppercase(),
+            pl.col("alt").cast(pl.String).str.to_uppercase(),
+            pl.col("consequence").cast(pl.String),
+        ).with_columns(_stable_rank_expression(seed).alias("_sample_rank"))
         _validate_source_frame(frame, source)
         frame = frame.with_columns(
             pl.col("chrom").cast(pl.Categorical),
@@ -177,15 +172,11 @@ def scan_candidate_pools(
 
     raw_counts = {
         str(consequence): int(count)
-        for consequence, count in grouped.select(
-            "consequence", "_raw_count"
-        ).iter_rows()
+        for consequence, count in grouped.select("consequence", "_raw_count").iter_rows()
     }
     pools: dict[str, list[RankedCandidate]] = {}
     try:
-        reduced = grouped.explode("_candidate", empty_as_null=True).unnest(
-            "_candidate"
-        )
+        reduced = grouped.explode("_candidate", empty_as_null=True).unnest("_candidate")
         for row in reduced.iter_rows(named=True):
             consequence = str(row["consequence"])
             candidate = VariantCandidate(
@@ -200,9 +191,7 @@ def scan_candidate_pools(
                 RankedCandidate(int(row["_sample_rank"]), candidate)
             )
         for consequence in pools:
-            pools[consequence] = sorted(
-                pools[consequence], key=lambda item: item.sort_key
-            )
+            pools[consequence] = sorted(pools[consequence], key=lambda item: item.sort_key)
     except PreparationError:
         raise
     except Exception as exc:
@@ -242,8 +231,7 @@ def prepare_dataset(
     ]
     choice_by_label = {choice["text"]: choice["choice_id"] for choice in choices}
     source_quotas = {
-        label: COLLAPSED_SOURCE_QUOTAS.get(label, config.per_class_quota)
-        for label in observed
+        label: COLLAPSED_SOURCE_QUOTAS.get(label, config.per_class_quota) for label in observed
     }
 
     records: list[dict[str, Any]] = []
@@ -265,9 +253,7 @@ def prepare_dataset(
                 {
                     "answer_choice_id": choice_by_label[final_label],
                     "choices": choices,
-                    "question": (
-                        "What is the Ensembl VEP most severe consequence for this SNV?"
-                    ),
+                    "question": ("What is the Ensembl VEP most severe consequence for this SNV?"),
                     "source_dataset": source["dataset_revision"],
                     "source_record_id": candidate.source_record_id,
                     "tags": ["grch38", "sequence_context", "snv", "vep_109.1"],
@@ -361,9 +347,7 @@ def write_prepared_dataset(
     }
     manifest_path = Path(manifest_output)
     manifest_path.parent.mkdir(parents=True, exist_ok=True)
-    manifest_path.write_text(
-        f"{canonical_json(manifest)}\n", encoding="utf-8", newline="\n"
-    )
+    manifest_path.write_text(f"{canonical_json(manifest)}\n", encoding="utf-8", newline="\n")
     return len(prepared.records), digest
 
 
@@ -399,15 +383,11 @@ def validate_prepared_artifacts(
     source_counts: Counter[str] = Counter()
     for record in records:
         if record["choices"] != choices:
-            raise PreparationError(
-                f"{record['source_record_id']}: choices do not match manifest"
-            )
+            raise PreparationError(f"{record['source_record_id']}: choices do not match manifest")
         try:
             final_counts[answer_text_by_id[record["answer_choice_id"]]] += 1
         except KeyError as exc:
-            raise PreparationError(
-                f"{record['source_record_id']}: unknown answer choice"
-            ) from exc
+            raise PreparationError(f"{record['source_record_id']}: unknown answer choice") from exc
         source_consequence = _source_consequence_for_record(record, manifest)
         source_counts[source_consequence] += 1
         _validate_rendered_variant(record["variant"], manifest)
@@ -479,7 +459,7 @@ def _validated_window(
     end = zero_based_position + config.flank_size + 1
     try:
         sequence = str(genome(candidate.chrom, start, end)).upper()
-    except (KeyError, ValueError):
+    except KeyError, ValueError:
         return None
     if len(sequence) != config.window_size or set(sequence) - set(BASE_CODES):
         return None
@@ -488,9 +468,7 @@ def _validated_window(
     return sequence
 
 
-def _source_consequence_for_record(
-    record: Mapping[str, Any], manifest: Mapping[str, Any]
-) -> str:
+def _source_consequence_for_record(record: Mapping[str, Any], manifest: Mapping[str, Any]) -> str:
     source_id = record["source_record_id"]
     selected_counts = manifest.get("sampling", {}).get("selected_source_counts", {})
     final_by_choice = {

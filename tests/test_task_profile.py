@@ -10,9 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_consequence_task_owns_completion_ceiling() -> None:
-    profile = load_task_profile(
-        ROOT / "configs/tasks/vep-most-severe-consequence.yaml"
-    )
+    profile = load_task_profile(ROOT / "configs/tasks/vep-most-severe-consequence.yaml")
 
     assert profile.task_family == "vep_most_severe_consequence"
     assert profile.generation_parameters == {"max_tokens": 2**18}

@@ -90,7 +90,7 @@ class OpenRouterBatchTransport:
         except urllib.error.HTTPError as exc:
             try:
                 payload = exc.read()
-            except (TimeoutError, http.client.HTTPException, OSError):
+            except TimeoutError, http.client.HTTPException, OSError:
                 payload = b""
             raw = _decode_json_object(payload)
             message = _batch_error_message(raw) or f"OpenRouter returned HTTP {exc.code}"
@@ -331,9 +331,7 @@ def collect_batch_file(
 
     result_schema = json.loads(Path(result_schema_path).read_text(encoding="utf-8"))
     Draft202012Validator.check_schema(result_schema)
-    result_validator = Draft202012Validator(
-        result_schema, format_checker=FormatChecker()
-    )
+    result_validator = Draft202012Validator(result_schema, format_checker=FormatChecker())
     batch_items: dict[str, dict[str, Any]] = {}
     for item in raw_batch["results"]:
         if not isinstance(item, dict):
@@ -378,15 +376,9 @@ def collect_batch_file(
                 item = batch_items[question["question_id"]]
                 response = item.get("response")
                 body = response.get("body") if isinstance(response, Mapping) else None
-                status_code = (
-                    response.get("status_code") if isinstance(response, Mapping) else None
-                )
+                status_code = response.get("status_code") if isinstance(response, Mapping) else None
                 result: dict[str, Any]
-                if (
-                    status_code == 200
-                    and isinstance(body, dict)
-                    and item.get("error") is None
-                ):
+                if status_code == 200 and isinstance(body, dict) and item.get("error") is None:
                     try:
                         result = completed_result(
                             raw=body,
@@ -495,7 +487,7 @@ def _fsync_directory(path: Path) -> None:
 def _decode_json_object(payload: bytes) -> dict[str, Any] | None:
     try:
         decoded = json.loads(payload)
-    except (UnicodeDecodeError, json.JSONDecodeError):
+    except UnicodeDecodeError, json.JSONDecodeError:
         return None
     return decoded if isinstance(decoded, dict) else None
 
@@ -522,7 +514,7 @@ def _response_time(body: Mapping[str, Any], fallback: datetime) -> datetime:
     if isinstance(created, int) and not isinstance(created, bool):
         try:
             return datetime.fromtimestamp(created, UTC)
-        except (OverflowError, OSError, ValueError):
+        except OverflowError, OSError, ValueError:
             pass
     return fallback
 

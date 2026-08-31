@@ -71,11 +71,9 @@ def create_bucket_plan(
     )
     return BucketPlanSummary(
         destination=destination,
-        uploads=int(summary["uploads"])
-        + sum(item["action"] == "upload" for item in shared_root),
+        uploads=int(summary["uploads"]) + sum(item["action"] == "upload" for item in shared_root),
         deletes=int(summary["deletes"]),
-        skips=int(summary["skips"])
-        + sum(item["action"] == "skip" for item in shared_root),
+        skips=int(summary["skips"]) + sum(item["action"] == "skip" for item in shared_root),
         total_size=int(summary["total_size"])
         + sum(item["size"] for item in shared_root if item["action"] == "upload"),
     )
@@ -96,8 +94,7 @@ def apply_bucket_plan(
     destination = header["dest"]
     if destination != confirm_destination:
         raise BuildError(
-            "--confirm-destination must exactly match the plan destination "
-            f"{destination!r}"
+            f"--confirm-destination must exactly match the plan destination {destination!r}"
         )
     bucket_id, version_name = _parse_destination(destination)
     if version_name == "main" and not promote_main:
@@ -125,9 +122,7 @@ def apply_bucket_plan(
             if not local_file.is_file() or local_file.stat().st_size != operation.get("size"):
                 raise BuildError(f"bucket plan upload no longer matches local file {path!r}")
     planned_local = {
-        operation["path"]
-        for operation in operations
-        if operation["action"] in {"upload", "skip"}
+        operation["path"] for operation in operations if operation["action"] in {"upload", "skip"}
     }
     actual_local = {
         path.relative_to(source).as_posix()
@@ -154,16 +149,12 @@ def apply_bucket_plan(
         api.batch_bucket_files(bucket_id, delete=[marker_path], token=token)
 
     root_additions = [(root / "README.md", "README.md")]
-    root_additions.extend(
-        (root / "schemas" / name, f"schemas/{name}") for name in SCHEMA_FILES
-    )
+    root_additions.extend((root / "schemas" / name, f"schemas/{name}") for name in SCHEMA_FILES)
     if shared_action == "upload":
         api.batch_bucket_files(bucket_id, add=root_additions, token=token)
 
     api.sync_bucket(apply=str(plan_file), token=token)
-    _verify_remote_tree(
-        api, bucket_id, root, version_name, token, include_manifest=False
-    )
+    _verify_remote_tree(api, bucket_id, root, version_name, token, include_manifest=False)
     _verify_remote_digests(api, bucket_id, root, version_name, token)
     api.batch_bucket_files(
         bucket_id,
@@ -183,13 +174,15 @@ def apply_bucket_plan(
     skips = sum(operation.get("action") == "skip" for operation in operations) + sum(
         item["action"] == "skip" for item in shared_root
     )
-    total_size = sum(
-        int(operation.get("size") or 0)
-        for operation in operations
-        if operation.get("action") == "upload"
-    ) + sum(
-        item["size"] for item in shared_root if item["action"] == "upload"
-    ) + (source / "manifest.json").stat().st_size
+    total_size = (
+        sum(
+            int(operation.get("size") or 0)
+            for operation in operations
+            if operation.get("action") == "upload"
+        )
+        + sum(item["size"] for item in shared_root if item["action"] == "upload")
+        + (source / "manifest.json").stat().st_size
+    )
     return BucketPlanSummary(destination, uploads, deletes, skips, total_size)
 
 
@@ -224,8 +217,7 @@ def _verify_remote_tree(
             f"missing={missing}, stale={stale}, wrong_size={wrong_size}"
         )
     schema_sizes = {
-        f"schemas/{name}": (root / "schemas" / name).stat().st_size
-        for name in SCHEMA_FILES
+        f"schemas/{name}": (root / "schemas" / name).stat().st_size for name in SCHEMA_FILES
     }
     remote_schemas = _remote_file_sizes(api, bucket_id, "schemas", token)
     for path, size in schema_sizes.items():
@@ -257,9 +249,7 @@ def _main_marker_present(api: HfApi, bucket_id: str, token: str) -> bool:
     )
 
 
-def _verify_remote_shared_root(
-    api: HfApi, bucket_id: str, root: Path, token: str
-) -> None:
+def _verify_remote_shared_root(api: HfApi, bucket_id: str, root: Path, token: str) -> None:
     descriptors = _shared_root_plan(root, "skip")
     with tempfile.TemporaryDirectory(prefix="vepbench-shared-root-verify-") as temporary:
         mirror = Path(temporary)
@@ -276,9 +266,7 @@ def _verify_remote_shared_root(
                 token=token,
             )
         except Exception as exc:
-            raise BuildError(
-                "published main shared schemas/README could not be verified"
-            ) from exc
+            raise BuildError("published main shared schemas/README could not be verified") from exc
         for descriptor in descriptors:
             path = mirror / descriptor["path"]
             if (
@@ -344,14 +332,10 @@ def _verify_remote_marker(
             raise BuildError("remote manifest does not match the validated local marker")
 
 
-def _remote_file_sizes(
-    api: HfApi, bucket_id: str, prefix: str, token: str
-) -> dict[str, int]:
+def _remote_file_sizes(api: HfApi, bucket_id: str, prefix: str, token: str) -> dict[str, int]:
     return {
         item.path: item.size
-        for item in api.list_bucket_tree(
-            bucket_id, prefix=prefix, recursive=True, token=token
-        )
+        for item in api.list_bucket_tree(bucket_id, prefix=prefix, recursive=True, token=token)
         if isinstance(item, BucketFile)
     }
 

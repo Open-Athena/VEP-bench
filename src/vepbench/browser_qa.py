@@ -24,9 +24,7 @@ class OfflineBrowserTransport:
     def __init__(self, prediction: str) -> None:
         self.prediction = prediction
 
-    def complete(
-        self, request_body: Mapping[str, Any], api_key: str
-    ) -> dict[str, Any]:
+    def complete(self, request_body: Mapping[str, Any], api_key: str) -> dict[str, Any]:
         del request_body, api_key
         return {
             "id": "browser-qa-generation",
@@ -41,9 +39,7 @@ class OfflineBrowserTransport:
                             "Deterministic response generated for browser QA.\n"
                             f"FINAL: {self.prediction}"
                         ),
-                        "reasoning": (
-                            "Synthetic provider-exposed reasoning for display testing."
-                        ),
+                        "reasoning": ("Synthetic provider-exposed reasoning for display testing."),
                     },
                 }
             ],
@@ -69,11 +65,7 @@ def prepare_fixture(
 
     questions = read_jsonl(questions_path)
     selected = next(
-        (
-            question
-            for question in questions
-            if question["question_id"] == selected_question_id
-        ),
+        (question for question in questions if question["question_id"] == selected_question_id),
         None,
     )
     if selected is None:
@@ -85,8 +77,7 @@ def prepare_fixture(
     ]
     if invalid_questions:
         raise BuildError(
-            f"browser QA prediction {prediction!r} is not valid for "
-            f"{invalid_questions[0]!r}"
+            f"browser QA prediction {prediction!r} is not valid for {invalid_questions[0]!r}"
         )
     if (site_root is None) != (data_base_url is None):
         raise BuildError("site_root and data_base_url must be supplied together")
@@ -137,8 +128,6 @@ def prepare_fixture(
             "version": "main",
             "data_base_url": data_base_url,
         }
-        config_path.write_text(
-            f"{canonical_json(config)}\n", encoding="utf-8", newline="\n"
-        )
+        config_path.write_text(f"{canonical_json(config)}\n", encoding="utf-8", newline="\n")
 
     return manifest

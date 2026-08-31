@@ -46,8 +46,7 @@ def load_task_profile(path: str | Path) -> TaskProfile:
         raise BuildError(f"{source_path}: unknown task profile field(s): {sorted(unknown)}")
     if raw["schema_version"] != "1.0":
         raise BuildError(
-            f"{source_path}: unsupported task profile schema_version "
-            f"{raw['schema_version']!r}"
+            f"{source_path}: unsupported task profile schema_version {raw['schema_version']!r}"
         )
 
     task_family = raw["task_family"]
@@ -60,9 +59,7 @@ def load_task_profile(path: str | Path) -> TaskProfile:
     if not isinstance(raw["generation"], dict):
         raise BuildError(f"{source_path}: generation must be a mapping")
     if set(raw["generation"]) != {"max_tokens"}:
-        raise BuildError(
-            f"{source_path}: task generation must contain exactly max_tokens"
-        )
+        raise BuildError(f"{source_path}: task generation must contain exactly max_tokens")
 
     generation_parameters = json.loads(canonical_json(raw["generation"]))
     validate_generation_parameters(generation_parameters)

@@ -151,9 +151,7 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=PROJECT_ROOT / "schemas/result.schema.json",
     )
-    version_build.add_argument(
-        "--schemas-dir", type=Path, default=PROJECT_ROOT / "schemas"
-    )
+    version_build.add_argument("--schemas-dir", type=Path, default=PROJECT_ROOT / "schemas")
     version_build.add_argument("--output", type=Path, required=True)
     version_validate = subparsers.add_parser(
         "version-validate", help="validate a complete local bucket version"
@@ -200,9 +198,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         if args.command == "build":
-            count, digest = build_file(
-                args.source, args.template, args.schema, args.output
-            )
+            count, digest = build_file(args.source, args.template, args.schema, args.output)
             print(f"wrote {count} question(s) to {args.output} (sha256 {digest})")
             return 0
         if args.command == "evaluate":
@@ -223,9 +219,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     for question in read_jsonl(args.questions)
                 }
                 if None in question_families:
-                    raise BuildError(
-                        f"{args.questions}: question is missing metadata.task_family"
-                    )
+                    raise BuildError(f"{args.questions}: question is missing metadata.task_family")
                 if question_families != {task_profile.task_family}:
                     raise BuildError(
                         f"{args.questions}: task families "
@@ -239,10 +233,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 profile = load_model_profile(args.model_profile)
                 model_id = profile.model_id
                 profile_label = profile.label
-                overlapping = (
-                    generation_parameters.keys()
-                    & profile.generation_parameters.keys()
-                )
+                overlapping = generation_parameters.keys() & profile.generation_parameters.keys()
                 if overlapping:
                     raise BuildError(
                         "task and model profiles define the same generation parameter(s): "
@@ -425,12 +416,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                 )
                 if completed.returncode != 0:
                     raise BuildError(
-                        f"Observable Framework build failed with exit code "
-                        f"{completed.returncode}"
+                        f"Observable Framework build failed with exit code {completed.returncode}"
                     )
-            print(
-                f"built {args.output} against {manifest['data_base_url']}"
-            )
+            print(f"built {args.output} against {manifest['data_base_url']}")
             return 0
     except (BuildError, ProviderError, OSError) as exc:
         parser.error(str(exc))

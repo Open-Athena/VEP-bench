@@ -70,9 +70,7 @@ def test_production_questions_match_expected_manifest(tmp_path: Path) -> None:
     build_file(PRODUCTION_SOURCE, PRODUCTION_TEMPLATE, SCHEMA, rebuilt)
 
     generated_manifest = json.loads((tmp_path / "questions.manifest.json").read_text())
-    expected_manifest = json.loads(
-        (ROOT / "benchmark/expected-manifest.json").read_text()
-    )
+    expected_manifest = json.loads((ROOT / "benchmark/expected-manifest.json").read_text())
     assert generated_manifest == expected_manifest
 
 
@@ -97,14 +95,11 @@ def test_production_prompt_has_unambiguous_final_line_instructions(
     assert questions[0]["provenance"]["template_version"] == "1.1"
     assert "Example: `FINAL: C07`" in prompt
     assert (
-        "Do not include the consequence name, a period, or any other text "
-        "on that line." in prompt
+        "Do not include the consequence name, a period, or any other text on that line." in prompt
     )
 
 
-def test_generated_question_satisfies_schema(
-    generated_question: dict, schema: dict
-) -> None:
+def test_generated_question_satisfies_schema(generated_question: dict, schema: dict) -> None:
     Draft202012Validator(schema).validate(generated_question)
     assert generated_question["question_id"] == "mc-effect-v1:synthetic-001"
     assert generated_question["answer_choice_id"] == "B"
@@ -126,9 +121,7 @@ def test_missing_answer_choice_fails(generated_question: dict, schema: dict) -> 
         validate_question(question, Draft202012Validator(schema))
 
 
-def test_prompt_choice_disagreement_fails(
-    generated_question: dict, schema: dict
-) -> None:
+def test_prompt_choice_disagreement_fails(generated_question: dict, schema: dict) -> None:
     question = copy.deepcopy(generated_question)
     question["prompt"] = question["prompt"].replace("C. No effect", "C. Other")
 

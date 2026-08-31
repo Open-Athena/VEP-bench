@@ -171,9 +171,7 @@ def test_committed_production_artifacts_are_balanced_and_pinned() -> None:
 
 def test_generated_production_prompts_hide_absolute_coordinates() -> None:
     schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
-    questions = build_questions(
-        read_jsonl(PRODUCTION_SOURCE), load_template(TEMPLATE), schema
-    )
+    questions = build_questions(read_jsonl(PRODUCTION_SOURCE), load_template(TEMPLATE), schema)
 
     assert len(questions) == 190
     for question in questions:
@@ -207,9 +205,7 @@ def test_preparation_is_byte_identical_and_balanced(
     assert first == second
     assert first_source.read_bytes() == second_source.read_bytes()
     assert first_manifest.read_bytes() == second_manifest.read_bytes()
-    assert validate_prepared_artifacts(first_source, first_manifest)["output"][
-        "records"
-    ] == 30
+    assert validate_prepared_artifacts(first_source, first_manifest)["output"]["records"] == 30
 
     manifest = json.loads(first_manifest.read_text(encoding="utf-8"))
     assert set(manifest["final_class_counts"].values()) == {10}
@@ -217,13 +213,8 @@ def test_preparation_is_byte_identical_and_balanced(
         label: manifest["sampling"]["selected_source_counts"][label]
         for label in COLLAPSED_SOURCE_QUOTAS
     } == COLLAPSED_SOURCE_QUOTAS
-    assert manifest["sampling"]["invalid_candidates_skipped"] == {
-        "missense_variant": 1
-    }
-    assert (
-        local_fixture.invalid_source_record_id
-        not in manifest["record_source_consequences"]
-    )
+    assert manifest["sampling"]["invalid_candidates_skipped"] == {"missense_variant": 1}
+    assert local_fixture.invalid_source_record_id not in manifest["record_source_consequences"]
 
 
 def test_generated_prompts_have_complete_local_fasta_and_vcf(
@@ -281,9 +272,7 @@ def test_generated_prompts_have_complete_local_fasta_and_vcf(
 def test_invalid_windows_are_backfilled_deterministically(
     local_fixture: LocalFixture,
 ) -> None:
-    selected_ids = {
-        record["source_record_id"] for record in local_fixture.prepared.records
-    }
+    selected_ids = {record["source_record_id"] for record in local_fixture.prepared.records}
     assert local_fixture.invalid_source_record_id not in selected_ids
     missense_ids = {
         source_id
@@ -305,9 +294,12 @@ def test_insufficient_candidate_pool_fails_clearly(
         raw_counts=local_fixture.scan.raw_counts,
     )
 
-    with Genome(local_fixture.fasta, subset_chroms={"17"}) as genome, pytest.raises(
-        PreparationError,
-        match="synonymous_variant: needed 10 valid variants, found 9",
+    with (
+        Genome(local_fixture.fasta, subset_chroms={"17"}) as genome,
+        pytest.raises(
+            PreparationError,
+            match="synonymous_variant: needed 10 valid variants, found 9",
+        ),
     ):
         prepare_dataset(
             insufficient,

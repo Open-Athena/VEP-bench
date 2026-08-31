@@ -21,10 +21,7 @@ PARQUET_URL = (
     "https://huggingface.co/datasets/songlab/hg38-variant-consequences/resolve/"
     f"{SOURCE_REVISION}/17.parquet"
 )
-PARQUET_URI = (
-    "hf://datasets/songlab/hg38-variant-consequences"
-    f"@{SOURCE_REVISION}/17.parquet"
-)
+PARQUET_URI = f"hf://datasets/songlab/hg38-variant-consequences@{SOURCE_REVISION}/17.parquet"
 FASTA_URL = (
     "https://huggingface.co/datasets/marin-dna/human-genome/resolve/"
     f"{REFERENCE_REVISION}/Homo_sapiens.GRCh38.dna_sm.primary_assembly.fa"
@@ -56,9 +53,7 @@ def main() -> None:
             progress=print,
         )
     print("fetching and validating reference sequence windows")
-    genome_storage_options = (
-        {"headers": headers} if headers else None
-    )
+    genome_storage_options = {"headers": headers} if headers else None
     with Genome(
         FASTA_URL,
         subset_chroms={config.chromosome},
@@ -70,9 +65,7 @@ def main() -> None:
             config=config,
             source={
                 "dataset": "songlab/hg38-variant-consequences",
-                "dataset_revision": (
-                    f"songlab/hg38-variant-consequences@{SOURCE_REVISION}"
-                ),
+                "dataset_revision": (f"songlab/hg38-variant-consequences@{SOURCE_REVISION}"),
                 "parquet_uri": PARQUET_URI,
                 "parquet_url": PARQUET_URL,
                 "revision": SOURCE_REVISION,

@@ -50,9 +50,7 @@ def test_plan_records_shared_root_mutations(
         def list_bucket_tree(self, _bucket, prefix, recursive, token):
             return []
 
-        def sync_bucket(
-            self, source, destination, delete, exclude, plan, token
-        ):
+        def sync_bucket(self, source, destination, delete, exclude, plan, token):
             Path(plan).write_text(
                 canonical_json(
                     {
@@ -80,9 +78,7 @@ def test_plan_records_shared_root_mutations(
     header = json.loads(plan_path.read_text(encoding="utf-8").splitlines()[0])
     assert header["shared_root"] == _shared_root_plan(root, "upload")
     assert summary.uploads == 2 + len(header["shared_root"])
-    assert summary.total_size == 123 + sum(
-        item["size"] for item in header["shared_root"]
-    )
+    assert summary.total_size == 123 + sum(item["size"] for item in header["shared_root"])
 
 
 def test_apply_requires_exact_destination_confirmation(tmp_path: Path) -> None:
@@ -179,9 +175,7 @@ def test_apply_removes_marker_and_uploads_new_manifest_last(
                 relative = local.relative_to(source).as_posix()
                 self.files[f"versions/main/{relative}"] = local.stat().st_size
 
-        def download_bucket_files(
-            self, _bucket, files, raise_on_missing_files, token
-        ):
+        def download_bucket_files(self, _bucket, files, raise_on_missing_files, token):
             for remote, local in files:
                 local = Path(local)
                 local.parent.mkdir(parents=True, exist_ok=True)
@@ -254,9 +248,7 @@ def test_named_apply_rejects_shared_schema_divergence_before_mutation(
                 ]
             return []
 
-        def download_bucket_files(
-            self, _bucket, files, raise_on_missing_files, token
-        ):
+        def download_bucket_files(self, _bucket, files, raise_on_missing_files, token):
             for _remote, local in files:
                 local = Path(local)
                 local.parent.mkdir(parents=True, exist_ok=True)
