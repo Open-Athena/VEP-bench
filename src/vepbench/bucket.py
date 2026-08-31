@@ -148,7 +148,7 @@ def apply_bucket_plan(
     if marker_path in remote_paths:
         api.batch_bucket_files(bucket_id, delete=[marker_path], token=token)
 
-    root_additions = [(root / "README.md", "README.md")]
+    root_additions: list[tuple[str | Path | bytes, str]] = [(root / "README.md", "README.md")]
     root_additions.extend((root / "schemas" / name, f"schemas/{name}") for name in SCHEMA_FILES)
     if shared_action == "upload":
         api.batch_bucket_files(bucket_id, add=root_additions, token=token)
@@ -295,7 +295,7 @@ def _verify_remote_digests(
     )
     with tempfile.TemporaryDirectory(prefix="vepbench-remote-verify-") as temporary:
         mirror = Path(temporary)
-        downloads: list[tuple[str, Path]] = []
+        downloads: list[tuple[str | BucketFile, str | Path]] = []
         for remote_path in remote_paths:
             local_path = mirror / remote_path
             local_path.parent.mkdir(parents=True, exist_ok=True)

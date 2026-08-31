@@ -28,6 +28,7 @@ dev = [
     "pytest>=8.3,<10",
     "pytest-cov>=7,<8",
     "ruff>=0.16.5",
+    "types-jsonschema>=4.25,<5",
     "types-pyyaml>=6.0.12,<7",
 ]
 
@@ -60,7 +61,7 @@ warn_unreachable = true
 warn_unused_ignores = true
 
 [[tool.mypy.overrides]]
-module = ["pyfaidx", "pyfaidx.*"]
+module = ["fsspec", "fsspec.*", "pyfaidx", "pyfaidx.*"]
 ignore_missing_imports = true
 
 [tool.coverage.run]

@@ -75,7 +75,7 @@ def build_version(
     questions_file = Path(questions_path)
     questions = read_jsonl(questions_file)
     question_validator = schema_validators["question.schema.json"]
-    question_ids = [question.get("question_id") for question in questions]
+    question_ids = [question["question_id"] for question in questions]
     if question_ids != sorted(question_ids):
         raise BuildError(f"{questions_file}: questions must be sorted by question_id")
     if len(question_ids) != len(set(question_ids)):
@@ -328,12 +328,12 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
         answers_seen.add(key)
         normalized_answer_state[key] = (answer["response"]["status"], answer["error"])
         run = run_by_id.get(answer["run_id"])
-        question = question_by_id.get(answer["question_id"])
-        if run is None or question is None:
+        answer_question = question_by_id.get(answer["question_id"])
+        if run is None or answer_question is None:
             raise BuildError(f"answer {key!r} references an unknown run or question")
-        if answer["question_sha256"] != sha256_json(question):
+        if answer["question_sha256"] != sha256_json(answer_question):
             raise BuildError(f"answer {key!r} has the wrong question digest")
-        _validate_answer_scoring(answer, question)
+        _validate_answer_scoring(answer, answer_question)
         expected_path = (
             f"versions/{version_name}/answers/{answer['run_id']}/{answer['question_id']}.json.gz"
         )

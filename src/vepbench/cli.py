@@ -264,7 +264,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 state_path = args.batch_state or (
                     PROJECT_ROOT / ".vepbench" / "batches" / f"{run_id}.json"
                 )
-                batch = submit_batch_file(
+                submission = submit_batch_file(
                     questions_path=args.questions,
                     question_schema_path=args.schema,
                     state_path=state_path,
@@ -275,11 +275,12 @@ def main(argv: Sequence[str] | None = None) -> int:
                     generation_parameters=generation_parameters,
                 )
                 print(
-                    f"submitted {batch.requests} request(s) as OpenRouter batch "
-                    f"{batch.batch_id} ({batch.status}); state: {batch.state_path}"
+                    f"submitted {submission.requests} request(s) as OpenRouter batch "
+                    f"{submission.batch_id} ({submission.status}); "
+                    f"state: {submission.state_path}"
                 )
                 return 0
-            summary = evaluate_file(
+            evaluation = evaluate_file(
                 questions_path=args.questions,
                 question_schema_path=args.schema,
                 result_schema_path=args.result_schema,
@@ -295,25 +296,26 @@ def main(argv: Sequence[str] | None = None) -> int:
                 resume=args.resume,
             )
             print(
-                f"wrote {summary.completed + summary.api_errors} result(s) to "
-                f"{summary.output} ({summary.api_errors} API error(s))"
+                f"wrote {evaluation.completed + evaluation.api_errors} result(s) to "
+                f"{evaluation.output} ({evaluation.api_errors} API error(s))"
             )
-            return 0 if summary.is_complete else 1
+            return 0 if evaluation.is_complete else 1
         if args.command == "batch-status":
             api_key = os.environ.get("OPENROUTER_API_KEY")
             if not api_key:
                 raise BuildError("OPENROUTER_API_KEY is not set")
-            batch = refresh_batch_state(state_path=args.state, api_key=api_key)
+            batch_status = refresh_batch_state(state_path=args.state, api_key=api_key)
             print(
-                f"batch {batch.batch_id}: {batch.status} "
-                f"(completed={batch.completed}, failed={batch.failed}, total={batch.total})"
+                f"batch {batch_status.batch_id}: {batch_status.status} "
+                f"(completed={batch_status.completed}, failed={batch_status.failed}, "
+                f"total={batch_status.total})"
             )
             return 0
         if args.command == "batch-collect":
             api_key = os.environ.get("OPENROUTER_API_KEY")
             if not api_key:
                 raise BuildError("OPENROUTER_API_KEY is not set")
-            summary = collect_batch_file(
+            collected = collect_batch_file(
                 state_path=args.state,
                 questions_path=args.questions,
                 question_schema_path=args.schema,
@@ -321,10 +323,10 @@ def main(argv: Sequence[str] | None = None) -> int:
                 api_key=api_key,
             )
             print(
-                f"wrote {summary.completed + summary.api_errors} result(s) to "
-                f"{summary.output} ({summary.api_errors} API error(s))"
+                f"wrote {collected.completed + collected.api_errors} result(s) to "
+                f"{collected.output} ({collected.api_errors} API error(s))"
             )
-            return 0 if summary.is_complete else 1
+            return 0 if collected.is_complete else 1
         if args.command == "version-build":
             manifest = build_version(
                 questions_path=args.questions,
@@ -361,7 +363,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
             return 0
         if args.command == "bucket-plan":
-            summary = create_bucket_plan(
+            plan = create_bucket_plan(
                 root=args.root,
                 version_name=args.version,
                 bucket_id=args.bucket,
@@ -370,21 +372,21 @@ def main(argv: Sequence[str] | None = None) -> int:
                 promote_main=args.promote_main,
             )
             print(
-                f"saved plan for {summary.destination}: uploads={summary.uploads}, "
-                f"deletes={summary.deletes}, skips={summary.skips}, "
-                f"upload_bytes={summary.total_size}"
+                f"saved plan for {plan.destination}: uploads={plan.uploads}, "
+                f"deletes={plan.deletes}, skips={plan.skips}, "
+                f"upload_bytes={plan.total_size}"
             )
             return 0
         if args.command == "bucket-apply":
-            summary = apply_bucket_plan(
+            applied = apply_bucket_plan(
                 plan_path=args.plan,
                 confirm_destination=args.confirm_destination,
                 token=require_hf_token(),
                 promote_main=args.promote_main,
             )
             print(
-                f"published and verified {summary.destination}: "
-                f"uploads={summary.uploads}, deletes={summary.deletes}"
+                f"published and verified {applied.destination}: "
+                f"uploads={applied.uploads}, deletes={applied.deletes}"
             )
             return 0
         if args.command == "site":
