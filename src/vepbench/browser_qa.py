@@ -120,9 +120,7 @@ def prepare_fixture(
         )
 
     if site_root is not None and data_base_url is not None:
-        config_path = site_root / "data/config.json"
-        if not config_path.is_file():
-            raise BuildError(f"browser QA site config does not exist: {config_path}")
+        config_path = _site_config_path(site_root)
         config = {
             "schema_version": "1.0",
             "version": "main",
@@ -131,3 +129,18 @@ def prepare_fixture(
         config_path.write_text(f"{canonical_json(config)}\n", encoding="utf-8", newline="\n")
 
     return manifest
+
+
+def _site_config_path(site_root: Path) -> Path:
+    """Locate config before or after Observable fingerprints file attachments."""
+
+    staged = site_root / "data/config.json"
+    if staged.is_file():
+        return staged
+    compiled = sorted((site_root / "_file/data").glob("config.*.json"))
+    if len(compiled) == 1:
+        return compiled[0]
+    raise BuildError(
+        f"browser QA site must contain exactly one data config; found {len(compiled)} "
+        f"compiled candidates under {site_root}"
+    )

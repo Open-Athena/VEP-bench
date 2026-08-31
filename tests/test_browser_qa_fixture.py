@@ -2,6 +2,8 @@ import gzip
 import json
 from pathlib import Path
 
+import pytest
+
 from vepbench.browser_qa import prepare_fixture
 from vepbench.publication import validate_version
 
@@ -9,10 +11,12 @@ ROOT = Path(__file__).resolve().parents[1]
 QUESTIONS = ROOT / "tests/fixtures/synthetic-questions.jsonl"
 
 
-def test_browser_qa_fixture_is_complete_and_offline(tmp_path: Path) -> None:
+@pytest.mark.parametrize("config_relative", ["data/config.json", "_file/data/config.abc123.json"])
+def test_browser_qa_fixture_is_complete_and_offline(tmp_path: Path, config_relative: str) -> None:
     site = tmp_path / "site"
-    (site / "data").mkdir(parents=True)
-    (site / "data/config.json").write_text("{}\n", encoding="utf-8")
+    config_path = site / config_relative
+    config_path.parent.mkdir(parents=True)
+    config_path.write_text("{}\n", encoding="utf-8")
     output = tmp_path / "publication"
     base_url = "http://127.0.0.1:4173/publication/versions/main"
 
@@ -26,7 +30,7 @@ def test_browser_qa_fixture_is_complete_and_offline(tmp_path: Path) -> None:
     )
 
     assert manifest == validate_version(output, version_name="main")
-    config = json.loads((site / "data/config.json").read_text(encoding="utf-8"))
+    config = json.loads(config_path.read_text(encoding="utf-8"))
     assert config["data_base_url"] == base_url
     runs = json.loads((output / "versions/main/runs.json").read_text(encoding="utf-8"))
     assert runs["runs"][0]["coverage"]["complete"] is True
