@@ -8,13 +8,80 @@ import {
   formatInteger,
   questionUrl
 } from "../components/vepbench.js";
+import {
+  ENSEMBL_CONSEQUENCE_SOURCE,
+  consequenceTableRows,
+  sequenceOntologyUrl
+} from "../components/consequences.js";
 
 const explorer = await FileAttachment("../data/explorer.json").json();
+const consequenceDiagramUrl = FileAttachment("./consequences.svg").href;
 const taskFamily = "vep_most_severe_consequence";
 const taskQuestions = explorer.questions.filter(
   (question) => question.metadata.task_family === taskFamily
 );
 const consequenceCount = new Set(taskQuestions[0]?.choices.map((choice) => choice.text)).size;
+const consequenceRows = consequenceTableRows(taskQuestions[0]?.choices ?? []);
+const coveredSourceTermCount = consequenceRows.filter((row) => row.choice_id !== null).length;
+
+function codeCell(value) {
+  const code = document.createElement("code");
+  code.textContent = value;
+  return code;
+}
+
+function accessionCell(value) {
+  const link = document.createElement("a");
+  link.href = sequenceOntologyUrl(value);
+  link.target = "_blank";
+  link.rel = "noreferrer";
+  link.append(codeCell(value));
+  return link;
+}
+
+function choiceCell(value) {
+  if (value === null) {
+    const empty = document.createElement("span");
+    empty.className = "muted";
+    empty.title = "Not included in this benchmark";
+    empty.textContent = "—";
+    return empty;
+  }
+  return codeCell(value);
+}
+
+function colorCell(value) {
+  const swatch = document.createElement("span");
+  swatch.setAttribute("aria-label", `Ensembl display color ${value}`);
+  swatch.title = value;
+  swatch.style.display = "inline-block";
+  swatch.style.width = "0.85rem";
+  swatch.style.height = "0.85rem";
+  swatch.style.border = "1px solid color-mix(in srgb, currentColor 35%, transparent)";
+  swatch.style.borderRadius = "0.2rem";
+  swatch.style.background = value;
+  return swatch;
+}
+
+function impactCell(value) {
+  const badge = document.createElement("span");
+  const palette = {
+    HIGH: ["#fee2e2", "#991b1b"],
+    MODERATE: ["#ffedd5", "#9a3412"],
+    LOW: ["#fef9c3", "#854d0e"],
+    MODIFIER: ["#e0f2fe", "#075985"]
+  }[value];
+  badge.textContent = value;
+  badge.style.display = "inline-block";
+  badge.style.padding = "0.12rem 0.42rem";
+  badge.style.borderRadius = "999px";
+  badge.style.fontSize = "0.72rem";
+  badge.style.fontWeight = "700";
+  badge.style.letterSpacing = "0.03em";
+  badge.style.background = palette[0];
+  badge.style.color = palette[1];
+  return badge;
+}
 ```
 
 *Assay 01 · sequence-context multiple choice*
@@ -34,6 +101,89 @@ Predict the Ensembl VEP most severe consequence for a human GRCh38 SNV using onl
     <div><dt>Explorer</dt><dd>Static; no backend or hidden state</dd></div>
   </dl>
 </div>
+
+## Consequence map
+
+Ensembl’s diagram places consequence terms relative to transcript structure. It is a current, general reference; the benchmark questions and answers remain pinned to VEP release 109.1.
+
+```js
+const consequenceFigure = html`<figure class="card" style="box-sizing: border-box; width: 100%; max-width: none; margin: 1rem 0 2rem; padding: 1rem;">
+  <a href=${consequenceDiagramUrl} target="_blank" rel="noreferrer" style="display: block;">
+    <img
+      src=${consequenceDiagramUrl}
+      alt="Ensembl diagram showing variant consequence terms relative to gene and transcript structure"
+      loading="lazy"
+      style="display: block; width: 100%; max-width: 990px; height: auto; margin: 0 auto; border-radius: 0.35rem; background: white;"
+    >
+  </a>
+  <figcaption class="muted" style="margin-top: 0.75rem; font-size: 0.82rem; line-height: 1.45;">
+    Consequence diagram © EMBL-EBI / Ensembl, reproduced unmodified from the
+    <a href=${ENSEMBL_CONSEQUENCE_SOURCE.page} target="_blank" rel="noreferrer">Ensembl release ${ENSEMBL_CONSEQUENCE_SOURCE.release} calculated-consequences reference</a>
+    (<a href=${ENSEMBL_CONSEQUENCE_SOURCE.diagram} target="_blank" rel="noreferrer">SVG source</a>) under the
+    <a href=${ENSEMBL_CONSEQUENCE_SOURCE.imageReuse} target="_blank" rel="noreferrer">Ensembl image-reuse policy</a>.
+    Open the diagram for a full-size view.
+  </figcaption>
+</figure>`;
+
+display(consequenceFigure);
+```
+
+## Consequence classes
+
+The complete current Ensembl catalog is shown in severity order. ${formatInteger(coveredSourceTermCount)} of ${formatInteger(consequenceRows.length)} source terms map to this benchmark’s ${consequenceCount} answer choices; an em dash marks terms that are not currently covered. Choice **C05** combines intergenic, intronic, upstream, and downstream variants, so its four source terms appear separately.
+
+Definitions, colors, severity order, and IMPACT labels follow Ensembl’s [current calculated-consequences reference](https://useast.ensembl.org/info/genome/variation/prediction/predicted_data.html). Severity order and IMPACT are separate Ensembl classifications; VEPBench itself scores only the exact answer choice.
+
+```js
+const visibleConsequences = view(Inputs.search(consequenceRows, {
+  label: "Find a consequence",
+  placeholder: "Choice, SO term, description, accession, or impact…",
+  columns: [
+    "choice_id",
+    "choice_label",
+    "term",
+    "description",
+    "accession",
+    "impact"
+  ]
+}));
+```
+
+<p class="muted">${formatInteger(visibleConsequences.length)} source terms match the current search</p>
+
+```js
+const consequenceTable = Inputs.table(visibleConsequences, {
+  columns: ["color", "choice_id", "term", "description", "accession", "impact"],
+  header: {
+    color: "",
+    choice_id: "Choice",
+    term: "SO term",
+    description: "SO description",
+    accession: "SO accession",
+    impact: "IMPACT"
+  },
+  format: {
+    color: colorCell,
+    choice_id: choiceCell,
+    term: codeCell,
+    accession: accessionCell,
+    impact: impactCell
+  },
+  width: {
+    color: 34,
+    choice_id: 70,
+    term: 250,
+    description: 520,
+    accession: 110,
+    impact: 100
+  },
+  select: false
+});
+
+consequenceTable.style.maxWidth = "none";
+const consequenceTableCard = html`<div class="card" style="box-sizing: border-box; width: 100%; max-width: none; padding: 0.75rem 1rem;">${consequenceTable}</div>`;
+display(consequenceTableCard);
+```
 
 ## Questions
 
@@ -78,7 +228,8 @@ const visibleEntries = filters.search.filter((entry) =>
 
 <p class="muted">${formatInteger(visibleEntries.length)} questions match the current filters</p>
 
-${Inputs.table(visibleEntries, {
+```js
+const questionTable = Inputs.table(visibleEntries, {
   columns: ["question_link", "variant", "answer"],
   header: {
     question_link: "Question",
@@ -94,4 +245,9 @@ ${Inputs.table(visibleEntries, {
     answer: 260
   },
   select: false
-})}
+});
+
+questionTable.style.maxWidth = "none";
+const questionTableCard = html`<div class="card" style="box-sizing: border-box; width: 100%; max-width: none; padding: 0.75rem 1rem;">${questionTable}</div>`;
+display(questionTableCard);
+```

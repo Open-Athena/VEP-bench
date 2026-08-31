@@ -44,6 +44,9 @@ def test_site_build_validates_and_copies_raw_artifacts(tmp_path: Path) -> None:
     assert (output / "tasks.md").is_file()
     assert (output / "questions.md").is_file()
     assert (output / "tasks/consequence-classification.md").is_file()
+    assert (output / "tasks/consequences.svg").read_bytes() == (
+        ASSETS / "tasks/consequences.svg"
+    ).read_bytes()
     explorer = json.loads((output / "data/explorer.json").read_text())
     assert explorer["schema_version"] == "1.1"
     assert explorer["questions"] == read_jsonl(QUESTIONS)
