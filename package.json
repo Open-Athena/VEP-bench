@@ -8,6 +8,6 @@
   },
   "devDependencies": {
     "@observablehq/framework": "1.13.4",
-    "markdown-it": "14.1.0"
+    "markdown-it": "15.0.1"
   }
 }
