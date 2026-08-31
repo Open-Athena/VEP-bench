@@ -414,8 +414,6 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
             if envelope["response"]["status"] == "completed":
                 if not isinstance(envelope["response"]["raw"], Mapping):
                     raise BuildError(f"raw response {raw_key!r} is missing its provider payload")
-            elif envelope["response"]["raw"] is not None:
-                raise BuildError(f"raw API error {raw_key!r} must not contain a provider payload")
 
         if raw_records != descriptor["records"]:
             raise BuildError(f"{descriptor['path']}: raw record count mismatch")

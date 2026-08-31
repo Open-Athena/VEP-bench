@@ -2,6 +2,7 @@ import gzip
 import io
 import json
 from copy import deepcopy
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
@@ -9,6 +10,7 @@ import zstandard
 
 import vepbench.publication as publication_module
 from vepbench.builder import BuildError, canonical_json
+from vepbench.evaluator import ProviderError, error_result
 from vepbench.publication import (
     build_version,
     promote_version,
@@ -200,6 +202,48 @@ def test_main_rejects_incomplete_run_but_experiment_accepts_it(tmp_path: Path) -
             source_version="experiment",
             output=tmp_path / "main",
         )
+
+
+def test_api_error_preserves_structured_provider_response(tmp_path: Path) -> None:
+    results = tmp_path / "results"
+    results.mkdir()
+    base = json.loads((RESULTS / "synthetic-demo.jsonl").read_text())
+    provider_payload = {"error": {"message": "temporary provider failure"}}
+    record = error_result(
+        error=ProviderError(
+            "temporary provider failure",
+            status_code=503,
+            raw_response=provider_payload,
+        ),
+        question=base["question"],
+        question_set_sha256=base["question_set_sha256"],
+        question_set_size=base["question_set_size"],
+        run_id="provider-error",
+        model_id=base["model"]["model_id"],
+        generation_parameters=base["generation_parameters"],
+        evaluated_at=datetime(2026, 8, 31, tzinfo=UTC),
+        latency_seconds=0.25,
+    )
+    (results / "provider-error.jsonl").write_text(
+        f"{canonical_json(record)}\n", encoding="utf-8", newline="\n"
+    )
+
+    output = tmp_path / "publication"
+    build_version(
+        questions_path=QUESTIONS,
+        results_dir=results,
+        result_schema_path=RESULT_SCHEMA,
+        schemas_dir=SCHEMAS,
+        output=output,
+        version_name="experiment",
+    )
+
+    raw_path = output / "versions/experiment/raw/provider-error.jsonl.zst"
+    with zstandard.ZstdDecompressor().stream_reader(raw_path.open("rb")) as reader:
+        envelope = json.loads(io.BufferedReader(reader).read())
+    assert envelope["response"]["status"] == "api_error"
+    assert envelope["response"]["raw"] == provider_payload
+    assert envelope["error"]["status_code"] == 503
 
 
 def test_main_rejects_version_without_runs(tmp_path: Path) -> None:
