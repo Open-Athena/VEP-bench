@@ -9,6 +9,8 @@ project_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 qa_root=$(mktemp -d)
 server_pid=
 
+# Invoked indirectly by the EXIT trap below.
+# shellcheck disable=SC2329
 cleanup() {
   if [[ -n "$server_pid" ]]; then
     kill "$server_pid" 2>/dev/null || true
