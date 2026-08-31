@@ -5,12 +5,37 @@ set -euo pipefail
 site_dir=${1:?usage: browser_qa.sh SITE_DIR OUTPUT_DIR}
 output_dir=${2:?usage: browser_qa.sh SITE_DIR OUTPUT_DIR}
 port=4173
+project_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+qa_root=$(mktemp -d)
+server_pid=
+
+cleanup() {
+  if [[ -n "$server_pid" ]]; then
+    kill "$server_pid" 2>/dev/null || true
+    wait "$server_pid" 2>/dev/null || true
+  fi
+  rm -rf -- "$qa_root"
+}
+trap cleanup EXIT
 
 mkdir -p "$output_dir"
-python3 -m http.server "$port" --bind 127.0.0.1 --directory "$site_dir" \
+cp -a "$site_dir/." "$qa_root/"
+
+questions="$qa_root/questions.jsonl"
+publication="$qa_root/publication"
+data_base_url="http://127.0.0.1:$port/publication/versions/main"
+uv run --project "$project_root" --locked vepbench build --output "$questions"
+uv run --project "$project_root" --locked python \
+  "$project_root/scripts/prepare_browser_qa_fixture.py" \
+  --questions "$questions" \
+  --output "$publication" \
+  --site-root "$qa_root" \
+  --data-base-url "$data_base_url"
+
+uv run --project "$project_root" --locked python -m http.server "$port" \
+  --bind 127.0.0.1 --directory "$qa_root" \
   >"$output_dir/server.log" 2>&1 &
 server_pid=$!
-trap 'kill "$server_pid" 2>/dev/null || true' EXIT
 
 curl --fail --retry 10 --retry-connrefused --retry-delay 1 \
   "http://127.0.0.1:$port/index.html" >/dev/null
@@ -34,7 +59,7 @@ common=(
   --dump-dom "http://127.0.0.1:$port/tasks/consequence-classification.html" \
   >"$output_dir/task.dom.html"
 "$chrome" "${common[@]}" --window-size=1440,1600 \
-  --dump-dom "http://127.0.0.1:$port/questions.html?question=vep-most-severe-v1%3A17%3A10511998%3AT%3AC&run=gpt-5.6-luna-medium-prompt-v1.1-20260830" \
+  --dump-dom "http://127.0.0.1:$port/questions.html?question=vep-most-severe-v1%3A17%3A10511998%3AT%3AC&run=browser-qa" \
   >"$output_dir/question.dom.html"
 
 status=0
@@ -50,12 +75,12 @@ for check in \
   'task.dom.html|Task version' \
   'task.dom.html|questions match the current filters' \
   'question.dom.html|>Questions<' \
-  'question.dom.html|gpt-5.6-luna-medium-prompt-v1.1-20260830' \
+  'question.dom.html|browser-qa' \
   'question.dom.html|Reference answer: C13' \
   'question.dom.html|Parsed prediction: C17' \
   'question.dom.html|>Incorrect<' \
   'question.dom.html|>Reasoning<' \
-  'question.dom.html|href="https://huggingface.co/buckets/open-athena/vepbench/resolve/versions/main/raw/gpt-5.6-luna-medium-prompt-v1.1-20260830.jsonl.zst"'
+  'question.dom.html|href="http://127.0.0.1:4173/publication/versions/main/raw/browser-qa.jsonl.zst"'
 do
   file=${check%%|*}
   pattern=${check#*|}

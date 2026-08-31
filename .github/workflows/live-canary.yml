@@ -1,0 +1,44 @@
+name: Live explorer canary
+
+on:
+  workflow_run:
+    workflows: [Test and deploy Pages]
+    types: [completed]
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: live-explorer-canary
+  cancel-in-progress: true
+
+jobs:
+  canary:
+    if: >-
+      github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Check deployed explorer
+        run: >-
+          bash scripts/browser_live_canary.sh
+          https://openathena.ai/VEPBench
+          browser-live-canary
+
+      - name: Upload browser canary evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: vepbench-live-canary
+          path: browser-live-canary
+          if-no-files-found: ignore
+          retention-days: 7

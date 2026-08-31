@@ -171,15 +171,28 @@ rebuild the official questions, and run the offline checks with:
 ```bash
 uv sync --locked --group dev
 npm ci
+uv run --locked pre-commit install
 uv run --locked vepbench build
 uv run --locked python scripts/validate_vep_consequence_artifacts.py
-uv run --locked pytest
+uv run --locked pytest --cov=vepbench --cov-report=term-missing:skip-covered
 uv run --locked ruff check .
+uv run --locked ruff format --check .
+uv run --locked mypy
+uv run --locked pre-commit run --all-files
 uv run --locked vepbench version-build \
   --version prompt-redesign \
   --output /tmp/vepbench-publication
 uv run --locked vepbench site --output /tmp/vepbench-site
 ```
+
+The commit hooks apply Ruff lint fixes and Ruff formatting, then validate common
+file formats, workflow syntax, and shell scripts. CI independently runs both
+`ruff check` and `ruff format --check`, so bypassing a local hook cannot bypass
+the formatting or linting gates.
+
+Pull-request browser QA builds a complete fake evaluation locally and never
+depends on the published bucket. A separate scheduled and post-deployment
+canary checks that the deployed explorer can still read the live public data.
 
 The committed `data/sources/chr17-vep-consequences.jsonl` and its source
 manifest are generated; do not edit them directly. `vepbench build` writes the
