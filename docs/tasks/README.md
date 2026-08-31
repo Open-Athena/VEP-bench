@@ -1,0 +1,32 @@
+# Benchmark tasks
+
+Every benchmark task has one methodology page in this directory. The root
+README lists tasks only at a high level; scientific and operational details
+live here so the project can grow without turning its introduction into a
+task-specific manual.
+
+## Catalog
+
+| Task | Family | Status |
+| --- | --- | --- |
+| [Ensembl VEP most-severe consequence](vep-most-severe-consequence.md) | `vep_most_severe_consequence` | Published public development set |
+
+## Documentation convention
+
+A task page should state:
+
+- the scientific question and what a model receives;
+- the answer space and scoring rule;
+- source datasets, versions, provenance, and sampling method;
+- prompt and task-profile versions;
+- known limitations and the intended interpretation of scores;
+- reproducible preparation and validation instructions;
+- links to its source, manifest, template, profile, and explorer page;
+- published baseline results, when available.
+
+Use a stable lowercase filename matching the task slug. Keep shared evaluator,
+schema, publication, and development instructions in the parent documentation
+rather than copying them into every task page.
+
+See [Architecture](../architecture.md#adding-a-task) for the implementation
+checklist.

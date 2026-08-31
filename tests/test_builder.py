@@ -21,7 +21,6 @@ SOURCE = ROOT / "tests/fixtures/synthetic-source.jsonl"
 TEMPLATE = ROOT / "tests/fixtures/synthetic-template.json"
 PRODUCTION_SOURCE = ROOT / "data/sources/chr17-vep-consequences.jsonl"
 PRODUCTION_TEMPLATE = ROOT / "templates/vep_most_severe_consequence.json"
-EXAMPLE_PROMPT = ROOT / "EXAMPLE_PROMPT.md"
 SCHEMA = ROOT / "schemas/question.schema.json"
 
 
@@ -72,16 +71,6 @@ def test_production_questions_match_expected_manifest(tmp_path: Path) -> None:
     generated_manifest = json.loads((tmp_path / "questions.manifest.json").read_text())
     expected_manifest = json.loads((ROOT / "benchmark/expected-manifest.json").read_text())
     assert generated_manifest == expected_manifest
-
-
-def test_example_prompt_matches_first_generated_question() -> None:
-    schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
-    first_question = build_questions(
-        read_jsonl(PRODUCTION_SOURCE), load_template(PRODUCTION_TEMPLATE), schema
-    )[0]
-    example = EXAMPLE_PROMPT.read_text(encoding="utf-8")
-
-    assert f"\n\n{first_question['prompt']}\n" in example
 
 
 def test_production_prompt_has_unambiguous_final_line_instructions(

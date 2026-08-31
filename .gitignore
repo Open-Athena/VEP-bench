@@ -223,6 +223,10 @@ node_modules/
 # Local resumable evaluation state
 .vepbench/
 
+# Local planning and prompt scratch files
+/PLAN.md
+/EXAMPLE_PROMPT.md
+
 # Production artifacts are published to the HF Bucket, not Git
 benchmark/questions.jsonl
 results/*.jsonl

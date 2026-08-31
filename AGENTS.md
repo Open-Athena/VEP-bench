@@ -2,16 +2,25 @@
 
 These instructions apply to the entire VEPBench repository.
 
+## Documentation
+
+- Read the contributor [documentation index](docs/README.md) before changing
+  architecture, evaluation, publication, or task behavior.
+- Keep the root `README.md` concise and human-facing.
+- Put shared maintainer documentation under `docs/` and task methodology under
+  `docs/tasks/`, with one file per task.
+- Update the relevant documentation in the same change when behavior or a
+  public contract changes.
+
 ## Product boundaries
 
 - Keep the MVP limited to generated multiple-choice questions, deterministic
-  exact-match scoring, one OpenRouter integration, committed JSONL artifacts,
-  and a static results explorer.
+  exact-match scoring, one OpenRouter integration, reproducible public
+  artifacts, and a static results explorer.
 - Do not introduce a database, backend service, authentication, submissions
-  system, provider abstraction, Hugging Face dependency, LLM judge, batch
-  inference, or statistical framework unless a scoped issue explicitly requires
-  it.
-- Treat the committed questions and answers as a public development set. Do not
+  system, provider abstraction, LLM judge, or statistical framework unless a
+  scoped issue explicitly requires it.
+- Treat the published questions and answers as a public development set. Do not
   add contamination defenses or hidden-test infrastructure without an explicit
   project decision.
 
