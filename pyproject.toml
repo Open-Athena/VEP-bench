@@ -68,5 +68,6 @@ branch = true
 source = ["vepbench"]
 
 [tool.coverage.report]
+fail_under = 72
 show_missing = true
 skip_covered = true

@@ -293,7 +293,7 @@ def prepare_dataset(
         )
         for record in records
     )
-    expected_final_counts = {label: config.per_class_quota for label in final_vocabulary}
+    expected_final_counts = dict.fromkeys(final_vocabulary, config.per_class_quota)
     if dict(sorted(final_counts.items())) != expected_final_counts:
         raise PreparationError(
             f"final class counts do not match quotas: {dict(sorted(final_counts.items()))}"

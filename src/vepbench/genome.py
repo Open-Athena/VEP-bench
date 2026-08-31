@@ -53,7 +53,7 @@ class Genome:
         fasta = self._fasta()
         keys = [
             key
-            for key in fasta.keys()
+            for key in fasta
             if self._subset_chroms is None or key in self._subset_chroms
         ]
         self._chrom_sizes = {key: len(fasta[key]) for key in keys}

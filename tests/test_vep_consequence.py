@@ -126,12 +126,10 @@ def local_fixture(tmp_path: Path) -> LocalFixture:
 def test_eager_scan_uses_stable_bounded_candidate_pools(
     local_fixture: LocalFixture,
 ) -> None:
-    assert local_fixture.scan.raw_counts == {
-        consequence: 16
-        for consequence in sorted(
-            [*COLLAPSED_SOURCE_QUOTAS, "missense_variant", "synonymous_variant"]
-        )
-    }
+    expected_consequences = sorted(
+        [*COLLAPSED_SOURCE_QUOTAS, "missense_variant", "synonymous_variant"]
+    )
+    assert local_fixture.scan.raw_counts == dict.fromkeys(expected_consequences, 16)
     for candidates in local_fixture.scan.candidates.values():
         assert len(candidates) == local_fixture.config.candidate_pool_size
         assert list(candidates) == sorted(candidates, key=lambda item: item.sort_key)
@@ -307,15 +305,14 @@ def test_insufficient_candidate_pool_fails_clearly(
         raw_counts=local_fixture.scan.raw_counts,
     )
 
-    with Genome(local_fixture.fasta, subset_chroms={"17"}) as genome:
-        with pytest.raises(
-            PreparationError,
-            match="synonymous_variant: needed 10 valid variants, found 9",
-        ):
-            prepare_dataset(
-                insufficient,
-                genome,
-                config=local_fixture.config,
-                source={"dataset_revision": "local/test@test-revision"},
-                reference={},
-            )
+    with Genome(local_fixture.fasta, subset_chroms={"17"}) as genome, pytest.raises(
+        PreparationError,
+        match="synonymous_variant: needed 10 valid variants, found 9",
+    ):
+        prepare_dataset(
+            insufficient,
+            genome,
+            config=local_fixture.config,
+            source={"dataset_revision": "local/test@test-revision"},
+            reference={},
+        )

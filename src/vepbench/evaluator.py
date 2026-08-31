@@ -271,21 +271,23 @@ def evaluate_file(
             return result, True
 
     mode = "a" if output_path.exists() else "x"
-    with output_path.open(mode, encoding="utf-8", newline="\n") as output_file:
-        with ThreadPoolExecutor(max_workers=concurrency) as executor:
-            evaluated = executor.map(
-                evaluate_question, pending_questions, buffersize=concurrency
-            )
-            for result, api_error in evaluated:
-                if api_error:
-                    api_errors += 1
-                else:
-                    completed += 1
-                validate_result(result, result_validator)
-                output_file.write(f"{canonical_json(result)}\n")
-                output_file.flush()
-                if progress is not None:
-                    progress(completed + api_errors, len(questions), api_errors)
+    with (
+        output_path.open(mode, encoding="utf-8", newline="\n") as output_file,
+        ThreadPoolExecutor(max_workers=concurrency) as executor,
+    ):
+        evaluated = executor.map(
+            evaluate_question, pending_questions, buffersize=concurrency
+        )
+        for result, api_error in evaluated:
+            if api_error:
+                api_errors += 1
+            else:
+                completed += 1
+            validate_result(result, result_validator)
+            output_file.write(f"{canonical_json(result)}\n")
+            output_file.flush()
+            if progress is not None:
+                progress(completed + api_errors, len(questions), api_errors)
 
     return EvaluationSummary(run_id, output_path, completed, api_errors)
 

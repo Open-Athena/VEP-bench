@@ -324,7 +324,7 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
     normalized_answer_state: dict[
         tuple[str, str, int], tuple[str, Mapping[str, Any] | None]
     ] = {}
-    per_run_answers: dict[str, int] = {run_id: 0 for run_id in run_by_id}
+    per_run_answers: dict[str, int] = dict.fromkeys(run_by_id, 0)
     per_run_stats = {
         run_id: {"completed": 0, "api_errors": 0, "correct": 0, "format_failures": 0}
         for run_id in run_by_id
@@ -366,7 +366,7 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
         stats["format_failures"] += answer["scoring"]["parse_error"] is not None
 
     raw_seen: set[tuple[str, str, int]] = set()
-    per_run_raw: dict[str, int] = {run_id: 0 for run_id in run_by_id}
+    per_run_raw: dict[str, int] = dict.fromkeys(run_by_id, 0)
     for descriptor in manifest["artifacts"]["raw"]:
         archive_run_id: str | None = None
         previous_key: tuple[str, int] | None = None
@@ -411,9 +411,10 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
                 or envelope["error"] != answer_error
             ):
                 raise BuildError(f"raw response {raw_key!r} disagrees with its normalized answer")
-            if envelope["response"]["status"] == "completed":
-                if not isinstance(envelope["response"]["raw"], Mapping):
-                    raise BuildError(f"raw response {raw_key!r} is missing its provider payload")
+            if envelope["response"]["status"] == "completed" and not isinstance(
+                envelope["response"]["raw"], Mapping
+            ):
+                raise BuildError(f"raw response {raw_key!r} is missing its provider payload")
 
         if raw_records != descriptor["records"]:
             raise BuildError(f"{descriptor['path']}: raw record count mismatch")
@@ -624,7 +625,7 @@ def _convert_run(
     raw_path = version_dir / "raw" / f"{run_id}.jsonl.zst"
     raw_content_digest = hashlib.sha256()
     raw_content_bytes = 0
-    with raw_path.open("wb") as raw_file:
+    with raw_path.open("wb") as raw_file:  # noqa: SIM117 - writer depends on raw_file
         with zstandard.ZstdCompressor(level=ZSTD_LEVEL).stream_writer(
             raw_file, closefd=False
         ) as raw_writer:
@@ -890,23 +891,22 @@ def _iter_compressed_jsonl(
                 if compression == "gzip"
                 else zstandard.ZstdDecompressor().stream_reader(compressed)
             )
-            with reader:
-                with io.BufferedReader(reader) as buffered:
-                    for line_number, raw_line in enumerate(buffered, start=1):
-                        content_digest.update(raw_line)
-                        content_bytes += len(raw_line)
-                        if not raw_line.endswith(b"\n"):
-                            raise BuildError(f"{path}: JSONL must end with LF")
-                        try:
-                            text = raw_line[:-1].decode("utf-8")
-                            value = json.loads(text)
-                        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-                            raise BuildError(f"{path}:{line_number}: invalid JSON") from exc
-                        if not isinstance(value, dict) or canonical_json(value) != text:
-                            raise BuildError(
-                                f"{path}:{line_number}: record is not canonical JSON"
-                            )
-                        yield value
+            with reader, io.BufferedReader(reader) as buffered:
+                for line_number, raw_line in enumerate(buffered, start=1):
+                    content_digest.update(raw_line)
+                    content_bytes += len(raw_line)
+                    if not raw_line.endswith(b"\n"):
+                        raise BuildError(f"{path}: JSONL must end with LF")
+                    try:
+                        text = raw_line[:-1].decode("utf-8")
+                        value = json.loads(text)
+                    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+                        raise BuildError(f"{path}:{line_number}: invalid JSON") from exc
+                    if not isinstance(value, dict) or canonical_json(value) != text:
+                        raise BuildError(
+                            f"{path}:{line_number}: record is not canonical JSON"
+                        )
+                    yield value
     except (gzip.BadGzipFile, zstandard.ZstdError, EOFError, OSError) as exc:
         raise BuildError(f"{path}: invalid {compression} data") from exc
 

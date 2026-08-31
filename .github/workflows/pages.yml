@@ -43,6 +43,7 @@ jobs:
         run: >-
           uv run --locked pytest
           --cov=vepbench
+          --cov-fail-under=72
           --cov-report=term-missing:skip-covered
           --cov-report=xml
 
