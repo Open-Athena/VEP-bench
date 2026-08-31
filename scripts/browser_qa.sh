@@ -42,8 +42,6 @@ for check in \
   'leaderboard.dom.html|>Leaderboard<' \
   'leaderboard.dom.html|>Model<' \
   'leaderboard.dom.html|>Score<' \
-  'leaderboard.dom.html|14.7%' \
-  'leaderboard.dom.html|GPT 5.6 Luna (medium)' \
   'leaderboard.dom.html|https://github.com/Open-Athena/VEPBench' \
   'leaderboard.dom.html|View source' \
   'tasks.dom.html|Browse benchmark tasks' \
@@ -51,13 +49,13 @@ for check in \
   'task.dom.html|Leaderboard' \
   'task.dom.html|Task version' \
   'task.dom.html|questions match the current filters' \
-  'task.dom.html|questions.html?question=vep-most-severe-v1%3A17%3A10511998%3AT%3AC' \
-  'question.dom.html|vep-most-severe-v1:17:10511998:T:C' \
-  'question.dom.html|>Question<' \
-  'question.dom.html|>Answer<' \
+  'question.dom.html|>Questions<' \
+  'question.dom.html|gpt-5.6-luna-medium-prompt-v1.1-20260830' \
+  'question.dom.html|Reference answer: C13' \
+  'question.dom.html|Parsed prediction: C17' \
+  'question.dom.html|>Incorrect<' \
   'question.dom.html|>Reasoning<' \
-  'question.dom.html|FINAL: C17' \
-  'question.dom.html|&gt;window'
+  'question.dom.html|href="https://huggingface.co/buckets/open-athena/vepbench/resolve/versions/main/raw/gpt-5.6-luna-medium-prompt-v1.1-20260830.jsonl.zst"'
 do
   file=${check%%|*}
   pattern=${check#*|}
@@ -120,17 +118,23 @@ if grep -q 'Question only' "$output_dir/question.dom.html"; then
   status=1
 fi
 
+for pattern in \
+  'observablehq--block"><div class="note" label="Published data unavailable"' \
+  'observablehq--block"><div class="note" label="Response unavailable"' \
+  '>No complete evaluation runs available</option>'
+do
+  if grep -q "$pattern" "$output_dir/question.dom.html"; then
+    echo "unexpected missing-data state in question.dom.html: $pattern" >&2
+    status=1
+  fi
+done
+
 for pattern in 'Raw provider response' 'Request and usage metadata'; do
   if grep -q "$pattern" "$output_dir/question.dom.html"; then
     echo "unexpected technical disclosure in question.dom.html: $pattern" >&2
     status=1
   fi
 done
-
-if grep -q 'No complete evaluation runs are available' "$output_dir/question.dom.html"; then
-  echo "unexpected missing-response state in question.dom.html" >&2
-  status=1
-fi
 
 "$chrome" "${common[@]}" --window-size=1440,1200 \
   --screenshot="$output_dir/leaderboard-desktop.png" \

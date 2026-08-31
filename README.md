@@ -11,8 +11,8 @@ rather than aiming to be a contamination-resistant benchmark:
   versioned prompt templates;
 - all questions use multiple-choice answers and exact-match scoring;
 - evaluations run locally through OpenRouter;
-- public questions, answer keys, responses, scores, and provider-exposed
-  reasoning are stored in this repository; and
+- published questions, scores, responses, and provider-exposed reasoning live
+  in the public `open-athena/vepbench` Hugging Face Storage Bucket; and
 - a static GitHub Pages site makes results inspectable without a backend.
 
 The public explorer is deployed at
@@ -20,7 +20,7 @@ The public explorer is deployed at
 
 ## Current task
 
-The committed development set contains 190 chromosome 17 SNVs. Each question
+The published development set contains 190 chromosome 17 SNVs. Each question
 asks for the Ensembl VEP most severe consequence from a 1,001-base window of
 the human GRCh38 reference genome and a centered local VCF record. See the
 [complete example prompt](EXAMPLE_PROMPT.md).
@@ -65,16 +65,19 @@ from all of VEP's inputs.
 structured variant records + versioned templates
                        |
                        v
-                 questions.jsonl
+        .vepbench/questions.jsonl
                        |
                        v
               local OpenRouter run
                        |
                        v
-              results/<run-id>.jsonl
+       .vepbench/results/<run-id>.jsonl
                        |
                        v
-          static GitHub Pages explorer
+       versions/<name>/ bucket package
+                       |
+                       v
+     versions/main/ static explorer data
 ```
 
 Only model-visible prompts cross the API boundary. Answer keys remain local and
@@ -82,9 +85,11 @@ are applied by the deterministic scorer after each response returns. Paid model
 calls run only from an explicitly invoked local command, never from tests or CI.
 
 The Observable Framework explorer opens on the leaderboard and provides a
-searchable, filterable table of individual prompts and responses, available
-provider-exposed reasoning, and exact-match results. Globally unique question
-IDs support durable links such as
+searchable table of individual prompts and lazily loaded responses, available
+provider-exposed reasoning, and exact-match results. Its initial request reads
+only `versions/main/runs.json`; entering the question explorer loads the compact
+question index, and inspecting one response fetches exactly one gzip JSON
+object. Globally unique question IDs support durable links such as
 `questions.html?question=<question-id>&run=<run-id>` without generating a page
 per question or response. The explorer does not require a database or backend.
 
@@ -104,7 +109,11 @@ is unavailable.
 ## Data contracts
 
 - [Generated question schema](schemas/question.schema.json)
-- [Evaluation result schema](schemas/result.schema.json)
+- [Published run schema](schemas/run.schema.json)
+- [Normalized browser answer schema](schemas/answer.schema.json)
+- [Raw response envelope schema](schemas/raw-response.schema.json)
+- [Published version manifest schema](schemas/manifest.schema.json)
+- [Local resumable evaluation result schema](schemas/result.schema.json)
 
 Generated questions are sorted by `question_id` and written as UTF-8 JSONL with
 LF line endings. A question-set fingerprint is the lowercase SHA-256 digest of
@@ -124,14 +133,30 @@ choice ID exactly. A missing or unknown choice ID scores zero as a parse error.
 API errors have a null score and make the run incomplete instead of counting as
 scientific errors.
 
-Each result snapshots the complete generated question alongside the raw
-provider response. Its question fingerprint is recomputed from that embedded
-snapshot, so historical runs remain valid and inspectable after the current
-question set changes. Results also record the originating question-set size;
-complete runs are accepted only when the embedded snapshots reproduce the set
-digest. Provider-exposed reasoning is preserved when available and is otherwise
-null; it is not presented as guaranteed access to a model's private chain of
-thought.
+Local evaluation JSONL remains an ordinary resumable staging format and keeps
+the information required to recover from an interrupted run. Publication
+validates those files, joins them to the exact generated question set, and
+deduplicates them into run metadata, normalized browser answers, and complete
+raw-response archives. Provider-exposed reasoning is preserved when available
+and is otherwise null; it is not presented as guaranteed access to a model's
+private chain of thought.
+
+Published questions and raw run archives are deterministic zstd JSONL files.
+Each browser answer is a deterministic gzip JSON object with stable key order,
+compression settings, and timestamp. `manifest.json` records compressed and
+decompressed digests and sizes for every artifact. Root schemas are shared by
+all versions. Only `versions/main/` is official; other lowercase slug versions
+are disposable experiments.
+
+Result staging files and raw response archives are converted and validated as
+streams, so publication memory does not scale with long provider reasoning.
+
+A model configuration key includes model and upstream provider identity, all
+generation parameters (including reasoning effort), and the prompt/task
+identity. `main` permits only complete runs without API errors and at most one
+run per configuration key. The site reads the bucket directly, and users may
+download complete per-run raw archives; individual raw responses are not
+published as separate objects.
 
 JSON Schema cannot enforce that `answer_choice_id` occurs exactly once in
 `choices`. The builder and tests must enforce this cross-field invariant, unique
@@ -141,7 +166,7 @@ choice IDs, and agreement between the structured choices and rendered prompt.
 
 Python environments and dependencies are managed with
 [`uv`](https://docs.astral.sh/uv/). Install the locked development environment,
-rebuild the committed questions, and run the offline checks with:
+rebuild the official questions, and run the offline checks with:
 
 ```bash
 uv sync --locked --group dev
@@ -150,26 +175,28 @@ uv run --locked vepbench build
 uv run --locked python scripts/validate_vep_consequence_artifacts.py
 uv run --locked pytest
 uv run --locked ruff check .
+uv run --locked vepbench version-build \
+  --version prompt-redesign \
+  --output /tmp/vepbench-publication
 uv run --locked vepbench site --output /tmp/vepbench-site
 ```
 
-The committed `data/sources/chr17-vep-consequences.jsonl`, its manifest, and
-`benchmark/questions.jsonl` are generated; do not edit them directly. The first
-real baseline is committed as
-[`results/gpt-5.6-luna-medium-parallel-20260829.jsonl`](results/gpt-5.6-luna-medium-parallel-20260829.jsonl).
-It contains all 190 OpenAI GPT-5.6 Luna responses with no API errors. Strict
-exact-match scoring gives 15/190 (7.9%); 72 responses failed the required final
-line format and therefore correctly score zero. That run used prompt template
-version 1.0 and is retained as a historical result.
+The committed `data/sources/chr17-vep-consequences.jsonl` and its source
+manifest are generated; do not edit them directly. `vepbench build` writes the
+exact questions and a digest manifest under `.vepbench/`. The small committed
+[`benchmark/expected-manifest.json`](benchmark/expected-manifest.json) pins the
+official record count and digest without making GitHub a second canonical home
+for the generated questions.
 
-The current prompt v1.1 evaluation is committed as
-[`results/gpt-5.6-luna-medium-prompt-v1.1-20260830.jsonl`](results/gpt-5.6-luna-medium-prompt-v1.1-20260830.jsonl).
-It also contains all 190 responses with no API errors. Exact-match scoring gives
-28/190 (14.7%), with one format failure and no length-limited completions. The
-format-only prompt revision therefore reduced invalid final lines from 72 to 1;
-the explorer shows only evaluations against the latest task version, while the
-older result remains committed for historical audit. Small synthetic artifacts
-under `tests/fixtures/` exist only for offline unit tests.
+Generated questions and production results are ignored locally and are not
+tracked in Git. The public bucket is their canonical home after publication;
+Git retains only the small expected question-set manifest and reproducible
+generation, validation, and publication code.
+
+The official prompt v1.1 results contain all 190 responses without API errors
+at each reasoning effort. Exact-match scores are 18/190 (9.5%) for low, 28/190
+(14.7%) for medium, and 44/190 (23.2%) for high. Small synthetic artifacts under
+`tests/fixtures/` exist only for offline unit tests.
 
 ### Rebuilding the source data
 
@@ -242,15 +269,73 @@ batch endpoint. The committed Luna baseline therefore used `--direct
 --concurrency 16`; native batch submission remains the default for models whose
 batch endpoint is live.
 
-Direct evaluation is non-streaming and bounded-parallel. The command refuses to
+Direct evaluation is non-streaming and bounded-parallel. Local runs are written
+under `.vepbench/results/`. The command refuses to
 overwrite an existing run, writes results in deterministic question order,
 flushes one result at a time, and exits non-zero when an API error leaves the run
 scientifically incomplete. It never sends answer keys to the provider. No test
 or GitHub Actions workflow reads the API key or makes model calls.
 
-GitHub Actions validates the generated fixtures, tests every committed result,
-and compiles the Observable Pages artifact from `web/`, `benchmark/`, and
-`results/`.
+GitHub Actions validates deterministic regeneration against the expected
+manifest, runs the offline suites, and compiles the Observable Pages artifact.
+The deployed explorer is read-only and always resolves data from bucket
+`versions/main/`.
+
+### Publishing a bucket version
+
+Evaluation never uploads automatically. Build and validate a named local
+version first:
+
+```bash
+uv run --locked vepbench version-build \
+  --version prompt-redesign \
+  --output /tmp/vepbench-publication
+
+uv run --locked vepbench version-validate \
+  --version prompt-redesign \
+  --root /tmp/vepbench-publication
+```
+
+With `HF_TOKEN` set, save a non-mutating sync plan targeting exactly that one
+version prefix. Review the JSONL before applying it:
+
+```bash
+uv run --locked vepbench bucket-plan \
+  --root /tmp/vepbench-publication \
+  --version prompt-redesign \
+  --plan /tmp/prompt-redesign.plan.jsonl
+
+uv run --locked vepbench bucket-apply \
+  --plan /tmp/prompt-redesign.plan.jsonl \
+  --confirm-destination \
+    hf://buckets/open-athena/vepbench/versions/prompt-redesign
+```
+
+Replacing the protected official version requires `--promote-main` on both
+bucket commands. First derive a complete future `main` tree from the validated
+named version:
+
+```bash
+uv run --locked vepbench version-promote \
+  --source-root /tmp/vepbench-publication \
+  --source-version prompt-redesign \
+  --output /tmp/vepbench-main
+
+uv run --locked vepbench bucket-plan \
+  --root /tmp/vepbench-main \
+  --version main \
+  --promote-main \
+  --plan /tmp/main.plan.jsonl
+```
+
+The saved plan records the expected digest, size, and action for the bucket
+README and every shared schema. Named versions must match those files whenever
+a ready `main` exists. Application removes the old main readiness marker before
+updating shared files, applies additions and stale-file deletions only inside
+`versions/main/`, uploads `manifest.json` last, and verifies the resulting
+remote paths, sizes, and content digests. No command recursively syncs or
+deletes at the bucket root.
+
 Implementation work is tracked in GitHub issues rather than as a roadmap here.
 
 VEPBench is a public development set for now. If it becomes a formal benchmark,

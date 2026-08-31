@@ -29,7 +29,6 @@ TEMPLATE = ROOT / "templates/vep_most_severe_consequence.json"
 SCHEMA = ROOT / "schemas/question.schema.json"
 PRODUCTION_SOURCE = ROOT / "data/sources/chr17-vep-consequences.jsonl"
 PRODUCTION_MANIFEST = ROOT / "data/sources/chr17-vep-consequences.manifest.json"
-PRODUCTION_QUESTIONS = ROOT / "benchmark/questions.jsonl"
 
 
 @dataclass(frozen=True)
@@ -172,8 +171,11 @@ def test_committed_production_artifacts_are_balanced_and_pinned() -> None:
     } == COLLAPSED_SOURCE_QUOTAS
 
 
-def test_committed_prompts_hide_absolute_coordinates() -> None:
-    questions = read_jsonl(PRODUCTION_QUESTIONS)
+def test_generated_production_prompts_hide_absolute_coordinates() -> None:
+    schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
+    questions = build_questions(
+        read_jsonl(PRODUCTION_SOURCE), load_template(TEMPLATE), schema
+    )
 
     assert len(questions) == 190
     for question in questions:

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://open-athena.github.io/VEPBench/schemas/question.schema.json",
   "title": "VEPBench generated multiple-choice question",
-  "description": "One line in benchmark/questions.jsonl.",
+  "description": "One generated record in a published questions JSONL artifact.",
   "type": "object",
   "additionalProperties": false,
   "required": [

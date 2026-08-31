@@ -51,7 +51,7 @@ jobs:
         run: |
           uv run --locked python scripts/validate_vep_consequence_artifacts.py
           uv run --locked vepbench build --output /tmp/questions.jsonl
-          cmp benchmark/questions.jsonl /tmp/questions.jsonl
+          cmp benchmark/expected-manifest.json /tmp/questions.manifest.json
 
       - name: Build validated static site
         run: uv run --locked vepbench site --output _site

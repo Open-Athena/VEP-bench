@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://open-athena.github.io/VEPBench/schemas/run.schema.json",
+  "title": "VEPBench published run",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "run_id", "configuration_key", "question_set_sha256", "question_set_size", "model", "generation_parameters", "evaluation_profile", "started_at", "completed_at", "coverage", "metrics", "answer_prefix", "raw_archive"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "run_id": {"$ref": "#/$defs/id"},
+    "configuration_key": {"type": "string", "pattern": "^cfg-[0-9a-f]{64}$"},
+    "question_set_sha256": {"$ref": "#/$defs/sha256"},
+    "question_set_size": {"type": "integer", "minimum": 1},
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gateway", "model_id", "upstream_provider"],
+      "properties": {
+        "gateway": {"const": "openrouter"},
+        "model_id": {"type": "string", "minLength": 1},
+        "model_revision": {"type": ["string", "null"]},
+        "upstream_provider": {"type": ["string", "null"]}
+      }
+    },
+    "generation_parameters": {"type": "object"},
+    "evaluation_profile": {"type": ["string", "null"]},
+    "started_at": {"type": "string", "format": "date-time"},
+    "completed_at": {"type": "string", "format": "date-time"},
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["attempted", "completed", "api_errors", "missing", "complete"],
+      "properties": {
+        "attempted": {"type": "integer", "minimum": 0},
+        "completed": {"type": "integer", "minimum": 0},
+        "api_errors": {"type": "integer", "minimum": 0},
+        "missing": {"type": "integer", "minimum": 0},
+        "complete": {"type": "boolean"}
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scored", "correct", "accuracy", "format_failures"],
+      "properties": {
+        "scored": {"type": "integer", "minimum": 0},
+        "correct": {"type": "integer", "minimum": 0},
+        "accuracy": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "format_failures": {"type": "integer", "minimum": 0}
+      }
+    },
+    "answer_prefix": {"type": "string", "pattern": "^answers/[A-Za-z0-9][A-Za-z0-9._:-]*/$"},
+    "raw_archive": {"$ref": "#/$defs/artifact"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$", "maxLength": 200},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "records", "content_sha256", "content_bytes", "artifact_sha256", "artifact_bytes"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "records": {"type": "integer", "minimum": 0},
+        "content_sha256": {"$ref": "#/$defs/sha256"},
+        "content_bytes": {"type": "integer", "minimum": 0},
+        "artifact_sha256": {"$ref": "#/$defs/sha256"},
+        "artifact_bytes": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

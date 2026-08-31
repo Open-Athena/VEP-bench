@@ -5,19 +5,31 @@ title: Questions
 ```js
 import {
   entriesForQuestions,
-  entryForResult,
+  entryForAnswer,
   formatInteger,
   formatRunLabel,
-  outcomeBadge,
   questionRecord
 } from "./components/vepbench.js";
-import {groupCurrentRuns} from "./components/benchmark-data.js";
+import {
+  artifactUrl,
+  fetchAnswer,
+  fetchJson,
+  groupCurrentRuns
+} from "./components/benchmark-data.js";
 
-const explorer = await FileAttachment("data/explorer.json").json();
+const config = await FileAttachment("data/config.json").json();
+const [runsState, questionState] = await Promise.all([
+  fetchJson(artifactUrl(config.data_base_url, "runs.json"))
+    .then((document) => ({document, error: null}))
+    .catch((error) => ({document: {runs: []}, error})),
+  fetchJson(artifactUrl(config.data_base_url, "question-index.json"))
+    .then((document) => ({document, error: null}))
+    .catch((error) => ({document: {questions: []}, error}))
+]);
 const parameters = new URLSearchParams(location.search);
 const requestedQuestionId = parameters.get("question");
 const requestedRunId = parameters.get("run");
-const currentRuns = groupCurrentRuns(explorer.task_runs);
+const currentRuns = groupCurrentRuns(runsState.document.runs);
 const requestedRun = currentRuns.find((candidate) => candidate.run_id === requestedRunId);
 const missingRun = requestedRunId && !requestedRun
   ? {kind: "missing", label: `Unavailable run · ${requestedRunId}`, run_id: requestedRunId}
@@ -27,7 +39,7 @@ const availableRunOptions = currentRuns.map((run) => ({
   label: `${formatRunLabel(run)} · ${run.run_id}`,
   run
 }));
-const noRuns = {kind: "empty", label: "No evaluation runs available"};
+const noRuns = {kind: "empty", label: "No complete evaluation runs available"};
 const runOptions = [
   ...(missingRun ? [missingRun] : []),
   ...availableRunOptions,
@@ -39,7 +51,7 @@ const defaultRunOption = runOptions.find(
 const taskName = (taskFamily) => taskFamily === "vep_most_severe_consequence"
   ? "Consequence classification"
   : taskFamily;
-const questionEntries = entriesForQuestions(explorer.questions).map((entry) => ({
+const questionEntries = entriesForQuestions(questionState.document.questions).map((entry) => ({
   ...entry,
   task: taskName(entry.question.metadata.task_family)
 }));
@@ -50,7 +62,13 @@ const requestedQuestion = questionEntries.find(
 
 # Questions
 
-Inspect a benchmark question alongside a response from a selected evaluation run.
+Inspect a benchmark question alongside one lazily loaded response from a selected evaluation run.
+
+```js
+if (runsState.error || questionState.error) {
+  display(html`<div class="note" label="Published data unavailable">The official benchmark data could not be loaded from <code>versions/main</code>.</div>`);
+}
+```
 
 ```js
 const controlsInput = Inputs.form({
@@ -71,13 +89,7 @@ const controlsInput = Inputs.form({
   consequence: Inputs.select([
     "All consequences",
     ...[...new Set(questionEntries.map((entry) => entry.answer))].sort()
-  ], {label: "Reference consequence"}),
-  result: Inputs.select([
-    "All results",
-    "Correct",
-    "Incorrect",
-    "Format failure"
-  ], {label: "Result"})
+  ], {label: "Reference consequence"})
 });
 controlsInput.style.display = "grid";
 controlsInput.style.gridTemplateColumns = "repeat(auto-fit, minmax(10rem, 1fr))";
@@ -96,32 +108,15 @@ for (const input of controlsInput.children) {
 ```
 
 ```js
-const controls = Generators.input(controlsInput);
+const controls = view(controlsInput);
 ```
 
 ```js
 const runOption = controls.run;
 const run = runOption.kind === "run" ? runOption.run : null;
-```
-
-```js
-const evaluatedEntries = controls.search.map((entry) => {
-  const resultIndex = run
-    ? run.records_data.findIndex((record) => record.question_id === entry.question_id)
-    : -1;
-  return resultIndex < 0
-    ? entry
-    : {
-      ...entry,
-      ...entryForResult(run.records_data[resultIndex], resultIndex, run),
-      question_label: entry.question_label,
-      task: entry.task
-    };
-});
-const visibleEntries = evaluatedEntries.filter((entry) =>
+const visibleEntries = controls.search.filter((entry) =>
   (controls.task === "All tasks" || entry.task === controls.task)
   && (controls.consequence === "All consequences" || entry.answer === controls.consequence)
-  && (controls.result === "All results" || entry.outcome === controls.result)
 );
 const defaultQuestion = requestedQuestionId
   ? (visibleEntries.find((entry) => entry.question_id === requestedQuestionId) ?? null)
@@ -130,29 +125,27 @@ const defaultQuestion = requestedQuestionId
 
 ```js
 const questionTable = Inputs.table(visibleEntries, {
-  columns: ["question_label", "task", "variant", "answer", "outcome"],
+  columns: ["question_label", "task", "variant", "answer"],
   header: {
     question_label: "Question",
     task: "Task",
     variant: "Source variant",
-    answer: "Reference consequence",
-    outcome: "Result"
-  },
-  format: {
-    outcome: (value) => outcomeBadge(value)
+    answer: "Reference consequence"
   },
   width: {
     question_label: 70,
     task: 210,
     variant: 150,
-    answer: 280,
-    outcome: 110
+    answer: 280
   },
   multiple: false,
   required: false,
   value: defaultQuestion
 });
-const selected = Generators.input(questionTable);
+```
+
+```js
+const selected = view(questionTable);
 ```
 
 <div class="card">
@@ -162,8 +155,25 @@ const selected = Generators.input(questionTable);
 </div>
 
 ```js
+const selectedIndex = selected
+  ? questionEntries.findIndex((entry) => entry.question_id === selected.question_id)
+  : -1;
+const answerState = selected && run
+  ? await fetchAnswer(config.data_base_url, run, selected.question_id)
+      .then((value) => ({value, error: null}))
+      .catch((error) => ({value: null, error}))
+  : {value: null, error: null};
+const rawArchiveUrl = answerState.value
+  ? artifactUrl(config.data_base_url, answerState.value.raw_archive_path)
+  : null;
 const recordEntry = selected
-  ? {...selected, run}
+  ? entryForAnswer(
+      selected.question,
+      selectedIndex,
+      answerState.value,
+      run,
+      rawArchiveUrl
+    )
   : null;
 ```
 
@@ -171,15 +181,12 @@ const recordEntry = selected
 if (requestedQuestionId && !requestedQuestion && !selected) {
   display(html`<div class="note" label="Question not found">No benchmark question has ID <code>${requestedQuestionId}</code>.</div>`);
 }
-```
-
-```js
 if (runOption.kind === "missing") {
   display(html`<div class="note" label="Response not found">No complete current evaluation has run ID <code>${runOption.run_id}</code>.</div>`);
 }
-```
-
-```js
+if (answerState.error) {
+  display(html`<div class="note" label="Response unavailable">The selected answer object could not be loaded.</div>`);
+}
 display(recordEntry
   ? questionRecord(recordEntry)
   : html`<div class="note" label="No question selected">Select a question row above to inspect it.</div>`

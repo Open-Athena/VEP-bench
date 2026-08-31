@@ -5,9 +5,11 @@ description = "Tool-free genetic variant effect prediction benchmark"
 readme = "README.md"
 requires-python = "==3.14.*"
 dependencies = [
+    "huggingface-hub[hf-xet]>=1.6,<2",
     "jsonschema>=4.23,<5",
     "pyyaml>=6.0,<7",
     "rfc3339-validator>=0.1.4,<1",
+    "zstandard>=0.23,<1",
 ]
 
 [project.scripts]
@@ -16,7 +18,6 @@ vepbench = "vepbench.cli:main"
 [dependency-groups]
 prepare = [
     "fsspec[http]>=2026.5.0,<2027",
-    "huggingface-hub[hf-xet]>=1.3,<2",
     "polars>=1.38,<2",
     "pyfaidx>=0.9,<1",
 ]

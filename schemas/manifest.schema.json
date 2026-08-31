@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://open-athena.github.io/VEPBench/schemas/manifest.schema.json",
+  "title": "VEPBench published version manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "version_name", "question_set_sha256", "question_set_size", "schemas", "artifacts"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "version_name": {"type": "string", "pattern": "^[a-z0-9](?:[a-z0-9-]{0,62})?$"},
+    "question_set_sha256": {"$ref": "#/$defs/sha256"},
+    "question_set_size": {"type": "integer", "minimum": 1},
+    "schemas": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["question.schema.json", "run.schema.json", "answer.schema.json", "raw-response.schema.json", "manifest.schema.json"],
+      "properties": {
+        "question.schema.json": {"$ref": "#/$defs/schema"},
+        "run.schema.json": {"$ref": "#/$defs/schema"},
+        "answer.schema.json": {"$ref": "#/$defs/schema"},
+        "raw-response.schema.json": {"$ref": "#/$defs/schema"},
+        "manifest.schema.json": {"$ref": "#/$defs/schema"}
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["questions", "runs", "question_index", "answers", "raw"],
+      "properties": {
+        "questions": {"$ref": "#/$defs/artifact"},
+        "runs": {"$ref": "#/$defs/artifact"},
+        "question_index": {"$ref": "#/$defs/artifact"},
+        "answers": {"type": "array", "items": {"$ref": "#/$defs/artifact"}},
+        "raw": {"type": "array", "items": {"$ref": "#/$defs/artifact"}}
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "bytes"],
+      "properties": {
+        "path": {"type": "string", "pattern": "^schemas/[^/]+\\.schema\\.json$"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "bytes": {"type": "integer", "minimum": 1}
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "records", "content_sha256", "content_bytes", "artifact_sha256", "artifact_bytes"],
+      "properties": {
+        "path": {"type": "string", "pattern": "^versions/[a-z0-9][a-z0-9-]*/.+$"},
+        "records": {"type": "integer", "minimum": 0},
+        "content_sha256": {"$ref": "#/$defs/sha256"},
+        "content_bytes": {"type": "integer", "minimum": 0},
+        "artifact_sha256": {"$ref": "#/$defs/sha256"},
+        "artifact_bytes": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

@@ -40,9 +40,9 @@ scp \
   data/sources/chr17-vep-consequences.manifest.json
 
 uv run --locked python scripts/validate_vep_consequence_artifacts.py
-uv run --locked vepbench build --output /tmp/vepbench-questions.jsonl
-cmp benchmark/questions.jsonl /tmp/vepbench-questions.jsonl 2>/dev/null || \
-  cp /tmp/vepbench-questions.jsonl benchmark/questions.jsonl
+uv run --locked vepbench build
+cmp benchmark/expected-manifest.json .vepbench/questions.manifest.json 2>/dev/null || \
+  cp .vepbench/questions.manifest.json benchmark/expected-manifest.json
 
 sky down --yes "${cluster}"
 trap - EXIT

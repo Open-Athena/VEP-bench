@@ -8,16 +8,22 @@ import {
   formatInteger,
   questionUrl
 } from "../components/vepbench.js";
+import {artifactUrl, fetchJson} from "../components/benchmark-data.js";
 import {
   ENSEMBL_CONSEQUENCE_SOURCE,
   consequenceTableRows,
   sequenceOntologyUrl
 } from "../components/consequences.js";
 
-const explorer = await FileAttachment("../data/explorer.json").json();
+const config = await FileAttachment("../data/config.json").json();
+const questionState = await fetchJson(
+  artifactUrl(config.data_base_url, "question-index.json")
+)
+  .then((document) => ({document, error: null}))
+  .catch((error) => ({document: {questions: []}, error}));
 const consequenceDiagramUrl = FileAttachment("./consequences.svg").href;
 const taskFamily = "vep_most_severe_consequence";
-const taskQuestions = explorer.questions.filter(
+const taskQuestions = questionState.document.questions.filter(
   (question) => question.metadata.task_family === taskFamily
 );
 const consequenceCount = new Set(taskQuestions[0]?.choices.map((choice) => choice.text)).size;
@@ -87,6 +93,12 @@ function impactCell(value) {
 *Assay 01 · sequence-context multiple choice*
 
 # Consequence classification
+
+```js
+if (questionState.error) {
+  display(html`<div class="note" label="Published data unavailable">The official question index could not be loaded from <code>versions/main</code>.</div>`);
+}
+```
 
 Predict the Ensembl VEP most severe consequence for a human GRCh38 SNV using only its centered local sequence window and variant alleles.
 

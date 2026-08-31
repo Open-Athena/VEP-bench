@@ -1,127 +1,87 @@
 import assert from "node:assert/strict";
+import {gzipSync} from "node:zlib";
 import test from "node:test";
 
-import {groupCurrentRuns, leaderboardRows} from "./benchmark-data.js";
+import {
+  answerPath,
+  fetchAnswer,
+  groupCurrentRuns,
+  leaderboardRows
+} from "./benchmark-data.js";
 
-function question(taskFamily) {
-  return {metadata: {task_family: taskFamily}};
-}
-
-function record({correct, evaluatedAt, modelId, questionId}) {
+function run({
+  accuracy = 0.5,
+  complete = true,
+  completedAt = "2026-08-31T00:00:00Z",
+  configurationKey = `cfg-${"0".repeat(64)}`,
+  effort = "medium",
+  runId = "test-run"
+} = {}) {
   return {
-    evaluated_at: evaluatedAt,
-    generation_parameters: {reasoning: {effort: "medium"}},
+    answer_prefix: `answers/${runId}/`,
+    completed_at: completedAt,
+    configuration_key: configurationKey,
+    coverage: {complete},
+    generation_parameters: {reasoning: {effort}},
+    metrics: {accuracy, format_failures: 0},
     model: {
-      model_id: modelId,
+      model_id: "test/model",
       upstream_provider: "Test provider"
     },
-    question_id: questionId,
-    scoring: {
-      correct,
-      parse_error: null,
-      value: correct ? 1 : 0
-    }
+    run_id: runId
   };
 }
 
-function taskRun({complete = true, current = true, runId, taskFamily, records}) {
-  return {
-    complete,
-    current_task_version: current,
-    records_data: records,
-    run_id: runId,
-    task_family: taskFamily
-  };
-}
-
-test("leaderboard requires full task coverage and keeps the latest task run", () => {
-  const fullModel = "test/full-model";
-  const partialModel = "test/partial-model";
-  const runs = [
-    taskRun({
-      runId: "full-alpha-old",
-      taskFamily: "alpha",
-      records: [record({
-        correct: false,
-        evaluatedAt: "2026-08-01T00:00:00Z",
-        modelId: fullModel,
-        questionId: "alpha-old"
-      })]
-    }),
-    taskRun({
-      runId: "full-alpha-new",
-      taskFamily: "alpha",
-      records: [record({
-        correct: true,
-        evaluatedAt: "2026-08-02T00:00:00Z",
-        modelId: fullModel,
-        questionId: "alpha-new"
-      })]
-    }),
-    taskRun({
-      runId: "full-beta",
-      taskFamily: "beta",
-      records: [record({
-        correct: true,
-        evaluatedAt: "2026-08-01T00:00:00Z",
-        modelId: fullModel,
-        questionId: "beta"
-      })]
-    }),
-    taskRun({
-      runId: "partial-alpha",
-      taskFamily: "alpha",
-      records: [record({
-        correct: true,
-        evaluatedAt: "2026-08-03T00:00:00Z",
-        modelId: partialModel,
-        questionId: "partial-alpha"
-      })]
-    })
-  ];
-
-  const rows = leaderboardRows(runs, [question("alpha"), question("beta")]);
+test("leaderboard keeps the latest complete run per model configuration", () => {
+  const rows = leaderboardRows([
+    run({accuracy: 0.2, completedAt: "2026-08-01T00:00:00Z", runId: "old"}),
+    run({accuracy: 0.8, completedAt: "2026-08-02T00:00:00Z", runId: "new"}),
+    run({complete: false, configurationKey: `cfg-${"1".repeat(64)}`, runId: "bad"})
+  ]);
 
   assert.equal(rows.length, 1);
-  assert.equal(rows[0].model_cell.model, "full-model (medium)");
-  assert.equal(rows[0].accuracy, 1);
-  assert.deepEqual(
-    rows[0].records_data.map((entry) => entry.question_id),
-    ["alpha-new", "beta"]
-  );
+  assert.equal(rows[0].run.run_id, "new");
+  assert.equal(rows[0].accuracy, 0.8);
+  assert.equal(rows[0].model_cell.model, "model (medium)");
 });
 
-test("question runs recombine current task slices sharing one run id", () => {
-  const sharedRecord = (questionId) => record({
-    correct: true,
-    evaluatedAt: "2026-08-01T00:00:00Z",
-    modelId: "test/model",
-    questionId
-  });
-  const runs = [
-    taskRun({
-      runId: "mixed-run",
-      taskFamily: "alpha",
-      records: [sharedRecord("alpha-question")]
-    }),
-    taskRun({
-      runId: "mixed-run",
-      taskFamily: "beta",
-      records: [sharedRecord("beta-question")]
-    }),
-    taskRun({
-      complete: false,
-      runId: "incomplete-run",
-      taskFamily: "alpha",
-      records: [sharedRecord("ignored-question")]
-    })
-  ];
+test("question explorer exposes only complete runs", () => {
+  const runs = groupCurrentRuns([
+    run({runId: "zeta"}),
+    run({complete: false, runId: "ignored"}),
+    run({runId: "alpha"})
+  ]);
+  assert.deepEqual(runs.map((candidate) => candidate.run_id), ["alpha", "zeta"]);
+});
 
-  const grouped = groupCurrentRuns(runs);
-
-  assert.deepEqual(grouped.map((run) => run.run_id), ["mixed-run"]);
-  assert.deepEqual(
-    grouped[0].records_data.map((entry) => entry.question_id),
-    ["alpha-question", "beta-question"]
+test("answer path is one encoded object and rejects mismatched prefixes", () => {
+  const candidate = run({runId: "demo-run"});
+  assert.equal(
+    answerPath(candidate, "task:question-1"),
+    "answers/demo-run/task%3Aquestion-1.json.gz"
   );
+  candidate.answer_prefix = "answers/another-run/";
+  assert.throws(() => answerPath(candidate, "task:question-1"), /does not match/);
+});
+
+test("fetchAnswer downloads and decompresses exactly one gzip object", async () => {
+  const answer = {question_id: "task:question-1", scoring: {correct: true}};
+  const compressed = gzipSync(`${JSON.stringify(answer)}\n`, {mtime: 0});
+  const requested = [];
+  const fetcher = async (url) => {
+    requested.push(url);
+    return new Response(compressed, {status: 200});
+  };
+
+  const observed = await fetchAnswer(
+    "https://example.test/versions/main",
+    run({runId: "demo-run"}),
+    "task:question-1",
+    fetcher
+  );
+
+  assert.deepEqual(observed, answer);
+  assert.deepEqual(requested, [
+    "https://example.test/versions/main/answers/demo-run/task%3Aquestion-1.json.gz"
+  ]);
 });

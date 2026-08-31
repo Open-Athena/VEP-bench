@@ -223,5 +223,9 @@ node_modules/
 # Local resumable evaluation state
 .vepbench/
 
+# Production artifacts are published to the HF Bucket, not Git
+benchmark/questions.jsonl
+results/*.jsonl
+
 # Streamlit
 .streamlit/secrets.toml

@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://open-athena.github.io/VEPBench/schemas/raw-response.schema.json",
+  "title": "VEPBench raw provider response envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "run_id", "question_id", "question_sha256", "completion_index", "evaluated_at", "request", "response", "error"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "run_id": {"$ref": "#/$defs/id"},
+    "question_id": {"$ref": "#/$defs/id"},
+    "question_sha256": {"$ref": "#/$defs/sha256"},
+    "completion_index": {"type": "integer", "minimum": 0},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["body_sha256"],
+      "properties": {
+        "body_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "response": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "raw"],
+      "properties": {
+        "status": {"enum": ["completed", "api_error"]},
+        "raw": {"type": ["object", "null"]}
+      }
+    },
+    "error": {"type": ["object", "null"]}
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "response": {
+            "properties": {"status": {"const": "completed"}},
+            "required": ["status"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "response": {"properties": {"raw": {"type": "object"}}},
+          "error": {"type": "null"}
+        }
+      },
+      "else": {
+        "properties": {
+          "response": {"properties": {"raw": {"type": "null"}}},
+          "error": {"type": "object"}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$", "maxLength": 200},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
