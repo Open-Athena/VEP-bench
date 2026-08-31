@@ -12,7 +12,9 @@ permissions:
   contents: read
 
 concurrency:
-  group: live-explorer-canary
+  # A skipped canary emitted by a pull-request workflow must not cancel the
+  # active canary for a successful main deployment.
+  group: live-explorer-canary-${{ github.event.workflow_run.event || github.event_name }}
   cancel-in-progress: true
 
 jobs:
