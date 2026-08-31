@@ -23,7 +23,7 @@ prepare = [
 ]
 dev = [
     { include-group = "prepare" },
-    "mypy>=1.18,<2",
+    "mypy>=1.18,<3",
     "pre-commit>=4.3,<5",
     "pytest>=8.3,<10",
     "pytest-cov>=7,<8",
