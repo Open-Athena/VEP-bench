@@ -11,9 +11,11 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from .batch import collect_batch_file, refresh_batch_state, submit_batch_file
+from .bucket import apply_bucket_plan, create_bucket_plan, require_hf_token
 from .builder import BuildError, build_file, read_jsonl
 from .evaluator import ProviderError, evaluate_file
 from .model_profile import load_model_profile
+from .publication import build_version, promote_version, validate_version
 from .site import build_site
 from .task_profile import load_task_profile
 
@@ -43,7 +45,7 @@ def build_parser() -> argparse.ArgumentParser:
     build.add_argument(
         "--output",
         type=Path,
-        default=PROJECT_ROOT / "benchmark/questions.jsonl",
+        default=PROJECT_ROOT / ".vepbench/questions.jsonl",
     )
 
     evaluate = subparsers.add_parser(
@@ -59,7 +61,7 @@ def build_parser() -> argparse.ArgumentParser:
     evaluate.add_argument(
         "--questions",
         type=Path,
-        default=PROJECT_ROOT / "benchmark/questions.jsonl",
+        default=PROJECT_ROOT / ".vepbench/questions.jsonl",
     )
     evaluate.add_argument(
         "--task-profile",
@@ -120,7 +122,7 @@ def build_parser() -> argparse.ArgumentParser:
     batch_collect.add_argument(
         "--questions",
         type=Path,
-        default=PROJECT_ROOT / "benchmark/questions.jsonl",
+        default=PROJECT_ROOT / ".vepbench/questions.jsonl",
     )
     batch_collect.add_argument(
         "--schema",
@@ -131,6 +133,60 @@ def build_parser() -> argparse.ArgumentParser:
         "--result-schema",
         type=Path,
         default=PROJECT_ROOT / "schemas/result.schema.json",
+    )
+    version_build = subparsers.add_parser(
+        "version-build", help="build a validated local bucket version"
+    )
+    version_build.add_argument("--version", required=True)
+    version_build.add_argument(
+        "--questions",
+        type=Path,
+        default=PROJECT_ROOT / ".vepbench/questions.jsonl",
+    )
+    version_build.add_argument(
+        "--results-dir", type=Path, default=PROJECT_ROOT / ".vepbench/results"
+    )
+    version_build.add_argument(
+        "--result-schema",
+        type=Path,
+        default=PROJECT_ROOT / "schemas/result.schema.json",
+    )
+    version_build.add_argument(
+        "--schemas-dir", type=Path, default=PROJECT_ROOT / "schemas"
+    )
+    version_build.add_argument("--output", type=Path, required=True)
+    version_validate = subparsers.add_parser(
+        "version-validate", help="validate a complete local bucket version"
+    )
+    version_validate.add_argument("--version", required=True)
+    version_validate.add_argument("--root", type=Path, required=True)
+    version_promote = subparsers.add_parser(
+        "version-promote", help="build a future main tree from a named local version"
+    )
+    version_promote.add_argument("--source-root", type=Path, required=True)
+    version_promote.add_argument("--source-version", required=True)
+    version_promote.add_argument("--output", type=Path, required=True)
+    bucket_plan = subparsers.add_parser(
+        "bucket-plan", help="save a reviewed, prefix-scoped HF Bucket sync plan"
+    )
+    bucket_plan.add_argument("--root", type=Path, required=True)
+    bucket_plan.add_argument("--version", required=True)
+    bucket_plan.add_argument("--bucket", default="open-athena/vepbench")
+    bucket_plan.add_argument("--plan", type=Path, required=True)
+    bucket_plan.add_argument(
+        "--promote-main",
+        action="store_true",
+        help="acknowledge that the plan replaces the protected main version",
+    )
+    bucket_apply = subparsers.add_parser(
+        "bucket-apply", help="apply a reviewed HF Bucket plan and publish its manifest last"
+    )
+    bucket_apply.add_argument("--plan", type=Path, required=True)
+    bucket_apply.add_argument("--confirm-destination", required=True)
+    bucket_apply.add_argument(
+        "--promote-main",
+        action="store_true",
+        help="acknowledge that the plan replaces the protected main version",
     )
     site = subparsers.add_parser(
         "site", help="validate data and build the Observable static explorer"
@@ -210,7 +266,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             timestamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
             model_slug = re.sub(r"[^A-Za-z0-9._-]+", "-", profile_label).strip("-")
             run_id = args.run_id or f"{model_slug}-{timestamp}"
-            output = args.output or PROJECT_ROOT / "results" / f"{run_id}.jsonl"
+            output = args.output or PROJECT_ROOT / ".vepbench/results" / f"{run_id}.jsonl"
             if not args.direct:
                 if args.resume:
                     raise BuildError("--resume requires --direct")
@@ -278,6 +334,68 @@ def main(argv: Sequence[str] | None = None) -> int:
                 f"{summary.output} ({summary.api_errors} API error(s))"
             )
             return 0 if summary.is_complete else 1
+        if args.command == "version-build":
+            manifest = build_version(
+                questions_path=args.questions,
+                results_dir=args.results_dir,
+                result_schema_path=args.result_schema,
+                schemas_dir=args.schemas_dir,
+                output=args.output,
+                version_name=args.version,
+            )
+            print(
+                f"built versions/{args.version} with "
+                f"{manifest['question_set_size']} question(s) and "
+                f"{manifest['artifacts']['runs']['records']} run(s) at {args.output}"
+            )
+            return 0
+        if args.command == "version-validate":
+            manifest = validate_version(args.root, version_name=args.version)
+            print(
+                f"validated versions/{args.version} with "
+                f"{manifest['question_set_size']} question(s) and "
+                f"{manifest['artifacts']['runs']['records']} run(s)"
+            )
+            return 0
+        if args.command == "version-promote":
+            manifest = promote_version(
+                source_root=args.source_root,
+                source_version=args.source_version,
+                output=args.output,
+            )
+            print(
+                f"promoted versions/{args.source_version} into a validated local "
+                f"versions/main tree with {manifest['question_set_size']} question(s) "
+                f"at {args.output}"
+            )
+            return 0
+        if args.command == "bucket-plan":
+            summary = create_bucket_plan(
+                root=args.root,
+                version_name=args.version,
+                bucket_id=args.bucket,
+                plan_path=args.plan,
+                token=require_hf_token(),
+                promote_main=args.promote_main,
+            )
+            print(
+                f"saved plan for {summary.destination}: uploads={summary.uploads}, "
+                f"deletes={summary.deletes}, skips={summary.skips}, "
+                f"upload_bytes={summary.total_size}"
+            )
+            return 0
+        if args.command == "bucket-apply":
+            summary = apply_bucket_plan(
+                plan_path=args.plan,
+                confirm_destination=args.confirm_destination,
+                token=require_hf_token(),
+                promote_main=args.promote_main,
+            )
+            print(
+                f"published and verified {summary.destination}: "
+                f"uploads={summary.uploads}, deletes={summary.deletes}"
+            )
+            return 0
         if args.command == "site":
             if args.output.exists() and any(args.output.iterdir()):
                 raise BuildError(f"refusing to overwrite non-empty site directory {args.output}")
@@ -288,10 +406,6 @@ def main(argv: Sequence[str] | None = None) -> int:
                 project = Path(temporary)
                 source = project / "web"
                 manifest = build_site(
-                    questions_path=PROJECT_ROOT / "benchmark/questions.jsonl",
-                    question_schema_path=PROJECT_ROOT / "schemas/question.schema.json",
-                    results_dir=PROJECT_ROOT / "results",
-                    result_schema_path=PROJECT_ROOT / "schemas/result.schema.json",
                     assets_dir=PROJECT_ROOT / "web",
                     output=source,
                 )
@@ -315,8 +429,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                         f"{completed.returncode}"
                     )
             print(
-                f"built {args.output} with {manifest['questions']['records']} question(s) "
-                f"and {len(manifest['results'])} run(s)"
+                f"built {args.output} against {manifest['data_base_url']}"
             )
             return 0
     except (BuildError, ProviderError, OSError) as exc:

@@ -8,12 +8,8 @@ const markdown = new MarkdownIt({
 });
 
 export {
-  accuracy,
-  formatFailures,
   formatRunLabel,
-  leaderboardRows,
-  runCorrect,
-  scored
+  leaderboardRows
 } from "./benchmark-data.js";
 
 export function formatInteger(value) {
@@ -121,26 +117,24 @@ function choiceText(question, choiceId) {
 }
 
 export function resultOutcome(result) {
+  if (!result) return "Not evaluated";
   if (result.scoring.parse_error !== null) return "Format failure";
   return result.scoring.correct ? "Correct" : "Incorrect";
 }
 
-export function entryForResult(result, index, run) {
+export function entryForAnswer(question, index, result, run, rawArchiveUrl = null) {
   return {
-    question_id: result.question_id,
+    question_id: question.question_id,
     question_label: `Q${String(index + 1).padStart(3, "0")}`,
-    variant: result.question.provenance.source_record_id,
-    answer: choiceText(result.question, result.question.answer_choice_id),
-    prediction: choiceText(result.question, result.scoring.parsed_answer),
+    variant: question.provenance.source_record_id,
+    answer: choiceText(question, question.answer_choice_id),
+    prediction: choiceText(question, result?.scoring.parsed_answer),
     outcome: resultOutcome(result),
-    question: result.question,
+    question,
     result,
-    run
+    run,
+    rawArchiveUrl
   };
-}
-
-export function entriesForRun(run) {
-  return run.records_data.map((result, index) => entryForResult(result, index, run));
 }
 
 export function entriesForQuestions(questions) {
@@ -150,7 +144,7 @@ export function entriesForQuestions(questions) {
     variant: question.provenance.source_record_id,
     answer: choiceText(question, question.answer_choice_id),
     prediction: "—",
-    outcome: "Not evaluated",
+    outcome: "Select to load",
     question,
     result: null,
     run: null
@@ -163,7 +157,7 @@ export function outcomeBadge(value) {
     ? "green"
     : value === "Format failure"
       ? "yellow"
-      : value === "Not evaluated"
+      : value === "Not evaluated" || value === "Select to load"
         ? ""
         : "red";
   if (color) badge.className = color;
@@ -272,6 +266,13 @@ export function questionRecord(entry) {
   );
   if (run) {
     footer.append(" · Run ", element("code", null, run.run_id));
+  }
+  if (entry.rawArchiveUrl) {
+    const archive = element("a", null, "Download complete run archive");
+    archive.href = entry.rawArchiveUrl;
+    archive.rel = "noreferrer";
+    archive.target = "_blank";
+    footer.append(" · ", archive);
   }
   root.append(footer);
   return root;

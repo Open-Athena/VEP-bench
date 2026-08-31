@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://open-athena.github.io/VEPBench/schemas/result.schema.json",
   "title": "VEPBench evaluation result",
-  "description": "One model completion and deterministic score in a results JSONL file.",
+  "description": "One resumable local model completion before publication.",
   "type": "object",
   "additionalProperties": false,
   "required": [

@@ -50,6 +50,14 @@ def test_build_is_byte_identical(tmp_path: Path) -> None:
     assert first_digest == second_digest
     assert first.read_bytes() == second.read_bytes()
     assert first.read_bytes().endswith(b"\n")
+    first_manifest = json.loads((tmp_path / "first.manifest.json").read_text())
+    assert first_manifest == {
+        "bytes": first.stat().st_size,
+        "path": "first.jsonl",
+        "records": 1,
+        "schema_version": "1.0",
+        "sha256": first_digest,
+    }
 
 
 def test_canonical_json_rejects_non_finite_numbers() -> None:
@@ -57,15 +65,22 @@ def test_canonical_json_rejects_non_finite_numbers() -> None:
         canonical_json({"temperature": math.nan})
 
 
-def test_committed_questions_match_builder(tmp_path: Path) -> None:
+def test_production_questions_match_expected_manifest(tmp_path: Path) -> None:
     rebuilt = tmp_path / "questions.jsonl"
     build_file(PRODUCTION_SOURCE, PRODUCTION_TEMPLATE, SCHEMA, rebuilt)
 
-    assert rebuilt.read_bytes() == (ROOT / "benchmark/questions.jsonl").read_bytes()
+    generated_manifest = json.loads((tmp_path / "questions.manifest.json").read_text())
+    expected_manifest = json.loads(
+        (ROOT / "benchmark/expected-manifest.json").read_text()
+    )
+    assert generated_manifest == expected_manifest
 
 
-def test_example_prompt_matches_first_committed_question() -> None:
-    first_question = read_jsonl(ROOT / "benchmark/questions.jsonl")[0]
+def test_example_prompt_matches_first_generated_question() -> None:
+    schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
+    first_question = build_questions(
+        read_jsonl(PRODUCTION_SOURCE), load_template(PRODUCTION_TEMPLATE), schema
+    )[0]
     example = EXAMPLE_PROMPT.read_text(encoding="utf-8")
 
     assert f"\n\n{first_question['prompt']}\n" in example

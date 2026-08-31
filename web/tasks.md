@@ -4,7 +4,7 @@ title: Tasks
 
 # Tasks
 
-Browse benchmark tasks and inspect their committed questions, reference answers, model responses, and exact-match scores.
+Browse benchmark tasks and inspect their published questions, reference answers, model responses, and exact-match scores.
 
 <div class="card">
 
@@ -14,7 +14,7 @@ Predict the most severe consequence assigned by Ensembl VEP from a centered huma
 
 - 190 balanced chromosome 17 SNVs
 - 19 multiple-choice consequence classes
-- Public development questions with committed model responses
+- Public development questions with bucket-published model responses
 
 [Open task →](./tasks/consequence-classification.html)
 

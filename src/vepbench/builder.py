@@ -45,7 +45,11 @@ def sha256_json(value: Any) -> str:
 
 
 def sha256_file(path: str | Path) -> str:
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as source:
+        for chunk in iter(lambda: source.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def read_jsonl(path: str | Path) -> list[dict[str, Any]]:
@@ -191,13 +195,32 @@ def build_file(
     template_path: str | Path,
     schema_path: str | Path,
     output: str | Path,
+    manifest_output: str | Path | None = None,
 ) -> tuple[int, str]:
     source_records = read_jsonl(source)
     template = load_template(template_path)
     schema = json.loads(Path(schema_path).read_text(encoding="utf-8"))
     questions = build_questions(source_records, template, schema)
     write_questions(questions, output)
-    return len(questions), sha256_file(output)
+    output_path = Path(output)
+    digest = sha256_file(output_path)
+    manifest_path = (
+        Path(manifest_output)
+        if manifest_output is not None
+        else output_path.with_name(f"{output_path.stem}.manifest.json")
+    )
+    manifest = {
+        "schema_version": "1.0",
+        "path": output_path.name,
+        "sha256": digest,
+        "bytes": output_path.stat().st_size,
+        "records": len(questions),
+    }
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    manifest_path.write_text(
+        f"{canonical_json(manifest)}\n", encoding="utf-8", newline="\n"
+    )
+    return len(questions), digest
 
 
 def _validate_source_record(record: dict[str, Any], index: int) -> None:
