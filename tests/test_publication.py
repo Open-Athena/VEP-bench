@@ -43,14 +43,10 @@ def test_publication_is_deterministic_and_separates_browser_answers(tmp_path: Pa
     build_synthetic(second)
 
     first_files = {
-        path.relative_to(first): path.read_bytes()
-        for path in first.rglob("*")
-        if path.is_file()
+        path.relative_to(first): path.read_bytes() for path in first.rglob("*") if path.is_file()
     }
     second_files = {
-        path.relative_to(second): path.read_bytes()
-        for path in second.rglob("*")
-        if path.is_file()
+        path.relative_to(second): path.read_bytes() for path in second.rglob("*") if path.is_file()
     }
     assert first_files == second_files
     assert manifest["version_name"] == "candidate"
@@ -95,9 +91,7 @@ def test_publication_streams_result_input_and_raw_validation(
         return original_verify_compressed(root, descriptor, compression)
 
     monkeypatch.setattr(publication_module, "read_jsonl", guarded_read_jsonl)
-    monkeypatch.setattr(
-        publication_module, "_verify_compressed", guarded_verify_compressed
-    )
+    monkeypatch.setattr(publication_module, "_verify_compressed", guarded_verify_compressed)
 
     build_synthetic(tmp_path / "publication")
 
@@ -105,9 +99,7 @@ def test_publication_streams_result_input_and_raw_validation(
 def test_validate_version_rejects_tampered_answer(tmp_path: Path) -> None:
     output = tmp_path / "publication"
     build_synthetic(output)
-    answer_path = next(
-        (output / "versions/candidate/answers/synthetic-demo").glob("*.json.gz")
-    )
+    answer_path = next((output / "versions/candidate/answers/synthetic-demo").glob("*.json.gz"))
     answer = json.loads(gzip.decompress(answer_path.read_bytes()))
     answer["response"]["content"] = "tampered\nFINAL: A"
     answer_path.write_bytes(gzip.compress(f"{canonical_json(answer)}\n".encode(), mtime=0))
@@ -130,9 +122,7 @@ def test_named_version_promotes_to_validated_main(tmp_path: Path) -> None:
     assert manifest["version_name"] == "main"
     assert (main / "versions/main/manifest.json").is_file()
     assert not (main / "versions/candidate").exists()
-    assert (
-        main / "versions/main/questions.jsonl.zst"
-    ).read_bytes() == (
+    assert (main / "versions/main/questions.jsonl.zst").read_bytes() == (
         candidate / "versions/candidate/questions.jsonl.zst"
     ).read_bytes()
 

@@ -157,9 +157,7 @@ def test_direct_evaluation_resumes_a_validated_ordered_prefix(tmp_path: Path) ->
         def __init__(self) -> None:
             self.calls = 0
 
-        def complete(
-            self, request_body: dict[str, Any], api_key: str
-        ) -> dict[str, Any]:
+        def complete(self, request_body: dict[str, Any], api_key: str) -> dict[str, Any]:
             self.calls += 1
             if self.calls == 2:
                 raise KeyboardInterrupt
@@ -178,9 +176,7 @@ def test_direct_evaluation_resumes_a_validated_ordered_prefix(tmp_path: Path) ->
             transport=InterruptAfterOne(),
             now=lambda: FIXED_TIME,
         )
-    assert [row["question_id"] for row in read_jsonl(output)] == [
-        "mc-effect-v1:synthetic-001"
-    ]
+    assert [row["question_id"] for row in read_jsonl(output)] == ["mc-effect-v1:synthetic-001"]
 
     resumed_transport = FakeTransport(raw)
     progress: list[tuple[int, int, int]] = []

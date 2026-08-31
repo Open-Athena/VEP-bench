@@ -6,9 +6,7 @@ from typing import Any
 
 from .builder import BuildError, canonical_json
 
-OFFICIAL_DATA_BASE_URL = (
-    "https://huggingface.co/buckets/open-athena/vepbench/resolve/versions/main"
-)
+OFFICIAL_DATA_BASE_URL = "https://huggingface.co/buckets/open-athena/vepbench/resolve/versions/main"
 
 
 def build_site(

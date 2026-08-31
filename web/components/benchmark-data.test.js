@@ -5,6 +5,7 @@ import test from "node:test";
 import {
   answerPath,
   fetchAnswer,
+  fetchJson,
   groupCurrentRuns,
   leaderboardRows
 } from "./benchmark-data.js";
@@ -84,4 +85,32 @@ test("fetchAnswer downloads and decompresses exactly one gzip object", async () 
   assert.deepEqual(requested, [
     "https://example.test/versions/main/answers/demo-run/task%3Aquestion-1.json.gz"
   ]);
+});
+
+test("fetchJson rejects non-success responses with the status code", async () => {
+  const fetcher = async () => new Response("unavailable", {status: 503});
+
+  await assert.rejects(
+    fetchJson("https://example.test/versions/main/runs.json", fetcher),
+    /HTTP 503/
+  );
+});
+
+test("fetchAnswer rejects unsafe identifiers before making a request", async () => {
+  let requested = false;
+  const fetcher = async () => {
+    requested = true;
+    return new Response();
+  };
+
+  await assert.rejects(
+    fetchAnswer(
+      "https://example.test/versions/main",
+      run({runId: "unsafe/run"}),
+      "task:question-1",
+      fetcher
+    ),
+    /Unsafe run or question ID/
+  );
+  assert.equal(requested, false);
 });

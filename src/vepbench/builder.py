@@ -123,9 +123,7 @@ def build_questions(
         )
         question = {
             "schema_version": QUESTION_SCHEMA_VERSION,
-            "question_id": (
-                f"{template['template_id']}:{source_record['source_record_id']}"
-            ),
+            "question_id": (f"{template['template_id']}:{source_record['source_record_id']}"),
             "task_type": "multiple_choice",
             "prompt": prompt,
             "choices": choices,
@@ -149,17 +147,13 @@ def build_questions(
     question_ids = [question["question_id"] for question in questions]
     if len(question_ids) != len(set(question_ids)):
         duplicates = sorted(
-            question_id
-            for question_id in set(question_ids)
-            if question_ids.count(question_id) > 1
+            question_id for question_id in set(question_ids) if question_ids.count(question_id) > 1
         )
         raise BuildError(f"duplicate generated question IDs: {duplicates}")
     return questions
 
 
-def validate_question(
-    question: Mapping[str, Any], validator: Draft202012Validator
-) -> None:
+def validate_question(question: Mapping[str, Any], validator: Draft202012Validator) -> None:
     errors = sorted(validator.iter_errors(question), key=lambda error: list(error.path))
     if errors:
         details = "; ".join(
@@ -217,9 +211,7 @@ def build_file(
         "records": len(questions),
     }
     manifest_path.parent.mkdir(parents=True, exist_ok=True)
-    manifest_path.write_text(
-        f"{canonical_json(manifest)}\n", encoding="utf-8", newline="\n"
-    )
+    manifest_path.write_text(f"{canonical_json(manifest)}\n", encoding="utf-8", newline="\n")
     return len(questions), digest
 
 
@@ -253,9 +245,7 @@ def _validate_source_record(record: dict[str, Any], index: int) -> None:
             )
 
 
-def _field_error(
-    location: str | Path, missing: set[str], unknown: set[str]
-) -> str:
+def _field_error(location: str | Path, missing: set[str], unknown: set[str]) -> str:
     parts = []
     if missing:
         parts.append(f"missing fields {sorted(missing)}")

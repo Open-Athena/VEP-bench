@@ -49,9 +49,7 @@ def validate_version_name(version_name: str) -> None:
     """Reject names that cannot safely identify one bucket version prefix."""
 
     if not VERSION_NAME.fullmatch(version_name) or version_name in {".", ".."}:
-        raise BuildError(
-            "version name must be a lowercase URL-safe slug of at most 63 characters"
-        )
+        raise BuildError("version name must be a lowercase URL-safe slug of at most 63 characters")
 
 
 def build_version(
@@ -71,15 +69,13 @@ def build_version(
         raise BuildError(f"refusing to overwrite non-empty publication directory {output_dir}")
 
     schema_source = Path(schemas_dir)
-    schema_validators = {
-        name: _load_validator(schema_source / name) for name in SCHEMA_FILES
-    }
+    schema_validators = {name: _load_validator(schema_source / name) for name in SCHEMA_FILES}
     result_validator = _load_validator(result_schema_path)
 
     questions_file = Path(questions_path)
     questions = read_jsonl(questions_file)
     question_validator = schema_validators["question.schema.json"]
-    question_ids = [question.get("question_id") for question in questions]
+    question_ids = [question["question_id"] for question in questions]
     if question_ids != sorted(question_ids):
         raise BuildError(f"{questions_file}: questions must be sorted by question_id")
     if len(question_ids) != len(set(question_ids)):
@@ -97,14 +93,11 @@ def build_version(
     question_set_sha256 = hashlib.sha256(question_set_bytes).hexdigest()
     question_by_id = {question["question_id"]: question for question in questions}
     question_digest = {
-        question_id: sha256_json(question)
-        for question_id, question in question_by_id.items()
+        question_id: sha256_json(question) for question_id, question in question_by_id.items()
     }
 
     output_dir.mkdir(parents=True, exist_ok=True)
-    (output_dir / "README.md").write_text(
-        BUCKET_README, encoding="utf-8", newline="\n"
-    )
+    (output_dir / "README.md").write_text(BUCKET_README, encoding="utf-8", newline="\n")
     published_schemas = output_dir / "schemas"
     published_schemas.mkdir()
     schema_manifest: dict[str, dict[str, Any]] = {}
@@ -124,9 +117,7 @@ def build_version(
     answers_dir.mkdir(parents=True)
     raw_dir.mkdir()
 
-    question_artifact = _write_zstd(
-        version_dir / "questions.jsonl.zst", question_set_bytes
-    )
+    question_artifact = _write_zstd(version_dir / "questions.jsonl.zst", question_set_bytes)
 
     question_index = {
         "schema_version": "1.0",
@@ -137,9 +128,7 @@ def build_version(
             for question in questions
         ],
     }
-    question_index_bytes = _write_json(
-        version_dir / "question-index.json", question_index
-    )
+    question_index_bytes = _write_json(version_dir / "question-index.json", question_index)
 
     run_records: list[dict[str, Any]] = []
     answer_artifacts: list[dict[str, Any]] = []
@@ -211,9 +200,7 @@ def build_version(
             "raw": sorted(raw_artifacts, key=lambda item: item["path"]),
         },
     }
-    manifest_errors = list(
-        schema_validators["manifest.schema.json"].iter_errors(manifest)
-    )
+    manifest_errors = list(schema_validators["manifest.schema.json"].iter_errors(manifest))
     if manifest_errors:
         raise BuildError(_schema_error("manifest", manifest_errors))
     _write_json(version_dir / "manifest.json", manifest)
@@ -228,9 +215,7 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
     root_dir = Path(root)
     if (root_dir / "README.md").read_text(encoding="utf-8") != BUCKET_README:
         raise BuildError("bucket README is missing or does not match the publication contract")
-    validators = {
-        name: _load_validator(root_dir / "schemas" / name) for name in SCHEMA_FILES
-    }
+    validators = {name: _load_validator(root_dir / "schemas" / name) for name in SCHEMA_FILES}
     version_dir = root_dir / "versions" / version_name
     manifest_path = version_dir / "manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -321,10 +306,8 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
                 entry["question_sha256"] = digest
 
     answers_seen: set[tuple[str, str, int]] = set()
-    normalized_answer_state: dict[
-        tuple[str, str, int], tuple[str, Mapping[str, Any] | None]
-    ] = {}
-    per_run_answers: dict[str, int] = {run_id: 0 for run_id in run_by_id}
+    normalized_answer_state: dict[tuple[str, str, int], tuple[str, Mapping[str, Any] | None]] = {}
+    per_run_answers: dict[str, int] = dict.fromkeys(run_by_id, 0)
     per_run_stats = {
         run_id: {"completed": 0, "api_errors": 0, "correct": 0, "format_failures": 0}
         for run_id in run_by_id
@@ -345,15 +328,14 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
         answers_seen.add(key)
         normalized_answer_state[key] = (answer["response"]["status"], answer["error"])
         run = run_by_id.get(answer["run_id"])
-        question = question_by_id.get(answer["question_id"])
-        if run is None or question is None:
+        answer_question = question_by_id.get(answer["question_id"])
+        if run is None or answer_question is None:
             raise BuildError(f"answer {key!r} references an unknown run or question")
-        if answer["question_sha256"] != sha256_json(question):
+        if answer["question_sha256"] != sha256_json(answer_question):
             raise BuildError(f"answer {key!r} has the wrong question digest")
-        _validate_answer_scoring(answer, question)
+        _validate_answer_scoring(answer, answer_question)
         expected_path = (
-            f"versions/{version_name}/answers/{answer['run_id']}/"
-            f"{answer['question_id']}.json.gz"
+            f"versions/{version_name}/answers/{answer['run_id']}/{answer['question_id']}.json.gz"
         )
         if descriptor["path"] != expected_path:
             raise BuildError(f"answer {key!r} is stored at the wrong path")
@@ -366,7 +348,7 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
         stats["format_failures"] += answer["scoring"]["parse_error"] is not None
 
     raw_seen: set[tuple[str, str, int]] = set()
-    per_run_raw: dict[str, int] = {run_id: 0 for run_id in run_by_id}
+    per_run_raw: dict[str, int] = dict.fromkeys(run_by_id, 0)
     for descriptor in manifest["artifacts"]["raw"]:
         archive_run_id: str | None = None
         previous_key: tuple[str, int] | None = None
@@ -406,14 +388,12 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
             if envelope["request"]["body_sha256"] != sha256_json(request_body):
                 raise BuildError(f"raw response {raw_key!r} has the wrong request digest")
             answer_status, answer_error = normalized_answer_state[raw_key]
-            if (
-                envelope["response"]["status"] != answer_status
-                or envelope["error"] != answer_error
-            ):
+            if envelope["response"]["status"] != answer_status or envelope["error"] != answer_error:
                 raise BuildError(f"raw response {raw_key!r} disagrees with its normalized answer")
-            if envelope["response"]["status"] == "completed":
-                if not isinstance(envelope["response"]["raw"], Mapping):
-                    raise BuildError(f"raw response {raw_key!r} is missing its provider payload")
+            if envelope["response"]["status"] == "completed" and not isinstance(
+                envelope["response"]["raw"], Mapping
+            ):
+                raise BuildError(f"raw response {raw_key!r} is missing its provider payload")
 
         if raw_records != descriptor["records"]:
             raise BuildError(f"{descriptor['path']}: raw record count mismatch")
@@ -442,9 +422,7 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
                 and stats["api_errors"] == 0
             ),
         }
-        accuracy = (
-            stats["correct"] / stats["completed"] if stats["completed"] else None
-        )
+        accuracy = stats["correct"] / stats["completed"] if stats["completed"] else None
         expected_metrics = {
             "scored": stats["completed"],
             "correct": stats["correct"],
@@ -529,9 +507,7 @@ def promote_version(
     return validate_version(output_dir, version_name="main")
 
 
-def _validate_answer_scoring(
-    answer: Mapping[str, Any], question: Mapping[str, Any]
-) -> None:
+def _validate_answer_scoring(answer: Mapping[str, Any], question: Mapping[str, Any]) -> None:
     status = answer["response"]["status"]
     if status == "completed":
         expected = score_multiple_choice(
@@ -589,9 +565,7 @@ def _convert_run(
     validate_result(first_record, result_validator)
     run_id = first_record["run_id"]
     model = json.loads(canonical_json(first_record["model"]))
-    generation_parameters = json.loads(
-        canonical_json(first_record["generation_parameters"])
-    )
+    generation_parameters = json.loads(canonical_json(first_record["generation_parameters"]))
     model_json = canonical_json(model)
     parameters_json = canonical_json(generation_parameters)
     evaluation_profile = ",".join(
@@ -624,7 +598,7 @@ def _convert_run(
     raw_path = version_dir / "raw" / f"{run_id}.jsonl.zst"
     raw_content_digest = hashlib.sha256()
     raw_content_bytes = 0
-    with raw_path.open("wb") as raw_file:
+    with raw_path.open("wb") as raw_file:  # noqa: SIM117 - writer depends on raw_file
         with zstandard.ZstdCompressor(level=ZSTD_LEVEL).stream_writer(
             raw_file, closefd=False
         ) as raw_writer:
@@ -664,9 +638,7 @@ def _convert_run(
                 correct += record["scoring"]["correct"] is True
                 format_failures += record["scoring"]["parse_error"] is not None
                 evaluated_at = record["evaluated_at"]
-                started_at = (
-                    evaluated_at if started_at is None else min(started_at, evaluated_at)
-                )
+                started_at = evaluated_at if started_at is None else min(started_at, evaluated_at)
                 completed_at = (
                     evaluated_at if completed_at is None else max(completed_at, evaluated_at)
                 )
@@ -805,9 +777,7 @@ def _iter_jsonl_file(path: Path) -> Iterator[dict[str, Any]]:
                 except (UnicodeDecodeError, json.JSONDecodeError) as exc:
                     raise BuildError(f"{path}:{line_number}: invalid JSON") from exc
                 if not isinstance(value, dict):
-                    raise BuildError(
-                        f"{path}:{line_number}: each record must be an object"
-                    )
+                    raise BuildError(f"{path}:{line_number}: each record must be an object")
                 yield value
     except OSError as exc:
         raise BuildError(f"cannot read result file {path}: {exc}") from exc
@@ -857,9 +827,8 @@ def _verify_plain(path: Path, descriptor: Mapping[str, Any]) -> bytes:
     digest = hashlib.sha256(payload).hexdigest()
     if digest != descriptor["artifact_sha256"] or len(payload) != descriptor["artifact_bytes"]:
         raise BuildError(f"{path}: artifact digest or size mismatch")
-    if (
-        digest != descriptor.get("content_sha256")
-        or len(payload) != descriptor.get("content_bytes")
+    if digest != descriptor.get("content_sha256") or len(payload) != descriptor.get(
+        "content_bytes"
     ):
         raise BuildError(f"{path}: content digest or size mismatch")
     return payload
@@ -890,23 +859,20 @@ def _iter_compressed_jsonl(
                 if compression == "gzip"
                 else zstandard.ZstdDecompressor().stream_reader(compressed)
             )
-            with reader:
-                with io.BufferedReader(reader) as buffered:
-                    for line_number, raw_line in enumerate(buffered, start=1):
-                        content_digest.update(raw_line)
-                        content_bytes += len(raw_line)
-                        if not raw_line.endswith(b"\n"):
-                            raise BuildError(f"{path}: JSONL must end with LF")
-                        try:
-                            text = raw_line[:-1].decode("utf-8")
-                            value = json.loads(text)
-                        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-                            raise BuildError(f"{path}:{line_number}: invalid JSON") from exc
-                        if not isinstance(value, dict) or canonical_json(value) != text:
-                            raise BuildError(
-                                f"{path}:{line_number}: record is not canonical JSON"
-                            )
-                        yield value
+            with reader, io.BufferedReader(reader) as buffered:
+                for line_number, raw_line in enumerate(buffered, start=1):
+                    content_digest.update(raw_line)
+                    content_bytes += len(raw_line)
+                    if not raw_line.endswith(b"\n"):
+                        raise BuildError(f"{path}: JSONL must end with LF")
+                    try:
+                        text = raw_line[:-1].decode("utf-8")
+                        value = json.loads(text)
+                    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+                        raise BuildError(f"{path}:{line_number}: invalid JSON") from exc
+                    if not isinstance(value, dict) or canonical_json(value) != text:
+                        raise BuildError(f"{path}:{line_number}: record is not canonical JSON")
+                    yield value
     except (gzip.BadGzipFile, zstandard.ZstdError, EOFError, OSError) as exc:
         raise BuildError(f"{path}: invalid {compression} data") from exc
 
@@ -917,9 +883,7 @@ def _iter_compressed_jsonl(
         raise BuildError(f"{path}: decompressed content digest or size mismatch")
 
 
-def _verify_compressed(
-    root: Path, descriptor: Mapping[str, Any], compression: str
-) -> bytes:
+def _verify_compressed(root: Path, descriptor: Mapping[str, Any], compression: str) -> bytes:
     path = root / descriptor["path"]
     payload = path.read_bytes()
     if (

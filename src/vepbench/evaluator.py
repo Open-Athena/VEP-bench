@@ -71,7 +71,7 @@ class OpenRouterTransport:
         except urllib.error.HTTPError as exc:
             try:
                 payload = exc.read()
-            except (TimeoutError, http.client.HTTPException, OSError):
+            except TimeoutError, http.client.HTTPException, OSError:
                 payload = b""
             raw = _decode_json_object(payload)
             message = _provider_error_message(raw) or f"OpenRouter returned HTTP {exc.code}"
@@ -201,9 +201,7 @@ def evaluate_file(
         raise BuildError(f"{questions_file}: duplicate question IDs")
     result_schema = json.loads(Path(result_schema_path).read_text(encoding="utf-8"))
     Draft202012Validator.check_schema(result_schema)
-    result_validator = Draft202012Validator(
-        result_schema, format_checker=FormatChecker()
-    )
+    result_validator = Draft202012Validator(result_schema, format_checker=FormatChecker())
 
     output_path = Path(output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -214,22 +212,22 @@ def evaluate_file(
     clock = now or (lambda: datetime.now(UTC))
     timer = monotonic or time.monotonic
     question_set_sha256 = sha256_file(questions_file)
-    existing = _validated_resume_prefix(
-        output_path=output_path,
-        questions=questions,
-        result_validator=result_validator,
-        run_id=run_id,
-        model_id=model_id,
-        generation_parameters=resolved_parameters,
-        question_set_sha256=question_set_sha256,
-    ) if resume else []
-    completed = sum(
-        result["response"]["status"] == "completed" for result in existing
+    existing = (
+        _validated_resume_prefix(
+            output_path=output_path,
+            questions=questions,
+            result_validator=result_validator,
+            run_id=run_id,
+            model_id=model_id,
+            generation_parameters=resolved_parameters,
+            question_set_sha256=question_set_sha256,
+        )
+        if resume
+        else []
     )
-    api_errors = sum(
-        result["response"]["status"] == "api_error" for result in existing
-    )
-    pending_questions = questions[len(existing):]
+    completed = sum(result["response"]["status"] == "completed" for result in existing)
+    api_errors = sum(result["response"]["status"] == "api_error" for result in existing)
+    pending_questions = questions[len(existing) :]
     if progress is not None and existing:
         progress(len(existing), len(questions), api_errors)
 
@@ -271,21 +269,21 @@ def evaluate_file(
             return result, True
 
     mode = "a" if output_path.exists() else "x"
-    with output_path.open(mode, encoding="utf-8", newline="\n") as output_file:
-        with ThreadPoolExecutor(max_workers=concurrency) as executor:
-            evaluated = executor.map(
-                evaluate_question, pending_questions, buffersize=concurrency
-            )
-            for result, api_error in evaluated:
-                if api_error:
-                    api_errors += 1
-                else:
-                    completed += 1
-                validate_result(result, result_validator)
-                output_file.write(f"{canonical_json(result)}\n")
-                output_file.flush()
-                if progress is not None:
-                    progress(completed + api_errors, len(questions), api_errors)
+    with (
+        output_path.open(mode, encoding="utf-8", newline="\n") as output_file,
+        ThreadPoolExecutor(max_workers=concurrency) as executor,
+    ):
+        evaluated = executor.map(evaluate_question, pending_questions, buffersize=concurrency)
+        for result, api_error in evaluated:
+            if api_error:
+                api_errors += 1
+            else:
+                completed += 1
+            validate_result(result, result_validator)
+            output_file.write(f"{canonical_json(result)}\n")
+            output_file.flush()
+            if progress is not None:
+                progress(completed + api_errors, len(questions), api_errors)
 
     return EvaluationSummary(run_id, output_path, completed, api_errors)
 
@@ -306,9 +304,7 @@ def _validated_resume_prefix(
         return []
     records = read_jsonl(output_path)
     if len(records) > len(questions):
-        raise BuildError(
-            f"cannot resume {output_path}: result count exceeds question count"
-        )
+        raise BuildError(f"cannot resume {output_path}: result count exceeds question count")
     for index, result in enumerate(records):
         validate_result(result, result_validator)
         question = questions[index]
@@ -334,9 +330,7 @@ def _validated_resume_prefix(
     return records
 
 
-def validate_result(
-    result: Mapping[str, Any], validator: Draft202012Validator
-) -> None:
+def validate_result(result: Mapping[str, Any], validator: Draft202012Validator) -> None:
     """Validate a result record, including invariants JSON Schema cannot express."""
 
     errors = sorted(validator.iter_errors(result), key=lambda error: list(error.path))
@@ -423,9 +417,7 @@ def completed_result(
         raise ProviderError("OpenRouter response content is not a string", raw_response=raw)
     finish_reason = choice.get("finish_reason")
     if finish_reason is not None and not isinstance(finish_reason, str):
-        raise ProviderError(
-            "OpenRouter response finish_reason is not a string", raw_response=raw
-        )
+        raise ProviderError("OpenRouter response finish_reason is not a string", raw_response=raw)
     score = score_multiple_choice(
         content,
         {choice["choice_id"] for choice in question["choices"]},
@@ -621,7 +613,7 @@ def _extract_provider(raw: Mapping[str, Any]) -> str | None:
 def _decode_json_object(payload: bytes) -> dict[str, Any] | None:
     try:
         value = json.loads(payload.decode("utf-8"))
-    except (UnicodeDecodeError, json.JSONDecodeError):
+    except UnicodeDecodeError, json.JSONDecodeError:
         return None
     return value if isinstance(value, dict) else None
 

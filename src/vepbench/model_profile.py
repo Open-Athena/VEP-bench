@@ -47,8 +47,7 @@ def load_model_profile(path: str | Path) -> ModelProfile:
         raise BuildError(f"{source_path}: unknown profile field(s): {sorted(unknown)}")
     if raw["schema_version"] != "1.0":
         raise BuildError(
-            f"{source_path}: unsupported model profile schema_version "
-            f"{raw['schema_version']!r}"
+            f"{source_path}: unsupported model profile schema_version {raw['schema_version']!r}"
         )
 
     label = raw["label"]

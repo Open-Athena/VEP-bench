@@ -15,10 +15,11 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
       - name: Check out repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Install uv
         uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
@@ -30,7 +31,7 @@ jobs:
         run: uv sync --locked --group dev
 
       - name: Install Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: "24"
           cache: npm
@@ -38,14 +39,28 @@ jobs:
       - name: Install Observable Framework
         run: npm ci
 
-      - name: Run offline tests
-        run: uv run --locked pytest
+      - name: Run Python tests with coverage
+        run: >-
+          uv run --locked pytest
+          --cov=vepbench
+          --cov-fail-under=72
+          --cov-report=term-missing:skip-covered
+          --cov-report=xml
 
       - name: Test explorer data logic
         run: npm test
 
       - name: Lint Python
         run: uv run --locked ruff check .
+
+      - name: Check Python formatting
+        run: uv run --locked ruff format --check .
+
+      - name: Type-check Python
+        run: uv run --locked mypy
+
+      - name: Run pre-commit hooks
+        run: uv run --locked pre-commit run --all-files
 
       - name: Verify generated benchmark artifacts
         run: |
@@ -60,32 +75,36 @@ jobs:
         run: bash scripts/browser_qa.sh _site browser-qa
 
       - name: Upload explorer preview
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: vepbench-explorer
           path: _site
+          retention-days: 7
 
       - name: Upload browser QA
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: vepbench-browser-qa
           path: browser-qa
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Configure Pages
         if: github.event_name != 'pull_request'
-        uses: actions/configure-pages@v6
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
 
       - name: Upload Pages artifact
         if: github.event_name != 'pull_request'
-        uses: actions/upload-pages-artifact@v5
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         with:
           path: _site
 
   deploy:
     if: github.event_name != 'pull_request'
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     permissions:
       pages: write
       id-token: write
@@ -95,4 +114,4 @@ jobs:
     steps:
       - name: Deploy Pages
         id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5

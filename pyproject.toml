@@ -23,8 +23,13 @@ prepare = [
 ]
 dev = [
     { include-group = "prepare" },
+    "mypy>=1.18,<2",
+    "pre-commit>=4.3,<5",
     "pytest>=8.3,<10",
+    "pytest-cov>=7,<8",
     "ruff>=0.16.5",
+    "types-jsonschema>=4.25,<5",
+    "types-pyyaml>=6.0.12,<7",
 ]
 
 [build-system]
@@ -32,7 +37,7 @@ requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"
 
 [tool.pytest.ini_options]
-addopts = "-q"
+addopts = "-q --strict-config --strict-markers"
 testpaths = ["tests"]
 
 [tool.ruff]
@@ -40,4 +45,30 @@ target-version = "py314"
 line-length = 100
 
 [tool.ruff.lint]
-select = ["B", "E", "F", "I", "UP"]
+select = ["B", "C4", "E", "F", "I", "RUF", "SIM", "UP"]
+
+[tool.mypy]
+python_version = "3.14"
+files = ["src/vepbench"]
+check_untyped_defs = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+pretty = true
+show_error_codes = true
+strict_equality = true
+warn_redundant_casts = true
+warn_unreachable = true
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+module = ["fsspec", "fsspec.*", "pyfaidx", "pyfaidx.*"]
+ignore_missing_imports = true
+
+[tool.coverage.run]
+branch = true
+source = ["vepbench"]
+
+[tool.coverage.report]
+fail_under = 72
+show_missing = true
+skip_covered = true

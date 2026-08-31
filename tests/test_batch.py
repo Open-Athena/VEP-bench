@@ -79,9 +79,7 @@ class StateObservingTransport(FakeBatchTransport):
 
 class MixedCompletedBatchTransport(FakeBatchTransport):
     def retrieve(self, batch_id: str, api_key: str) -> dict[str, Any]:
-        custom_ids = [
-            request["custom_id"] for request in self.requests[0][0]["requests"]
-        ]
+        custom_ids = [request["custom_id"] for request in self.requests[0][0]["requests"]]
         valid = CompletedBatchTransport().retrieve(batch_id, api_key)["results"][0]
         valid["custom_id"] = custom_ids[0]
         valid["id"] = custom_ids[0]
@@ -111,9 +109,7 @@ def _three_question_file(tmp_path: Path) -> Path:
     third["provenance"]["source_record_id"] = "synthetic-003"
     output = tmp_path / "three-questions.jsonl"
     output.write_text(
-        "".join(
-            f"{canonical_json(question)}\n" for question in [first, second, third]
-        ),
+        "".join(f"{canonical_json(question)}\n" for question in [first, second, third]),
         encoding="utf-8",
         newline="\n",
     )
