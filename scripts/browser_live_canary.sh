@@ -52,9 +52,9 @@ done
 for file in leaderboard.dom.html task.dom.html question.dom.html; do
   for pattern in \
     'observablehq--error' \
-    'Published data unavailable' \
-    'Response unavailable' \
-    'No complete evaluation runs available'
+    'observablehq--block"><div class="note" label="Published data unavailable"' \
+    'observablehq--block"><div class="note" label="Response unavailable"' \
+    '>No complete evaluation runs available</option>'
   do
     if grep -q "$pattern" "$output_dir/$file"; then
       echo "unexpected live explorer state in $file: $pattern" >&2
