@@ -2,7 +2,7 @@ import gzip
 import json
 from pathlib import Path
 
-from scripts.prepare_browser_qa_fixture import prepare_fixture
+from vepbench.browser_qa import prepare_fixture
 from vepbench.publication import validate_version
 
 ROOT = Path(__file__).resolve().parents[1]
