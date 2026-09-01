@@ -1,0 +1,10 @@
+# Medium-reasoning GPT-5.6 Sol comparison. Submit through OpenRouter's Batch
+# API to use the batch route while keeping the canonical base model ID here.
+schema_version: "1.0"
+label: gpt-5.6-sol-medium
+model: openai/gpt-5.6-sol
+generation:
+  seed: 20260829
+  reasoning:
+    effort: medium
+    exclude: false

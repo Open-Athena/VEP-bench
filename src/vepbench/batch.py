@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import http.client
 import json
+import math
 import os
 import tempfile
 import urllib.error
@@ -29,6 +30,7 @@ from .evaluator import (
     ProviderError,
     completed_result,
     error_result,
+    validate_batch_usage_allocations,
     validate_generation_parameters,
     validate_result,
     validate_run_id,
@@ -138,6 +140,8 @@ def submit_batch_file(
     model_id: str,
     api_key: str,
     generation_parameters: Mapping[str, Any],
+    batch_offset: int = 0,
+    batch_size: int | None = None,
     transport: BatchTransport | None = None,
     now: datetime | None = None,
 ) -> BatchSubmissionSummary:
@@ -146,6 +150,10 @@ def submit_batch_file(
     validate_run_id(run_id)
     if not model_id:
         raise BuildError("model_id must be non-empty")
+    if batch_offset < 0:
+        raise BuildError("batch_offset must be non-negative")
+    if batch_size is not None and batch_size < 1:
+        raise BuildError("batch_size must be positive")
     validate_generation_parameters(generation_parameters)
     resolved_parameters = json.loads(canonical_json(dict(generation_parameters)))
 
@@ -161,6 +169,12 @@ def submit_batch_file(
         raise BuildError(f"{questions_file}: questions must be sorted by question_id")
     if len(question_ids) != len(set(question_ids)):
         raise BuildError(f"{questions_file}: duplicate question IDs")
+    submitted_questions = questions[
+        batch_offset : None if batch_size is None else batch_offset + batch_size
+    ]
+    if not submitted_questions:
+        raise BuildError("batch selection contains no questions")
+    submitted_question_ids = [question["question_id"] for question in submitted_questions]
 
     state_file = Path(state_path)
     if state_file.exists():
@@ -178,7 +192,7 @@ def submit_batch_file(
                 **resolved_parameters,
             },
         }
-        for question in questions
+        for question in submitted_questions
     ]
     request_body = {
         "endpoint": "/v1/chat/completions",
@@ -198,6 +212,7 @@ def submit_batch_file(
         "question_set_sha256": sha256_file(questions_file),
         "question_set_size": len(questions),
         "question_ids": question_ids,
+        "submitted_question_ids": submitted_question_ids,
         "result_output": str(output_file),
         "raw_submission": None,
     }
@@ -328,6 +343,22 @@ def collect_batch_file(
         raise BuildError(f"{state_file}: question-set digest does not match {questions_file}")
     if len(questions) != state.get("question_set_size"):
         raise BuildError(f"{state_file}: question-set size does not match {questions_file}")
+    submitted_question_ids = state.get("submitted_question_ids", question_ids)
+    if (
+        not isinstance(submitted_question_ids, list)
+        or not submitted_question_ids
+        or any(not isinstance(question_id, str) for question_id in submitted_question_ids)
+        or len(submitted_question_ids) != len(set(submitted_question_ids))
+    ):
+        raise BuildError(f"{state_file}: invalid submitted question IDs")
+    submitted_id_set = set(submitted_question_ids)
+    if [question_id for question_id in question_ids if question_id in submitted_id_set] != (
+        submitted_question_ids
+    ):
+        raise BuildError(f"{state_file}: submitted question IDs do not match the question set")
+    submitted_questions = [
+        question for question in questions if question["question_id"] in submitted_id_set
+    ]
 
     result_schema = json.loads(Path(result_schema_path).read_text(encoding="utf-8"))
     Draft202012Validator.check_schema(result_schema)
@@ -342,8 +373,14 @@ def collect_batch_file(
         if custom_id in batch_items:
             raise BuildError(f"{state_file}: duplicate batch result {custom_id!r}")
         batch_items[custom_id] = item
-    if set(batch_items) != set(question_ids):
+    if set(batch_items) != submitted_id_set:
         raise BuildError(f"{state_file}: batch results do not match submitted question IDs")
+    batch_usage_allocations = _allocate_batch_usage(
+        raw_batch,
+        status.batch_id,
+        submitted_question_ids,
+        batch_items,
+    )
 
     run_id = state.get("run_id")
     model_id = state.get("model_id")
@@ -372,7 +409,7 @@ def collect_batch_file(
             delete=False,
         ) as output_file:
             temporary_path = Path(output_file.name)
-            for question in questions:
+            for question in submitted_questions:
                 item = batch_items[question["question_id"]]
                 response = item.get("response")
                 body = response.get("body") if isinstance(response, Mapping) else None
@@ -430,6 +467,11 @@ def collect_batch_file(
                         latency_seconds=None,
                     )
                     api_errors += 1
+                allocation = batch_usage_allocations.get(question["question_id"])
+                if allocation is not None:
+                    usage = dict(result["usage"])
+                    usage.update(allocation)
+                    result["usage"] = usage
                 validate_result(result, result_validator)
                 output_file.write(f"{canonical_json(result)}\n")
             output_file.flush()
@@ -443,6 +485,193 @@ def collect_batch_file(
         if temporary_path is not None:
             temporary_path.unlink(missing_ok=True)
     return EvaluationSummary(run_id, output_path, completed, api_errors)
+
+
+def merge_batch_result_files(
+    *,
+    result_paths: list[str | Path],
+    questions_path: str | Path,
+    question_schema_path: str | Path,
+    result_schema_path: str | Path,
+    output: str | Path,
+) -> EvaluationSummary:
+    """Merge complete batch chunks into one canonical full-set result file."""
+
+    if not result_paths:
+        raise BuildError("at least one batch result file is required")
+    output_path = Path(output)
+    if output_path.exists():
+        raise BuildError(f"refusing to overwrite existing run file {output_path}")
+
+    questions_file = Path(questions_path)
+    questions = read_jsonl(questions_file)
+    question_schema = json.loads(Path(question_schema_path).read_text(encoding="utf-8"))
+    Draft202012Validator.check_schema(question_schema)
+    question_validator = Draft202012Validator(question_schema)
+    for question in questions:
+        validate_question(question, question_validator)
+    question_ids = [question["question_id"] for question in questions]
+    if question_ids != sorted(question_ids):
+        raise BuildError(f"{questions_file}: questions must be sorted by question_id")
+    if len(question_ids) != len(set(question_ids)):
+        raise BuildError(f"{questions_file}: duplicate question IDs")
+    question_by_id = {question["question_id"]: question for question in questions}
+    question_set_sha256 = sha256_file(questions_file)
+
+    result_schema = json.loads(Path(result_schema_path).read_text(encoding="utf-8"))
+    Draft202012Validator.check_schema(result_schema)
+    result_validator = Draft202012Validator(result_schema, format_checker=FormatChecker())
+    records_by_id: dict[str, dict[str, Any]] = {}
+    run_identity: dict[str, Any] | None = None
+    for result_path in result_paths:
+        for result in read_jsonl(Path(result_path)):
+            validate_result(result, result_validator)
+            question_id = result["question_id"]
+            if question_id in records_by_id:
+                raise BuildError(f"duplicate batch result {question_id!r}")
+            if (
+                question_id not in question_by_id
+                or result["question"] != question_by_id[question_id]
+            ):
+                raise BuildError(f"{question_id}: result does not match {questions_file}")
+            if result["question_set_sha256"] != question_set_sha256 or result[
+                "question_set_size"
+            ] != len(questions):
+                raise BuildError(f"{question_id}: result is not pinned to the full question set")
+            identity = {
+                "run_id": result["run_id"],
+                "model": result["model"],
+                "generation_parameters": result["generation_parameters"],
+                "question_set_sha256": result["question_set_sha256"],
+                "question_set_size": result["question_set_size"],
+            }
+            if run_identity is None:
+                run_identity = identity
+            elif identity != run_identity:
+                raise BuildError("batch result chunks do not share one run identity")
+            records_by_id[question_id] = result
+
+    if set(records_by_id) != set(question_ids):
+        missing = sorted(set(question_ids) - set(records_by_id))
+        extra = sorted(set(records_by_id) - set(question_ids))
+        raise BuildError(
+            f"batch result chunks do not cover the question set (missing={missing}, extra={extra})"
+        )
+    if run_identity is None:
+        raise BuildError("batch result files contain no records")
+    validate_batch_usage_allocations(records_by_id.values(), context="batch result chunks")
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    temporary_path: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            newline="\n",
+            dir=output_path.parent,
+            prefix=f".{output_path.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as output_file:
+            temporary_path = Path(output_file.name)
+            for question_id in question_ids:
+                output_file.write(f"{canonical_json(records_by_id[question_id])}\n")
+            output_file.flush()
+            os.fsync(output_file.fileno())
+        try:
+            os.link(temporary_path, output_path)
+        except FileExistsError as exc:
+            raise BuildError(f"refusing to overwrite existing run file {output_path}") from exc
+        _fsync_directory(output_path.parent)
+    finally:
+        if temporary_path is not None:
+            temporary_path.unlink(missing_ok=True)
+
+    completed = sum(
+        result["response"]["status"] == "completed" for result in records_by_id.values()
+    )
+    return EvaluationSummary(
+        run_identity["run_id"], output_path, completed, len(records_by_id) - completed
+    )
+
+
+def _allocate_batch_usage(
+    raw_batch: Mapping[str, Any],
+    batch_id: str,
+    submitted_question_ids: list[str],
+    batch_items: Mapping[str, Mapping[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    """Allocate a provider batch total while retaining its receipt and provenance."""
+
+    batch_usage = raw_batch.get("usage")
+    if not isinstance(batch_usage, Mapping):
+        return {}
+    raw_cost = batch_usage.get("cost")
+    if (
+        isinstance(raw_cost, bool)
+        or not isinstance(raw_cost, int | float)
+        or not math.isfinite(raw_cost)
+        or raw_cost < 0
+    ):
+        return {}
+    batch_cost = float(raw_cost)
+
+    token_weights: list[int] = []
+    complete_weights = True
+    for question_id in submitted_question_ids:
+        item = batch_items[question_id]
+        response = item.get("response")
+        body = response.get("body") if isinstance(response, Mapping) else None
+        usage = body.get("usage") if isinstance(body, Mapping) else None
+        weight = _usage_total_tokens(usage)
+        if weight is None or weight <= 0:
+            complete_weights = False
+        token_weights.append(0 if weight is None else weight)
+
+    allocation_method = "proportional_total_tokens" if complete_weights else "equal"
+    weights = token_weights if complete_weights else [1] * len(submitted_question_ids)
+    weight_total = math.fsum(weights)
+    allocations: dict[str, float] = {}
+    allocated: list[float] = []
+    for question_id, weight in zip(submitted_question_ids[:-1], weights[:-1], strict=True):
+        item_cost = batch_cost * weight / weight_total
+        allocations[question_id] = item_cost
+        allocated.append(item_cost)
+    allocations[submitted_question_ids[-1]] = batch_cost - math.fsum(allocated)
+    receipt = json.loads(canonical_json(dict(batch_usage)))
+    return {
+        question_id: {
+            "cost": allocations[question_id],
+            "vepbench": {
+                "batch_id": batch_id,
+                "batch_question_ids": submitted_question_ids,
+                "batch_usage": receipt,
+                "cost_allocation": allocation_method,
+                "cost_source": "allocated_batch_total",
+            },
+        }
+        for question_id in submitted_question_ids
+    }
+
+
+def _usage_total_tokens(usage: Any) -> int | None:
+    if not isinstance(usage, Mapping):
+        return None
+    total_tokens = usage.get("total_tokens")
+    if not isinstance(total_tokens, bool) and isinstance(total_tokens, int):
+        return total_tokens if total_tokens >= 0 else None
+    prompt_tokens = usage.get("prompt_tokens")
+    completion_tokens = usage.get("completion_tokens")
+    if (
+        isinstance(prompt_tokens, bool)
+        or not isinstance(prompt_tokens, int)
+        or prompt_tokens < 0
+        or isinstance(completion_tokens, bool)
+        or not isinstance(completion_tokens, int)
+        or completion_tokens < 0
+    ):
+        return None
+    return prompt_tokens + completion_tokens
 
 
 def _write_new_json(path: Path, value: Mapping[str, Any]) -> None:

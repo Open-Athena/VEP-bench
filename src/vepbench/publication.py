@@ -24,7 +24,11 @@ from .builder import (
     sha256_json,
     validate_question,
 )
-from .evaluator import score_multiple_choice, validate_result
+from .evaluator import (
+    score_multiple_choice,
+    validate_batch_usage_allocations,
+    validate_result,
+)
 
 VERSION_NAME = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,62})?$")
 SCHEMA_FILES = (
@@ -354,7 +358,11 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
                 entry["question_sha256"] = digest
 
     answers_seen: set[tuple[str, str, int]] = set()
-    normalized_answer_state: dict[tuple[str, str, int], tuple[str, Mapping[str, Any] | None]] = {}
+    normalized_answer_state: dict[
+        tuple[str, str, int],
+        tuple[str, Mapping[str, Any] | None, Mapping[str, Any]],
+    ] = {}
+    answer_usage_records: list[dict[str, Any]] = []
     expected_outcomes: dict[tuple[str, str], bool | None] = {}
     per_run_answers: dict[str, int] = dict.fromkeys(run_by_id, 0)
     per_run_stats: dict[str, dict[str, Any]] = {
@@ -384,7 +392,18 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
         if answer["completion_index"] != 0:
             raise BuildError(f"answer {key!r} is not the single canonical completion")
         answers_seen.add(key)
-        normalized_answer_state[key] = (answer["response"]["status"], answer["error"])
+        normalized_answer_state[key] = (
+            answer["response"]["status"],
+            answer["error"],
+            answer["usage"],
+        )
+        answer_usage_records.append(
+            {
+                "run_id": answer["run_id"],
+                "question_id": answer["question_id"],
+                "usage": answer["usage"],
+            }
+        )
         expected_outcomes[(answer["run_id"], answer["question_id"])] = answer["scoring"]["correct"]
         run = run_by_id.get(answer["run_id"])
         answer_question = question_by_id.get(answer["question_id"])
@@ -414,6 +433,10 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
             stats["cost_values"].append(usage_cost)
         else:
             stats["cost_complete"] = False
+
+    validate_batch_usage_allocations(
+        answer_usage_records, context=f"versions/{version_name} answers"
+    )
 
     outcome_runs_seen: set[str] = set()
     for descriptor in manifest["artifacts"].get("outcomes", []):
@@ -521,8 +544,12 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
             }
             if envelope["request"]["body_sha256"] != sha256_json(request_body):
                 raise BuildError(f"raw response {raw_key!r} has the wrong request digest")
-            answer_status, answer_error = normalized_answer_state[raw_key]
-            if envelope["response"]["status"] != answer_status or envelope["error"] != answer_error:
+            answer_status, answer_error, answer_usage = normalized_answer_state[raw_key]
+            if (
+                envelope["response"]["status"] != answer_status
+                or envelope["error"] != answer_error
+                or ("usage" in envelope and envelope["usage"] != answer_usage)
+            ):
                 raise BuildError(f"raw response {raw_key!r} disagrees with its normalized answer")
             if envelope["response"]["status"] == "completed" and not isinstance(
                 envelope["response"]["raw"], Mapping
@@ -754,6 +781,7 @@ def _convert_run(
     cost_values: list[float] = []
     tokens_complete = True
     cost_complete = True
+    usage_records: list[dict[str, Any]] = []
     record_count = 0
     started_at: str | None = None
     completed_at: str | None = None
@@ -811,6 +839,13 @@ def _convert_run(
                     cost_values.append(usage_cost)
                 else:
                     cost_complete = False
+                usage_records.append(
+                    {
+                        "run_id": run_id,
+                        "question_id": question_id,
+                        "usage": record["usage"],
+                    }
+                )
                 evaluated_at = record["evaluated_at"]
                 started_at = evaluated_at if started_at is None else min(started_at, evaluated_at)
                 completed_at = (
@@ -883,6 +918,7 @@ def _convert_run(
                         "status": status,
                         "raw": record["response"]["raw"],
                     },
+                    "usage": record["usage"],
                     "error": record["error"],
                 }
                 raw_errors = list(raw_validator.iter_errors(envelope))
@@ -892,6 +928,8 @@ def _convert_run(
                 raw_writer.write(envelope_bytes)
                 raw_content_digest.update(envelope_bytes)
                 raw_content_bytes += len(envelope_bytes)
+
+    validate_batch_usage_allocations(usage_records, context=str(result_file))
 
     outcome_document = {
         "schema_version": "1.0",

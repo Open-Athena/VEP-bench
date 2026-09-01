@@ -64,6 +64,7 @@ def test_publication_is_deterministic_and_separates_browser_answers(tmp_path: Pa
         raw_payload = io.BufferedReader(reader).read()
     envelope = json.loads(raw_payload)
     assert envelope["response"]["raw"]["id"] == "synthetic-generation"
+    assert envelope["usage"] == answer["usage"]
     assert "question" not in envelope
     assert "scoring" not in envelope
     assert set(envelope["request"]) == {"body_sha256"}
@@ -85,6 +86,38 @@ def test_publication_is_deterministic_and_separates_browser_answers(tmp_path: Pa
         {"question_id": "mc-effect-v1:synthetic-001", "correct": True}
     ]
     assert manifest["artifacts"]["outcomes"][0]["records"] == 1
+
+
+def test_validate_version_accepts_legacy_raw_archive_without_usage(tmp_path: Path) -> None:
+    output = tmp_path / "publication"
+    build_synthetic(output)
+    version = output / "versions/candidate"
+    manifest_path = version / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    raw_descriptor = manifest["artifacts"]["raw"][0]
+    raw_path = output / raw_descriptor["path"]
+    with zstandard.ZstdDecompressor().stream_reader(raw_path.open("rb")) as reader:
+        envelopes = [json.loads(line) for line in io.BufferedReader(reader) if line.strip()]
+    for envelope in envelopes:
+        envelope.pop("usage")
+    raw_content = "".join(f"{canonical_json(envelope)}\n" for envelope in envelopes).encode()
+    legacy_raw_descriptor = {
+        "path": raw_descriptor["path"],
+        "records": len(envelopes),
+        **publication_module._write_zstd(raw_path, raw_content),
+    }
+
+    runs_path = version / "runs.json"
+    runs = json.loads(runs_path.read_text(encoding="utf-8"))
+    runs["runs"][0]["raw_archive"] = legacy_raw_descriptor
+    runs_content = publication_module._write_json(runs_path, runs)
+    manifest["artifacts"]["raw"][0] = legacy_raw_descriptor
+    manifest["artifacts"]["runs"] = publication_module._plain_artifact(
+        "versions/candidate/runs.json", runs_content, 1
+    )
+    publication_module._write_json(manifest_path, manifest)
+
+    validate_version(output, version_name="candidate")
 
 
 def test_usage_totals_normalizes_gateway_usage() -> None:
@@ -220,6 +253,39 @@ def test_publication_rejects_result_from_another_question_set(tmp_path: Path) ->
     )
 
     with pytest.raises(BuildError, match="does not match the published question set"):
+        build_version(
+            questions_path=QUESTIONS,
+            results_dir=results,
+            result_schema_path=RESULT_SCHEMA,
+            schemas_dir=SCHEMAS,
+            output=tmp_path / "publication",
+            version_name="candidate",
+        )
+
+
+def test_publication_rejects_incomplete_batch_cost_allocation(tmp_path: Path) -> None:
+    results = tmp_path / "results"
+    results.mkdir()
+    record = deepcopy(json.loads((RESULTS / "synthetic-demo.jsonl").read_text()))
+    record["usage"] = {
+        **record["usage"],
+        "cost": 0.125,
+        "vepbench": {
+            "batch_id": "batch-incomplete",
+            "batch_question_ids": [
+                "mc-effect-v1:synthetic-001",
+                "mc-effect-v1:synthetic-002",
+            ],
+            "batch_usage": {"cost": 0.125},
+            "cost_allocation": "equal",
+            "cost_source": "allocated_batch_total",
+        },
+    }
+    (results / "incomplete-allocation.jsonl").write_text(
+        f"{canonical_json(record)}\n", encoding="utf-8", newline="\n"
+    )
+
+    with pytest.raises(BuildError, match="allocations do not cover its recorded members"):
         build_version(
             questions_path=QUESTIONS,
             results_dir=results,
