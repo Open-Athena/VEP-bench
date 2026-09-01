@@ -4,6 +4,7 @@ title: Leaderboard
 
 ```js
 import {
+  leaderboardLineChart,
   leaderboardRows,
   leaderboardTable
 } from "./components/vepbench.js";
@@ -26,4 +27,12 @@ if (runsState.error) {
 
 <div class="card">
   ${leaderboardTable(rows)}
+</div>
+
+## Score by cost and token usage
+
+Each line connects evaluated configurations from the same model family. Use the selector to compare exact-match score with total run cost or total token usage.
+
+<div class="card">
+  ${leaderboardLineChart(rows)}
 </div>

@@ -20,7 +20,7 @@ task source + prompt template
  local resumable result JSONL
             |
             v
- validated publication version
+ validated publication version <--- model catalog
             |
             v
  Hugging Face Storage Bucket + static explorer
@@ -111,15 +111,21 @@ the original run.
 
 Local result JSONL is a resumable staging format. Publication validates and
 deduplicates it into run metadata, compact browser answers, and complete raw
-response archives. Question and raw-run archives are deterministic zstd JSONL;
-browser answers are deterministic gzip JSON objects. A manifest records
-compressed and decompressed sizes and digests.
+response archives. It also aggregates provider-reported token usage and USD
+cost into each run and joins versioned model-family and release-date metadata
+from `configs/models/catalog.json`. Model catalog fields are display metadata
+and do not affect configuration identity. Question and raw-run archives are
+deterministic zstd JSONL; browser answers are deterministic gzip JSON objects.
+A manifest records compressed and decompressed sizes and digests.
 
 A model configuration key includes model and upstream-provider identity, all
 generation parameters, and the prompt and task identity. The official version
 accepts only complete runs without API errors and at most one run for each
 configuration key. Publication processes result and raw-response data as
 streams so memory use does not grow with the total amount of model reasoning.
+
+The leaderboard line chart connects configurations within each published model
+family and can compare exact-match score against total cost or total tokens.
 
 Only `versions/main/` in the public bucket is official. Named lowercase-slug
 versions are reviewable release candidates or disposable experiments. The

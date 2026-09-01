@@ -7,6 +7,7 @@ import {
   fetchAnswer,
   fetchJson,
   groupCurrentRuns,
+  leaderboardLineSeries,
   leaderboardRows
 } from "./benchmark-data.js";
 
@@ -16,7 +17,12 @@ function run({
   completedAt = "2026-08-31T00:00:00Z",
   configurationKey = `cfg-${"0".repeat(64)}`,
   effort = "medium",
-  runId = "test-run"
+  family = "Test family",
+  modelId = "test/model",
+  releaseDate = "2026-07-09",
+  runId = "test-run",
+  tokens = 1200,
+  cost = 0.25
 } = {}) {
   return {
     answer_prefix: `answers/${runId}/`,
@@ -24,9 +30,16 @@ function run({
     configuration_key: configurationKey,
     coverage: {complete},
     generation_parameters: {reasoning: {effort}},
-    metrics: {accuracy, format_failures: 0},
+    metrics: {
+      accuracy,
+      format_failures: 0,
+      total_tokens: tokens,
+      total_cost_usd: cost
+    },
     model: {
-      model_id: "test/model",
+      model_id: modelId,
+      family,
+      release_date: releaseDate,
       upstream_provider: "Test provider"
     },
     run_id: runId
@@ -44,6 +57,54 @@ test("leaderboard keeps the latest complete run per model configuration", () => 
   assert.equal(rows[0].run.run_id, "new");
   assert.equal(rows[0].accuracy, 0.8);
   assert.equal(rows[0].model_cell.model, "model (medium)");
+  assert.equal(rows[0].family, "Test family");
+  assert.equal(rows[0].release_date, "2026-07-09");
+  assert.equal(rows[0].tokens, 1200);
+  assert.equal(rows[0].cost, 0.25);
+});
+
+test("line chart data groups model families and sorts points by the selected metric", () => {
+  const rows = leaderboardRows([
+    run({
+      accuracy: 0.8,
+      configurationKey: `cfg-${"1".repeat(64)}`,
+      cost: 2,
+      effort: "high",
+      runId: "family-a-high",
+      tokens: 200
+    }),
+    run({
+      accuracy: 0.6,
+      configurationKey: `cfg-${"2".repeat(64)}`,
+      cost: 1,
+      effort: "low",
+      modelId: "test/model-v2",
+      runId: "family-a-low",
+      tokens: 100
+    }),
+    run({
+      accuracy: 0.7,
+      configurationKey: `cfg-${"3".repeat(64)}`,
+      cost: 1.5,
+      family: "Another family",
+      modelId: "test/another",
+      runId: "family-b",
+      tokens: null
+    })
+  ]);
+
+  const costSeries = leaderboardLineSeries(rows, "cost");
+  assert.deepEqual(costSeries.map((series) => series.family), [
+    "Another family",
+    "Test family"
+  ]);
+  assert.deepEqual(
+    costSeries[1].points.map((point) => point.x),
+    [1, 2]
+  );
+  const tokenSeries = leaderboardLineSeries(rows, "tokens");
+  assert.deepEqual(tokenSeries.map((series) => series.family), ["Test family"]);
+  assert.throws(() => leaderboardLineSeries(rows, "release_date"), /Unknown/);
 });
 
 test("question explorer exposes only complete runs", () => {

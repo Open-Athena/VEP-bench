@@ -52,7 +52,12 @@ def test_browser_qa_fixture_is_complete_and_offline(tmp_path: Path, config_relat
     config = json.loads(config_path.read_text(encoding="utf-8"))
     assert config["data_base_url"] == base_url
     runs = json.loads((output / "versions/main/runs.json").read_text(encoding="utf-8"))
-    assert runs["runs"][0]["coverage"]["complete"] is True
+    run = runs["runs"][0]
+    assert run["coverage"]["complete"] is True
+    assert run["model"]["family"] == "Synthetic browser QA"
+    assert run["model"]["release_date"] == "2026-08-01"
+    assert run["metrics"]["total_tokens"] == 112
+    assert run["metrics"]["total_cost_usd"] == 0
     answer_path = next((output / "versions/main/answers/browser-qa").glob("*.json.gz"))
     answer = json.loads(gzip.decompress(answer_path.read_bytes()))
     assert answer["scoring"] == {

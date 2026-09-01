@@ -7,6 +7,10 @@ function modelName(modelId, generationParameters) {
   return effort ? `${displayName} (${effort})` : displayName;
 }
 
+function nonnegativeNumber(value) {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : null;
+}
+
 export function formatRunLabel(run) {
   const model = modelName(run?.model?.model_id ?? "unknown model", run?.generation_parameters);
   const provider = run?.model?.upstream_provider ?? "provider not reported";
@@ -24,20 +28,56 @@ export function leaderboardRows(runs) {
     }
   }
   return [...latestByConfiguration.values()]
-    .map((run) => ({
-      run,
-      model_cell: {
-        model: modelName(run.model.model_id, run.generation_parameters),
-        provider: run.model.upstream_provider ?? "not reported"
-      },
-      accuracy: run.metrics.accuracy,
-      format_failures: run.metrics.format_failures
-    }))
+    .map((run) => {
+      const family = run.model.family ?? modelName(run.model.model_id);
+      return {
+        run,
+        model_cell: {
+          model: modelName(run.model.model_id, run.generation_parameters),
+          provider: run.model.upstream_provider ?? "not reported"
+        },
+        family,
+        family_id: family,
+        release_date: run.model.release_date ?? null,
+        tokens: nonnegativeNumber(run.metrics.total_tokens),
+        cost: nonnegativeNumber(run.metrics.total_cost_usd),
+        accuracy: nonnegativeNumber(run.metrics.accuracy),
+        format_failures: run.metrics.format_failures
+      };
+    })
     .sort((a, b) =>
       (b.accuracy ?? -1) - (a.accuracy ?? -1)
       || a.model_cell.model.localeCompare(b.model_cell.model)
       || a.model_cell.provider.localeCompare(b.model_cell.provider)
     );
+}
+
+export function leaderboardLineSeries(rows, metric) {
+  if (metric !== "cost" && metric !== "tokens") {
+    throw new Error(`Unknown leaderboard line metric ${metric}`);
+  }
+  const byFamily = new Map();
+  for (const row of rows) {
+    const x = nonnegativeNumber(row[metric]);
+    const accuracy = nonnegativeNumber(row.accuracy);
+    if (x === null || accuracy === null) continue;
+    let series = byFamily.get(row.family_id);
+    if (!series) {
+      series = {family_id: row.family_id, family: row.family, points: []};
+      byFamily.set(row.family_id, series);
+    }
+    series.points.push({x, accuracy, row});
+  }
+  return [...byFamily.values()]
+    .map((series) => ({
+      ...series,
+      points: series.points.toSorted((a, b) =>
+        a.x - b.x
+        || a.accuracy - b.accuracy
+        || a.row.model_cell.model.localeCompare(b.row.model_cell.model)
+      )
+    }))
+    .sort((a, b) => a.family.localeCompare(b.family));
 }
 
 export function groupCurrentRuns(runs) {

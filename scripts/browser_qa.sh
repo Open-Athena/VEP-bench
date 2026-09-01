@@ -39,10 +39,20 @@ uv run --project "$project_root" --locked python -m http.server "$port" \
   >"$output_dir/server.log" 2>&1 &
 server_pid=$!
 
-curl --fail --retry 10 --retry-connrefused --retry-delay 1 \
+curl --fail --retry 20 --retry-all-errors --retry-connrefused --retry-delay 1 \
   "http://127.0.0.1:$port/index.html" >/dev/null
 
-chrome=$(command -v google-chrome || command -v chromium || command -v chromium-browser)
+chrome=$(
+  command -v google-chrome \
+    || command -v chromium \
+    || command -v chromium-browser \
+    || command -v chrome-headless-shell \
+    || true
+)
+if [[ -z "$chrome" ]]; then
+  echo "browser QA requires google-chrome, chromium, chromium-browser, or chrome-headless-shell on PATH" >&2
+  exit 1
+fi
 common=(
   --headless
   --no-sandbox
@@ -68,7 +78,12 @@ status=0
 for check in \
   'leaderboard.dom.html|>Leaderboard<' \
   'leaderboard.dom.html|>Model<' \
+  'leaderboard.dom.html|>Release date<' \
+  'leaderboard.dom.html|>Tokens<' \
+  'leaderboard.dom.html|>Cost<' \
   'leaderboard.dom.html|>Score<' \
+  'leaderboard.dom.html|Score by cost and token usage' \
+  'leaderboard.dom.html|Score versus Total cost' \
   'leaderboard.dom.html|https://github.com/Open-Athena/VEPBench' \
   'leaderboard.dom.html|View source' \
   'tasks.dom.html|Browse benchmark tasks' \
@@ -91,6 +106,17 @@ do
     status=1
   fi
 done
+
+header_order=$(
+  { grep -o '<strong role="columnheader"[^>]*>[^<]*</strong>' "$output_dir/leaderboard.dom.html" || true; } \
+    | head -5 \
+    | sed -E 's/<[^>]+>//g' \
+    | paste -sd '|' -
+)
+if [[ "$header_order" != 'Model|Score|Release date|Tokens|Cost' ]]; then
+  echo "unexpected leaderboard column order: $header_order" >&2
+  status=1
+fi
 
 if grep -q '>Correct<' "$output_dir/leaderboard.dom.html"; then
   echo "unexpected Correct column in leaderboard.dom.html" >&2

@@ -105,11 +105,27 @@ def prepare_fixture(
             concurrency=8,
         )
         candidate = work / "candidate"
+        model_catalog = work / "model-catalog.json"
+        catalog_document = {
+            "schema_version": "1.0",
+            "models": {
+                "synthetic/browser-qa": {
+                    "family": "Synthetic browser QA",
+                    "release_date": "2026-08-01",
+                }
+            },
+        }
+        model_catalog.write_text(
+            f"{canonical_json(catalog_document)}\n",
+            encoding="utf-8",
+            newline="\n",
+        )
         build_version(
             questions_path=questions_path,
             results_dir=results,
             result_schema_path=PROJECT_ROOT / "schemas/result.schema.json",
             schemas_dir=PROJECT_ROOT / "schemas",
+            model_catalog_path=model_catalog,
             output=candidate,
             version_name="browser-qa",
         )

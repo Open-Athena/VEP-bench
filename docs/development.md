@@ -56,6 +56,23 @@ expected manifest, compiles the explorer, and performs browser smoke QA with
 fake evaluation data. A separate scheduled and post-deployment canary checks
 that the live explorer can read the official bucket version.
 
+## Browser smoke QA
+
+The browser smoke test requires one of `google-chrome`, `chromium`,
+`chromium-browser`, or `chrome-headless-shell` on `PATH`. Confirm the browser is
+discoverable before running it:
+
+```bash
+command -v chromium || command -v chrome-headless-shell
+bash scripts/browser_qa.sh _site browser-qa
+```
+
+On a user-managed VM, keep reusable browser binaries under a persistent path
+such as `~/.local/share/vepbench/browsers/` and expose the selected executable
+through `~/.local/bin`, which is normally on `PATH`. Do not rely on a browser
+installation under `/tmp` because temporary files are not a stable project
+dependency.
+
 ## Artifact policy
 
 Compact prepared task sources and their manifests are committed when they are
