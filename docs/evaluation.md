@@ -55,8 +55,8 @@ marks the cost as an allocated batch total and retains the batch ID, allocation
 method, submitted question IDs, and complete provider usage receipt under
 `usage.vepbench`. Merge and publication validation require every recorded batch
 member to be present with identical provenance and require the allocated costs
-to sum to the receipt. Publication carries that provenance into both normalized
-answers and raw-response envelopes.
+to reconcile to the receipt within one floating-point ULP. Publication carries
+that provenance into both normalized answers and raw-response envelopes.
 
 Some providers reserve the theoretical maximum completion cost when a batch is
 submitted. If that reservation exceeds the available balance, submit bounded

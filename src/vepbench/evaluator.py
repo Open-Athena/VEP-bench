@@ -459,7 +459,13 @@ def validate_batch_usage_allocations(records: Iterable[Mapping[str, Any]], *, co
             )
         allocated_total = math.fsum(cost for _, cost, _ in allocated)
         receipt_total = float(reference["batch_usage"]["cost"])
-        if allocated_total != receipt_total:
+        rounding_tolerance = max(math.ulp(allocated_total), math.ulp(receipt_total))
+        if not math.isclose(
+            allocated_total,
+            receipt_total,
+            rel_tol=0.0,
+            abs_tol=rounding_tolerance,
+        ):
             raise BuildError(
                 f"{context}: batch {batch_id!r} allocations do not sum to its receipt "
                 f"for run {run_id!r}"

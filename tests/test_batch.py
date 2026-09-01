@@ -1,4 +1,5 @@
 import json
+import math
 from copy import deepcopy
 from datetime import UTC, datetime
 from pathlib import Path
@@ -7,12 +8,14 @@ from typing import Any
 import pytest
 
 from vepbench.batch import (
+    _allocate_batch_usage,
     collect_batch_file,
     merge_batch_result_files,
     refresh_batch_state,
     submit_batch_file,
 )
 from vepbench.builder import BuildError, canonical_json, read_jsonl
+from vepbench.evaluator import validate_batch_usage_allocations
 
 ROOT = Path(__file__).resolve().parents[1]
 QUESTIONS = ROOT / "tests/fixtures/synthetic-questions.jsonl"
@@ -504,3 +507,29 @@ def test_collect_batch_records_cost_when_every_request_failed(tmp_path: Path) ->
     assert result["response"]["status"] == "api_error"
     assert result["usage"]["cost"] == 0.002
     assert result["usage"]["vepbench"]["cost_allocation"] == "equal"
+
+
+def test_batch_allocation_accepts_one_ulp_rounding_difference() -> None:
+    question_ids = ["question-a", "question-b"]
+    items = {
+        question_id: {"response": {"body": {"usage": {"total_tokens": total_tokens}}}}
+        for question_id, total_tokens in zip(question_ids, (5612, 6426), strict=True)
+    }
+    receipt_cost = 0.984714
+    allocations = _allocate_batch_usage(
+        {"usage": {"cost": receipt_cost}},
+        "batch-rounding",
+        question_ids,
+        items,
+    )
+    records = [
+        {
+            "run_id": "rounding-run",
+            "question_id": question_id,
+            "usage": allocation,
+        }
+        for question_id, allocation in allocations.items()
+    ]
+
+    assert math.fsum(record["usage"]["cost"] for record in records) != receipt_cost
+    validate_batch_usage_allocations(records, context="rounding regression")
