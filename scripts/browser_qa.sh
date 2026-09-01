@@ -4,7 +4,7 @@ set -euo pipefail
 
 site_dir=${1:?usage: browser_qa.sh SITE_DIR OUTPUT_DIR}
 output_dir=${2:?usage: browser_qa.sh SITE_DIR OUTPUT_DIR}
-port=4173
+port=${VEPBENCH_BROWSER_QA_PORT:-4173}
 project_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 qa_root=$(mktemp -d)
 server_pid=
@@ -93,11 +93,15 @@ for check in \
   'task.dom.html|questions match the current filters' \
   'question.dom.html|>Questions<' \
   'question.dom.html|browser-qa' \
+  'question.dom.html|>Result<' \
+  'question.dom.html|>All results</option>' \
+  'question.dom.html|>Correct</option>' \
+  'question.dom.html|>Incorrect</option>' \
   'question.dom.html|Reference answer: C13' \
   'question.dom.html|Parsed prediction: C17' \
   'question.dom.html|>Incorrect<' \
   'question.dom.html|>Reasoning<' \
-  'question.dom.html|href="http://127.0.0.1:4173/publication/versions/main/raw/browser-qa.jsonl.zst"'
+  "question.dom.html|href=\"http://127.0.0.1:$port/publication/versions/main/raw/browser-qa.jsonl.zst\""
 do
   file=${check%%|*}
   pattern=${check#*|}
@@ -198,6 +202,9 @@ done
 "$chrome" "${common[@]}" --window-size=1440,1600 \
   --screenshot="$output_dir/task-desktop.png" \
   "http://127.0.0.1:$port/tasks/consequence-classification.html"
+"$chrome" "${common[@]}" --window-size=1440,1600 \
+  --screenshot="$output_dir/question-desktop.png" \
+  "http://127.0.0.1:$port/questions.html?question=vep-most-severe-v1%3A17%3A38786886%3AA%3AT&run=browser-qa"
 "$chrome" "${common[@]}" --window-size=390,844 \
   --screenshot="$output_dir/task-mobile.png" \
   "http://127.0.0.1:$port/tasks/consequence-classification.html"

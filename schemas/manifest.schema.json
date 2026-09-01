@@ -31,6 +31,7 @@
         "runs": {"$ref": "#/$defs/artifact"},
         "question_index": {"$ref": "#/$defs/artifact"},
         "answers": {"type": "array", "items": {"$ref": "#/$defs/artifact"}},
+        "outcomes": {"type": "array", "items": {"$ref": "#/$defs/artifact"}},
         "raw": {"type": "array", "items": {"$ref": "#/$defs/artifact"}}
       }
     }

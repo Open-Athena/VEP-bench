@@ -110,9 +110,10 @@ the original run.
 ## Publication and explorer
 
 Local result JSONL is a resumable staging format. Publication validates and
-deduplicates it into run metadata, compact browser answers, and complete raw
-response archives. It also aggregates provider-reported token usage and USD
-cost into each run and joins versioned model-family and release-date metadata
+deduplicates it into run metadata, compact per-run outcome indexes, browser
+answers, and complete raw response archives. It also aggregates
+provider-reported token usage and USD cost into each run and joins versioned
+model-family and release-date metadata
 from `configs/models/catalog.json`. Model catalog fields are display metadata
 and do not affect configuration identity. Question and raw-run archives are
 deterministic zstd JSONL; browser answers are deterministic gzip JSON objects.

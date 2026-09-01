@@ -107,13 +107,47 @@ export function answerPath(run, questionId) {
   return `${run.answer_prefix}${encodeURIComponent(questionId)}.json.gz`;
 }
 
-export async function fetchAnswer(baseUrl, run, questionId, fetcher = fetch) {
-  const url = artifactUrl(baseUrl, answerPath(run, questionId));
+export function outcomeIndexPath(run) {
+  if (!SAFE_ID.test(run.run_id)) throw new Error("Unsafe run ID");
+  const expected = `outcomes/${run.run_id}.json.gz`;
+  if (run.outcome_index_path !== expected) {
+    throw new Error("Run outcome index path does not match its ID");
+  }
+  return expected;
+}
+
+async function fetchGzipJson(url, label, fetcher) {
   const response = await fetcher(url);
-  if (!response.ok) throw new Error(`Unable to load answer: HTTP ${response.status}`);
+  if (!response.ok) throw new Error(`Unable to load ${label}: HTTP ${response.status}`);
   if (typeof DecompressionStream !== "function") {
     throw new Error("This browser does not support gzip decompression");
   }
   const decompressed = response.body.pipeThrough(new DecompressionStream("gzip"));
   return new Response(decompressed).json();
+}
+
+export async function fetchAnswer(baseUrl, run, questionId, fetcher = fetch) {
+  return fetchGzipJson(
+    artifactUrl(baseUrl, answerPath(run, questionId)),
+    "answer",
+    fetcher
+  );
+}
+
+export async function fetchOutcomeIndex(baseUrl, run, fetcher = fetch) {
+  const document = await fetchGzipJson(
+    artifactUrl(baseUrl, outcomeIndexPath(run)),
+    "outcome index",
+    fetcher
+  );
+  if (
+    document?.schema_version !== "1.0"
+    || document.run_id !== run.run_id
+    || document.question_set_sha256 !== run.question_set_sha256
+    || document.question_set_size !== run.question_set_size
+    || !Array.isArray(document.outcomes)
+  ) {
+    throw new Error("Outcome index does not match its run");
+  }
+  return document;
 }

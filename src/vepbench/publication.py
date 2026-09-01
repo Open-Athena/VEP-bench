@@ -155,8 +155,10 @@ def build_version(
 
     version_dir = output_dir / "versions" / version_name
     answers_dir = version_dir / "answers"
+    outcomes_dir = version_dir / "outcomes"
     raw_dir = version_dir / "raw"
     answers_dir.mkdir(parents=True)
+    outcomes_dir.mkdir()
     raw_dir.mkdir()
 
     question_artifact = _write_zstd(version_dir / "questions.jsonl.zst", question_set_bytes)
@@ -174,6 +176,7 @@ def build_version(
 
     run_records: list[dict[str, Any]] = []
     answer_artifacts: list[dict[str, Any]] = []
+    outcome_artifacts: list[dict[str, Any]] = []
     raw_artifacts: list[dict[str, Any]] = []
     configuration_keys: set[str] = set()
     seen_run_ids: set[str] = set()
@@ -204,6 +207,7 @@ def build_version(
             configuration_keys.add(configuration_key)
             run_records.append(run["record"])
             answer_artifacts.extend(run["answers"])
+            outcome_artifacts.append(run["outcomes"])
             raw_artifacts.append(run["raw"])
 
     run_records.sort(key=lambda run: run["run_id"])
@@ -240,6 +244,7 @@ def build_version(
                 len(questions),
             ),
             "answers": sorted(answer_artifacts, key=lambda item: item["path"]),
+            "outcomes": sorted(outcome_artifacts, key=lambda item: item["path"]),
             "raw": sorted(raw_artifacts, key=lambda item: item["path"]),
         },
     }
@@ -350,6 +355,7 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
 
     answers_seen: set[tuple[str, str, int]] = set()
     normalized_answer_state: dict[tuple[str, str, int], tuple[str, Mapping[str, Any] | None]] = {}
+    expected_outcomes: dict[tuple[str, str], bool | None] = {}
     per_run_answers: dict[str, int] = dict.fromkeys(run_by_id, 0)
     per_run_stats: dict[str, dict[str, Any]] = {
         run_id: {
@@ -379,6 +385,7 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
             raise BuildError(f"answer {key!r} is not the single canonical completion")
         answers_seen.add(key)
         normalized_answer_state[key] = (answer["response"]["status"], answer["error"])
+        expected_outcomes[(answer["run_id"], answer["question_id"])] = answer["scoring"]["correct"]
         run = run_by_id.get(answer["run_id"])
         answer_question = question_by_id.get(answer["question_id"])
         if run is None or answer_question is None:
@@ -407,6 +414,72 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
             stats["cost_values"].append(usage_cost)
         else:
             stats["cost_complete"] = False
+
+    outcome_runs_seen: set[str] = set()
+    for descriptor in manifest["artifacts"].get("outcomes", []):
+        outcome_bytes = _verify_compressed(root_dir, descriptor, "gzip")
+        outcome_index = json.loads(outcome_bytes)
+        if (
+            not isinstance(outcome_index, dict)
+            or set(outcome_index)
+            != {
+                "schema_version",
+                "run_id",
+                "question_set_sha256",
+                "question_set_size",
+                "outcomes",
+            }
+            or outcome_index["schema_version"] != "1.0"
+        ):
+            raise BuildError(f"{descriptor['path']}: invalid outcome index")
+        run_id = outcome_index["run_id"]
+        run = run_by_id.get(run_id)
+        if run is None or run_id in outcome_runs_seen:
+            raise BuildError(f"{descriptor['path']}: outcome index has an unknown or duplicate run")
+        outcome_runs_seen.add(run_id)
+        expected_relative_path = f"outcomes/{run_id}.json.gz"
+        expected_path = f"versions/{version_name}/{expected_relative_path}"
+        if (
+            descriptor["path"] != expected_path
+            or run.get("outcome_index_path") != expected_relative_path
+        ):
+            raise BuildError(f"{descriptor['path']}: outcome index is stored at the wrong path")
+        if (
+            outcome_index["question_set_sha256"] != manifest["question_set_sha256"]
+            or outcome_index["question_set_size"] != manifest["question_set_size"]
+        ):
+            raise BuildError(f"{descriptor['path']}: outcome index has the wrong question set")
+        outcomes = outcome_index["outcomes"]
+        if not isinstance(outcomes, list) or len(outcomes) != descriptor["records"]:
+            raise BuildError(f"{descriptor['path']}: outcome record count mismatch")
+        question_ids_for_run = sorted(
+            question_id
+            for candidate_run_id, question_id in expected_outcomes
+            if candidate_run_id == run_id
+        )
+        if [row.get("question_id") for row in outcomes if isinstance(row, dict)] != (
+            question_ids_for_run
+        ) or len(outcomes) != len(question_ids_for_run):
+            raise BuildError(f"{descriptor['path']}: outcomes do not match run answers")
+        for row in outcomes:
+            if (
+                not isinstance(row, dict)
+                or set(row) != {"question_id", "correct"}
+                or (row["correct"] is not None and not isinstance(row["correct"], bool))
+            ):
+                raise BuildError(f"{descriptor['path']}: invalid outcome record")
+            outcome_key = (run_id, row["question_id"])
+            if (
+                outcome_key not in expected_outcomes
+                or expected_outcomes[outcome_key] != row["correct"]
+            ):
+                raise BuildError(f"{descriptor['path']}: outcome disagrees with its answer")
+
+    runs_with_outcome_paths = {
+        run_id for run_id, run in run_by_id.items() if "outcome_index_path" in run
+    }
+    if outcome_runs_seen != runs_with_outcome_paths:
+        raise BuildError("run outcome indexes do not match run metadata")
 
     raw_seen: set[tuple[str, str, int]] = set()
     per_run_raw: dict[str, int] = dict.fromkeys(run_by_id, 0)
@@ -517,6 +590,7 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
             manifest["artifacts"]["runs"],
             manifest["artifacts"]["question_index"],
             *manifest["artifacts"]["answers"],
+            *manifest["artifacts"].get("outcomes", []),
             *manifest["artifacts"]["raw"],
         )
     }
@@ -562,6 +636,7 @@ def promote_version(
         artifacts["runs"],
         artifacts["question_index"],
         *artifacts["answers"],
+        *artifacts.get("outcomes", []),
         *artifacts["raw"],
     ]
     for descriptor in descriptors:
@@ -673,6 +748,7 @@ def _convert_run(
             )
         published_model.update(model_metadata)
     answer_descriptors: list[dict[str, Any]] = []
+    outcome_rows: list[dict[str, Any]] = []
     completed = api_errors = correct = format_failures = 0
     token_values: list[int] = []
     cost_values: list[float] = []
@@ -775,6 +851,12 @@ def _convert_run(
                         **artifact,
                     }
                 )
+                outcome_rows.append(
+                    {
+                        "question_id": question_id,
+                        "correct": record["scoring"]["correct"],
+                    }
+                )
 
                 envelope = {
                     "schema_version": "1.0",
@@ -811,6 +893,20 @@ def _convert_run(
                 raw_content_digest.update(envelope_bytes)
                 raw_content_bytes += len(envelope_bytes)
 
+    outcome_document = {
+        "schema_version": "1.0",
+        "run_id": run_id,
+        "question_set_sha256": question_set_sha256,
+        "question_set_size": question_set_size,
+        "outcomes": outcome_rows,
+    }
+    outcome_path = version_dir / "outcomes" / f"{run_id}.json.gz"
+    outcome_bytes = f"{canonical_json(outcome_document)}\n".encode()
+    outcome_artifact = {
+        "path": str(outcome_path.relative_to(version_dir.parent.parent)),
+        "records": len(outcome_rows),
+        **_write_gzip(outcome_path, outcome_bytes),
+    }
     raw_artifact = {
         "path": str(raw_path.relative_to(version_dir.parent.parent)),
         "records": record_count,
@@ -851,6 +947,7 @@ def _convert_run(
             "total_cost_usd": total_cost_usd,
         },
         "answer_prefix": f"answers/{run_id}/",
+        "outcome_index_path": f"outcomes/{run_id}.json.gz",
         "raw_archive": {
             key: raw_artifact[key]
             for key in (
@@ -863,7 +960,12 @@ def _convert_run(
             )
         },
     }
-    return {"record": run_record, "answers": answer_descriptors, "raw": raw_artifact}
+    return {
+        "record": run_record,
+        "answers": answer_descriptors,
+        "outcomes": outcome_artifact,
+        "raw": raw_artifact,
+    }
 
 
 def _usage_totals(usage: Mapping[str, Any]) -> tuple[int | None, float | None]:
