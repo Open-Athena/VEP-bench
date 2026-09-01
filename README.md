@@ -29,7 +29,7 @@ training-data contamination.
 
 | Task | Model input | Target | Questions |
 | --- | --- | --- | ---: |
-| [Ensembl VEP most-severe consequence](docs/tasks/vep-most-severe-consequence.md) | A centered GRCh38 sequence window and SNV alleles | Ensembl VEP consequence class | 190 |
+| [Ensembl VEP most-severe consequence](docs/tasks/vep-most-severe-consequence.md) | A centered GRCh38 sequence window and SNV alleles | Ensembl VEP consequence class | 51 |
 
 Each task has its own versioned sources, prompt, methodology, limitations, and
 results. Task details live under [`docs/tasks/`](docs/tasks/README.md) so new

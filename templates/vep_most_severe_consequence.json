@@ -1,5 +1,5 @@
 {
   "template_id": "vep-most-severe-v1",
-  "template_version": "1.1",
-  "prompt": "Predict the Ensembl VEP most severe consequence for the SNV using only the local sequence context below.\n\n**Reference genome:** human GRCh38\n**VEP version:** release 109.1\n**VEP flags:** `--most_severe --distance 1000`\n\n{variant}\n\n{question}\n\nChoices:\n{choices}\n\nYou may explain your reasoning.\n\nYour final line must contain only the word `FINAL`, a colon, a space, and the choice ID.\nExample: `FINAL: C07`\nDo not include the consequence name, a period, or any other text on that line."
+  "template_version": "1.2",
+  "prompt": "Predict the Ensembl VEP most severe consequence for the SNV using only the local sequence context below.\n\n**Reference genome:** human GRCh38\n**VEP version:** release 109.1\n**VEP flags:** `--most_severe --distance 1000`\n\n**FASTA formatting:** Sequence lines contain 80 bases except the final line.\n\n{variant}\n\n{question}\n\nChoices:\n{choices}\n\nYou may explain your reasoning.\n\nYour final line must contain only the word `FINAL`, a colon, a space, and the choice ID.\nExample: `FINAL: C07`\nDo not include the consequence name, a period, or any other text on that line."
 }
