@@ -354,7 +354,10 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
                 entry["question_sha256"] = digest
 
     answers_seen: set[tuple[str, str, int]] = set()
-    normalized_answer_state: dict[tuple[str, str, int], tuple[str, Mapping[str, Any] | None]] = {}
+    normalized_answer_state: dict[
+        tuple[str, str, int],
+        tuple[str, Mapping[str, Any] | None, Mapping[str, Any]],
+    ] = {}
     expected_outcomes: dict[tuple[str, str], bool | None] = {}
     per_run_answers: dict[str, int] = dict.fromkeys(run_by_id, 0)
     per_run_stats: dict[str, dict[str, Any]] = {
@@ -384,7 +387,11 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
         if answer["completion_index"] != 0:
             raise BuildError(f"answer {key!r} is not the single canonical completion")
         answers_seen.add(key)
-        normalized_answer_state[key] = (answer["response"]["status"], answer["error"])
+        normalized_answer_state[key] = (
+            answer["response"]["status"],
+            answer["error"],
+            answer["usage"],
+        )
         expected_outcomes[(answer["run_id"], answer["question_id"])] = answer["scoring"]["correct"]
         run = run_by_id.get(answer["run_id"])
         answer_question = question_by_id.get(answer["question_id"])
@@ -521,8 +528,12 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
             }
             if envelope["request"]["body_sha256"] != sha256_json(request_body):
                 raise BuildError(f"raw response {raw_key!r} has the wrong request digest")
-            answer_status, answer_error = normalized_answer_state[raw_key]
-            if envelope["response"]["status"] != answer_status or envelope["error"] != answer_error:
+            answer_status, answer_error, answer_usage = normalized_answer_state[raw_key]
+            if (
+                envelope["response"]["status"] != answer_status
+                or envelope["error"] != answer_error
+                or envelope.get("usage") != answer_usage
+            ):
                 raise BuildError(f"raw response {raw_key!r} disagrees with its normalized answer")
             if envelope["response"]["status"] == "completed" and not isinstance(
                 envelope["response"]["raw"], Mapping
@@ -883,6 +894,7 @@ def _convert_run(
                         "status": status,
                         "raw": record["response"]["raw"],
                     },
+                    "usage": record["usage"],
                     "error": record["error"],
                 }
                 raw_errors = list(raw_validator.iter_errors(envelope))

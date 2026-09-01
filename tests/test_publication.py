@@ -64,6 +64,7 @@ def test_publication_is_deterministic_and_separates_browser_answers(tmp_path: Pa
         raw_payload = io.BufferedReader(reader).read()
     envelope = json.loads(raw_payload)
     assert envelope["response"]["raw"]["id"] == "synthetic-generation"
+    assert envelope["usage"] == answer["usage"]
     assert "question" not in envelope
     assert "scoring" not in envelope
     assert set(envelope["request"]) == {"body_sha256"}

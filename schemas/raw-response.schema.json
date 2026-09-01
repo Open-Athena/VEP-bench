@@ -29,6 +29,7 @@
         "raw": {"type": ["object", "null"]}
       }
     },
+    "usage": {"type": "object"},
     "error": {"type": ["object", "null"]}
   },
   "allOf": [

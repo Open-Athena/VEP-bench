@@ -233,7 +233,7 @@
       }
     },
     "usage": {
-      "description": "Token, cost, and related usage fields returned by the gateway.",
+      "description": "Gateway usage plus explicit VEPBench normalization provenance when aggregate batch cost is allocated across results.",
       "type": "object"
     },
     "error": {

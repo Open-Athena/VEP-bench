@@ -105,7 +105,9 @@ Result snapshots retain the complete question, provider response, final
 content, nullable provider-exposed reasoning, usage, finish reason, non-secret
 request parameters, question-set digest and size, and individual question
 digest. Historical results therefore remain inspectable without reconstructing
-the original run.
+the original run. When a provider exposes cost only for a whole batch, the
+normalized usage records retain the aggregate receipt and identify the
+deterministic allocation used to make per-result costs sum to that receipt.
 
 ## Publication and explorer
 

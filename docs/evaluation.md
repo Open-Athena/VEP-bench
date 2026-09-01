@@ -47,9 +47,14 @@ uv run --locked vepbench batch-collect --state <state.json>
 Collection writes canonical scored JSONL in deterministic question order.
 OpenRouter reports cost for a completed batch as one aggregate rather than on
 each response. Collection allocates that exact total deterministically across
-successful results in proportion to their provider-reported token totals (or
-equally when token totals are unavailable). The allocations sum to the batch
-total, allowing publication to retain exact run cost.
+all submitted results in proportion to their provider-reported token totals
+when every result reports them, or equally otherwise. This includes failed or
+malformed responses, so their billed cost is not dropped. The allocations sum
+to the batch total, allowing publication to retain exact run cost. Each result
+marks the cost as an allocated batch total and retains the batch ID, allocation
+method, and complete provider usage receipt under `usage.vepbench`; publication
+carries that provenance into both normalized answers and raw-response
+envelopes.
 
 Some providers reserve the theoretical maximum completion cost when a batch is
 submitted. If that reservation exceeds the available balance, submit bounded

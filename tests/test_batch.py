@@ -123,6 +123,25 @@ class MixedCompletedBatchTransport(FakeBatchTransport):
             "status": "completed",
             "request_counts": {"total": 3, "completed": 3, "failed": 0},
             "results": [valid, malformed, invalid_field],
+            "usage": {"prompt_tokens": 60, "completion_tokens": 24, "cost": 0.003},
+        }
+
+
+class FailedCompletedBatchTransport(FakeBatchTransport):
+    def retrieve(self, batch_id: str, api_key: str) -> dict[str, Any]:
+        return {
+            "id": batch_id,
+            "status": "completed",
+            "request_counts": {"total": 1, "completed": 0, "failed": 1},
+            "results": [
+                {
+                    "custom_id": "mc-effect-v1:synthetic-001",
+                    "id": "mc-effect-v1:synthetic-001",
+                    "error": {"message": "provider failed"},
+                    "response": {"status_code": 500, "body": None},
+                }
+            ],
+            "usage": {"cost": 0.002},
         }
 
 
@@ -364,10 +383,14 @@ def test_collect_batch_writes_sorted_schema_valid_results(tmp_path: Path) -> Non
     assert result["response"]["latency_seconds"] is None
     assert result["response"]["raw"]["custom_id"] == "mc-effect-v1:synthetic-001"
     assert result["response"]["raw"]["response"]["body"]["id"] == "generation-test"
-    assert result["usage"] == {
-        "prompt_tokens": 20,
-        "completion_tokens": 8,
-        "cost": 0.001,
+    assert result["usage"]["prompt_tokens"] == 20
+    assert result["usage"]["completion_tokens"] == 8
+    assert result["usage"]["cost"] == 0.001
+    assert result["usage"]["vepbench"] == {
+        "batch_id": "batch-test",
+        "batch_usage": {"prompt_tokens": 20, "completion_tokens": 8, "cost": 0.001},
+        "cost_allocation": "proportional_total_tokens",
+        "cost_source": "allocated_batch_total",
     }
 
 
@@ -410,3 +433,37 @@ def test_collect_batch_records_malformed_success_as_api_error(tmp_path: Path) ->
     assert records[1]["response"]["raw"]["custom_id"] == records[1]["question_id"]
     assert "finish_reason is not a string" in records[2]["error"]["message"]
     assert records[2]["response"]["raw"]["custom_id"] == records[2]["question_id"]
+    assert sum(record["usage"]["cost"] for record in records) == pytest.approx(0.003)
+    assert all(record["usage"]["vepbench"]["batch_usage"]["cost"] == 0.003 for record in records)
+
+
+def test_collect_batch_records_cost_when_every_request_failed(tmp_path: Path) -> None:
+    transport = FailedCompletedBatchTransport()
+    state_path = tmp_path / "state.json"
+    result_output = tmp_path / "result.jsonl"
+    submit_batch_file(
+        questions_path=QUESTIONS,
+        question_schema_path=QUESTION_SCHEMA,
+        state_path=state_path,
+        result_output=result_output,
+        run_id="batch-run",
+        model_id="example/model",
+        api_key="test-secret",
+        generation_parameters={"max_tokens": 128},
+        transport=transport,
+    )
+
+    summary = collect_batch_file(
+        state_path=state_path,
+        questions_path=QUESTIONS,
+        question_schema_path=QUESTION_SCHEMA,
+        result_schema_path=ROOT / "schemas/result.schema.json",
+        api_key="test-secret",
+        transport=transport,
+    )
+
+    assert (summary.completed, summary.api_errors) == (0, 1)
+    result = read_jsonl(result_output)[0]
+    assert result["response"]["status"] == "api_error"
+    assert result["usage"]["cost"] == 0.002
+    assert result["usage"]["vepbench"]["cost_allocation"] == "equal"

@@ -374,7 +374,12 @@ def collect_batch_file(
         batch_items[custom_id] = item
     if set(batch_items) != submitted_id_set:
         raise BuildError(f"{state_file}: batch results do not match submitted question IDs")
-    batch_costs = _allocate_batch_cost(raw_batch, submitted_question_ids, batch_items)
+    batch_usage_allocations = _allocate_batch_usage(
+        raw_batch,
+        status.batch_id,
+        submitted_question_ids,
+        batch_items,
+    )
 
     run_id = state.get("run_id")
     model_id = state.get("model_id")
@@ -442,10 +447,6 @@ def collect_batch_file(
                         )
                         api_errors += 1
                     else:
-                        if question["question_id"] in batch_costs:
-                            usage = dict(result["usage"])
-                            usage["cost"] = batch_costs[question["question_id"]]
-                            result["usage"] = usage
                         completed += 1
                 else:
                     error = ProviderError(
@@ -465,6 +466,11 @@ def collect_batch_file(
                         latency_seconds=None,
                     )
                     api_errors += 1
+                allocation = batch_usage_allocations.get(question["question_id"])
+                if allocation is not None:
+                    usage = dict(result["usage"])
+                    usage.update(allocation)
+                    result["usage"] = usage
                 validate_result(result, result_validator)
                 output_file.write(f"{canonical_json(result)}\n")
             output_file.flush()
@@ -587,12 +593,13 @@ def merge_batch_result_files(
     )
 
 
-def _allocate_batch_cost(
+def _allocate_batch_usage(
     raw_batch: Mapping[str, Any],
+    batch_id: str,
     submitted_question_ids: list[str],
     batch_items: Mapping[str, Mapping[str, Any]],
-) -> dict[str, float]:
-    """Allocate one provider-reported batch total across successful results."""
+) -> dict[str, dict[str, Any]]:
+    """Allocate a provider batch total while retaining its receipt and provenance."""
 
     batch_usage = raw_batch.get("usage")
     if not isinstance(batch_usage, Mapping):
@@ -607,38 +614,41 @@ def _allocate_batch_cost(
         return {}
     batch_cost = float(raw_cost)
 
-    successful_ids: list[str] = []
     token_weights: list[int] = []
     complete_weights = True
     for question_id in submitted_question_ids:
         item = batch_items[question_id]
         response = item.get("response")
         body = response.get("body") if isinstance(response, Mapping) else None
-        status_code = response.get("status_code") if isinstance(response, Mapping) else None
-        if status_code != 200 or not isinstance(body, Mapping) or item.get("error") is not None:
-            continue
-        successful_ids.append(question_id)
-        usage = body.get("usage")
+        usage = body.get("usage") if isinstance(body, Mapping) else None
         weight = _usage_total_tokens(usage)
         if weight is None or weight <= 0:
             complete_weights = False
         token_weights.append(0 if weight is None else weight)
 
-    if not successful_ids:
-        if batch_cost:
-            raise BuildError("completed batch reports cost but has no successful results")
-        return {}
-
-    weights = token_weights if complete_weights else [1] * len(successful_ids)
+    allocation_method = "proportional_total_tokens" if complete_weights else "equal"
+    weights = token_weights if complete_weights else [1] * len(submitted_question_ids)
     weight_total = math.fsum(weights)
     allocations: dict[str, float] = {}
     allocated: list[float] = []
-    for question_id, weight in zip(successful_ids[:-1], weights[:-1], strict=True):
+    for question_id, weight in zip(submitted_question_ids[:-1], weights[:-1], strict=True):
         item_cost = batch_cost * weight / weight_total
         allocations[question_id] = item_cost
         allocated.append(item_cost)
-    allocations[successful_ids[-1]] = batch_cost - math.fsum(allocated)
-    return allocations
+    allocations[submitted_question_ids[-1]] = batch_cost - math.fsum(allocated)
+    receipt = json.loads(canonical_json(dict(batch_usage)))
+    return {
+        question_id: {
+            "cost": allocations[question_id],
+            "vepbench": {
+                "batch_id": batch_id,
+                "batch_usage": receipt,
+                "cost_allocation": allocation_method,
+                "cost_source": "allocated_batch_total",
+            },
+        }
+        for question_id in submitted_question_ids
+    }
 
 
 def _usage_total_tokens(usage: Any) -> int | None:
