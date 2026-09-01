@@ -6,23 +6,21 @@ import {consequenceTableRows, sequenceOntologyUrl} from "./consequences.js";
 const choices = [
   ["C01", "3_prime_UTR_variant"],
   ["C02", "5_prime_UTR_variant"],
-  ["C03", "coding_sequence_variant"],
-  ["C04", "incomplete_terminal_codon_variant"],
-  ["C05", "intergenic_variant / intron_variant / upstream_gene_variant / downstream_gene_variant"],
-  ["C06", "mature_miRNA_variant"],
-  ["C07", "missense_variant"],
-  ["C08", "non_coding_transcript_exon_variant"],
-  ["C09", "splice_acceptor_variant"],
-  ["C10", "splice_donor_5th_base_variant"],
-  ["C11", "splice_donor_region_variant"],
-  ["C12", "splice_donor_variant"],
-  ["C13", "splice_polypyrimidine_tract_variant"],
-  ["C14", "splice_region_variant"],
-  ["C15", "start_lost"],
-  ["C16", "stop_gained"],
-  ["C17", "stop_lost"],
-  ["C18", "stop_retained_variant"],
-  ["C19", "synonymous_variant"]
+  ["C03", "intergenic_variant / intron_variant / upstream_gene_variant / downstream_gene_variant"],
+  ["C04", "mature_miRNA_variant"],
+  ["C05", "missense_variant"],
+  ["C06", "non_coding_transcript_exon_variant"],
+  ["C07", "splice_acceptor_variant"],
+  ["C08", "splice_donor_5th_base_variant"],
+  ["C09", "splice_donor_region_variant"],
+  ["C10", "splice_donor_variant"],
+  ["C11", "splice_polypyrimidine_tract_variant"],
+  ["C12", "splice_region_variant"],
+  ["C13", "start_lost"],
+  ["C14", "stop_gained"],
+  ["C15", "stop_lost"],
+  ["C16", "stop_retained_variant"],
+  ["C17", "synonymous_variant"]
 ].map(([choice_id, text]) => ({choice_id, text}));
 
 test("consequence rows cover every benchmark source term in severity order", () => {
@@ -44,7 +42,7 @@ test("consequence rows cover every benchmark source term in severity order", () 
     choices.map((choice) => choice.choice_id).sort()
   );
   assert.deepEqual(
-    rows.filter((row) => row.choice_id === "C05").map((row) => row.term).sort(),
+    rows.filter((row) => row.choice_id === "C03").map((row) => row.term).sort(),
     [
       "downstream_gene_variant",
       "intergenic_variant",
@@ -52,7 +50,7 @@ test("consequence rows cover every benchmark source term in severity order", () 
       "upstream_gene_variant"
     ]
   );
-  assert.equal(rows.filter((row) => row.choice_id !== null).length, 22);
+  assert.equal(rows.filter((row) => row.choice_id !== null).length, 20);
   assert.deepEqual(
     rows.find((row) => row.term === "frameshift_variant"),
     {

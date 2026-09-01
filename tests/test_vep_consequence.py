@@ -11,8 +11,9 @@ import pytest
 from vepbench.builder import build_questions, load_template, read_jsonl
 from vepbench.genome import Genome
 from vepbench.vep_consequence import (
+    COLLAPSE_MAP,
     COLLAPSED_LABEL,
-    COLLAPSED_SOURCE_QUOTAS,
+    EXCLUDED_CONSEQUENCES,
     CandidateScan,
     PreparationConfig,
     PreparationError,
@@ -44,12 +45,13 @@ class LocalFixture:
 @pytest.fixture
 def local_fixture(tmp_path: Path) -> LocalFixture:
     source_consequences = [
-        *COLLAPSED_SOURCE_QUOTAS,
+        *COLLAPSE_MAP,
+        *EXCLUDED_CONSEQUENCES,
         "missense_variant",
         "synonymous_variant",
     ]
     config = PreparationConfig(
-        per_class_quota=10,
+        per_class_quota=3,
         candidate_pool_size=16,
         seed=271_828,
     )
@@ -127,7 +129,7 @@ def test_eager_scan_uses_stable_bounded_candidate_pools(
     local_fixture: LocalFixture,
 ) -> None:
     expected_consequences = sorted(
-        [*COLLAPSED_SOURCE_QUOTAS, "missense_variant", "synonymous_variant"]
+        [*COLLAPSE_MAP, *EXCLUDED_CONSEQUENCES, "missense_variant", "synonymous_variant"]
     )
     assert local_fixture.scan.raw_counts == dict.fromkeys(expected_consequences, 16)
     for candidates in local_fixture.scan.candidates.values():
@@ -158,26 +160,43 @@ def test_eager_scan_uses_stable_bounded_candidate_pools(
 def test_committed_production_artifacts_are_balanced_and_pinned() -> None:
     manifest = validate_prepared_artifacts(PRODUCTION_SOURCE, PRODUCTION_MANIFEST)
 
-    assert manifest["output"]["records"] == 190
-    assert len(manifest["final_vocabulary"]) == 19
-    assert set(manifest["final_class_counts"].values()) == {10}
+    assert manifest["output"]["records"] == 51
+    assert len(manifest["final_vocabulary"]) == 17
+    assert set(manifest["final_class_counts"].values()) == {3}
+    assert manifest["configuration"]["per_class_quota"] == 3
+    assert manifest["excluded_consequences"] == sorted(EXCLUDED_CONSEQUENCES)
+    assert not (set(manifest["final_vocabulary"]) & EXCLUDED_CONSEQUENCES)
     assert manifest["sampling"]["seed"] == 2_026_082_800
     assert sum(manifest["sampling"]["raw_counts"].values()) == 248_760_612
-    assert {
-        label: manifest["sampling"]["selected_source_counts"][label]
-        for label in COLLAPSED_SOURCE_QUOTAS
-    } == COLLAPSED_SOURCE_QUOTAS
+    collapsed_counts = manifest["sampling"]["selected_source_counts"]
+    assert collapsed_counts["intergenic_variant"] == 1
+    assert collapsed_counts["intron_variant"] == 1
+    assert (
+        sum(
+            collapsed_counts.get(label, 0)
+            for label in {
+                "downstream_gene_variant",
+                "upstream_gene_variant",
+            }
+        )
+        == 1
+    )
 
 
 def test_generated_production_prompts_hide_absolute_coordinates() -> None:
     schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
     questions = build_questions(read_jsonl(PRODUCTION_SOURCE), load_template(TEMPLATE), schema)
 
-    assert len(questions) == 190
+    assert len(questions) == 51
     for question in questions:
         prompt = question["prompt"]
         original_position = question["provenance"]["source_record_id"].split(":")[1]
         assert "**Reference genome:** human GRCh38" in prompt
+        assert (
+            "**FASTA formatting:** Sequence lines contain 80 bases except the final line." in prompt
+        )
+        assert "1-based" not in prompt
+        assert "line 7" not in prompt
         assert "chr17" not in prompt.lower()
         assert original_position not in prompt
 
@@ -205,14 +224,24 @@ def test_preparation_is_byte_identical_and_balanced(
     assert first == second
     assert first_source.read_bytes() == second_source.read_bytes()
     assert first_manifest.read_bytes() == second_manifest.read_bytes()
-    assert validate_prepared_artifacts(first_source, first_manifest)["output"]["records"] == 30
+    assert validate_prepared_artifacts(first_source, first_manifest)["output"]["records"] == 9
 
     manifest = json.loads(first_manifest.read_text(encoding="utf-8"))
-    assert set(manifest["final_class_counts"].values()) == {10}
-    assert {
-        label: manifest["sampling"]["selected_source_counts"][label]
-        for label in COLLAPSED_SOURCE_QUOTAS
-    } == COLLAPSED_SOURCE_QUOTAS
+    assert set(manifest["final_class_counts"].values()) == {3}
+    assert not (set(manifest["final_vocabulary"]) & EXCLUDED_CONSEQUENCES)
+    collapsed_counts = manifest["sampling"]["selected_source_counts"]
+    assert collapsed_counts["intergenic_variant"] == 1
+    assert collapsed_counts["intron_variant"] == 1
+    assert (
+        sum(
+            collapsed_counts.get(label, 0)
+            for label in {
+                "downstream_gene_variant",
+                "upstream_gene_variant",
+            }
+        )
+        == 1
+    )
     assert manifest["sampling"]["invalid_candidates_skipped"] == {"missense_variant": 1}
     assert local_fixture.invalid_source_record_id not in manifest["record_source_consequences"]
 
@@ -227,7 +256,7 @@ def test_generated_prompts_have_complete_local_fasta_and_vcf(
         schema,
     )
     expected_choices = local_fixture.prepared.manifest["choices"]
-    assert len(questions) == 30
+    assert len(questions) == 9
 
     final_counts: Counter[str] = Counter()
     for question in questions:
@@ -235,6 +264,12 @@ def test_generated_prompts_have_complete_local_fasta_and_vcf(
         assert "**Reference genome:** human GRCh38" in question["prompt"]
         assert "**VEP version:** release 109.1" in question["prompt"]
         assert "**VEP flags:** `--most_severe --distance 1000`" in question["prompt"]
+        assert (
+            "**FASTA formatting:** Sequence lines contain 80 bases except the final line."
+            in question["prompt"]
+        )
+        assert question["prompt"].count("```fasta") == 1
+        assert question["prompt"].count("```vcf") == 1
         assert "chr17" not in question["prompt"].lower()
         original_position = question["provenance"]["source_record_id"].split(":")[1]
         assert original_position not in question["prompt"]
@@ -244,7 +279,10 @@ def test_generated_prompts_have_complete_local_fasta_and_vcf(
             question["prompt"],
         )
         assert fasta_match is not None
-        sequence = fasta_match.group("sequence").replace("\n", "")
+        sequence_lines = fasta_match.group("sequence").splitlines()
+        assert all(len(line) == 80 for line in sequence_lines[:-1])
+        assert len(sequence_lines[-1]) == 41
+        sequence = "".join(sequence_lines)
         assert len(sequence) == 1_001
         assert sequence == sequence.upper()
 
@@ -263,9 +301,9 @@ def test_generated_prompts_have_complete_local_fasta_and_vcf(
         final_counts[answer] += 1
 
     assert final_counts == {
-        COLLAPSED_LABEL: 10,
-        "missense_variant": 10,
-        "synonymous_variant": 10,
+        COLLAPSED_LABEL: 3,
+        "missense_variant": 3,
+        "synonymous_variant": 3,
     }
 
 
@@ -281,14 +319,14 @@ def test_invalid_windows_are_backfilled_deterministically(
         ].items()
         if source_consequence == "missense_variant"
     }
-    assert len(missense_ids) == 10
+    assert len(missense_ids) == 3
 
 
 def test_insufficient_candidate_pool_fails_clearly(
     local_fixture: LocalFixture,
 ) -> None:
     candidates = dict(local_fixture.scan.candidates)
-    candidates["synonymous_variant"] = candidates["synonymous_variant"][:9]
+    candidates["synonymous_variant"] = candidates["synonymous_variant"][:2]
     insufficient = CandidateScan(
         candidates=candidates,
         raw_counts=local_fixture.scan.raw_counts,
@@ -298,7 +336,7 @@ def test_insufficient_candidate_pool_fails_clearly(
         Genome(local_fixture.fasta, subset_chroms={"17"}) as genome,
         pytest.raises(
             PreparationError,
-            match="synonymous_variant: needed 10 valid variants, found 9",
+            match="synonymous_variant: needed 3 valid variants, found 2",
         ),
     ):
         prepare_dataset(

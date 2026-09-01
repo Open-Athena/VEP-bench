@@ -105,10 +105,10 @@ Predict the Ensembl VEP most severe consequence for a human GRCh38 SNV using onl
 ## Task design
 
 <div class="card">
-  <p><strong>${formatInteger(taskQuestions.length)} questions</strong> across ${consequenceCount} balanced consequence classes, with 10 examples per class. Each question uses a 1,001 bp window centered on the variant and is scored by exact match against its last valid <code>FINAL</code> line.</p>
-  <p>Models see a chromosome 17 SNV in local VCF form, the human GRCh38 reference window, and VEP release 109.1 with <code>--most_severe --distance 1000</code>. Transcript annotations are intentionally omitted. Intergenic, intronic, upstream, and downstream consequences are combined into one class.</p>
+  <p><strong>${formatInteger(taskQuestions.length)} questions</strong> across ${consequenceCount} balanced consequence classes, with 3 examples per class. Each question uses a 1,001 bp window centered on the variant and is scored by exact match against its last valid <code>FINAL</code> line.</p>
+  <p>Models see a chromosome 17 SNV in local VCF form, the human GRCh38 reference window, and VEP release 109.1 with <code>--most_severe --distance 1000</code>. The prompt states the deterministic 80-base FASTA line width. Transcript annotations are intentionally omitted. Intergenic, intronic, upstream, and downstream consequences are combined into one class.</p>
   <dl>
-    <div><dt>Task version</dt><dd>1.1</dd></div>
+    <div><dt>Task version</dt><dd>1.2</dd></div>
     <div><dt>Questions</dt><dd>Public development set</dd></div>
     <div><dt>Explorer</dt><dd>Static; no backend or hidden state</dd></div>
   </dl>
@@ -142,7 +142,7 @@ display(consequenceFigure);
 
 ## Consequence classes
 
-The complete current Ensembl catalog is shown in severity order. ${formatInteger(coveredSourceTermCount)} of ${formatInteger(consequenceRows.length)} source terms map to this benchmark’s ${consequenceCount} answer choices; an em dash marks terms that are not currently covered. Choice **C05** combines intergenic, intronic, upstream, and downstream variants, so its four source terms appear separately.
+The complete current Ensembl catalog is shown in severity order. ${formatInteger(coveredSourceTermCount)} of ${formatInteger(consequenceRows.length)} source terms map to this benchmark’s ${consequenceCount} answer choices; an em dash marks terms that are not currently covered. Choice **C03** combines intergenic, intronic, upstream, and downstream variants, so its four source terms appear separately.
 
 Definitions, colors, severity order, and IMPACT labels follow Ensembl’s [current calculated-consequences reference](https://useast.ensembl.org/info/genome/variation/prediction/predicted_data.html). Severity order and IMPACT are separate Ensembl classifications; VEPBench itself scores only the exact answer choice.
 

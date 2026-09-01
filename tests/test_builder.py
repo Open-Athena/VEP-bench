@@ -81,7 +81,8 @@ def test_production_prompt_has_unambiguous_final_line_instructions(
     )
     prompt = questions[0]["prompt"]
 
-    assert questions[0]["provenance"]["template_version"] == "1.1"
+    assert questions[0]["provenance"]["template_version"] == "1.2"
+    assert "**FASTA formatting:** Sequence lines contain 80 bases except the final line." in prompt
     assert "Example: `FINAL: C07`" in prompt
     assert (
         "Do not include the consequence name, a period, or any other text on that line." in prompt

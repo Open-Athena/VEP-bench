@@ -22,6 +22,7 @@ CHROM_CODES = {str(index): index for index in range(1, 23)} | {
 }
 RANK_MULTIPLIER = 1_000_003
 RANK_MODULUS = 2_147_483_647
+FASTA_LINE_WIDTH = 80
 COLLAPSED_LABEL = (
     "intergenic_variant / intron_variant / upstream_gene_variant / downstream_gene_variant"
 )
@@ -31,12 +32,17 @@ COLLAPSE_MAP = {
     "intron_variant": COLLAPSED_LABEL,
     "upstream_gene_variant": COLLAPSED_LABEL,
 }
-COLLAPSED_SOURCE_QUOTAS = {
-    "downstream_gene_variant": 2,
-    "intergenic_variant": 3,
-    "intron_variant": 3,
-    "upstream_gene_variant": 2,
-}
+COLLAPSED_SELECTION_GROUPS = (
+    ("intergenic_variant",),
+    ("intron_variant",),
+    ("downstream_gene_variant", "upstream_gene_variant"),
+)
+EXCLUDED_CONSEQUENCES = frozenset(
+    {
+        "coding_sequence_variant",
+        "incomplete_terminal_codon_variant",
+    }
+)
 
 
 class PreparationError(BuildError):
@@ -80,7 +86,7 @@ class CandidateScan:
 class PreparationConfig:
     chromosome: str = "17"
     flank_size: int = 500
-    per_class_quota: int = 10
+    per_class_quota: int = 3
     candidate_pool_size: int = 128
     seed: int = 2_026_082_800
 
@@ -217,38 +223,44 @@ def prepare_dataset(
     """Fetch valid windows and turn candidate pools into builder source records."""
 
     observed = set(scan.raw_counts)
-    missing_collapsed = set(COLLAPSED_SOURCE_QUOTAS) - observed
+    missing_collapsed = set(COLLAPSE_MAP) - observed
     if missing_collapsed:
         raise PreparationError(
             f"missing collapsed source consequences: {sorted(missing_collapsed)}"
         )
 
-    final_vocabulary = sorted(COLLAPSE_MAP.get(label, label) for label in observed)
+    included = observed - EXCLUDED_CONSEQUENCES
+    final_vocabulary = sorted(COLLAPSE_MAP.get(label, label) for label in included)
     final_vocabulary = sorted(set(final_vocabulary))
     choices = [
         {"choice_id": f"C{index:02d}", "text": label}
         for index, label in enumerate(final_vocabulary, start=1)
     ]
     choice_by_label = {choice["text"]: choice["choice_id"] for choice in choices}
-    source_quotas = {
-        label: COLLAPSED_SOURCE_QUOTAS.get(label, config.per_class_quota) for label in observed
-    }
+    selection_groups = _selection_groups(included, config.per_class_quota)
 
     records: list[dict[str, Any]] = []
     skipped: Counter[str] = Counter()
     selected_source_counts: Counter[str] = Counter()
     record_source_consequences: dict[str, str] = {}
-    for source_consequence in sorted(source_quotas):
-        quota = source_quotas[source_consequence]
-        for ranked in scan.candidates.get(source_consequence, ()):
-            if selected_source_counts[source_consequence] >= quota:
+    for final_label, source_consequences, quota in selection_groups:
+        selected_in_group = 0
+        candidates = sorted(
+            (
+                ranked
+                for source_consequence in source_consequences
+                for ranked in scan.candidates.get(source_consequence, ())
+            ),
+            key=lambda item: item.sort_key,
+        )
+        for ranked in candidates:
+            if selected_in_group >= quota:
                 break
             candidate = ranked.candidate
             sequence = _validated_window(candidate, genome, config)
             if sequence is None:
-                skipped[source_consequence] += 1
+                skipped[candidate.consequence] += 1
                 continue
-            final_label = COLLAPSE_MAP.get(source_consequence, source_consequence)
             records.append(
                 {
                     "answer_choice_id": choice_by_label[final_label],
@@ -261,13 +273,14 @@ def prepare_dataset(
                     "variant": render_local_variant(sequence, candidate.ref, candidate.alt),
                 }
             )
-            record_source_consequences[candidate.source_record_id] = source_consequence
-            selected_source_counts[source_consequence] += 1
-        if selected_source_counts[source_consequence] != quota:
+            record_source_consequences[candidate.source_record_id] = candidate.consequence
+            selected_source_counts[candidate.consequence] += 1
+            selected_in_group += 1
+        if selected_in_group != quota:
+            group_name = " / ".join(source_consequences)
             raise PreparationError(
-                f"{source_consequence}: needed {quota} valid variants, found "
-                f"{selected_source_counts[source_consequence]} in candidate pool of "
-                f"{len(scan.candidates.get(source_consequence, ()))}"
+                f"{group_name}: needed {quota} valid variants, found "
+                f"{selected_in_group} in candidate pool of {len(candidates)}"
             )
 
     records.sort(key=lambda record: record["source_record_id"])
@@ -301,6 +314,8 @@ def prepare_dataset(
             "allowed_bases": "ACGT",
             "local_contig": "window",
             "local_variant_position": config.flank_size + 1,
+            "per_class_quota": config.per_class_quota,
+            "fasta_line_width": FASTA_LINE_WIDTH,
         },
         "sampling": {
             "seed": config.seed,
@@ -310,11 +325,19 @@ def prepare_dataset(
             "candidate_pool_size": config.candidate_pool_size,
             "input_mode": "local_eager_polars",
             "raw_counts": dict(sorted(scan.raw_counts.items())),
-            "source_quotas": dict(sorted(source_quotas.items())),
+            "selection_groups": [
+                {
+                    "final_consequence": final_label,
+                    "source_consequences": list(source_consequences),
+                    "quota": quota,
+                }
+                for final_label, source_consequences, quota in selection_groups
+            ],
             "selected_source_counts": dict(sorted(selected_source_counts.items())),
             "invalid_candidates_skipped": dict(sorted(skipped.items())),
         },
         "collapse_mapping": dict(sorted(COLLAPSE_MAP.items())),
+        "excluded_consequences": sorted(EXCLUDED_CONSEQUENCES),
         "final_vocabulary": final_vocabulary,
         "choices": choices,
         "final_class_counts": dict(sorted(final_counts.items())),
@@ -377,6 +400,11 @@ def validate_prepared_artifacts(
     ]
     if choices != expected_choices:
         raise PreparationError("manifest choices do not match the stable vocabulary")
+    excluded = manifest.get("excluded_consequences")
+    if not isinstance(excluded, list) or excluded != sorted(set(excluded)):
+        raise PreparationError("manifest excluded consequences must be a sorted unique list")
+    if set(vocabulary) & set(excluded):
+        raise PreparationError("manifest vocabulary contains an excluded consequence")
 
     answer_text_by_id = {choice["choice_id"]: choice["text"] for choice in choices}
     final_counts: Counter[str] = Counter()
@@ -389,6 +417,10 @@ def validate_prepared_artifacts(
         except KeyError as exc:
             raise PreparationError(f"{record['source_record_id']}: unknown answer choice") from exc
         source_consequence = _source_consequence_for_record(record, manifest)
+        if source_consequence in excluded:
+            raise PreparationError(
+                f"{record['source_record_id']}: source uses an excluded consequence"
+            )
         source_counts[source_consequence] += 1
         _validate_rendered_variant(record["variant"], manifest)
 
@@ -402,7 +434,7 @@ def validate_prepared_artifacts(
 
 
 def render_local_variant(sequence: str, ref: str, alt: str) -> str:
-    wrapped = "\n".join(textwrap.wrap(sequence, width=80))
+    wrapped = "\n".join(textwrap.wrap(sequence, width=FASTA_LINE_WIDTH))
     return (
         "```fasta\n"
         ">window\n"
@@ -415,6 +447,31 @@ def render_local_variant(sequence: str, ref: str, alt: str) -> str:
         f"window\t{len(sequence) // 2 + 1}\t.\t{ref}\t{alt}\t.\tPASS\t.\n"
         "```"
     )
+
+
+def _selection_groups(
+    included_consequences: set[str], per_class_quota: int
+) -> list[tuple[str, tuple[str, ...], int]]:
+    if per_class_quota < len(COLLAPSED_SELECTION_GROUPS):
+        raise PreparationError(
+            "per-class quota must cover the intergenic, intronic, and gene-proximal "
+            "collapsed selection groups"
+        )
+
+    groups: list[tuple[str, tuple[str, ...], int]] = [
+        (consequence, (consequence,), per_class_quota)
+        for consequence in sorted(included_consequences - set(COLLAPSE_MAP))
+    ]
+    base_quota, remainder = divmod(per_class_quota, len(COLLAPSED_SELECTION_GROUPS))
+    for index, source_consequences in enumerate(COLLAPSED_SELECTION_GROUPS):
+        groups.append(
+            (
+                COLLAPSED_LABEL,
+                source_consequences,
+                base_quota + (index < remainder),
+            )
+        )
+    return sorted(groups, key=lambda group: (group[0], group[1]))
 
 
 def _stable_rank_expression(seed: int) -> pl.Expr:
@@ -488,6 +545,8 @@ def _source_consequence_for_record(record: Mapping[str, Any], manifest: Mapping[
 
 
 def _validate_rendered_variant(variant: str, manifest: Mapping[str, Any]) -> None:
+    if variant.count("```fasta\n") != 1 or variant.count("```vcf\n") != 1:
+        raise PreparationError("variant must contain exactly one FASTA and one VCF block")
     try:
         fasta_block = variant.split("```fasta\n", 1)[1].split("\n```", 1)[0]
         vcf_block = variant.split("```vcf\n", 1)[1].split("\n```", 1)[0]
@@ -496,7 +555,15 @@ def _validate_rendered_variant(variant: str, manifest: Mapping[str, Any]) -> Non
     fasta_lines = fasta_block.splitlines()
     if not fasta_lines or fasta_lines[0] != ">window":
         raise PreparationError("FASTA header must be >window")
-    sequence = "".join(fasta_lines[1:])
+    sequence_lines = fasta_lines[1:]
+    line_width = manifest["configuration"]["fasta_line_width"]
+    if (
+        not sequence_lines
+        or any(len(line) != line_width for line in sequence_lines[:-1])
+        or not 0 < len(sequence_lines[-1]) <= line_width
+    ):
+        raise PreparationError("FASTA sequence lines do not match the configured wrapping")
+    sequence = "".join(sequence_lines)
     window_size = manifest["configuration"]["window_size"]
     if len(sequence) != window_size or set(sequence) - set(BASE_CODES):
         raise PreparationError("FASTA sequence does not match the configured window")
