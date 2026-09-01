@@ -142,7 +142,7 @@ display(consequenceFigure);
 
 ## Consequence classes
 
-The complete current Ensembl catalog is shown in severity order. ${formatInteger(coveredSourceTermCount)} of ${formatInteger(consequenceRows.length)} source terms map to this benchmark’s ${consequenceCount} answer choices; an em dash marks terms that are not currently covered. Choice **C05** combines intergenic, intronic, upstream, and downstream variants, so its four source terms appear separately.
+The complete current Ensembl catalog is shown in severity order. ${formatInteger(coveredSourceTermCount)} of ${formatInteger(consequenceRows.length)} source terms map to this benchmark’s ${consequenceCount} answer choices; an em dash marks terms that are not currently covered. Choice **C03** combines intergenic, intronic, upstream, and downstream variants, so its four source terms appear separately.
 
 Definitions, colors, severity order, and IMPACT labels follow Ensembl’s [current calculated-consequences reference](https://useast.ensembl.org/info/genome/variation/prediction/predicted_data.html). Severity order and IMPACT are separate Ensembl classifications; VEPBench itself scores only the exact answer choice.
 
