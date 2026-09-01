@@ -73,6 +73,9 @@ common=(
 "$chrome" "${common[@]}" --window-size=1440,1600 \
   --dump-dom "http://127.0.0.1:$port/questions.html?question=vep-most-severe-v1%3A17%3A38786886%3AA%3AT&run=browser-qa" \
   >"$output_dir/question.dom.html"
+"$chrome" "${common[@]}" --window-size=1440,1600 \
+  --dump-dom "http://127.0.0.1:$port/questions.html?run=missing-run" \
+  >"$output_dir/question-neutral.dom.html"
 
 status=0
 for check in \
@@ -99,8 +102,11 @@ for check in \
   'question.dom.html|>Incorrect</option>' \
   'question.dom.html|Reference answer: C13' \
   'question.dom.html|Parsed prediction: C17' \
-  'question.dom.html|>Incorrect<' \
+  'question.dom.html|<td><span class="vepbench-outcome-badge vepbench-outcome-correct">Correct</span></td>' \
+  'question.dom.html|<td><span class="vepbench-outcome-badge vepbench-outcome-incorrect">Incorrect</span></td>' \
   'question.dom.html|>Reasoning<' \
+  'question-neutral.dom.html|Unavailable run · missing-run' \
+  'question-neutral.dom.html|<td><span>Not evaluated</span></td>' \
   "question.dom.html|href=\"http://127.0.0.1:$port/publication/versions/main/raw/browser-qa.jsonl.zst\""
 do
   file=${check%%|*}
@@ -110,6 +116,12 @@ do
     status=1
   fi
 done
+
+if grep -Pzoq '<div class="card">(?:\s|<!--[^>]*-->)*</div>' \
+  "$output_dir/question.dom.html"; then
+  echo "unexpected empty card in question.dom.html" >&2
+  status=1
+fi
 
 header_order=$(
   { grep -o '<strong role="columnheader"[^>]*>[^<]*</strong>' "$output_dir/leaderboard.dom.html" || true; } \

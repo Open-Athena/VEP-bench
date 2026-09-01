@@ -468,14 +468,14 @@ export function entriesForQuestions(questions) {
 
 export function outcomeBadge(value) {
   const badge = document.createElement("span");
-  const color = value === "Correct"
-    ? "green"
-    : value === "Format failure"
-      ? "yellow"
-      : value === "Not evaluated" || value === "Select to load"
-        ? ""
-        : "red";
-  if (color) badge.className = color;
+  const outcome = value === "Correct"
+    ? "correct"
+    : value === "Incorrect"
+      ? "incorrect"
+      : value === "Format failure"
+        ? "format-failure"
+        : "";
+  if (outcome) badge.className = `vepbench-outcome-badge vepbench-outcome-${outcome}`;
   badge.textContent = value;
   return badge;
 }

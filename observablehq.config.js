@@ -46,6 +46,29 @@ export default {
         word-break: normal;
       }
 
+      .vepbench-outcome-badge {
+        display: inline-block;
+        border-radius: 999px;
+        font-weight: 600;
+        line-height: 1.4;
+        padding: 0.05rem 0.4rem;
+      }
+
+      .vepbench-outcome-correct {
+        background: #e6f4ea;
+        color: #0b5d1e;
+      }
+
+      .vepbench-outcome-incorrect {
+        background: #fce8e6;
+        color: #8a1c12;
+      }
+
+      .vepbench-outcome-format-failure {
+        background: #fff3bf;
+        color: #5c4600;
+      }
+
       @container (max-width: 639px) {
         .vepbench-record-card {
           height: auto;
