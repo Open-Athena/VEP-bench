@@ -99,7 +99,7 @@ for check in \
   'question.dom.html|>Incorrect</option>' \
   'question.dom.html|Reference answer: C13' \
   'question.dom.html|Parsed prediction: C17' \
-  'question.dom.html|>Incorrect<' \
+  'question.dom.html|<span class="red">Incorrect</span>' \
   'question.dom.html|>Reasoning<' \
   "question.dom.html|href=\"http://127.0.0.1:$port/publication/versions/main/raw/browser-qa.jsonl.zst\""
 do
@@ -110,6 +110,11 @@ do
     status=1
   fi
 done
+
+if grep -Pzoq '<div class="card">\s*</div>' "$output_dir/question.dom.html"; then
+  echo "unexpected empty card in question.dom.html" >&2
+  status=1
+fi
 
 header_order=$(
   { grep -o '<strong role="columnheader"[^>]*>[^<]*</strong>' "$output_dir/leaderboard.dom.html" || true; } \

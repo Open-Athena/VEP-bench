@@ -470,11 +470,11 @@ export function outcomeBadge(value) {
   const badge = document.createElement("span");
   const color = value === "Correct"
     ? "green"
-    : value === "Format failure"
-      ? "yellow"
-      : value === "Not evaluated" || value === "Select to load"
-        ? ""
-        : "red";
+    : value === "Incorrect"
+      ? "red"
+      : value === "Format failure"
+        ? "yellow"
+        : "";
   if (color) badge.className = color;
   badge.textContent = value;
   return badge;

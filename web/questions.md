@@ -8,6 +8,7 @@ import {
   entryForAnswer,
   formatInteger,
   formatRunLabel,
+  outcomeBadge,
   questionRecord
 } from "./components/vepbench.js";
 import {
@@ -165,6 +166,9 @@ const questionTable = Inputs.table(visibleEntries, {
     answer: "Reference consequence",
     outcome: "Result"
   },
+  format: {
+    outcome: outcomeBadge
+  },
   width: {
     question_label: 70,
     task: 210,
@@ -182,11 +186,11 @@ const questionTable = Inputs.table(visibleEntries, {
 const selected = view(questionTable);
 ```
 
-<div class="card">
-  ${controlsInput}
-  <p class="muted" style="margin: 0.75rem 0 0.25rem">${formatInteger(visibleEntries.length)} questions match the current filters · select one row to inspect it</p>
-  ${questionTable}
-</div>
+${controlsInput}
+
+${questionTable}
+
+<p class="muted" style="margin: 0.75rem 0 0.25rem">${formatInteger(visibleEntries.length)} questions match the current filters · select one row to inspect it</p>
 
 ```js
 const selectedIndex = selected

@@ -74,6 +74,31 @@ sizes, and content digests.
 The saved plan also covers the bucket README and shared schemas. A named version
 must match those shared files whenever a ready `main` already exists.
 
+## Coordinate publication and explorer changes
+
+GitHub Pages and the public bucket deploy independently. When an explorer
+change reads a new run field or artifact, use this rollout order:
+
+1. Keep the schema addition backward-compatible so the current explorer can
+   still read the future publication.
+2. Build, validate, review, and promote the updated `versions/main` publication
+   before merging the dependent explorer UI.
+3. Verify the live `runs.json` contains the new per-run metadata and the live
+   `manifest.json` lists the new artifacts.
+4. Merge the explorer change, wait for the Pages deployment, and smoke-test the
+   live page against the official bucket.
+
+If data cannot be published first, the new UI must retain a useful legacy-data
+fallback until promotion completes. The deterministic browser QA fixture is
+built with the current code and schemas, so it verifies the new format but
+cannot by itself detect that the live bucket is still on an older format.
+
+For the question explorer, **Unavailable run** means a deep-linked run ID is
+not present in the current `versions/main/runs.json`. **Results unavailable**
+means the selected run lacks its outcome-index metadata or the referenced
+artifact could not be loaded; after a format change, check for a deployment
+order mismatch first.
+
 ## Static explorer
 
 Build the explorer locally with:
