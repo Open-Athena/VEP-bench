@@ -85,6 +85,8 @@ uv run --locked vepbench site --output /tmp/vepbench-site
 The explorer is a read-only static site. It loads `versions/main/runs.json`
 first, including the leaderboard's model release date, total tokens, and total
 cost. The score-efficiency chart switches between cost and tokens and draws one
-line per model family. The explorer fetches the question index when a user opens
-the question explorer and loads one compressed answer object at a time.
-Complete raw archives remain downloadable without requiring a backend.
+line per model family. The explorer fetches the question index and a compact
+outcome index for the selected run when a user opens the question explorer.
+This supports the result column and correct/incorrect filter while full answer
+content is still loaded one compressed object at a time. Complete raw archives
+remain downloadable without requiring a backend.

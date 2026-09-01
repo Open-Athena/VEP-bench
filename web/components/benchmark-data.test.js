@@ -6,9 +6,11 @@ import {
   answerPath,
   fetchAnswer,
   fetchJson,
+  fetchOutcomeIndex,
   groupCurrentRuns,
   leaderboardLineSeries,
-  leaderboardRows
+  leaderboardRows,
+  outcomeIndexPath
 } from "./benchmark-data.js";
 
 function run({
@@ -42,6 +44,9 @@ function run({
       release_date: releaseDate,
       upstream_provider: "Test provider"
     },
+    outcome_index_path: `outcomes/${runId}.json.gz`,
+    question_set_sha256: "0".repeat(64),
+    question_set_size: 1,
     run_id: runId
   };
 }
@@ -146,6 +151,37 @@ test("fetchAnswer downloads and decompresses exactly one gzip object", async () 
   assert.deepEqual(requested, [
     "https://example.test/versions/main/answers/demo-run/task%3Aquestion-1.json.gz"
   ]);
+});
+
+test("fetchOutcomeIndex downloads the compact results for one run", async () => {
+  const candidate = run({runId: "demo-run"});
+  const outcomeIndex = {
+    schema_version: "1.0",
+    run_id: candidate.run_id,
+    question_set_sha256: candidate.question_set_sha256,
+    question_set_size: candidate.question_set_size,
+    outcomes: [{question_id: "task:question-1", correct: true}]
+  };
+  const compressed = gzipSync(`${JSON.stringify(outcomeIndex)}\n`, {mtime: 0});
+  const requested = [];
+  const fetcher = async (url) => {
+    requested.push(url);
+    return new Response(compressed, {status: 200});
+  };
+
+  assert.deepEqual(
+    await fetchOutcomeIndex("https://example.test/versions/main", candidate, fetcher),
+    outcomeIndex
+  );
+  assert.deepEqual(requested, [
+    "https://example.test/versions/main/outcomes/demo-run.json.gz"
+  ]);
+});
+
+test("outcome index path rejects mismatched run metadata", () => {
+  const candidate = run({runId: "demo-run"});
+  candidate.outcome_index_path = "outcomes/another-run.json.gz";
+  assert.throws(() => outcomeIndexPath(candidate), /does not match/);
 });
 
 test("fetchJson rejects non-success responses with the status code", async () => {

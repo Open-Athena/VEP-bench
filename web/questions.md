@@ -14,6 +14,7 @@ import {
   artifactUrl,
   fetchAnswer,
   fetchJson,
+  fetchOutcomeIndex,
   groupCurrentRuns
 } from "./components/benchmark-data.js";
 
@@ -51,6 +52,11 @@ const defaultRunOption = runOptions.find(
 const taskName = (taskFamily) => taskFamily === "vep_most_severe_consequence"
   ? "Consequence classification"
   : taskFamily;
+const resultLabel = (correct) => correct === true
+  ? "Correct"
+  : correct === false
+    ? "Incorrect"
+    : "Not scored";
 const questionEntries = entriesForQuestions(questionState.document.questions).map((entry) => ({
   ...entry,
   task: taskName(entry.question.metadata.task_family)
@@ -89,22 +95,30 @@ const controlsInput = Inputs.form({
   consequence: Inputs.select([
     "All consequences",
     ...[...new Set(questionEntries.map((entry) => entry.answer))].sort()
-  ], {label: "Reference consequence"})
+  ], {label: "Reference consequence"}),
+  result: Inputs.select([
+    "All results",
+    "Correct",
+    "Incorrect"
+  ], {label: "Result"})
 });
-controlsInput.style.display = "grid";
-controlsInput.style.gridTemplateColumns = "repeat(auto-fit, minmax(10rem, 1fr))";
+controlsInput.style.display = "flex";
+controlsInput.style.flexWrap = "wrap";
 controlsInput.style.gap = "0.75rem";
 controlsInput.style.alignItems = "end";
 controlsInput.style.width = "100%";
 for (const input of controlsInput.children) {
   input.style.display = "flex";
   input.style.flexDirection = "column";
+  input.style.flex = "1 1 8rem";
   input.style.gap = "0.25rem";
-  input.style.minWidth = "0";
+  input.style.minWidth = "8rem";
   input.style.margin = "0";
   const control = input.lastElementChild;
   if (control) control.style.width = "100%";
 }
+controlsInput.children[1].style.flex = "1.5 1 15rem";
+controlsInput.children[1].style.minWidth = "15rem";
 ```
 
 ```js
@@ -114,9 +128,27 @@ const controls = view(controlsInput);
 ```js
 const runOption = controls.run;
 const run = runOption.kind === "run" ? runOption.run : null;
-const visibleEntries = controls.search.filter((entry) =>
+const outcomeState = run?.outcome_index_path
+  ? await fetchOutcomeIndex(config.data_base_url, run)
+      .then((value) => ({value, error: null}))
+      .catch((error) => ({value: null, error}))
+  : {value: null, error: null};
+const outcomesByQuestion = new Map(
+  (outcomeState.value?.outcomes ?? []).map((outcome) => [
+    outcome.question_id,
+    resultLabel(outcome.correct)
+  ])
+);
+const entriesWithResults = controls.search.map((entry) => ({
+  ...entry,
+  outcome: run
+    ? (outcomesByQuestion.get(entry.question_id) ?? "Unavailable")
+    : "Not evaluated"
+}));
+const visibleEntries = entriesWithResults.filter((entry) =>
   (controls.task === "All tasks" || entry.task === controls.task)
   && (controls.consequence === "All consequences" || entry.answer === controls.consequence)
+  && (controls.result === "All results" || entry.outcome === controls.result)
 );
 const defaultQuestion = requestedQuestionId
   ? (visibleEntries.find((entry) => entry.question_id === requestedQuestionId) ?? null)
@@ -125,18 +157,20 @@ const defaultQuestion = requestedQuestionId
 
 ```js
 const questionTable = Inputs.table(visibleEntries, {
-  columns: ["question_label", "task", "variant", "answer"],
+  columns: ["question_label", "task", "variant", "answer", "outcome"],
   header: {
     question_label: "Question",
     task: "Task",
     variant: "Source variant",
-    answer: "Reference consequence"
+    answer: "Reference consequence",
+    outcome: "Result"
   },
   width: {
     question_label: 70,
     task: 210,
     variant: 150,
-    answer: 280
+    answer: 280,
+    outcome: 100
   },
   multiple: false,
   required: false,
@@ -183,6 +217,9 @@ if (requestedQuestionId && !requestedQuestion && !selected) {
 }
 if (runOption.kind === "missing") {
   display(html`<div class="note" label="Response not found">No complete current evaluation has run ID <code>${runOption.run_id}</code>.</div>`);
+}
+if (run && (!run.outcome_index_path || outcomeState.error)) {
+  display(html`<div class="note" label="Results unavailable">The result column could not be loaded for this evaluation run.</div>`);
 }
 if (answerState.error) {
   display(html`<div class="note" label="Response unavailable">The selected answer object could not be loaded.</div>`);

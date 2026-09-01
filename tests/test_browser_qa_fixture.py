@@ -58,6 +58,12 @@ def test_browser_qa_fixture_is_complete_and_offline(tmp_path: Path, config_relat
     assert run["model"]["release_date"] == "2026-08-01"
     assert run["metrics"]["total_tokens"] == 112
     assert run["metrics"]["total_cost_usd"] == 0
+    outcome_index = json.loads(
+        gzip.decompress((output / "versions/main" / run["outcome_index_path"]).read_bytes())
+    )
+    assert outcome_index["outcomes"] == [
+        {"question_id": "mc-effect-v1:synthetic-001", "correct": False}
+    ]
     answer_path = next((output / "versions/main/answers/browser-qa").glob("*.json.gz"))
     answer = json.loads(gzip.decompress(answer_path.read_bytes()))
     assert answer["scoring"] == {

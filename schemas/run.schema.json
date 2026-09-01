@@ -58,6 +58,7 @@
       }
     },
     "answer_prefix": {"type": "string", "pattern": "^answers/[A-Za-z0-9][A-Za-z0-9._:-]*/$"},
+    "outcome_index_path": {"type": "string", "pattern": "^outcomes/[A-Za-z0-9][A-Za-z0-9._:-]*\\.json\\.gz$"},
     "raw_archive": {"$ref": "#/$defs/artifact"}
   },
   "$defs": {

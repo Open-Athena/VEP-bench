@@ -76,6 +76,15 @@ def test_publication_is_deterministic_and_separates_browser_answers(tmp_path: Pa
     runs = json.loads((version / "runs.json").read_text(encoding="utf-8"))["runs"]
     assert runs[0]["metrics"]["total_tokens"] == 98
     assert runs[0]["metrics"]["total_cost_usd"] == 0
+    assert runs[0]["outcome_index_path"] == "outcomes/synthetic-demo.json.gz"
+
+    outcome_path = version / runs[0]["outcome_index_path"]
+    outcome_index = json.loads(gzip.decompress(outcome_path.read_bytes()))
+    assert outcome_index["run_id"] == "synthetic-demo"
+    assert outcome_index["outcomes"] == [
+        {"question_id": "mc-effect-v1:synthetic-001", "correct": True}
+    ]
+    assert manifest["artifacts"]["outcomes"][0]["records"] == 1
 
 
 def test_usage_totals_normalizes_gateway_usage() -> None:
