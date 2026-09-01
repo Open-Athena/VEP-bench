@@ -61,7 +61,7 @@ common=(
   --dump-dom "http://127.0.0.1:$port/tasks/consequence-classification.html" \
   >"$output_dir/task.dom.html"
 "$chrome" "${common[@]}" --window-size=1440,1600 \
-  --dump-dom "http://127.0.0.1:$port/questions.html?question=vep-most-severe-v1%3A17%3A10511998%3AT%3AC&run=browser-qa" \
+  --dump-dom "http://127.0.0.1:$port/questions.html?question=vep-most-severe-v1%3A17%3A38786886%3AA%3AT&run=browser-qa" \
   >"$output_dir/question.dom.html"
 
 status=0

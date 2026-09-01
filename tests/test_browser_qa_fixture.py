@@ -4,11 +4,30 @@ from pathlib import Path
 
 import pytest
 
-from vepbench.browser_qa import prepare_fixture
+from vepbench.browser_qa import DEFAULT_PREDICTION, DEFAULT_QUESTION_ID, prepare_fixture
+from vepbench.builder import build_questions, load_template, read_jsonl
 from vepbench.publication import validate_version
 
 ROOT = Path(__file__).resolve().parents[1]
 QUESTIONS = ROOT / "tests/fixtures/synthetic-questions.jsonl"
+PRODUCTION_SOURCE = ROOT / "data/sources/chr17-vep-consequences.jsonl"
+PRODUCTION_TEMPLATE = ROOT / "templates/vep_most_severe_consequence.json"
+QUESTION_SCHEMA = ROOT / "schemas/question.schema.json"
+
+
+def test_browser_qa_defaults_match_production_question_set() -> None:
+    questions = build_questions(
+        read_jsonl(PRODUCTION_SOURCE),
+        load_template(PRODUCTION_TEMPLATE),
+        json.loads(QUESTION_SCHEMA.read_text(encoding="utf-8")),
+    )
+    selected = next(
+        question for question in questions if question["question_id"] == DEFAULT_QUESTION_ID
+    )
+
+    assert selected["answer_choice_id"] == "C13"
+    assert DEFAULT_PREDICTION == "C17"
+    assert DEFAULT_PREDICTION in {choice["choice_id"] for choice in selected["choices"]}
 
 
 @pytest.mark.parametrize("config_relative", ["data/config.json", "_file/data/config.abc123.json"])
