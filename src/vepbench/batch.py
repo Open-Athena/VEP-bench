@@ -30,6 +30,7 @@ from .evaluator import (
     ProviderError,
     completed_result,
     error_result,
+    validate_batch_usage_allocations,
     validate_generation_parameters,
     validate_result,
     validate_run_id,
@@ -558,6 +559,7 @@ def merge_batch_result_files(
         )
     if run_identity is None:
         raise BuildError("batch result files contain no records")
+    validate_batch_usage_allocations(records_by_id.values(), context="batch result chunks")
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     temporary_path: Path | None = None
@@ -642,6 +644,7 @@ def _allocate_batch_usage(
             "cost": allocations[question_id],
             "vepbench": {
                 "batch_id": batch_id,
+                "batch_question_ids": submitted_question_ids,
                 "batch_usage": receipt,
                 "cost_allocation": allocation_method,
                 "cost_source": "allocated_batch_total",

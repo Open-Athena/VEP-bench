@@ -7,7 +7,7 @@ import re
 import time
 import urllib.error
 import urllib.request
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Iterable, Mapping
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -396,6 +396,83 @@ def validate_result(result: Mapping[str, Any], validator: Draft202012Validator) 
             raise BuildError(f"{result['question_id']}: API error has completion data")
         if not isinstance(result["error"], Mapping):
             raise BuildError(f"{result['question_id']}: API error must include error details")
+
+
+def validate_batch_usage_allocations(records: Iterable[Mapping[str, Any]], *, context: str) -> None:
+    """Validate aggregate batch receipts and their per-result allocations."""
+
+    groups: dict[tuple[str, str], list[tuple[str, float, Mapping[str, Any]]]] = {}
+    for record in records:
+        usage = record.get("usage")
+        if not isinstance(usage, Mapping):
+            continue
+        provenance = usage.get("vepbench")
+        if not isinstance(provenance, Mapping):
+            continue
+        if provenance.get("cost_source") != "allocated_batch_total":
+            continue
+
+        run_id = record.get("run_id")
+        question_id = record.get("question_id")
+        batch_id = provenance.get("batch_id")
+        batch_usage = provenance.get("batch_usage")
+        allocation_method = provenance.get("cost_allocation")
+        batch_question_ids = provenance.get("batch_question_ids")
+        allocated_cost = usage.get("cost")
+        if (
+            not isinstance(run_id, str)
+            or not isinstance(question_id, str)
+            or not isinstance(batch_id, str)
+            or not batch_id
+            or not isinstance(batch_usage, Mapping)
+            or allocation_method not in {"proportional_total_tokens", "equal"}
+            or not isinstance(batch_question_ids, list)
+            or not batch_question_ids
+            or any(not isinstance(item, str) or not item for item in batch_question_ids)
+            or batch_question_ids != sorted(set(batch_question_ids))
+            or question_id not in batch_question_ids
+            or not _is_nonnegative_number(allocated_cost)
+            or not _is_nonnegative_number(batch_usage.get("cost"))
+        ):
+            raise BuildError(f"{context}: invalid allocated batch cost provenance")
+        assert isinstance(allocated_cost, int | float)
+        groups.setdefault((run_id, batch_id), []).append(
+            (question_id, float(allocated_cost), provenance)
+        )
+
+    for (run_id, batch_id), allocated in groups.items():
+        reference = allocated[0][2]
+        expected_question_ids = reference["batch_question_ids"]
+        for _, _, provenance in allocated[1:]:
+            if (
+                provenance.get("batch_usage") != reference["batch_usage"]
+                or provenance.get("cost_allocation") != reference["cost_allocation"]
+                or provenance.get("batch_question_ids") != expected_question_ids
+            ):
+                raise BuildError(
+                    f"{context}: batch {batch_id!r} has inconsistent allocation provenance"
+                )
+        actual_question_ids = sorted(question_id for question_id, _, _ in allocated)
+        if actual_question_ids != expected_question_ids:
+            raise BuildError(
+                f"{context}: batch {batch_id!r} allocations do not cover its recorded members"
+            )
+        allocated_total = math.fsum(cost for _, cost, _ in allocated)
+        receipt_total = float(reference["batch_usage"]["cost"])
+        if allocated_total != receipt_total:
+            raise BuildError(
+                f"{context}: batch {batch_id!r} allocations do not sum to its receipt "
+                f"for run {run_id!r}"
+            )
+
+
+def _is_nonnegative_number(value: Any) -> bool:
+    return (
+        not isinstance(value, bool)
+        and isinstance(value, int | float)
+        and math.isfinite(value)
+        and value >= 0
+    )
 
 
 def completed_result(
