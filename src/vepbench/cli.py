@@ -152,6 +152,12 @@ def build_parser() -> argparse.ArgumentParser:
         default=PROJECT_ROOT / "schemas/result.schema.json",
     )
     version_build.add_argument("--schemas-dir", type=Path, default=PROJECT_ROOT / "schemas")
+    version_build.add_argument(
+        "--model-catalog",
+        type=Path,
+        default=PROJECT_ROOT / "configs/models/catalog.json",
+        help="model family and release metadata for published leaderboard rows",
+    )
     version_build.add_argument("--output", type=Path, required=True)
     version_validate = subparsers.add_parser(
         "version-validate", help="validate a complete local bucket version"
@@ -333,6 +339,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 results_dir=args.results_dir,
                 result_schema_path=args.result_schema,
                 schemas_dir=args.schemas_dir,
+                model_catalog_path=args.model_catalog,
                 output=args.output,
                 version_name=args.version,
             )

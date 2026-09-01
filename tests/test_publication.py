@@ -73,6 +73,79 @@ def test_publication_is_deterministic_and_separates_browser_answers(tmp_path: Pa
     )
     assert questions == QUESTIONS.read_bytes()
 
+    runs = json.loads((version / "runs.json").read_text(encoding="utf-8"))["runs"]
+    assert runs[0]["metrics"]["total_tokens"] == 98
+    assert runs[0]["metrics"]["total_cost_usd"] == 0
+
+
+def test_usage_totals_normalizes_gateway_usage() -> None:
+    assert publication_module._usage_totals(
+        {"prompt_tokens": 2, "completion_tokens": 3, "total_tokens": 6, "cost": 0.125}
+    ) == (6, 0.125)
+    assert publication_module._usage_totals(
+        {"prompt_tokens": 2, "completion_tokens": 3, "cost": 0}
+    ) == (5, 0.0)
+    assert publication_module._usage_totals({"prompt_tokens": 2, "completion_tokens": 3}) == (
+        5,
+        None,
+    )
+
+
+def test_publication_enriches_run_with_versioned_model_catalog(tmp_path: Path) -> None:
+    catalog = tmp_path / "model-catalog.json"
+    catalog.write_text(
+        canonical_json(
+            {
+                "schema_version": "1.0",
+                "models": {
+                    "synthetic/demo": {
+                        "family": "Synthetic family",
+                        "release_date": "2026-07-09",
+                    }
+                },
+            }
+        ),
+        encoding="utf-8",
+        newline="\n",
+    )
+    output = tmp_path / "publication"
+
+    build_version(
+        questions_path=QUESTIONS,
+        results_dir=RESULTS,
+        result_schema_path=RESULT_SCHEMA,
+        schemas_dir=SCHEMAS,
+        model_catalog_path=catalog,
+        output=output,
+        version_name="candidate",
+    )
+
+    run = json.loads((output / "versions/candidate/runs.json").read_text(encoding="utf-8"))["runs"][
+        0
+    ]
+    assert run["model"]["family"] == "Synthetic family"
+    assert run["model"]["release_date"] == "2026-07-09"
+
+
+def test_publication_rejects_model_missing_from_catalog(tmp_path: Path) -> None:
+    catalog = tmp_path / "model-catalog.json"
+    catalog.write_text(
+        canonical_json({"schema_version": "1.0", "models": {}}),
+        encoding="utf-8",
+        newline="\n",
+    )
+
+    with pytest.raises(BuildError, match="missing from the model catalog"):
+        build_version(
+            questions_path=QUESTIONS,
+            results_dir=RESULTS,
+            result_schema_path=RESULT_SCHEMA,
+            schemas_dir=SCHEMAS,
+            model_catalog_path=catalog,
+            output=tmp_path / "publication",
+            version_name="candidate",
+        )
+
 
 def test_publication_streams_result_input_and_raw_validation(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch

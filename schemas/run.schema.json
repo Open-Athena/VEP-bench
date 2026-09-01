@@ -19,7 +19,9 @@
         "gateway": {"const": "openrouter"},
         "model_id": {"type": "string", "minLength": 1},
         "model_revision": {"type": ["string", "null"]},
-        "upstream_provider": {"type": ["string", "null"]}
+        "upstream_provider": {"type": ["string", "null"]},
+        "family": {"type": "string", "minLength": 1},
+        "release_date": {"type": "string", "format": "date"}
       }
     },
     "generation_parameters": {"type": "object"},
@@ -46,7 +48,13 @@
         "scored": {"type": "integer", "minimum": 0},
         "correct": {"type": "integer", "minimum": 0},
         "accuracy": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
-        "format_failures": {"type": "integer", "minimum": 0}
+        "format_failures": {"type": "integer", "minimum": 0},
+        "total_tokens": {"type": ["integer", "null"], "minimum": 0},
+        "total_cost_usd": {"type": ["number", "null"], "minimum": 0}
+      },
+      "dependentRequired": {
+        "total_tokens": ["total_cost_usd"],
+        "total_cost_usd": ["total_tokens"]
       }
     },
     "answer_prefix": {"type": "string", "pattern": "^answers/[A-Za-z0-9][A-Za-z0-9._:-]*/$"},

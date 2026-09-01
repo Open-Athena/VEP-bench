@@ -4,9 +4,11 @@ import gzip
 import hashlib
 import io
 import json
+import math
 import re
 import shutil
 from collections.abc import Iterator, Mapping
+from datetime import date
 from itertools import chain
 from pathlib import Path
 from typing import Any
@@ -52,12 +54,49 @@ def validate_version_name(version_name: str) -> None:
         raise BuildError("version name must be a lowercase URL-safe slug of at most 63 characters")
 
 
+def _load_model_catalog(path: Path) -> dict[str, dict[str, str]]:
+    """Load display-only model metadata used by published leaderboard rows."""
+
+    try:
+        document = json.loads(path.read_text(encoding="utf-8"))
+    except OSError as exc:
+        raise BuildError(f"cannot read model catalog {path}: {exc}") from exc
+    except json.JSONDecodeError as exc:
+        raise BuildError(f"{path}: invalid JSON: {exc}") from exc
+    if not isinstance(document, dict) or set(document) != {"schema_version", "models"}:
+        raise BuildError(f"{path}: model catalog must contain schema_version and models")
+    if document["schema_version"] != "1.0" or not isinstance(document["models"], dict):
+        raise BuildError(f"{path}: unsupported model catalog")
+
+    models: dict[str, dict[str, str]] = {}
+    for model_id, metadata in document["models"].items():
+        if not isinstance(model_id, str) or not model_id or not isinstance(metadata, dict):
+            raise BuildError(f"{path}: invalid model catalog entry {model_id!r}")
+        if set(metadata) != {"family", "release_date"}:
+            raise BuildError(f"{path}: model {model_id!r} must contain family and release_date")
+        family = metadata["family"]
+        release_date = metadata["release_date"]
+        if not isinstance(family, str) or not family.strip():
+            raise BuildError(f"{path}: model {model_id!r} has an invalid family")
+        if not isinstance(release_date, str) or not re.fullmatch(
+            r"\d{4}-\d{2}-\d{2}", release_date
+        ):
+            raise BuildError(f"{path}: model {model_id!r} has an invalid release_date")
+        try:
+            date.fromisoformat(release_date)
+        except ValueError as exc:
+            raise BuildError(f"{path}: model {model_id!r} has an invalid release_date") from exc
+        models[model_id] = {"family": family.strip(), "release_date": release_date}
+    return models
+
+
 def build_version(
     *,
     questions_path: str | Path,
     results_dir: str | Path,
     result_schema_path: str | Path,
     schemas_dir: str | Path,
+    model_catalog_path: str | Path | None = None,
     output: str | Path,
     version_name: str,
 ) -> dict[str, Any]:
@@ -71,6 +110,9 @@ def build_version(
     schema_source = Path(schemas_dir)
     schema_validators = {name: _load_validator(schema_source / name) for name in SCHEMA_FILES}
     result_validator = _load_validator(result_schema_path)
+    model_catalog = (
+        _load_model_catalog(Path(model_catalog_path)) if model_catalog_path is not None else None
+    )
 
     questions_file = Path(questions_path)
     questions = read_jsonl(questions_file)
@@ -147,6 +189,7 @@ def build_version(
                 question_digest=question_digest,
                 question_set_sha256=question_set_sha256,
                 question_set_size=len(questions),
+                model_catalog=model_catalog,
                 version_dir=version_dir,
             )
             run_id = run["record"]["run_id"]
@@ -308,8 +351,17 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
     answers_seen: set[tuple[str, str, int]] = set()
     normalized_answer_state: dict[tuple[str, str, int], tuple[str, Mapping[str, Any] | None]] = {}
     per_run_answers: dict[str, int] = dict.fromkeys(run_by_id, 0)
-    per_run_stats = {
-        run_id: {"completed": 0, "api_errors": 0, "correct": 0, "format_failures": 0}
+    per_run_stats: dict[str, dict[str, Any]] = {
+        run_id: {
+            "completed": 0,
+            "api_errors": 0,
+            "correct": 0,
+            "format_failures": 0,
+            "token_values": [],
+            "cost_values": [],
+            "tokens_complete": True,
+            "cost_complete": True,
+        }
         for run_id in run_by_id
     }
     for descriptor in manifest["artifacts"]["answers"]:
@@ -346,6 +398,15 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
         stats["api_errors"] += status == "api_error"
         stats["correct"] += answer["scoring"]["correct"] is True
         stats["format_failures"] += answer["scoring"]["parse_error"] is not None
+        usage_tokens, usage_cost = _usage_totals(answer["usage"])
+        if status == "completed" and usage_tokens is not None:
+            stats["token_values"].append(usage_tokens)
+        else:
+            stats["tokens_complete"] = False
+        if status == "completed" and usage_cost is not None:
+            stats["cost_values"].append(usage_cost)
+        else:
+            stats["cost_complete"] = False
 
     raw_seen: set[tuple[str, str, int]] = set()
     per_run_raw: dict[str, int] = dict.fromkeys(run_by_id, 0)
@@ -429,6 +490,21 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
             "accuracy": accuracy,
             "format_failures": stats["format_failures"],
         }
+        if "total_tokens" in run["metrics"] or "total_cost_usd" in run["metrics"]:
+            expected_metrics.update(
+                {
+                    "total_tokens": (
+                        sum(stats["token_values"])
+                        if stats["completed"] and stats["tokens_complete"]
+                        else None
+                    ),
+                    "total_cost_usd": (
+                        math.fsum(stats["cost_values"])
+                        if stats["completed"] and stats["cost_complete"]
+                        else None
+                    ),
+                }
+            )
         if run["coverage"] != expected_coverage or run["metrics"] != expected_metrics:
             raise BuildError(f"run {run_id!r} aggregate metadata does not match answers")
     if answers_seen != raw_seen:
@@ -555,6 +631,7 @@ def _convert_run(
     question_digest: Mapping[str, str],
     question_set_sha256: str,
     question_set_size: int,
+    model_catalog: Mapping[str, Mapping[str, str]] | None,
     version_dir: Path,
 ) -> dict[str, Any]:
     records = _iter_jsonl_file(result_file)
@@ -587,8 +664,20 @@ def _convert_run(
             "evaluation_profile": evaluation_profile,
         }
     )
+    published_model = dict(model)
+    if model_catalog is not None:
+        model_metadata = model_catalog.get(model["model_id"])
+        if model_metadata is None:
+            raise BuildError(
+                f"{result_file}: model {model['model_id']!r} is missing from the model catalog"
+            )
+        published_model.update(model_metadata)
     answer_descriptors: list[dict[str, Any]] = []
     completed = api_errors = correct = format_failures = 0
+    token_values: list[int] = []
+    cost_values: list[float] = []
+    tokens_complete = True
+    cost_complete = True
     record_count = 0
     started_at: str | None = None
     completed_at: str | None = None
@@ -637,6 +726,15 @@ def _convert_run(
                 api_errors += status == "api_error"
                 correct += record["scoring"]["correct"] is True
                 format_failures += record["scoring"]["parse_error"] is not None
+                usage_tokens, usage_cost = _usage_totals(record["usage"])
+                if status == "completed" and usage_tokens is not None:
+                    token_values.append(usage_tokens)
+                else:
+                    tokens_complete = False
+                if status == "completed" and usage_cost is not None:
+                    cost_values.append(usage_cost)
+                else:
+                    cost_complete = False
                 evaluated_at = record["evaluated_at"]
                 started_at = evaluated_at if started_at is None else min(started_at, evaluated_at)
                 completed_at = (
@@ -722,6 +820,8 @@ def _convert_run(
         "artifact_bytes": raw_path.stat().st_size,
     }
     accuracy = correct / completed if completed else None
+    total_tokens = sum(token_values) if completed and tokens_complete else None
+    total_cost_usd = math.fsum(cost_values) if completed and cost_complete else None
     if started_at is None or completed_at is None:
         raise BuildError(f"{result_file}: no result records found")
     run_record = {
@@ -730,7 +830,7 @@ def _convert_run(
         "configuration_key": configuration_key,
         "question_set_sha256": question_set_sha256,
         "question_set_size": question_set_size,
-        "model": model,
+        "model": published_model,
         "generation_parameters": generation_parameters,
         "evaluation_profile": evaluation_profile,
         "started_at": started_at,
@@ -747,6 +847,8 @@ def _convert_run(
             "correct": correct,
             "accuracy": accuracy,
             "format_failures": format_failures,
+            "total_tokens": total_tokens,
+            "total_cost_usd": total_cost_usd,
         },
         "answer_prefix": f"answers/{run_id}/",
         "raw_archive": {
@@ -762,6 +864,39 @@ def _convert_run(
         },
     }
     return {"record": run_record, "answers": answer_descriptors, "raw": raw_artifact}
+
+
+def _usage_totals(usage: Mapping[str, Any]) -> tuple[int | None, float | None]:
+    """Read comparable token and USD totals from one gateway usage object."""
+
+    total_tokens = usage.get("total_tokens")
+    if isinstance(total_tokens, bool) or not isinstance(total_tokens, int):
+        prompt_tokens = usage.get("prompt_tokens")
+        completion_tokens = usage.get("completion_tokens")
+        if (
+            isinstance(prompt_tokens, bool)
+            or not isinstance(prompt_tokens, int)
+            or prompt_tokens < 0
+            or isinstance(completion_tokens, bool)
+            or not isinstance(completion_tokens, int)
+            or completion_tokens < 0
+        ):
+            normalized_tokens = None
+        else:
+            normalized_tokens = prompt_tokens + completion_tokens
+    else:
+        normalized_tokens = total_tokens if total_tokens >= 0 else None
+
+    cost = usage.get("cost")
+    normalized_cost = (
+        float(cost)
+        if not isinstance(cost, bool)
+        and isinstance(cost, int | float)
+        and math.isfinite(cost)
+        and cost >= 0
+        else None
+    )
+    return normalized_tokens, normalized_cost
 
 
 def _iter_jsonl_file(path: Path) -> Iterator[dict[str, Any]]:

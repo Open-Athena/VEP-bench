@@ -18,7 +18,11 @@ uv run --locked vepbench version-validate \
 
 The version builder joins results to the exact generated question set and
 validates schemas, fingerprints, run completeness, and configuration identity.
-Named versions use lowercase slugs. Only `main` is official.
+It uses `configs/models/catalog.json` by default for leaderboard family and
+release-date metadata, and aggregates provider-reported usage into total tokens
+and total USD cost per run. Every published model must have a catalog entry;
+use `--model-catalog` to select another reviewed catalog. Named versions use
+lowercase slugs. Only `main` is official.
 
 ## Plan and apply a bucket update
 
@@ -79,6 +83,8 @@ uv run --locked vepbench site --output /tmp/vepbench-site
 ```
 
 The explorer is a read-only static site. It loads `versions/main/runs.json`
-first, fetches the question index when a user opens the question explorer, and
-loads one compressed answer object at a time. Complete raw archives remain
-downloadable without requiring a backend.
+first, including the leaderboard's model release date, total tokens, and total
+cost. The score-efficiency chart switches between cost and tokens and draws one
+line per model family. The explorer fetches the question index when a user opens
+the question explorer and loads one compressed answer object at a time.
+Complete raw archives remain downloadable without requiring a backend.
