@@ -34,6 +34,18 @@ def test_luna_flex_profile_requests_discounted_service_tier() -> None:
     assert "temperature" not in profile.generation_parameters
 
 
+def test_sol_profile_is_valid_and_reproducible() -> None:
+    profile = load_model_profile(ROOT / "configs/models/openai-gpt-5.6-sol-medium.yaml")
+
+    assert profile.label == "gpt-5.6-sol-medium"
+    assert profile.model_id == "openai/gpt-5.6-sol"
+    assert profile.generation_parameters == {
+        "reasoning": {"effort": "medium", "exclude": False},
+        "seed": 20260829,
+    }
+    assert "temperature" not in profile.generation_parameters
+
+
 @pytest.mark.parametrize("effort", ["low", "high"])
 def test_luna_comparison_profiles_set_reasoning_only(effort: str) -> None:
     profile = load_model_profile(ROOT / f"configs/models/openai-gpt-5.6-luna-{effort}.yaml")

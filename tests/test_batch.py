@@ -6,7 +6,12 @@ from typing import Any
 
 import pytest
 
-from vepbench.batch import collect_batch_file, refresh_batch_state, submit_batch_file
+from vepbench.batch import (
+    collect_batch_file,
+    merge_batch_result_files,
+    refresh_batch_state,
+    submit_batch_file,
+)
 from vepbench.builder import BuildError, canonical_json, read_jsonl
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -62,6 +67,28 @@ class CompletedBatchTransport(FakeBatchTransport):
             "request_counts": {"total": 1, "completed": 1, "failed": 0},
             "results": [item],
             "usage": {"prompt_tokens": 20, "completion_tokens": 8, "cost": 0.001},
+        }
+
+
+class RequestedCompletedBatchTransport(FakeBatchTransport):
+    def retrieve(self, batch_id: str, api_key: str) -> dict[str, Any]:
+        custom_ids = [request["custom_id"] for request in self.requests[0][0]["requests"]]
+        items = []
+        for custom_id in custom_ids:
+            item = deepcopy(CompletedBatchTransport().retrieve(batch_id, api_key)["results"][0])
+            item["custom_id"] = custom_id
+            item["id"] = custom_id
+            items.append(item)
+        return {
+            "id": batch_id,
+            "status": "completed",
+            "request_counts": {
+                "total": len(items),
+                "completed": len(items),
+                "failed": 0,
+            },
+            "results": items,
+            "usage": {"cost": 0.001 * len(items)},
         }
 
 
@@ -209,6 +236,101 @@ def test_submit_batch_rejects_invalid_run_id_before_provider_call(tmp_path: Path
     assert transport.requests == []
 
 
+def test_submit_and_collect_batch_chunk_retains_full_question_set_identity(
+    tmp_path: Path,
+) -> None:
+    questions = _three_question_file(tmp_path)
+    transport = RequestedCompletedBatchTransport()
+    state_path = tmp_path / "state.json"
+    result_output = tmp_path / "chunk.jsonl"
+
+    summary = submit_batch_file(
+        questions_path=questions,
+        question_schema_path=QUESTION_SCHEMA,
+        state_path=state_path,
+        result_output=result_output,
+        run_id="batch-run",
+        model_id="example/model",
+        api_key="test-secret",
+        generation_parameters={"max_tokens": 128},
+        batch_offset=1,
+        batch_size=1,
+        transport=transport,
+    )
+
+    assert summary.requests == 1
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    assert state["question_set_size"] == 3
+    assert state["submitted_question_ids"] == ["mc-effect-v1:synthetic-002"]
+    assert [request["custom_id"] for request in transport.requests[0][0]["requests"]] == [
+        "mc-effect-v1:synthetic-002"
+    ]
+
+    collected = collect_batch_file(
+        state_path=state_path,
+        questions_path=questions,
+        question_schema_path=QUESTION_SCHEMA,
+        result_schema_path=ROOT / "schemas/result.schema.json",
+        api_key="test-secret",
+        transport=transport,
+    )
+
+    assert collected.is_complete
+    result = read_jsonl(result_output)[0]
+    assert result["question_id"] == "mc-effect-v1:synthetic-002"
+    assert result["question_set_size"] == 3
+
+
+def test_merge_batch_chunks_writes_one_ordered_full_run(tmp_path: Path) -> None:
+    questions = _three_question_file(tmp_path)
+    chunk_outputs = []
+    for index, (offset, size) in enumerate(((0, 2), (2, 1)), start=1):
+        transport = RequestedCompletedBatchTransport()
+        state_path = tmp_path / f"state-{index}.json"
+        chunk_output = tmp_path / f"chunk-{index}.jsonl"
+        submit_batch_file(
+            questions_path=questions,
+            question_schema_path=QUESTION_SCHEMA,
+            state_path=state_path,
+            result_output=chunk_output,
+            run_id="batch-run",
+            model_id="example/model",
+            api_key="test-secret",
+            generation_parameters={"max_tokens": 128},
+            batch_offset=offset,
+            batch_size=size,
+            transport=transport,
+        )
+        collect_batch_file(
+            state_path=state_path,
+            questions_path=questions,
+            question_schema_path=QUESTION_SCHEMA,
+            result_schema_path=ROOT / "schemas/result.schema.json",
+            api_key="test-secret",
+            transport=transport,
+        )
+        chunk_outputs.append(chunk_output)
+
+    merged_output = tmp_path / "merged.jsonl"
+    summary = merge_batch_result_files(
+        result_paths=chunk_outputs,
+        questions_path=questions,
+        question_schema_path=QUESTION_SCHEMA,
+        result_schema_path=ROOT / "schemas/result.schema.json",
+        output=merged_output,
+    )
+
+    assert summary.is_complete
+    records = read_jsonl(merged_output)
+    assert [record["question_id"] for record in records] == [
+        "mc-effect-v1:synthetic-001",
+        "mc-effect-v1:synthetic-002",
+        "mc-effect-v1:synthetic-003",
+    ]
+    assert {record["question_set_size"] for record in records} == {3}
+    assert sum(record["usage"]["cost"] for record in records) == pytest.approx(0.003)
+
+
 def test_collect_batch_writes_sorted_schema_valid_results(tmp_path: Path) -> None:
     transport = CompletedBatchTransport()
     state_path = tmp_path / "state.json"
@@ -242,7 +364,11 @@ def test_collect_batch_writes_sorted_schema_valid_results(tmp_path: Path) -> Non
     assert result["response"]["latency_seconds"] is None
     assert result["response"]["raw"]["custom_id"] == "mc-effect-v1:synthetic-001"
     assert result["response"]["raw"]["response"]["body"]["id"] == "generation-test"
-    assert result["usage"] == {"prompt_tokens": 20, "completion_tokens": 8}
+    assert result["usage"] == {
+        "prompt_tokens": 20,
+        "completion_tokens": 8,
+        "cost": 0.001,
+    }
 
 
 def test_collect_batch_records_malformed_success_as_api_error(tmp_path: Path) -> None:

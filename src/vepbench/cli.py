@@ -10,7 +10,12 @@ from collections.abc import Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 
-from .batch import collect_batch_file, refresh_batch_state, submit_batch_file
+from .batch import (
+    collect_batch_file,
+    merge_batch_result_files,
+    refresh_batch_state,
+    submit_batch_file,
+)
 from .bucket import apply_bucket_plan, create_bucket_plan, require_hf_token
 from .builder import BuildError, build_file, read_jsonl
 from .evaluator import ProviderError, evaluate_file
@@ -91,6 +96,17 @@ def build_parser() -> argparse.ArgumentParser:
         help="local state path for the asynchronous batch submission",
     )
     evaluate.add_argument(
+        "--batch-offset",
+        type=int,
+        default=0,
+        help="zero-based first question to submit through the Batch API",
+    )
+    evaluate.add_argument(
+        "--batch-size",
+        type=int,
+        help="maximum questions to submit while retaining full-set result identity",
+    )
+    evaluate.add_argument(
         "--concurrency",
         type=int,
         default=8,
@@ -134,6 +150,26 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=PROJECT_ROOT / "schemas/result.schema.json",
     )
+    batch_merge = subparsers.add_parser(
+        "batch-merge", help="merge collected batch chunks into one full result file"
+    )
+    batch_merge.add_argument("inputs", type=Path, nargs="+")
+    batch_merge.add_argument(
+        "--questions",
+        type=Path,
+        default=PROJECT_ROOT / ".vepbench/questions.jsonl",
+    )
+    batch_merge.add_argument(
+        "--schema",
+        type=Path,
+        default=PROJECT_ROOT / "schemas/question.schema.json",
+    )
+    batch_merge.add_argument(
+        "--result-schema",
+        type=Path,
+        default=PROJECT_ROOT / "schemas/result.schema.json",
+    )
+    batch_merge.add_argument("--output", type=Path, required=True)
     version_build = subparsers.add_parser(
         "version-build", help="build a validated local bucket version"
     )
@@ -279,6 +315,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                     model_id=model_id,
                     api_key=api_key,
                     generation_parameters=generation_parameters,
+                    batch_offset=args.batch_offset,
+                    batch_size=args.batch_size,
                 )
                 print(
                     f"submitted {submission.requests} request(s) as OpenRouter batch "
@@ -286,6 +324,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                     f"state: {submission.state_path}"
                 )
                 return 0
+            if args.batch_offset != 0 or args.batch_size is not None:
+                raise BuildError("--batch-offset and --batch-size cannot be used with --direct")
             evaluation = evaluate_file(
                 questions_path=args.questions,
                 question_schema_path=args.schema,
@@ -333,6 +373,19 @@ def main(argv: Sequence[str] | None = None) -> int:
                 f"{collected.output} ({collected.api_errors} API error(s))"
             )
             return 0 if collected.is_complete else 1
+        if args.command == "batch-merge":
+            merged = merge_batch_result_files(
+                result_paths=args.inputs,
+                questions_path=args.questions,
+                question_schema_path=args.schema,
+                result_schema_path=args.result_schema,
+                output=args.output,
+            )
+            print(
+                f"wrote {merged.completed + merged.api_errors} merged result(s) to "
+                f"{merged.output} ({merged.api_errors} API error(s))"
+            )
+            return 0 if merged.is_complete else 1
         if args.command == "version-build":
             manifest = build_version(
                 questions_path=args.questions,

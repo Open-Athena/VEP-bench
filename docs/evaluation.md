@@ -45,6 +45,37 @@ uv run --locked vepbench batch-collect --state <state.json>
 ```
 
 Collection writes canonical scored JSONL in deterministic question order.
+OpenRouter reports cost for a completed batch as one aggregate rather than on
+each response. Collection allocates that exact total deterministically across
+successful results in proportion to their provider-reported token totals (or
+equally when token totals are unavailable). The allocations sum to the batch
+total, allowing publication to retain exact run cost.
+
+Some providers reserve the theoretical maximum completion cost when a batch is
+submitted. If that reservation exceeds the available balance, submit bounded
+chunks sequentially while retaining the identity of the complete question set:
+
+```bash
+uv run --locked vepbench evaluate \
+  --task-profile configs/tasks/vep-most-severe-consequence.yaml \
+  --model-profile configs/models/openai-gpt-5.6-sol-medium.yaml \
+  --run-id <shared-run-id> --batch-offset 0 --batch-size 7 \
+  --batch-state <chunk-01-state.json> --output <chunk-01-results.jsonl>
+```
+
+Refresh and collect each chunk before submitting the next one, advancing
+`--batch-offset` by the chunk size. After every question is collected, merge
+the chunk result files into one complete, deterministically ordered run:
+
+```bash
+uv run --locked vepbench batch-merge \
+  --output .vepbench/results/<shared-run-id>.jsonl \
+  <chunk-01-results.jsonl> <chunk-02-results.jsonl> ...
+```
+
+Chunk state records both the submitted question IDs and the full question-set
+digest and size. The merge rejects missing, duplicate, mismatched, or
+mixed-configuration records.
 
 Use direct evaluation when a model has no live batch endpoint:
 
