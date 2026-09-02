@@ -10,6 +10,7 @@ import {
   groupCurrentRuns,
   leaderboardLineSeries,
   leaderboardRows,
+  overallLeaderboardRows,
   outcomeIndexPath
 } from "./benchmark-data.js";
 
@@ -19,10 +20,12 @@ function run({
   completedAt = "2026-08-31T00:00:00Z",
   configurationKey = `cfg-${"0".repeat(64)}`,
   effort = "medium",
+  evaluationProfile = "synthetic_effect:mc-effect-v1@1.0",
   family = "Test family",
   modelId = "test/model",
   releaseDate = "2026-07-09",
   runId = "test-run",
+  taskFamily = "synthetic_effect",
   tokens = 1200,
   cost = 0.25
 } = {}) {
@@ -32,6 +35,7 @@ function run({
     configuration_key: configurationKey,
     coverage: {complete},
     generation_parameters: {reasoning: {effort}},
+    evaluation_profile: evaluationProfile,
     metrics: {
       accuracy,
       format_failures: 0,
@@ -47,7 +51,8 @@ function run({
     outcome_index_path: `outcomes/${runId}.json.gz`,
     question_set_sha256: "0".repeat(64),
     question_set_size: 1,
-    run_id: runId
+    run_id: runId,
+    task_family: taskFamily
   };
 }
 
@@ -66,6 +71,71 @@ test("leaderboard keeps the latest complete run per model configuration", () => 
   assert.equal(rows[0].release_date, "2026-07-09");
   assert.equal(rows[0].tokens, 1200);
   assert.equal(rows[0].cost, 0.25);
+});
+
+test("overall leaderboard macro-averages complete task profiles", () => {
+  const leaderboard = {
+    aggregation_method: "task_macro_average_v0",
+    evaluation_profiles: [
+      {
+        task_family: "clinvar",
+        evaluation_profile: "clinvar:clinvar-snv-v1@1.0"
+      },
+      {
+        task_family: "vep_most_severe_consequence",
+        evaluation_profile: "vep_most_severe_consequence:vep-most-severe-v1@1.2"
+      }
+    ]
+  };
+  const rows = overallLeaderboardRows([
+    run({
+      accuracy: 0.75,
+      configurationKey: `cfg-${"1".repeat(64)}`,
+      cost: 0.5,
+      evaluationProfile: "clinvar:clinvar-snv-v1@1.0",
+      runId: "medium-clinvar",
+      taskFamily: "clinvar",
+      tokens: 300
+    }),
+    run({
+      accuracy: 0.25,
+      configurationKey: `cfg-${"2".repeat(64)}`,
+      cost: 0.25,
+      evaluationProfile: "vep_most_severe_consequence:vep-most-severe-v1@1.2",
+      runId: "medium-consequence",
+      taskFamily: "vep_most_severe_consequence",
+      tokens: 200
+    }),
+    run({
+      accuracy: 0.9,
+      configurationKey: `cfg-${"3".repeat(64)}`,
+      effort: "low",
+      evaluationProfile: "vep_most_severe_consequence:vep-most-severe-v1@1.2",
+      runId: "low-consequence-only",
+      taskFamily: "vep_most_severe_consequence"
+    })
+  ], leaderboard);
+
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0].accuracy, 0.5);
+  assert.equal(rows[0].tokens, 500);
+  assert.equal(rows[0].cost, 0.75);
+  assert.deepEqual(
+    rows[0].task_scores.map((task) => [task.task_family, task.accuracy]),
+    [["clinvar", 0.75], ["vep_most_severe_consequence", 0.25]]
+  );
+  assert.deepEqual(rows[0].runs.map((candidate) => candidate.run_id), [
+    "medium-clinvar",
+    "medium-consequence"
+  ]);
+});
+
+test("overall leaderboard rejects unknown aggregation metadata", () => {
+  assert.deepEqual(overallLeaderboardRows([], null), []);
+  assert.deepEqual(overallLeaderboardRows([], {
+    aggregation_method: "question_micro_average_v0",
+    evaluation_profiles: []
+  }), []);
 });
 
 test("line chart data groups model families and sorts points by the selected metric", () => {

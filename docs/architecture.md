@@ -80,10 +80,9 @@ Use a stable slug consistently and add, as applicable:
 
 Question IDs must be globally unique across tasks. New task families should use
 explicit source, template, and profile paths rather than relying on the current
-single-task CLI defaults. Before combining multiple task families into one
-official evaluation, define deterministic aggregation and task-profile
-semantics explicitly; the current evaluator intentionally accepts one task
-family at a time.
+single-task CLI defaults. The evaluator intentionally accepts one task family
+at a time. Publication combines those independently pinned task runs without
+rewriting their question-set identities.
 
 ## Data contracts
 
@@ -140,6 +139,21 @@ generation parameters, and the prompt and task identity. The official version
 accepts only complete runs without API errors and at most one run for each
 configuration key. Publication processes result and raw-response data as
 streams so memory use does not grow with the total amount of model reasoning.
+
+An official multi-task version publishes the sorted union of its task question
+sets as the browsable question artifact. Each run still records the digest,
+size, task family, and evaluation profile of the single task question set that
+was actually evaluated. The publication's `runs.json` records the complete list
+of task profiles required by the leaderboard.
+
+The provisional `task_macro_average_v0` overall score groups runs with identical
+model, upstream-provider, model-revision, and fully resolved generation
+parameters. A configuration is eligible only when it has one complete run for
+every published evaluation profile. Its overall score is the arithmetic mean
+of the task accuracies, so every task has equal weight regardless of question
+count. Displayed overall token usage and cost are sums across the included task
+runs. A future aggregation change must use a new method identifier rather than
+silently changing this rule.
 
 The leaderboard line chart connects configurations within each published model
 family and can compare exact-match score against total cost or total tokens.

@@ -16,13 +16,32 @@ uv run --locked vepbench version-validate \
   --root /tmp/vepbench-publication
 ```
 
-The version builder joins results to the exact generated question set and
-validates schemas, fingerprints, run completeness, and configuration identity.
+The version builder joins each result to its exact generated task question set
+and validates schemas, fingerprints, run completeness, and configuration
+identity.
 It uses `configs/models/catalog.json` by default for leaderboard family and
 release-date metadata, and aggregates provider-reported usage into total tokens
 and total USD cost per run. Every published model must have a catalog entry;
 use `--model-catalog` to select another reviewed catalog. Named versions use
 lowercase slugs. Only `main` is official.
+
+For a multi-task version, repeat `--questions` once per task question set and
+`--results-dir` for each curated result staging directory:
+
+```bash
+uv run --locked vepbench version-build \
+  --version two-task-medium \
+  --questions .vepbench/questions.jsonl \
+  --questions .vepbench/clinvar-questions.jsonl \
+  --results-dir .vepbench/publication-results/consequence \
+  --results-dir .vepbench/publication-results/clinvar \
+  --output /tmp/vepbench-publication
+```
+
+Each question file must contain exactly one task family. Result files retain
+the digest and size of that task's question set. Curate staging directories so
+they contain only the intended full result files, not batch chunks or
+superseded runs.
 
 ## Plan and apply a bucket update
 
@@ -115,3 +134,9 @@ outcome index for the selected run when a user opens the question explorer.
 This supports the result column and correct/incorrect filter while full answer
 content is still loaded one compressed object at a time. Complete raw archives
 remain downloadable without requiring a backend.
+
+For multi-task publications, `runs.json` also names the required evaluation
+profiles and the aggregation method. The current provisional overall score is
+an equal-weight mean of per-task exact-match accuracies and is shown only for
+configurations with complete coverage of every required profile. Overall cost
+and token counts are sums across those task runs.

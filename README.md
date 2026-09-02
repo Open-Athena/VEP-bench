@@ -38,10 +38,12 @@ tasks can be added without making this README task-specific.
 
 ## Results
 
-The [explorer](https://openathena.ai/VEPBench/) provides task-level results and
-question-level prompts, reference answers, model responses, available
-reasoning, and exact-match scores. Each score should be interpreted alongside
-the corresponding task's methodology and limitations.
+The [explorer](https://openathena.ai/VEPBench/) provides a provisional overall
+score that weights each task equally, plus task-level results and question-level
+prompts, reference answers, model responses, available reasoning, and
+exact-match scores. A model configuration receives an overall score only after
+completing every published task. Each score should be interpreted alongside the
+corresponding tasks' methodology and limitations.
 
 ## Documentation
 

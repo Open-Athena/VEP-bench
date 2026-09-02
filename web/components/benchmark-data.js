@@ -2,7 +2,10 @@ const SAFE_ID = /^[A-Za-z0-9][A-Za-z0-9._:-]*$/;
 
 function modelName(modelId, generationParameters) {
   const name = modelId.split("/").at(-1) ?? modelId;
-  const displayName = name === "gpt-5.6-luna" ? "GPT 5.6 Luna" : name;
+  const displayName = {
+    "gpt-5.6-luna": "GPT 5.6 Luna",
+    "gpt-5.6-sol": "GPT 5.6 Sol"
+  }[name] ?? name;
   const effort = generationParameters?.reasoning?.effort;
   return effort ? `${displayName} (${effort})` : displayName;
 }
@@ -17,7 +20,7 @@ export function formatRunLabel(run) {
   return `${model} · ${provider}`;
 }
 
-export function leaderboardRows(runs) {
+function latestCompleteRuns(runs) {
   const latestByConfiguration = new Map();
   for (const run of runs.filter((candidate) => candidate.coverage.complete)) {
     const previous = latestByConfiguration.get(run.configuration_key);
@@ -27,29 +30,131 @@ export function leaderboardRows(runs) {
       latestByConfiguration.set(run.configuration_key, run);
     }
   }
-  return [...latestByConfiguration.values()]
-    .map((run) => {
-      const family = run.model.family ?? modelName(run.model.model_id);
-      return {
-        run,
-        model_cell: {
-          model: modelName(run.model.model_id, run.generation_parameters),
-          provider: run.model.upstream_provider ?? "not reported"
-        },
-        family,
-        family_id: family,
-        release_date: run.model.release_date ?? null,
-        tokens: nonnegativeNumber(run.metrics.total_tokens),
-        cost: nonnegativeNumber(run.metrics.total_cost_usd),
-        accuracy: nonnegativeNumber(run.metrics.accuracy),
-        format_failures: run.metrics.format_failures
-      };
-    })
-    .sort((a, b) =>
-      (b.accuracy ?? -1) - (a.accuracy ?? -1)
-      || a.model_cell.model.localeCompare(b.model_cell.model)
-      || a.model_cell.provider.localeCompare(b.model_cell.provider)
+  return [...latestByConfiguration.values()];
+}
+
+function rowForRun(run) {
+  const family = run.model.family ?? modelName(run.model.model_id);
+  return {
+    run,
+    model_cell: {
+      model: modelName(run.model.model_id, run.generation_parameters),
+      provider: run.model.upstream_provider ?? "not reported"
+    },
+    family,
+    family_id: family,
+    release_date: run.model.release_date ?? null,
+    tokens: nonnegativeNumber(run.metrics.total_tokens),
+    cost: nonnegativeNumber(run.metrics.total_cost_usd),
+    accuracy: nonnegativeNumber(run.metrics.accuracy),
+    format_failures: run.metrics.format_failures
+  };
+}
+
+function sortLeaderboardRows(rows) {
+  return rows.sort((a, b) =>
+    (b.accuracy ?? -1) - (a.accuracy ?? -1)
+    || a.model_cell.model.localeCompare(b.model_cell.model)
+    || a.model_cell.provider.localeCompare(b.model_cell.provider)
+  );
+}
+
+export function leaderboardRows(runs) {
+  return sortLeaderboardRows(latestCompleteRuns(runs).map(rowForRun));
+}
+
+function canonicalValue(value) {
+  if (Array.isArray(value)) return value.map(canonicalValue);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.keys(value).sort().map((key) => [key, canonicalValue(value[key])])
     );
+  }
+  return value;
+}
+
+function overallConfigurationKey(run) {
+  return JSON.stringify(canonicalValue({
+    model: {
+      gateway: run.model.gateway,
+      model_id: run.model.model_id,
+      model_revision: run.model.model_revision ?? null,
+      upstream_provider: run.model.upstream_provider ?? null
+    },
+    generation_parameters: run.generation_parameters
+  }));
+}
+
+function sumIfComplete(values) {
+  return values.every((value) => value !== null)
+    ? values.reduce((total, value) => total + value, 0)
+    : null;
+}
+
+export function overallLeaderboardRows(runs, leaderboard) {
+  if (leaderboard?.aggregation_method !== "task_macro_average_v0") return [];
+  const profiles = leaderboard.evaluation_profiles;
+  if (!Array.isArray(profiles) || profiles.length === 0) return [];
+  const profileKeys = new Set();
+  for (const profile of profiles) {
+    if (typeof profile?.task_family !== "string"
+      || typeof profile?.evaluation_profile !== "string"
+      || profileKeys.has(profile.evaluation_profile)) return [];
+    profileKeys.add(profile.evaluation_profile);
+  }
+
+  const groups = new Map();
+  for (const run of latestCompleteRuns(runs)) {
+    const profile = profiles.find((candidate) =>
+      candidate.task_family === run.task_family
+      && candidate.evaluation_profile === run.evaluation_profile
+    );
+    if (!profile) continue;
+    const key = overallConfigurationKey(run);
+    let group = groups.get(key);
+    if (!group) {
+      group = new Map();
+      groups.set(key, group);
+    }
+    const previous = group.get(profile.evaluation_profile);
+    if (!previous
+      || Date.parse(run.completed_at) > Date.parse(previous.completed_at)
+      || (run.completed_at === previous.completed_at && run.run_id > previous.run_id)) {
+      group.set(profile.evaluation_profile, run);
+    }
+  }
+
+  const rows = [];
+  for (const group of groups.values()) {
+    const taskRuns = profiles.map((profile) => group.get(profile.evaluation_profile));
+    if (taskRuns.some((run) => !run)) continue;
+    const taskAccuracies = taskRuns.map((run) => nonnegativeNumber(run.metrics.accuracy));
+    if (taskAccuracies.some((accuracy) => accuracy === null)) continue;
+    const representative = taskRuns[0];
+    const row = rowForRun(representative);
+    row.runs = taskRuns;
+    delete row.run;
+    row.accuracy = taskAccuracies.reduce((total, accuracy) => total + accuracy, 0)
+      / taskAccuracies.length;
+    row.tokens = sumIfComplete(
+      taskRuns.map((run) => nonnegativeNumber(run.metrics.total_tokens))
+    );
+    row.cost = sumIfComplete(
+      taskRuns.map((run) => nonnegativeNumber(run.metrics.total_cost_usd))
+    );
+    row.format_failures = taskRuns.reduce(
+      (total, run) => total + (nonnegativeNumber(run.metrics.format_failures) ?? 0),
+      0
+    );
+    row.task_scores = profiles.map((profile, index) => ({
+      task_family: profile.task_family,
+      evaluation_profile: profile.evaluation_profile,
+      accuracy: taskAccuracies[index],
+      run: taskRuns[index]
+    }));
+    rows.push(row);
+  }
+  return sortLeaderboardRows(rows);
 }
 
 export function leaderboardLineSeries(rows, metric) {

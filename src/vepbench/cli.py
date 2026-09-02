@@ -177,10 +177,14 @@ def build_parser() -> argparse.ArgumentParser:
     version_build.add_argument(
         "--questions",
         type=Path,
-        default=PROJECT_ROOT / ".vepbench/questions.jsonl",
+        action="append",
+        help="question JSONL for one task family; repeat for multi-task publication",
     )
     version_build.add_argument(
-        "--results-dir", type=Path, default=PROJECT_ROOT / ".vepbench/results"
+        "--results-dir",
+        type=Path,
+        action="append",
+        help="directory of result JSONL files; repeat for multiple staging directories",
     )
     version_build.add_argument(
         "--result-schema",
@@ -388,8 +392,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 0 if merged.is_complete else 1
         if args.command == "version-build":
             manifest = build_version(
-                questions_path=args.questions,
-                results_dir=args.results_dir,
+                questions_path=args.questions or [PROJECT_ROOT / ".vepbench/questions.jsonl"],
+                results_dir=args.results_dir or [PROJECT_ROOT / ".vepbench/results"],
                 result_schema_path=args.result_schema,
                 schemas_dir=args.schemas_dir,
                 model_catalog_path=args.model_catalog,

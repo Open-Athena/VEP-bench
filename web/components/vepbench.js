@@ -11,7 +11,8 @@ const markdown = new MarkdownIt({
 export {
   formatRunLabel,
   leaderboardLineSeries,
-  leaderboardRows
+  leaderboardRows,
+  overallLeaderboardRows
 } from "./benchmark-data.js";
 
 export function formatInteger(value) {
@@ -111,7 +112,7 @@ export function leaderboardTable(rows) {
   costHeader.style.textAlign = "right";
   const scoreHeader = document.createElement("strong");
   scoreHeader.setAttribute("role", "columnheader");
-  scoreHeader.textContent = "Score";
+  scoreHeader.textContent = rows.some((row) => row.task_scores) ? "Overall score" : "Score";
   scoreHeader.style.textAlign = "center";
   header.append(modelHeader, scoreHeader, releaseHeader, tokensHeader, costHeader);
   table.append(header);
@@ -130,6 +131,19 @@ export function leaderboardTable(rows) {
     const provider = document.createElement("small");
     provider.textContent = rowData.model_cell.provider;
     modelCell.append(model, " · ", provider);
+    if (rowData.task_scores) {
+      const taskNames = {
+        clinvar: "ClinVar",
+        vep_most_severe_consequence: "Consequence"
+      };
+      const breakdown = document.createElement("small");
+      breakdown.style.display = "block";
+      breakdown.style.color = "var(--theme-foreground-muted, #666)";
+      breakdown.textContent = rowData.task_scores.map((task) =>
+        `${taskNames[task.task_family] ?? task.task_family} ${formatPercent(task.accuracy)}`
+      ).join(" · ");
+      modelCell.append(breakdown);
+    }
 
     const releaseCell = document.createElement("span");
     releaseCell.setAttribute("role", "cell");

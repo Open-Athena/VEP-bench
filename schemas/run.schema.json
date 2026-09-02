@@ -25,6 +25,7 @@
       }
     },
     "generation_parameters": {"type": "object"},
+    "task_family": {"type": "string", "minLength": 1},
     "evaluation_profile": {"type": ["string", "null"]},
     "started_at": {"type": "string", "format": "date-time"},
     "completed_at": {"type": "string", "format": "date-time"},
