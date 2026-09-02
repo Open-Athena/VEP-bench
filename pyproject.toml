@@ -19,6 +19,7 @@ vepbench = "vepbench.cli:main"
 prepare = [
     "fsspec[http]>=2026.5.0,<2027",
     "polars>=1.38,<2",
+    "pyarrow>=21,<24",
     "pyfaidx>=0.9,<1",
 ]
 dev = [

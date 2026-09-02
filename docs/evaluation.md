@@ -5,15 +5,21 @@ by tests or CI, and the credential is read only from `OPENROUTER_API_KEY`.
 
 ## Build questions
 
-The default build currently targets the only implemented task:
+The default build targets the Ensembl VEP consequence task:
 
 ```bash
 uv run --locked vepbench build
 ```
 
 The command accepts explicit `--source`, `--template`, `--schema`, and
-`--output` paths. Use explicit paths for additional task families rather than
-depending on the default.
+`--output` paths. Build ClinVar with explicit task paths:
+
+```bash
+uv run --locked vepbench build \
+  --source data/sources/clinvar-july-2026.jsonl \
+  --template templates/clinvar.json \
+  --output .vepbench/clinvar-questions.jsonl
+```
 
 ## Profiles
 

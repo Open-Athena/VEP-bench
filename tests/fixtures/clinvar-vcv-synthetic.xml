@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ClinVarVariationRelease Dated="2026-08-06">
+  <VariationArchive VariationID="1" Accession="VCV000000001" Version="1" VariationName="one" VariationType="single nucleotide variant" DateCreated="2026-07-01">
+    <ClassifiedRecord>
+      <SimpleAllele>
+        <GeneList><Gene Symbol="GENE1" FullName="Synthetic gene" GeneID="1" Source="calculated" /></GeneList>
+        <Name>NC_000017.11:g.1001A&gt;C</Name>
+        <Location><SequenceLocation Assembly="GRCh38" AssemblyAccessionVersion="GCF_000001405.38" Chr="17" Accession="NC_000017.11" start="1001" stop="1001" variantLength="1" referenceAllele="A" alternateAllele="C" positionVCF="1001" referenceAlleleVCF="A" alternateAlleleVCF="C" /></Location>
+        <HGVSlist><HGVS Type="coding"><NucleotideExpression sequenceType="coding" sequenceAccessionVersion="NM_000001.2"><Expression>NM_000001.2:c.1A&gt;C</Expression></NucleotideExpression></HGVS></HGVSlist>
+      </SimpleAllele>
+      <RCVList><RCVAccession><ClassifiedConditionList TraitSetID="1"><ClassifiedCondition DB="MONDO" ID="0000001">Condition one</ClassifiedCondition></ClassifiedConditionList></RCVAccession></RCVList>
+      <Classifications><GermlineClassification><ReviewStatus>criteria provided, single submitter</ReviewStatus><Description>Benign</Description></GermlineClassification></Classifications>
+    </ClassifiedRecord>
+  </VariationArchive>
+  <VariationArchive VariationID="2" Accession="VCV000000002" Version="2" VariationName="two" VariationType="single nucleotide variant" DateCreated="2026-07-31">
+    <ClassifiedRecord>
+      <SimpleAllele><Name>two</Name><Location><SequenceLocation Assembly="GRCh38" Chr="17" Accession="NC_000017.11" start="2001" stop="2001" variantLength="1" referenceAllele="A" alternateAllele="G" positionVCF="2001" referenceAlleleVCF="A" alternateAlleleVCF="G" /></Location></SimpleAllele>
+      <RCVList />
+      <Classifications><GermlineClassification><ReviewStatus>criteria provided, multiple submitters, no conflicts</ReviewStatus><Description>Pathogenic</Description></GermlineClassification></Classifications>
+    </ClassifiedRecord>
+  </VariationArchive>
+  <VariationArchive VariationID="3" Accession="VCV000000003" Version="1" VariationName="three" VariationType="single nucleotide variant" DateCreated="2026-07-15">
+    <ClassifiedRecord>
+      <SimpleAllele><Name>three</Name><Location><SequenceLocation Assembly="GRCh38" Chr="17" Accession="NC_000017.11" start="3001" stop="3001" variantLength="1" referenceAllele="A" alternateAllele="T" positionVCF="3001" referenceAlleleVCF="A" alternateAlleleVCF="T" /></Location></SimpleAllele>
+      <RCVList />
+      <Classifications><GermlineClassification><ReviewStatus>reviewed by expert panel</ReviewStatus><Description>Benign</Description></GermlineClassification></Classifications>
+    </ClassifiedRecord>
+  </VariationArchive>
+  <VariationArchive VariationID="4" Accession="VCV000000004" Version="1" VariationName="four" VariationType="single nucleotide variant" DateCreated="2026-07-16">
+    <ClassifiedRecord>
+      <SimpleAllele><Name>four</Name><Location><SequenceLocation Assembly="GRCh38" Chr="17" Accession="NC_000017.11" start="4001" stop="4001" variantLength="1" referenceAllele="A" alternateAllele="C" positionVCF="4001" referenceAlleleVCF="A" alternateAlleleVCF="C" /></Location></SimpleAllele>
+      <RCVList />
+      <Classifications><GermlineClassification><ReviewStatus>practice guideline</ReviewStatus><Description>Pathogenic</Description></GermlineClassification></Classifications>
+    </ClassifiedRecord>
+  </VariationArchive>
+  <VariationArchive VariationID="5" Accession="VCV000000005" Version="1" VariationName="outside" VariationType="single nucleotide variant" DateCreated="2026-06-30">
+    <ClassifiedRecord><SimpleAllele><Name>outside</Name><Location><SequenceLocation Assembly="GRCh38" Chr="17" Accession="NC_000017.11" positionVCF="5001" referenceAlleleVCF="A" alternateAlleleVCF="C" /></Location></SimpleAllele><RCVList /><Classifications><GermlineClassification><ReviewStatus>criteria provided, single submitter</ReviewStatus><Description>Benign</Description></GermlineClassification></Classifications></ClassifiedRecord>
+  </VariationArchive>
+  <VariationArchive VariationID="6" Accession="VCV000000006" Version="1" VariationName="likely" VariationType="single nucleotide variant" DateCreated="2026-07-10">
+    <ClassifiedRecord><SimpleAllele><Name>likely</Name><Location><SequenceLocation Assembly="GRCh38" Chr="17" Accession="NC_000017.11" positionVCF="6001" referenceAlleleVCF="A" alternateAlleleVCF="C" /></Location></SimpleAllele><RCVList /><Classifications><GermlineClassification><ReviewStatus>criteria provided, single submitter</ReviewStatus><Description>Likely benign</Description></GermlineClassification></Classifications></ClassifiedRecord>
+  </VariationArchive>
+  <VariationArchive VariationID="7" Accession="VCV000000007" Version="1" VariationName="uncertain" VariationType="single nucleotide variant" DateCreated="2026-07-10">
+    <ClassifiedRecord><SimpleAllele><Name>uncertain</Name><Location><SequenceLocation Assembly="GRCh38" Chr="17" Accession="NC_000017.11" positionVCF="7001" referenceAlleleVCF="A" alternateAlleleVCF="C" /></Location></SimpleAllele><RCVList /><Classifications><GermlineClassification><ReviewStatus>criteria provided, single submitter</ReviewStatus><Description>Uncertain significance</Description></GermlineClassification></Classifications></ClassifiedRecord>
+  </VariationArchive>
+  <VariationArchive VariationID="8" Accession="VCV000000008" Version="1" VariationName="zero star" VariationType="single nucleotide variant" DateCreated="2026-07-10">
+    <ClassifiedRecord><SimpleAllele><Name>zero</Name><Location><SequenceLocation Assembly="GRCh38" Chr="17" Accession="NC_000017.11" positionVCF="8001" referenceAlleleVCF="A" alternateAlleleVCF="C" /></Location></SimpleAllele><RCVList /><Classifications><GermlineClassification><ReviewStatus>no assertion criteria provided</ReviewStatus><Description>Benign</Description></GermlineClassification></Classifications></ClassifiedRecord>
+  </VariationArchive>
+  <VariationArchive VariationID="9" Accession="VCV000000009" Version="1" VariationName="mitochondrial" VariationType="single nucleotide variant" DateCreated="2026-07-10">
+    <ClassifiedRecord><SimpleAllele><Name>mt</Name><Location><SequenceLocation Assembly="GRCh38" Chr="MT" Accession="NC_012920.1" positionVCF="9001" referenceAlleleVCF="A" alternateAlleleVCF="C" /></Location></SimpleAllele><RCVList /><Classifications><GermlineClassification><ReviewStatus>criteria provided, single submitter</ReviewStatus><Description>Benign</Description></GermlineClassification></Classifications></ClassifiedRecord>
+  </VariationArchive>
+  <VariationArchive VariationID="10" Accession="VCV000000010" Version="1" VariationName="alternate" VariationType="single nucleotide variant" DateCreated="2026-07-10">
+    <ClassifiedRecord><SimpleAllele><Name>alt</Name><Location><SequenceLocation Assembly="GRCh38" Chr="17" Accession="NT_187661.1" positionVCF="10001" referenceAlleleVCF="A" alternateAlleleVCF="C" /></Location></SimpleAllele><RCVList /><Classifications><GermlineClassification><ReviewStatus>criteria provided, single submitter</ReviewStatus><Description>Benign</Description></GermlineClassification></Classifications></ClassifiedRecord>
+  </VariationArchive>
+  <VariationArchive VariationID="11" Accession="VCV000000011" Version="1" VariationName="indel" VariationType="Deletion" DateCreated="2026-07-10">
+    <ClassifiedRecord><SimpleAllele><Name>indel</Name><Location><SequenceLocation Assembly="GRCh38" Chr="17" Accession="NC_000017.11" positionVCF="11001" referenceAlleleVCF="AA" alternateAlleleVCF="A" /></Location></SimpleAllele><RCVList /><Classifications><GermlineClassification><ReviewStatus>criteria provided, single submitter</ReviewStatus><Description>Pathogenic</Description></GermlineClassification></Classifications></ClassifiedRecord>
+  </VariationArchive>
+  <VariationArchive VariationID="12" Accession="VCV000000012" Version="1" VariationName="haplotype" VariationType="Haplotype" DateCreated="2026-07-10">
+    <ClassifiedRecord><Haplotype><Name>haplotype</Name></Haplotype><RCVList /><Classifications><GermlineClassification><ReviewStatus>criteria provided, single submitter</ReviewStatus><Description>Pathogenic</Description></GermlineClassification></Classifications></ClassifiedRecord>
+  </VariationArchive>
+  <VariationArchive VariationID="13" Accession="VCV000000013" Version="1" VariationName="duplicate one" VariationType="single nucleotide variant" DateCreated="2026-07-10">
+    <ClassifiedRecord><SimpleAllele><Name>duplicate</Name><Location><SequenceLocation Assembly="GRCh38" Chr="17" Accession="NC_000017.11" positionVCF="13001" referenceAlleleVCF="A" alternateAlleleVCF="C" /></Location></SimpleAllele><RCVList /><Classifications><GermlineClassification><ReviewStatus>criteria provided, single submitter</ReviewStatus><Description>Benign</Description></GermlineClassification></Classifications></ClassifiedRecord>
+  </VariationArchive>
+  <VariationArchive VariationID="14" Accession="VCV000000014" Version="1" VariationName="duplicate two" VariationType="single nucleotide variant" DateCreated="2026-07-11">
+    <ClassifiedRecord><SimpleAllele><Name>duplicate</Name><Location><SequenceLocation Assembly="GRCh38" Chr="17" Accession="NC_000017.11" positionVCF="13001" referenceAlleleVCF="A" alternateAlleleVCF="C" /></Location></SimpleAllele><RCVList /><Classifications><GermlineClassification><ReviewStatus>criteria provided, single submitter</ReviewStatus><Description>Pathogenic</Description></GermlineClassification></Classifications></ClassifiedRecord>
+  </VariationArchive>
+  <VariationArchive VariationID="15" Accession="VCV000000015" Version="1" VariationName="likely pathogenic" VariationType="single nucleotide variant" DateCreated="2026-07-12">
+    <ClassifiedRecord><SimpleAllele><Name>likely pathogenic</Name><Location><SequenceLocation Assembly="GRCh38" Chr="17" Accession="NC_000017.11" positionVCF="15001" referenceAlleleVCF="A" alternateAlleleVCF="G" /></Location></SimpleAllele><RCVList /><Classifications><GermlineClassification><ReviewStatus>criteria provided, single submitter</ReviewStatus><Description>Likely pathogenic</Description></GermlineClassification></Classifications></ClassifiedRecord>
+  </VariationArchive>
+  <VariationArchive VariationID="16" Accession="VCV000000016" Version="1" VariationName="conflicting" VariationType="single nucleotide variant" DateCreated="2026-07-13">
+    <ClassifiedRecord><SimpleAllele><Name>conflicting</Name><Location><SequenceLocation Assembly="GRCh38" Chr="17" Accession="NC_000017.11" positionVCF="16001" referenceAlleleVCF="A" alternateAlleleVCF="T" /></Location></SimpleAllele><RCVList /><Classifications><GermlineClassification><ReviewStatus>criteria provided, multiple submitters, no conflicts</ReviewStatus><Description>Conflicting classifications of pathogenicity</Description></GermlineClassification></Classifications></ClassifiedRecord>
+  </VariationArchive>
+  <VariationArchive VariationID="17" Accession="VCV000000017" Version="1" VariationName="after window" VariationType="single nucleotide variant" DateCreated="2026-08-01">
+    <ClassifiedRecord><SimpleAllele><Name>after</Name><Location><SequenceLocation Assembly="GRCh38" Chr="17" Accession="NC_000017.11" positionVCF="17001" referenceAlleleVCF="A" alternateAlleleVCF="C" /></Location></SimpleAllele><RCVList /><Classifications><GermlineClassification><ReviewStatus>criteria provided, single submitter</ReviewStatus><Description>Pathogenic</Description></GermlineClassification></Classifications></ClassifiedRecord>
+  </VariationArchive>
+</ClinVarVariationRelease>

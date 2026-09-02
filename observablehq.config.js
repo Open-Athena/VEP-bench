@@ -13,6 +13,9 @@ export default {
       pages: [{
         name: "Consequence classification",
         path: "/tasks/consequence-classification"
+      }, {
+        name: "ClinVar",
+        path: "/tasks/clinvar"
       }]
     },
     {name: "Questions", path: "/questions"}

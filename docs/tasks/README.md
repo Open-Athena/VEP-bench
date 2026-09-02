@@ -10,6 +10,7 @@ task-specific manual.
 | Task | Family | Status |
 | --- | --- | --- |
 | [Ensembl VEP most-severe consequence](vep-most-severe-consequence.md) | `vep_most_severe_consequence` | Published public development set |
+| [ClinVar](clinvar.md) | `clinvar` | Prepared temporal public development set |
 
 ## Documentation convention
 

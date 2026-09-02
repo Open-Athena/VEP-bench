@@ -50,9 +50,10 @@ const runOptions = [
 const defaultRunOption = runOptions.find(
   (option) => option.kind === "run" && option.run === requestedRun
 ) ?? missingRun ?? availableRunOptions[0] ?? noRuns;
-const taskName = (taskFamily) => taskFamily === "vep_most_severe_consequence"
-  ? "Consequence classification"
-  : taskFamily;
+const taskName = (taskFamily) => ({
+  clinvar: "ClinVar",
+  vep_most_severe_consequence: "Consequence classification"
+})[taskFamily] ?? taskFamily;
 const resultLabel = (correct) => correct === true
   ? "Correct"
   : correct === false
@@ -86,17 +87,17 @@ const controlsInput = Inputs.form({
   }),
   search: Inputs.search(questionEntries, {
     label: "Find a question",
-    placeholder: "Question ID, variant, consequence, or choice…",
+    placeholder: "Question ID, variant, reference answer, or choice…",
     columns: ["question_id", "variant", "answer", "task"]
   }),
   task: Inputs.select([
     "All tasks",
     ...[...new Set(questionEntries.map((entry) => entry.task))].sort()
   ], {label: "Task"}),
-  consequence: Inputs.select([
-    "All consequences",
+  answer: Inputs.select([
+    "All answers",
     ...[...new Set(questionEntries.map((entry) => entry.answer))].sort()
-  ], {label: "Reference consequence"}),
+  ], {label: "Reference answer"}),
   result: Inputs.select([
     "All results",
     "Correct",
@@ -148,7 +149,7 @@ const entriesWithResults = controls.search.map((entry) => ({
 }));
 const visibleEntries = entriesWithResults.filter((entry) =>
   (controls.task === "All tasks" || entry.task === controls.task)
-  && (controls.consequence === "All consequences" || entry.answer === controls.consequence)
+  && (controls.answer === "All answers" || entry.answer === controls.answer)
   && (controls.result === "All results" || entry.outcome === controls.result)
 );
 const defaultQuestion = requestedQuestionId
@@ -162,8 +163,8 @@ const questionTable = Inputs.table(visibleEntries, {
   header: {
     question_label: "Question",
     task: "Task",
-    variant: "Source variant",
-    answer: "Reference consequence",
+    variant: "Source record",
+    answer: "Reference answer",
     outcome: "Result"
   },
   format: {

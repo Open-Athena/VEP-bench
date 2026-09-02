@@ -48,6 +48,13 @@ Each task owns:
 - task-specific validity checks and tests;
 - a methodology page under [`docs/tasks/`](tasks/README.md).
 
+Expensive task preparation may keep immutable, content-addressed processed
+intermediates under the public bucket's separate `data_prep/` namespace. Such a
+cache is task-owned, is not an official benchmark version, and must not contain
+raw upstream data that can be fetched from its authoritative archive. Cache
+completion manifests are installed last so readers never mistake a partial
+upload for a reusable result.
+
 Task-specific assumptions should not be added to shared evaluator,
 publication, or explorer code. Published questions identify their task through
 `metadata.task_family`, and task-profile evaluation checks that a question set
@@ -92,6 +99,11 @@ The public on-disk contracts are:
 Generated questions are sorted by `question_id` and written as UTF-8 JSONL with
 LF line endings. The complete file has a lowercase SHA-256 fingerprint; each
 question is also fingerprinted from canonical compact JSON.
+
+Task source records may contain a `source_metadata` object for audit fields
+that must remain out of model-visible prompts. The builder includes that object
+in the source-record fingerprint but does not copy it into generated questions;
+task-specific compact-source validators own its structure.
 
 JSON Schema cannot express every question invariant. The builder additionally
 checks that choice IDs are unique, that `answer_choice_id` identifies exactly
