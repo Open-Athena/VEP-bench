@@ -25,7 +25,6 @@ function run({
   modelId = "test/model",
   releaseDate = "2026-07-09",
   runId = "test-run",
-  taskFamily = "synthetic_effect",
   tokens = 1200,
   cost = 0.25
 } = {}) {
@@ -51,8 +50,7 @@ function run({
     outcome_index_path: `outcomes/${runId}.json.gz`,
     question_set_sha256: "0".repeat(64),
     question_set_size: 1,
-    run_id: runId,
-    task_family: taskFamily
+    run_id: runId
   };
 }
 
@@ -94,7 +92,6 @@ test("overall leaderboard macro-averages complete task profiles", () => {
       cost: 0.5,
       evaluationProfile: "clinvar:clinvar-snv-v1@1.0",
       runId: "medium-clinvar",
-      taskFamily: "clinvar",
       tokens: 300
     }),
     run({
@@ -103,7 +100,6 @@ test("overall leaderboard macro-averages complete task profiles", () => {
       cost: 0.25,
       evaluationProfile: "vep_most_severe_consequence:vep-most-severe-v1@1.2",
       runId: "medium-consequence",
-      taskFamily: "vep_most_severe_consequence",
       tokens: 200
     }),
     run({
@@ -111,8 +107,7 @@ test("overall leaderboard macro-averages complete task profiles", () => {
       configurationKey: `cfg-${"3".repeat(64)}`,
       effort: "low",
       evaluationProfile: "vep_most_severe_consequence:vep-most-severe-v1@1.2",
-      runId: "low-consequence-only",
-      taskFamily: "vep_most_severe_consequence"
+      runId: "low-consequence-only"
     })
   ], leaderboard);
 

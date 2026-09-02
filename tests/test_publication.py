@@ -145,9 +145,9 @@ def test_publication_combines_task_question_sets_without_rewriting_run_identity(
             },
         ],
     }
-    assert {run["task_family"] for run in runs_document["runs"]} == {
-        "synthetic_clinical",
-        "synthetic_effect",
+    assert {run["evaluation_profile"] for run in runs_document["runs"]} == {
+        "synthetic_clinical:clinical-v1@1.0",
+        "synthetic_effect:mc-effect-v1@1.0",
     }
     assert {run["question_set_size"] for run in runs_document["runs"]} == {1}
     assert {run["question_set_sha256"] for run in runs_document["runs"]} == {
@@ -179,7 +179,6 @@ def test_validate_version_accepts_legacy_raw_archive_without_usage(tmp_path: Pat
     runs_path = version / "runs.json"
     runs = json.loads(runs_path.read_text(encoding="utf-8"))
     runs.pop("leaderboard")
-    runs["runs"][0].pop("task_family")
     runs["runs"][0]["raw_archive"] = legacy_raw_descriptor
     runs_content = publication_module._write_json(runs_path, runs)
     manifest["artifacts"]["raw"][0] = legacy_raw_descriptor

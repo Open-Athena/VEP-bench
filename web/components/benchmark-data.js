@@ -106,8 +106,7 @@ export function overallLeaderboardRows(runs, leaderboard) {
   const groups = new Map();
   for (const run of latestCompleteRuns(runs)) {
     const profile = profiles.find((candidate) =>
-      candidate.task_family === run.task_family
-      && candidate.evaluation_profile === run.evaluation_profile
+      candidate.evaluation_profile === run.evaluation_profile
     );
     if (!profile) continue;
     const key = overallConfigurationKey(run);

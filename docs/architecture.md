@@ -142,9 +142,9 @@ streams so memory use does not grow with the total amount of model reasoning.
 
 An official multi-task version publishes the sorted union of its task question
 sets as the browsable question artifact. Each run still records the digest,
-size, task family, and evaluation profile of the single task question set that
-was actually evaluated. The publication's `runs.json` records the complete list
-of task profiles required by the leaderboard.
+size, and evaluation profile of the single task question set that was actually
+evaluated. The publication's `runs.json` maps those profiles to task families
+and records the complete list required by the leaderboard.
 
 The provisional `task_macro_average_v0` overall score groups runs with identical
 model, upstream-provider, model-revision, and fully resolved generation

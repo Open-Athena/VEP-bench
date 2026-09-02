@@ -423,20 +423,16 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
         errors = list(validators["run.schema.json"].iter_errors(run))
         if errors:
             raise BuildError(_schema_error(run["run_id"], errors))
-        task_family = run.get("task_family")
-        if len(task_sets) > 1 and task_family is None:
-            raise BuildError(f"multi-task run {run['run_id']!r} is missing its task family")
-        if task_family is None:
-            matching_families = [
-                candidate_family
-                for candidate_family, task_set in task_sets.items()
-                if run["question_set_sha256"] == task_set["question_set_sha256"]
-                and run["question_set_size"] == task_set["question_set_size"]
-                and run["evaluation_profile"] == task_set["evaluation_profile"]
-            ]
-            if len(matching_families) != 1:
-                raise BuildError(f"run {run['run_id']!r} has no unique task family")
-            task_family = matching_families[0]
+        matching_families = [
+            candidate_family
+            for candidate_family, task_set in task_sets.items()
+            if run["question_set_sha256"] == task_set["question_set_sha256"]
+            and run["question_set_size"] == task_set["question_set_size"]
+            and run["evaluation_profile"] == task_set["evaluation_profile"]
+        ]
+        if len(matching_families) != 1:
+            raise BuildError(f"run {run['run_id']!r} has no unique task family")
+        task_family = matching_families[0]
         task_set = task_sets.get(task_family)
         if task_set is None or (
             run["question_set_sha256"] != task_set["question_set_sha256"]
@@ -1074,7 +1070,6 @@ def _convert_run(
         "question_set_size": question_set_size,
         "model": published_model,
         "generation_parameters": generation_parameters,
-        "task_family": task_family,
         "evaluation_profile": evaluation_profile,
         "started_at": started_at,
         "completed_at": completed_at,
