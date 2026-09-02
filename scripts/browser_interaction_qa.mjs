@@ -103,6 +103,11 @@ await waitFor(
   "two-model leaderboard"
 );
 const allTaskTable = await evaluate('document.querySelector("table tbody").innerText');
+assert.equal(
+  await evaluate('getComputedStyle(document.querySelector(\'th[title="score"]\')).textAlign'),
+  "center",
+  "score column header is not centered"
+);
 assert.equal(await chooseOption("ClinVar"), true);
 await waitFor(
   `document.querySelector('.card[aria-label^="ClinVar score versus"]') !== null`,

@@ -81,6 +81,10 @@ export default {
         position: relative;
       }
 
+      th[title="score"] {
+        text-align: center !important;
+      }
+
       .vepbench-score-bar {
         background: #4267d2;
         bottom: 0;
