@@ -28,6 +28,10 @@ on that task, such as the completion-token ceiling. A model profile contains
 only model- or provider-specific settings. Question paths, result paths, run
 IDs, and secrets remain run-specific.
 
+Both current task profiles use a 128,000-token completion ceiling. This fits
+the supported output limit of every benchmarked model while leaving substantial
+headroom for reasoning and the required final answer.
+
 The evaluator rejects overlapping task and model settings. Fully resolved
 non-secret request parameters are copied into every result record for
 reproducibility.
@@ -51,6 +55,8 @@ uv run --locked vepbench batch-collect --state <state.json>
 ```
 
 Collection writes canonical scored JSONL in deterministic question order.
+Submission maps benchmark question IDs to stable provider-safe batch custom IDs
+and preserves that mapping in the resumable state file.
 OpenRouter reports cost for a completed batch as one aggregate rather than on
 each response. Collection allocates that exact total deterministically across
 all submitted results in proportion to their provider-reported token totals
@@ -111,13 +117,38 @@ profile can only be changed in that profile.
 ## Completion and failure semantics
 
 Only prompts cross the provider boundary; answer keys never do. A complete
-response with an invalid or missing final answer is a scientific error and
-scores zero. An API failure has a null score, makes the run incomplete, and
-causes direct evaluation to exit nonzero.
+response receives one flat, deterministic `scoring.result_type`:
+
+- `correct` or `incorrect` when the last well-formed `FINAL: <choice-id>` line
+  identifies a known choice;
+- `refusal` when the provider supplies a structured refusal or a
+  `content_filter` finish reason;
+- `token_limit` when no valid final answer is present and the finish reason is
+  `length`; or
+- `format_error` for every other completed response without a valid final
+  answer.
+
+A valid final answer remains `correct` or `incorrect` when the finish reason is
+`length`. Refusal evidence takes precedence over answer parsing. The taxonomy
+does not include provider or transport failures: an API failure has null
+scoring, makes the run incomplete, and causes direct evaluation to exit
+nonzero. Such a run cannot appear in the official leaderboard.
 
 Local results are written under `.vepbench/results/` unless an output path is
 provided. They preserve provider-exposed reasoning when present, but do not
 claim access to a model's private chain of thought.
+
+## Fable profile
+
+The Claude Fable 5.1 medium profile requests medium adaptive reasoning and
+omits unsupported temperature and seed parameters. Use its canonical base
+model ID with the default OpenRouter Batch API path; OpenRouter selects the
+discounted batch route during submission.
+
+The DeepSeek V4 Flash 0731 low profile requests low provider-exposed reasoning
+and a deterministic seed. Its direct and batch prices should be checked before
+a full run because the cheapest live route can change independently of the
+versioned profile.
 
 ## Existing Luna profiles
 

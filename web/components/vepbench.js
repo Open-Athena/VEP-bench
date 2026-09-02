@@ -1,5 +1,7 @@
 import MarkdownIt from "npm:markdown-it@14.1.0";
 
+import {resultTypeForAnswer, resultTypeLabel} from "./benchmark-data.js";
+
 const markdown = new MarkdownIt({
   html: false,
   breaks: true,
@@ -44,8 +46,7 @@ function choiceText(question, choiceId) {
 
 export function resultOutcome(result) {
   if (!result) return "Not evaluated";
-  if (result.scoring.parse_error !== null) return "Format failure";
-  return result.scoring.correct ? "Correct" : "Incorrect";
+  return resultTypeLabel(resultTypeForAnswer(result), result.scoring.correct);
 }
 
 export function entryForAnswer(question, index, result, run, rawArchiveUrl = null) {
@@ -79,13 +80,13 @@ export function entriesForQuestions(questions) {
 
 export function outcomeBadge(value) {
   const badge = document.createElement("span");
-  const outcome = value === "Correct"
-    ? "correct"
-    : value === "Incorrect"
-      ? "incorrect"
-      : value === "Format failure"
-        ? "format-failure"
-        : "";
+  const outcome = {
+    Correct: "correct",
+    Incorrect: "incorrect",
+    Refusal: "refusal",
+    "Token limit": "token-limit",
+    "Format error": "format-error"
+  }[value] ?? "";
   if (outcome) badge.className = `vepbench-outcome-badge vepbench-outcome-${outcome}`;
   badge.textContent = value;
   return badge;

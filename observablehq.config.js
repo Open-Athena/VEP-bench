@@ -67,7 +67,17 @@ export default {
         color: #8a1c12;
       }
 
-      .vepbench-outcome-format-failure {
+      .vepbench-outcome-refusal {
+        background: #fde8e8;
+        color: #8a1c12;
+      }
+
+      .vepbench-outcome-token-limit {
+        background: #eee8ff;
+        color: #50328a;
+      }
+
+      .vepbench-outcome-format-error {
         background: #fff3bf;
         color: #5c4600;
       }

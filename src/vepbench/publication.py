@@ -25,6 +25,9 @@ from .builder import (
     validate_question,
 )
 from .evaluator import (
+    RESULT_TYPES,
+    classify_result_type,
+    result_type_for_record,
     score_multiple_choice,
     validate_batch_usage_allocations,
     validate_result,
@@ -40,6 +43,7 @@ SCHEMA_FILES = (
 )
 ZSTD_LEVEL = 3
 GZIP_LEVEL = 9
+AUTO_ROUTED_PROVIDER = "OpenRouter auto-routing"
 BUCKET_README = """# VEPBench published data
 
 This public bucket is the canonical store for generated VEPBench questions and
@@ -154,11 +158,20 @@ def _overall_configuration_key(run: Mapping[str, Any]) -> str:
                 "gateway": model["gateway"],
                 "model_id": model["model_id"],
                 "model_revision": model.get("model_revision"),
-                "upstream_provider": model.get("upstream_provider"),
             },
             "generation_parameters": run["generation_parameters"],
         }
     )
+
+
+def _model_identity(model: Mapping[str, Any]) -> dict[str, Any]:
+    """Return request-owned model identity, excluding observed route metadata."""
+
+    return {
+        "gateway": model["gateway"],
+        "model_id": model["model_id"],
+        "model_revision": model.get("model_revision"),
+    }
 
 
 def build_version(
@@ -507,14 +520,15 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
         tuple[str, Mapping[str, Any] | None, Mapping[str, Any]],
     ] = {}
     answer_usage_records: list[dict[str, Any]] = []
-    expected_outcomes: dict[tuple[str, str], bool | None] = {}
+    expected_outcomes: dict[tuple[str, str], tuple[bool | None, str | None]] = {}
     per_run_answers: dict[str, int] = dict.fromkeys(run_by_id, 0)
     per_run_stats: dict[str, dict[str, Any]] = {
         run_id: {
             "completed": 0,
             "api_errors": 0,
             "correct": 0,
-            "format_failures": 0,
+            "parse_failures": 0,
+            "result_counts": dict.fromkeys(RESULT_TYPES, 0),
             "token_values": [],
             "cost_values": [],
             "tokens_complete": True,
@@ -548,7 +562,6 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
                 "usage": answer["usage"],
             }
         )
-        expected_outcomes[(answer["run_id"], answer["question_id"])] = answer["scoring"]["correct"]
         run = run_by_id.get(answer["run_id"])
         answer_question = question_by_id.get(answer["question_id"])
         if run is None or answer_question is None:
@@ -557,7 +570,11 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
             raise BuildError(f"answer {key!r} belongs to the wrong task family")
         if answer["question_sha256"] != sha256_json(answer_question):
             raise BuildError(f"answer {key!r} has the wrong question digest")
-        _validate_answer_scoring(answer, answer_question)
+        result_type = _validate_answer_scoring(answer, answer_question)
+        expected_outcomes[(answer["run_id"], answer["question_id"])] = (
+            answer["scoring"]["correct"],
+            result_type,
+        )
         expected_path = (
             f"versions/{version_name}/answers/{answer['run_id']}/{answer['question_id']}.json.gz"
         )
@@ -569,7 +586,9 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
         stats["completed"] += status == "completed"
         stats["api_errors"] += status == "api_error"
         stats["correct"] += answer["scoring"]["correct"] is True
-        stats["format_failures"] += answer["scoring"]["parse_error"] is not None
+        stats["parse_failures"] += answer["scoring"]["parse_error"] is not None
+        if result_type is not None:
+            stats["result_counts"][result_type] += 1
         usage_tokens, usage_cost = _usage_totals(answer["usage"])
         if status == "completed" and usage_tokens is not None:
             stats["token_values"].append(usage_tokens)
@@ -633,14 +652,26 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
         for row in outcomes:
             if (
                 not isinstance(row, dict)
-                or set(row) != {"question_id", "correct"}
+                or set(row)
+                not in (
+                    {"question_id", "correct"},
+                    {"question_id", "correct", "result_type"},
+                )
                 or (row["correct"] is not None and not isinstance(row["correct"], bool))
+                or (
+                    "result_type" in row
+                    and row["result_type"] is not None
+                    and row["result_type"] not in RESULT_TYPES
+                )
             ):
                 raise BuildError(f"{descriptor['path']}: invalid outcome record")
             outcome_key = (run_id, row["question_id"])
             if (
                 outcome_key not in expected_outcomes
-                or expected_outcomes[outcome_key] != row["correct"]
+                or expected_outcomes[outcome_key][0] != row["correct"]
+                or (
+                    "result_type" in row and expected_outcomes[outcome_key][1] != row["result_type"]
+                )
             ):
                 raise BuildError(f"{descriptor['path']}: outcome disagrees with its answer")
 
@@ -733,8 +764,14 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
             "scored": stats["completed"],
             "correct": stats["correct"],
             "accuracy": accuracy,
-            "format_failures": stats["format_failures"],
+            "format_failures": (
+                stats["result_counts"]["format_error"]
+                if "result_counts" in run["metrics"]
+                else stats["parse_failures"]
+            ),
         }
+        if "result_counts" in run["metrics"]:
+            expected_metrics["result_counts"] = stats["result_counts"]
         if "total_tokens" in run["metrics"] or "total_cost_usd" in run["metrics"]:
             expected_metrics.update(
                 {
@@ -830,7 +867,7 @@ def promote_version(
     return validate_version(output_dir, version_name="main")
 
 
-def _validate_answer_scoring(answer: Mapping[str, Any], question: Mapping[str, Any]) -> None:
+def _validate_answer_scoring(answer: Mapping[str, Any], question: Mapping[str, Any]) -> str | None:
     status = answer["response"]["status"]
     if status == "completed":
         expected = score_multiple_choice(
@@ -845,10 +882,27 @@ def _validate_answer_scoring(answer: Mapping[str, Any], question: Mapping[str, A
             "correct": expected.correct,
             "parse_error": expected.parse_error,
         }
-        if answer["scoring"] != expected_scoring or answer["error"] is not None:
+        actual_scoring = dict(answer["scoring"])
+        has_result_type = "result_type" in actual_scoring
+        actual_result_type = actual_scoring.pop("result_type", None)
+        fallback_result_type = classify_result_type(
+            correct=expected.correct,
+            parse_error=expected.parse_error,
+            finish_reason=answer["response"]["finish_reason"],
+        )
+        if (
+            actual_scoring != expected_scoring
+            or answer["error"] is not None
+            or (
+                has_result_type
+                and actual_result_type != "refusal"
+                and actual_result_type != fallback_result_type
+            )
+        ):
             raise BuildError(
                 f"answer {answer['run_id']}/{answer['question_id']} has an invalid score"
             )
+        return actual_result_type if has_result_type else fallback_result_type
     else:
         expected_scoring = {
             "metric": "exact_match",
@@ -858,14 +912,19 @@ def _validate_answer_scoring(answer: Mapping[str, Any], question: Mapping[str, A
             "parse_error": None,
         }
         completion_fields = ("content", "reasoning", "finish_reason")
+        actual_scoring = dict(answer["scoring"])
+        has_result_type = "result_type" in actual_scoring
+        actual_result_type = actual_scoring.pop("result_type", None)
         if (
-            answer["scoring"] != expected_scoring
+            actual_scoring != expected_scoring
+            or (has_result_type and actual_result_type is not None)
             or any(answer["response"][field] is not None for field in completion_fields)
             or not isinstance(answer["error"], Mapping)
         ):
             raise BuildError(
                 f"answer {answer['run_id']}/{answer['question_id']} has an invalid API error"
             )
+        return None
 
 
 def _convert_run(
@@ -895,12 +954,14 @@ def _convert_run(
     evaluation_profile = task_set["evaluation_profile"]
     run_id = first_record["run_id"]
     model = json.loads(canonical_json(first_record["model"]))
+    model_identity = _model_identity(model)
+    observed_providers = {model["upstream_provider"]}
     generation_parameters = json.loads(canonical_json(first_record["generation_parameters"]))
-    model_json = canonical_json(model)
+    model_identity_json = canonical_json(model_identity)
     parameters_json = canonical_json(generation_parameters)
     configuration_key = "cfg-" + sha256_json(
         {
-            "model": model,
+            "model": model_identity,
             "generation_parameters": generation_parameters,
             "evaluation_profile": evaluation_profile,
         }
@@ -915,7 +976,8 @@ def _convert_run(
         published_model.update(model_metadata)
     answer_descriptors: list[dict[str, Any]] = []
     outcome_rows: list[dict[str, Any]] = []
-    completed = api_errors = correct = format_failures = 0
+    completed = api_errors = correct = 0
+    result_counts = dict.fromkeys(RESULT_TYPES, 0)
     token_values: list[int] = []
     cost_values: list[float] = []
     tokens_complete = True
@@ -940,12 +1002,13 @@ def _convert_run(
                 if record["run_id"] != run_id:
                     raise BuildError(f"{result_file}: must contain exactly one run ID")
                 if (
-                    canonical_json(record["model"]) != model_json
+                    canonical_json(_model_identity(record["model"])) != model_identity_json
                     or canonical_json(record["generation_parameters"]) != parameters_json
                 ):
                     raise BuildError(
                         f"{result_file}: model and generation parameters must be constant"
                     )
+                observed_providers.add(record["model"]["upstream_provider"])
                 ordered_key = (record["question_id"], record["completion_index"])
                 if previous_key is not None and ordered_key <= previous_key:
                     raise BuildError(
@@ -968,7 +1031,9 @@ def _convert_run(
                 completed += status == "completed"
                 api_errors += status == "api_error"
                 correct += record["scoring"]["correct"] is True
-                format_failures += record["scoring"]["parse_error"] is not None
+                result_type = result_type_for_record(record)
+                if result_type is not None:
+                    result_counts[result_type] += 1
                 usage_tokens, usage_cost = _usage_totals(record["usage"])
                 if status == "completed" and usage_tokens is not None:
                     token_values.append(usage_tokens)
@@ -1008,7 +1073,7 @@ def _convert_run(
                         )
                     },
                     "usage": record["usage"],
-                    "scoring": record["scoring"],
+                    "scoring": {**record["scoring"], "result_type": result_type},
                     "error": record["error"],
                     "raw_archive_path": f"raw/{run_id}.jsonl.zst",
                 }
@@ -1029,6 +1094,7 @@ def _convert_run(
                     {
                         "question_id": question_id,
                         "correct": record["scoring"]["correct"],
+                        "result_type": result_type,
                     }
                 )
 
@@ -1097,6 +1163,9 @@ def _convert_run(
     total_cost_usd = math.fsum(cost_values) if completed and cost_complete else None
     if started_at is None or completed_at is None:
         raise BuildError(f"{result_file}: no result records found")
+    published_model["upstream_provider"] = (
+        next(iter(observed_providers)) if len(observed_providers) == 1 else AUTO_ROUTED_PROVIDER
+    )
     run_record = {
         "schema_version": "1.0",
         "run_id": run_id,
@@ -1119,7 +1188,8 @@ def _convert_run(
             "scored": completed,
             "correct": correct,
             "accuracy": accuracy,
-            "format_failures": format_failures,
+            "format_failures": result_counts["format_error"],
+            "result_counts": result_counts,
             "total_tokens": total_tokens,
             "total_cost_usd": total_cost_usd,
         },

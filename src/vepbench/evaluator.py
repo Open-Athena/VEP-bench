@@ -28,6 +28,7 @@ from .builder import (
 OPENROUTER_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions"
 FINAL_ANSWER = re.compile(r"^FINAL:[ \t]*([A-Za-z0-9_-]+)[ \t]*\r?$", re.MULTILINE)
 RECORD_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]*$")
+RESULT_TYPES = ("correct", "incorrect", "refusal", "token_limit", "format_error")
 
 
 @dataclass
@@ -120,6 +121,39 @@ def score_multiple_choice(
         return Score(selected, 0, False, f"unknown choice ID {selected!r}")
     correct = selected == answer_choice_id
     return Score(selected, int(correct), correct, None)
+
+
+def classify_result_type(
+    *,
+    correct: bool,
+    parse_error: str | None,
+    finish_reason: str | None,
+    refusal: Any = None,
+) -> str:
+    """Classify one completed response into the public flat result taxonomy."""
+
+    if (isinstance(refusal, str) and refusal.strip()) or finish_reason == "content_filter":
+        return "refusal"
+    if parse_error is None:
+        return "correct" if correct else "incorrect"
+    if finish_reason == "length":
+        return "token_limit"
+    return "format_error"
+
+
+def result_type_for_record(record: Mapping[str, Any]) -> str | None:
+    """Derive a result type, including for legacy records that did not store one."""
+
+    response = record["response"]
+    if response["status"] != "completed":
+        return None
+    scoring = record["scoring"]
+    return classify_result_type(
+        correct=scoring["correct"],
+        parse_error=scoring["parse_error"],
+        finish_reason=response["finish_reason"],
+        refusal=_provider_refusal(response.get("raw")),
+    )
 
 
 def validate_generation_parameters(parameters: Mapping[str, Any]) -> None:
@@ -375,8 +409,13 @@ def validate_result(result: Mapping[str, Any], validator: Draft202012Validator) 
             "correct": expected.correct,
             "parse_error": expected.parse_error,
         }
-        if result["scoring"] != expected_scoring:
+        actual_scoring = dict(result["scoring"])
+        has_result_type = "result_type" in actual_scoring
+        actual_result_type = actual_scoring.pop("result_type", None)
+        if actual_scoring != expected_scoring:
             raise BuildError(f"{result['question_id']}: stored score does not match response")
+        if has_result_type and actual_result_type != result_type_for_record(result):
+            raise BuildError(f"{result['question_id']}: stored result type does not match response")
         if result["error"] is not None:
             raise BuildError(f"{result['question_id']}: completed response must not have error")
     else:
@@ -387,7 +426,12 @@ def validate_result(result: Mapping[str, Any], validator: Draft202012Validator) 
             "correct": None,
             "parse_error": None,
         }
-        if result["scoring"] != expected_scoring:
+        actual_scoring = dict(result["scoring"])
+        has_result_type = "result_type" in actual_scoring
+        actual_result_type = actual_scoring.pop("result_type", None)
+        if actual_scoring != expected_scoring or (
+            has_result_type and actual_result_type is not None
+        ):
             raise BuildError(f"{result['question_id']}: API error must have null scoring")
         if any(
             result["response"][field] is not None
@@ -534,6 +578,12 @@ def completed_result(
             "value": score.value,
             "correct": score.correct,
             "parse_error": score.parse_error,
+            "result_type": classify_result_type(
+                correct=score.correct,
+                parse_error=score.parse_error,
+                finish_reason=finish_reason,
+                refusal=message.get("refusal"),
+            ),
         },
         usage=usage,
         error=None,
@@ -575,6 +625,7 @@ def error_result(
             "value": None,
             "correct": None,
             "parse_error": None,
+            "result_type": None,
         },
         usage={},
         error={
@@ -633,6 +684,22 @@ def _first_choice(raw: Mapping[str, Any]) -> tuple[dict[str, Any], dict[str, Any
     if not isinstance(message, dict):
         raise ProviderError("OpenRouter response choice has no message", raw_response=dict(raw))
     return choice, message
+
+
+def _provider_refusal(raw: Any) -> Any:
+    """Return a structured refusal from a direct or batch OpenRouter payload."""
+
+    if not isinstance(raw, Mapping):
+        return None
+    body: Mapping[str, Any] = raw
+    response = raw.get("response")
+    if isinstance(response, Mapping) and isinstance(response.get("body"), Mapping):
+        body = response["body"]
+    choices = body.get("choices")
+    if not isinstance(choices, list) or not choices or not isinstance(choices[0], Mapping):
+        return None
+    message = choices[0].get("message")
+    return message.get("refusal") if isinstance(message, Mapping) else None
 
 
 def _extract_reasoning(message: Mapping[str, Any]) -> str | None:

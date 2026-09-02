@@ -3,6 +3,35 @@ const EXPLORER_TASK_ORDER = new Map([
   ["vep_most_severe_consequence", 0],
   ["clinvar", 1]
 ]);
+const RESULT_TYPE_LABELS = Object.freeze({
+  correct: "Correct",
+  incorrect: "Incorrect",
+  refusal: "Refusal",
+  token_limit: "Token limit",
+  format_error: "Format error"
+});
+
+export function resultTypeForAnswer(result) {
+  if (!result) return null;
+  if (result.response?.status && result.response.status !== "completed") return null;
+  const stored = result.scoring?.result_type;
+  if (Object.hasOwn(RESULT_TYPE_LABELS, stored)) return stored;
+  if (result.scoring.parse_error !== null && result.response?.finish_reason === "content_filter") {
+    return "refusal";
+  }
+  if (result.scoring.parse_error !== null && result.response?.finish_reason === "length") {
+    return "token_limit";
+  }
+  if (result.scoring.parse_error !== null) return "format_error";
+  return result.scoring.correct ? "correct" : "incorrect";
+}
+
+export function resultTypeLabel(resultType, correct = null) {
+  if (Object.hasOwn(RESULT_TYPE_LABELS, resultType)) return RESULT_TYPE_LABELS[resultType];
+  if (correct === true) return RESULT_TYPE_LABELS.correct;
+  if (correct === false) return RESULT_TYPE_LABELS.incorrect;
+  return "Not scored";
+}
 
 function compareTaskFamilies(left, right) {
   return (EXPLORER_TASK_ORDER.get(left) ?? Number.MAX_SAFE_INTEGER)
@@ -13,6 +42,8 @@ function compareTaskFamilies(left, right) {
 function modelName(modelId, generationParameters) {
   const name = modelId.split("/").at(-1) ?? modelId;
   const displayName = {
+    "claude-fable-5.1": "Claude Fable 5.1",
+    "deepseek-v4-flash-0731": "DeepSeek V4 Flash 0731",
     "gpt-5.6-luna": "GPT 5.6 Luna",
     "gpt-5.6-sol": "GPT 5.6 Sol"
   }[name] ?? name;
@@ -88,8 +119,7 @@ function overallConfigurationKey(run) {
     model: {
       gateway: run.model.gateway,
       model_id: run.model.model_id,
-      model_revision: run.model.model_revision ?? null,
-      upstream_provider: run.model.upstream_provider ?? null
+      model_revision: run.model.model_revision ?? null
     },
     generation_parameters: run.generation_parameters
   }));

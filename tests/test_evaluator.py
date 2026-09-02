@@ -14,6 +14,7 @@ from vepbench.builder import BuildError, canonical_json, read_jsonl
 from vepbench.evaluator import (
     OpenRouterTransport,
     ProviderError,
+    classify_result_type,
     evaluate_file,
     score_multiple_choice,
     validate_result,
@@ -76,6 +77,36 @@ def test_score_rejects_missing_and_unknown_answers() -> None:
     assert unknown.parse_error == "unknown choice ID 'Z'"
 
 
+@pytest.mark.parametrize(
+    ("correct", "parse_error", "finish_reason", "refusal", "expected"),
+    [
+        (True, None, "stop", None, "correct"),
+        (False, None, "stop", None, "incorrect"),
+        (False, "missing final", "content_filter", None, "refusal"),
+        (False, "missing final", "stop", "I cannot answer.", "refusal"),
+        (False, "missing final", "length", None, "token_limit"),
+        (False, "missing final", "stop", None, "format_error"),
+        (True, None, "length", None, "correct"),
+    ],
+)
+def test_result_type_classification_is_flat_and_deterministic(
+    correct: bool,
+    parse_error: str | None,
+    finish_reason: str,
+    refusal: str | None,
+    expected: str,
+) -> None:
+    assert (
+        classify_result_type(
+            correct=correct,
+            parse_error=parse_error,
+            finish_reason=finish_reason,
+            refusal=refusal,
+        )
+        == expected
+    )
+
+
 @pytest.mark.parametrize("content", ["FINAL:\nB", "FINAL: \nB", "FINAL:\r\nB"])
 def test_score_does_not_accept_answer_on_the_next_line(content: str) -> None:
     score = score_multiple_choice(content, {"A", "B"}, "B")
@@ -125,6 +156,7 @@ def test_completed_evaluation_is_valid_and_preserves_response(tmp_path: Path) ->
         "value": 1,
         "correct": True,
         "parse_error": None,
+        "result_type": "correct",
     }
     assert result["response"]["raw"] == raw
     assert result["response"]["reasoning"] == "Provider-exposed trace"
@@ -233,6 +265,7 @@ def test_api_error_is_valid_and_marks_run_incomplete(tmp_path: Path) -> None:
     assert result["response"]["status"] == "api_error"
     assert result["scoring"]["value"] is None
     assert result["scoring"]["correct"] is None
+    assert result["scoring"]["result_type"] is None
     assert result["error"]["status_code"] == 503
 
 
@@ -373,6 +406,28 @@ def test_result_validation_recomputes_score(tmp_path: Path) -> None:
     result["scoring"]["correct"] = False
 
     with pytest.raises(BuildError, match="stored score does not match response"):
+        _validate_result(result)
+
+
+def test_result_validation_recomputes_result_type(tmp_path: Path) -> None:
+    output = tmp_path / "run.jsonl"
+    evaluate_file(
+        questions_path=QUESTIONS,
+        question_schema_path=QUESTION_SCHEMA,
+        result_schema_path=RESULT_SCHEMA,
+        output=output,
+        run_id="result-type-validation-run",
+        model_id="example/model",
+        api_key="test-secret",
+        transport=FakeTransport(
+            {"choices": [{"finish_reason": "stop", "message": {"content": "FINAL: B"}}]}
+        ),
+        now=lambda: FIXED_TIME,
+    )
+    result = _load_one(output)
+    result["scoring"]["result_type"] = "incorrect"
+
+    with pytest.raises(BuildError, match="stored result type does not match response"):
         _validate_result(result)
 
 

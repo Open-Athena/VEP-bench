@@ -34,7 +34,8 @@
         "parsed_answer": {"type": ["string", "null"]},
         "value": {"enum": [0, 1, null]},
         "correct": {"type": ["boolean", "null"]},
-        "parse_error": {"type": ["string", "null"]}
+        "parse_error": {"type": ["string", "null"]},
+        "result_type": {"enum": ["correct", "incorrect", "refusal", "token_limit", "format_error", null]}
       }
     },
     "error": {"type": ["object", "null"]},

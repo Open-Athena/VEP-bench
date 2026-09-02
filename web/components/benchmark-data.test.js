@@ -10,6 +10,7 @@ import {
   fetchJson,
   fetchOutcomeIndex,
   groupCurrentRuns,
+  formatRunLabel,
   leaderboardRows,
   leaderboardRowsForScope,
   modelSelectionRows,
@@ -17,6 +18,8 @@ import {
   orderTaskFamilies,
   overallLeaderboardRows,
   outcomeIndexPath,
+  resultTypeForAnswer,
+  resultTypeLabel,
   runForTask
 } from "./benchmark-data.js";
 
@@ -29,6 +32,7 @@ function run({
   evaluationProfile = "synthetic_effect:mc-effect-v1@1.0",
   family = "Test family",
   modelId = "test/model",
+  provider = "Test provider",
   releaseDate = "2026-07-09",
   runId = "test-run",
   tokens = 1200,
@@ -51,7 +55,7 @@ function run({
       model_id: modelId,
       family,
       release_date: releaseDate,
-      upstream_provider: "Test provider"
+      upstream_provider: provider
     },
     outcome_index_path: `outcomes/${runId}.json.gz`,
     question_set_sha256: "0".repeat(64),
@@ -75,6 +79,17 @@ test("leaderboard keeps the latest complete run per model configuration", () => 
   assert.equal(rows[0].release_date, "2026-07-09");
   assert.equal(rows[0].tokens, 1200);
   assert.equal(rows[0].cost, 0.25);
+});
+
+test("new comparison models have human-readable labels", () => {
+  assert.match(
+    formatRunLabel(run({modelId: "anthropic/claude-fable-5.1"})),
+    /^Claude Fable 5\.1 \(medium\)/
+  );
+  assert.match(
+    formatRunLabel(run({modelId: "deepseek/deepseek-v4-flash-0731"})),
+    /^DeepSeek V4 Flash 0731 \(medium\)/
+  );
 });
 
 test("overall leaderboard macro-averages complete task profiles", () => {
@@ -105,6 +120,7 @@ test("overall leaderboard macro-averages complete task profiles", () => {
       configurationKey: `cfg-${"2".repeat(64)}`,
       cost: 0.25,
       evaluationProfile: "vep_most_severe_consequence:vep-most-severe-v1@1.2",
+      provider: "Another routed provider",
       runId: "medium-consequence",
       tokens: 200
     }),
@@ -293,6 +309,34 @@ test("question explorer exposes only complete runs", () => {
     run({runId: "alpha"})
   ]);
   assert.deepEqual(runs.map((candidate) => candidate.run_id), ["alpha", "zeta"]);
+});
+
+test("result types use stored values and preserve legacy fallbacks", () => {
+  assert.equal(
+    resultTypeForAnswer({scoring: {result_type: "refusal", parse_error: "missing"}}),
+    "refusal"
+  );
+  assert.equal(
+    resultTypeForAnswer({scoring: {correct: false, parse_error: "missing"}}),
+    "format_error"
+  );
+  assert.equal(
+    resultTypeForAnswer({
+      response: {status: "completed", finish_reason: "length"},
+      scoring: {correct: false, parse_error: "missing"}
+    }),
+    "token_limit"
+  );
+  assert.equal(
+    resultTypeForAnswer({
+      response: {status: "api_error", finish_reason: null},
+      scoring: {correct: null, parse_error: null, result_type: null}
+    }),
+    null
+  );
+  assert.equal(resultTypeLabel("token_limit", false), "Token limit");
+  assert.equal(resultTypeLabel(undefined, true), "Correct");
+  assert.equal(resultTypeLabel(undefined, null), "Not scored");
 });
 
 test("answer path is one encoded object and rejects mismatched prefixes", () => {

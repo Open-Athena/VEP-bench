@@ -62,7 +62,11 @@ def test_browser_qa_fixture_is_complete_and_offline(tmp_path: Path, config_relat
         gzip.decompress((output / "versions/main" / run["outcome_index_path"]).read_bytes())
     )
     assert outcome_index["outcomes"] == [
-        {"question_id": "mc-effect-v1:synthetic-001", "correct": False}
+        {
+            "question_id": "mc-effect-v1:synthetic-001",
+            "correct": False,
+            "result_type": "incorrect",
+        }
     ]
     answer_path = next((output / "versions/main/answers/browser-qa").glob("*.json.gz"))
     answer = json.loads(gzip.decompress(answer_path.read_bytes()))
@@ -71,6 +75,7 @@ def test_browser_qa_fixture_is_complete_and_offline(tmp_path: Path, config_relat
         "metric": "exact_match",
         "parse_error": None,
         "parsed_answer": "A",
+        "result_type": "incorrect",
         "value": 0,
     }
 

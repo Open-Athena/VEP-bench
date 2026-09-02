@@ -131,9 +131,11 @@ first, including the leaderboard's model release date, total tokens, and total
 cost. The score-efficiency chart switches between cost and tokens and draws one
 line per model family. The explorer fetches the question index and a compact
 outcome index for the selected run when a user opens the question explorer.
-This supports the result column and correct/incorrect filter while full answer
-content is still loaded one compressed object at a time. Complete raw archives
-remain downloadable without requiring a backend.
+This supports the result column and filters for correct, incorrect, refusal,
+token-limit, and format-error outcomes while full answer content is still
+loaded one compressed object at a time. Outcome indexes built before the flat
+result taxonomy remain readable through their boolean correctness field.
+Complete raw archives remain downloadable without requiring a backend.
 
 For multi-task publications, `runs.json` also names the required evaluation
 profiles and the aggregation method. The current provisional overall score is

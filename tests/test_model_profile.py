@@ -46,6 +46,28 @@ def test_sol_profile_is_valid_and_reproducible() -> None:
     assert "temperature" not in profile.generation_parameters
 
 
+def test_fable_profile_is_valid_and_omits_unsupported_parameters() -> None:
+    profile = load_model_profile(ROOT / "configs/models/anthropic-claude-fable-5.1-medium.yaml")
+
+    assert profile.label == "claude-fable-5.1-medium"
+    assert profile.model_id == "anthropic/claude-fable-5.1"
+    assert profile.generation_parameters == {"reasoning": {"effort": "medium", "exclude": False}}
+    assert "temperature" not in profile.generation_parameters
+    assert "seed" not in profile.generation_parameters
+
+
+def test_deepseek_profile_requests_low_reasoning() -> None:
+    profile = load_model_profile(ROOT / "configs/models/deepseek-v4-flash-0731-low.yaml")
+
+    assert profile.label == "deepseek-v4-flash-0731-low"
+    assert profile.model_id == "deepseek/deepseek-v4-flash-0731"
+    assert profile.generation_parameters == {
+        "reasoning": {"effort": "low", "exclude": False},
+        "seed": 20260829,
+    }
+    assert "temperature" not in profile.generation_parameters
+
+
 @pytest.mark.parametrize("effort", ["low", "high"])
 def test_luna_comparison_profiles_set_reasoning_only(effort: str) -> None:
     profile = load_model_profile(ROOT / f"configs/models/openai-gpt-5.6-luna-{effort}.yaml")

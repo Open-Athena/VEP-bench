@@ -2,4 +2,4 @@
 schema_version: "1.0"
 task_family: clinvar
 generation:
-  max_tokens: 262144
+  max_tokens: 128000

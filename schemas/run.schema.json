@@ -49,6 +49,18 @@
         "correct": {"type": "integer", "minimum": 0},
         "accuracy": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
         "format_failures": {"type": "integer", "minimum": 0},
+        "result_counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["correct", "incorrect", "refusal", "token_limit", "format_error"],
+          "properties": {
+            "correct": {"type": "integer", "minimum": 0},
+            "incorrect": {"type": "integer", "minimum": 0},
+            "refusal": {"type": "integer", "minimum": 0},
+            "token_limit": {"type": "integer", "minimum": 0},
+            "format_error": {"type": "integer", "minimum": 0}
+          }
+        },
         "total_tokens": {"type": ["integer", "null"], "minimum": 0},
         "total_cost_usd": {"type": ["number", "null"], "minimum": 0}
       },

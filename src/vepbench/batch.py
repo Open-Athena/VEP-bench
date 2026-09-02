@@ -175,6 +175,13 @@ def submit_batch_file(
     if not submitted_questions:
         raise BuildError("batch selection contains no questions")
     submitted_question_ids = [question["question_id"] for question in submitted_questions]
+    submitted_custom_ids = [
+        f"request_{question_index:06d}"
+        for question_index in range(
+            batch_offset,
+            batch_offset + len(submitted_questions),
+        )
+    ]
 
     state_file = Path(state_path)
     if state_file.exists():
@@ -185,14 +192,18 @@ def submit_batch_file(
 
     requests = [
         {
-            "custom_id": question["question_id"],
+            "custom_id": custom_id,
             "body": {
                 "model": model_id,
                 "messages": [{"role": "user", "content": question["prompt"]}],
                 **resolved_parameters,
             },
         }
-        for question in submitted_questions
+        for question, custom_id in zip(
+            submitted_questions,
+            submitted_custom_ids,
+            strict=True,
+        )
     ]
     request_body = {
         "endpoint": "/v1/chat/completions",
@@ -213,6 +224,7 @@ def submit_batch_file(
         "question_set_size": len(questions),
         "question_ids": question_ids,
         "submitted_question_ids": submitted_question_ids,
+        "submitted_custom_ids": submitted_custom_ids,
         "result_output": str(output_file),
         "raw_submission": None,
     }
@@ -359,6 +371,16 @@ def collect_batch_file(
     submitted_questions = [
         question for question in questions if question["question_id"] in submitted_id_set
     ]
+    submitted_custom_ids = state.get("submitted_custom_ids", submitted_question_ids)
+    if (
+        not isinstance(submitted_custom_ids, list)
+        or len(submitted_custom_ids) != len(submitted_question_ids)
+        or any(
+            not isinstance(custom_id, str) or not custom_id for custom_id in submitted_custom_ids
+        )
+        or len(submitted_custom_ids) != len(set(submitted_custom_ids))
+    ):
+        raise BuildError(f"{state_file}: invalid submitted custom IDs")
 
     result_schema = json.loads(Path(result_schema_path).read_text(encoding="utf-8"))
     Draft202012Validator.check_schema(result_schema)
@@ -373,13 +395,21 @@ def collect_batch_file(
         if custom_id in batch_items:
             raise BuildError(f"{state_file}: duplicate batch result {custom_id!r}")
         batch_items[custom_id] = item
-    if set(batch_items) != submitted_id_set:
-        raise BuildError(f"{state_file}: batch results do not match submitted question IDs")
+    if set(batch_items) != set(submitted_custom_ids):
+        raise BuildError(f"{state_file}: batch results do not match submitted custom IDs")
+    batch_items_by_question_id = {
+        question_id: batch_items[custom_id]
+        for question_id, custom_id in zip(
+            submitted_question_ids,
+            submitted_custom_ids,
+            strict=True,
+        )
+    }
     batch_usage_allocations = _allocate_batch_usage(
         raw_batch,
         status.batch_id,
         submitted_question_ids,
-        batch_items,
+        batch_items_by_question_id,
     )
 
     run_id = state.get("run_id")
@@ -410,7 +440,7 @@ def collect_batch_file(
         ) as output_file:
             temporary_path = Path(output_file.name)
             for question in submitted_questions:
-                item = batch_items[question["question_id"]]
+                item = batch_items_by_question_id[question["question_id"]]
                 response = item.get("response")
                 body = response.get("body") if isinstance(response, Mapping) else None
                 status_code = response.get("status_code") if isinstance(response, Mapping) else None

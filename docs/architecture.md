@@ -109,8 +109,12 @@ checks that choice IDs are unique, that `answer_choice_id` identifies exactly
 one choice, and that rendered choices agree with the prompt.
 
 The scorer reads only the last well-formed `FINAL: <choice-id>` line. A complete
-response with no valid known choice receives score zero and a parse error. An
-API failure receives a null score and makes the run incomplete.
+response is assigned one flat result type: `correct`, `incorrect`, `refusal`,
+`token_limit`, or `format_error`. Structured provider refusal evidence has
+precedence; otherwise a valid parsed answer determines correctness, an
+unparseable response finished for `length` is a token limit, and any remaining
+unparseable completion is a format error. An API failure is not a result type:
+it receives a null score and makes the run incomplete.
 
 Result snapshots retain the complete question, provider response, final
 content, nullable provider-exposed reasoning, usage, finish reason, non-secret
@@ -127,18 +131,25 @@ missing members, inconsistent receipts, or totals that do not reconcile.
 Local result JSONL is a resumable staging format. Publication validates and
 deduplicates it into run metadata, compact per-run outcome indexes, browser
 answers, and complete raw response archives. It also aggregates
-provider-reported token usage and USD cost into each run and joins versioned
-model-family and release-date metadata
-from `configs/models/catalog.json`. Model catalog fields are display metadata
+the five result counts, provider-reported token usage, and USD cost into each
+run and joins versioned model-family and release-date metadata from
+`configs/models/catalog.json`. Model catalog fields are display metadata
 and do not affect configuration identity. Question and raw-run archives are
 deterministic zstd JSONL; browser answers are deterministic gzip JSON objects.
 A manifest records compressed and decompressed sizes and digests.
 
-A model configuration key includes model and upstream-provider identity, all
-generation parameters, and the prompt and task identity. The official version
-accepts only complete runs without API errors and at most one run for each
-configuration key. Publication processes result and raw-response data as
+A model configuration key includes gateway, model ID, model revision, all
+generation parameters, and the prompt and task identity. The observed upstream
+provider is response metadata rather than configuration identity because
+OpenRouter may route one unpinned run across providers. A run with more than one
+observed provider is labeled `OpenRouter auto-routing`; every per-response
+provider remains preserved in local results and raw archives. The official
+version accepts only complete runs without API errors and at most one run for
+each configuration key. Publication processes result and raw-response data as
 streams so memory use does not grow with the total amount of model reasoning.
+Legacy result records without `result_type` remain publishable because the
+publisher derives the same classification from their score, finish reason, and
+retained structured provider response.
 
 An official multi-task version publishes the sorted union of its task question
 sets as the browsable question artifact. Each run still records the digest,
@@ -147,7 +158,7 @@ evaluated. The publication's `runs.json` maps those profiles to task families
 and records the complete list required by the leaderboard.
 
 The provisional `task_macro_average_v0` overall score groups runs with identical
-model, upstream-provider, model-revision, and fully resolved generation
+gateway, model, model revision, and fully resolved generation
 parameters. A configuration is eligible only when it has one complete run for
 every published evaluation profile. Its overall score is the arithmetic mean
 of the task accuracies, so every task has equal weight regardless of question

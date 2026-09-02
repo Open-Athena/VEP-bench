@@ -44,8 +44,8 @@ class FakeBatchTransport:
 class CompletedBatchTransport(FakeBatchTransport):
     def retrieve(self, batch_id: str, api_key: str) -> dict[str, Any]:
         item = {
-            "custom_id": "mc-effect-v1:synthetic-001",
-            "id": "mc-effect-v1:synthetic-001",
+            "custom_id": "request_000000",
+            "id": "request_000000",
             "error": None,
             "response": {
                 "status_code": 200,
@@ -139,8 +139,8 @@ class FailedCompletedBatchTransport(FakeBatchTransport):
             "request_counts": {"total": 1, "completed": 0, "failed": 1},
             "results": [
                 {
-                    "custom_id": "mc-effect-v1:synthetic-001",
-                    "id": "mc-effect-v1:synthetic-001",
+                    "custom_id": "request_000000",
+                    "id": "request_000000",
                     "error": {"message": "provider failed"},
                     "response": {"status_code": 500, "body": None},
                 }
@@ -192,7 +192,7 @@ def test_submit_batch_persists_non_secret_resumable_state(tmp_path: Path) -> Non
     request = transport.requests[0][0]
     assert request["endpoint"] == "/v1/chat/completions"
     assert request["model"] == "example/model"
-    assert request["requests"][0]["custom_id"] == "mc-effect-v1:synthetic-001"
+    assert request["requests"][0]["custom_id"] == "request_000000"
     assert request["requests"][0]["body"]["seed"] == 20260829
     assert "temperature" not in request["requests"][0]["body"]
     assert summary.batch_id == "batch-test"
@@ -202,6 +202,7 @@ def test_submit_batch_persists_non_secret_resumable_state(tmp_path: Path) -> Non
     state = json.loads(state_path.read_text(encoding="utf-8"))
     assert state["batch_id"] == "batch-test"
     assert state["question_set_size"] == 1
+    assert state["submitted_custom_ids"] == ["request_000000"]
     assert state["result_output"] == str(result_output)
     assert state["generation_parameters"] == parameters
     assert "test-secret" not in state_path.read_text(encoding="utf-8")
@@ -285,8 +286,9 @@ def test_submit_and_collect_batch_chunk_retains_full_question_set_identity(
     state = json.loads(state_path.read_text(encoding="utf-8"))
     assert state["question_set_size"] == 3
     assert state["submitted_question_ids"] == ["mc-effect-v1:synthetic-002"]
+    assert state["submitted_custom_ids"] == ["request_000001"]
     assert [request["custom_id"] for request in transport.requests[0][0]["requests"]] == [
-        "mc-effect-v1:synthetic-002"
+        "request_000001"
     ]
 
     collected = collect_batch_file(
@@ -420,7 +422,7 @@ def test_collect_batch_writes_sorted_schema_valid_results(tmp_path: Path) -> Non
     result = read_jsonl(result_output)[0]
     assert result["scoring"]["correct"] is True
     assert result["response"]["latency_seconds"] is None
-    assert result["response"]["raw"]["custom_id"] == "mc-effect-v1:synthetic-001"
+    assert result["response"]["raw"]["custom_id"] == "request_000000"
     assert result["response"]["raw"]["response"]["body"]["id"] == "generation-test"
     assert result["usage"]["prompt_tokens"] == 20
     assert result["usage"]["completion_tokens"] == 8
@@ -470,9 +472,9 @@ def test_collect_batch_records_malformed_success_as_api_error(tmp_path: Path) ->
     ]
     assert records[1]["error"]["status_code"] == 200
     assert "no completion choice" in records[1]["error"]["message"]
-    assert records[1]["response"]["raw"]["custom_id"] == records[1]["question_id"]
+    assert records[1]["response"]["raw"]["custom_id"] == "request_000001"
     assert "finish_reason is not a string" in records[2]["error"]["message"]
-    assert records[2]["response"]["raw"]["custom_id"] == records[2]["question_id"]
+    assert records[2]["response"]["raw"]["custom_id"] == "request_000002"
     assert sum(record["usage"]["cost"] for record in records) == pytest.approx(0.003)
     assert all(record["usage"]["vepbench"]["batch_usage"]["cost"] == 0.003 for record in records)
 
