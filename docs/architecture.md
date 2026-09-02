@@ -162,7 +162,9 @@ usage. The score column retains the generic `Score` label because the selector
 provides its scope. The line chart connects configurations within each
 published model family and can compare the selected score against cost or total
 tokens. The page uses Observable's native inputs, table, and plot so both views
-react to the same selected row set.
+react to the same selected row set. The native table's score formatter adds an
+absolute zero-to-one inline bar behind the percentage without changing the
+numeric value used for sorting.
 
 The question explorer selects complete model configurations, ranked by overall
 score, and resolves the task-specific run only after a question is selected.

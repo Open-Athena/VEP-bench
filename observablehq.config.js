@@ -72,6 +72,39 @@ export default {
         color: #5c4600;
       }
 
+      .vepbench-score-cell {
+        background: color-mix(in srgb, currentColor 6%, transparent);
+        border-radius: 0.2rem;
+        display: block;
+        min-width: 5rem;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .vepbench-score-bar {
+        background: #4267d2;
+        bottom: 0;
+        left: 0;
+        opacity: 0.25;
+        position: absolute;
+        top: 0;
+        width: var(--vepbench-score-width);
+      }
+
+      .vepbench-score-value {
+        display: block;
+        font-variant-numeric: tabular-nums;
+        padding: 0 0.3rem;
+        position: relative;
+        text-align: right;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .vepbench-score-bar {
+          opacity: 0.4;
+        }
+      }
+
       @container (max-width: 639px) {
         .vepbench-record-card {
           height: auto;

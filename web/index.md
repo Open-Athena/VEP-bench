@@ -92,6 +92,14 @@ const tableRows = rows.map((row) => ({
   cost: row.cost,
   family: row.family
 }));
+function scoreBar(value) {
+  if (!Number.isFinite(value)) return "—";
+  const width = Math.max(0, Math.min(1, value)) * 100;
+  return html`<span class="vepbench-score-cell" style=${`--vepbench-score-width: ${width}%`}>
+    <span class="vepbench-score-bar" aria-hidden="true"></span>
+    <span class="vepbench-score-value">${formatPercent(value)}</span>
+  </span>`;
+}
 const leaderboardTable = Inputs.table(tableRows, {
   columns: ["model", "score", "release_date", "tokens", "cost"],
   header: {
@@ -102,13 +110,13 @@ const leaderboardTable = Inputs.table(tableRows, {
     cost: "Cost"
   },
   format: {
-    score: formatPercent,
+    score: scoreBar,
     release_date: formatDate,
     tokens: (value) => value === null ? "—" : formatInteger(value),
     cost: formatCost
   },
   align: {score: "right", tokens: "right", cost: "right"},
-  width: {model: 240, score: 90, release_date: 110, tokens: 100, cost: 90},
+  width: {model: 240, score: 100, release_date: 110, tokens: 100, cost: 90},
   rows: Math.max(2, tableRows.length),
   sort: "score",
   reverse: true,

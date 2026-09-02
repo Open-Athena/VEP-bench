@@ -85,6 +85,8 @@ for check in \
   'leaderboard.dom.html|>Tokens<' \
   'leaderboard.dom.html|>Cost<' \
   'leaderboard.dom.html|>Score<' \
+  'leaderboard.dom.html|class="vepbench-score-cell"' \
+  'leaderboard.dom.html|class="vepbench-score-bar" aria-hidden="true"' \
   'leaderboard.dom.html|>Task</label>' \
   'leaderboard.dom.html|>All tasks</option>' \
   'leaderboard.dom.html|>Consequence classification</option>' \
