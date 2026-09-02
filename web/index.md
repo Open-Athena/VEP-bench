@@ -149,7 +149,6 @@ function scoreEfficiencyPlot(data, {width}) {
     },
     y: {
       label: "Score",
-      domain: [0, 1],
       grid: true,
       tickFormat: formatPercent
     },
@@ -174,8 +173,7 @@ function scoreEfficiencyPlot(data, {width}) {
           `Score: ${formatPercent(row.score)}`,
           `${metricLabel}: ${metric === "cost" ? formatCost(row.cost) : formatInteger(row.tokens)}`
         ].join("\n")
-      }),
-      Plot.ruleY([0])
+      })
     ]
   });
 }
