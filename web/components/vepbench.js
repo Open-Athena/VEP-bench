@@ -536,9 +536,14 @@ export function questionRecord(entry) {
     "muted",
     `Reference answer: ${question.answer_choice_id} · ${entry.answer}`
   );
+  const consequence = element(
+    "p",
+    "muted",
+    `VEP consequence: ${entry.consequence ?? "—"}`
+  );
   const questionBody = markdownNode(question.prompt);
   questionBody.className = "vepbench-record-content";
-  questionColumn.append(questionHeader, reference, questionBody);
+  questionColumn.append(questionHeader, reference, consequence, questionBody);
 
   const responseBody = result?.response.content
     ? markdownNode(result.response.content)

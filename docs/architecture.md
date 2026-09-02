@@ -158,6 +158,15 @@ silently changing this rule.
 The leaderboard line chart connects configurations within each published model
 family and can compare exact-match score against total cost or total tokens.
 
+The question explorer selects complete model configurations, ranked by overall
+score, and resolves the task-specific run only after a question is selected.
+Its compact `question-metadata.json` asset is deterministically derived from
+committed task sources and provenance manifests. Every task must supply a VEP
+consequence for each source record, normally as
+`source_metadata.vep_consequence`; legacy task manifests may provide an explicit
+override. This display-only metadata is never added to model-visible prompts and
+does not change question or historical result fingerprints.
+
 Only `versions/main/` in the public bucket is official. Named lowercase-slug
 versions are reviewable release candidates or disposable experiments. The
 Observable Framework explorer is static and reads published artifacts directly

@@ -7,7 +7,7 @@ import {
   entriesForQuestions,
   entryForAnswer,
   formatInteger,
-  formatRunLabel,
+  formatPercent,
   outcomeBadge,
   questionRecord
 } from "./components/vepbench.js";
@@ -16,40 +16,49 @@ import {
   fetchAnswerIfAvailable,
   fetchJson,
   fetchOutcomeIndex,
-  groupCurrentRuns
+  modelSelectionRows,
+  runForTask
 } from "./components/benchmark-data.js";
 
 const config = await FileAttachment("data/config.json").json();
-const [runsState, questionState] = await Promise.all([
+const [runsState, questionState, metadataState] = await Promise.all([
   fetchJson(artifactUrl(config.data_base_url, "runs.json"))
     .then((document) => ({document, error: null}))
     .catch((error) => ({document: {runs: []}, error})),
   fetchJson(artifactUrl(config.data_base_url, "question-index.json"))
     .then((document) => ({document, error: null}))
-    .catch((error) => ({document: {questions: []}, error}))
+    .catch((error) => ({document: {questions: []}, error})),
+  FileAttachment("data/question-metadata.json").json()
+    .then((document) => ({document, error: null}))
+    .catch((error) => ({document: {by_task_family: {}}, error}))
 ]);
 const parameters = new URLSearchParams(location.search);
 const requestedQuestionId = parameters.get("question");
 const requestedRunId = parameters.get("run");
-const currentRuns = groupCurrentRuns(runsState.document.runs);
-const requestedRun = currentRuns.find((candidate) => candidate.run_id === requestedRunId);
-const missingRun = requestedRunId && !requestedRun
-  ? {kind: "missing", label: `Unavailable run · ${requestedRunId}`, run_id: requestedRunId}
+const modelRows = modelSelectionRows(
+  runsState.document.runs,
+  runsState.document.leaderboard
+);
+const requestedModelRow = modelRows.find((row) =>
+  row.runs.some((run) => run.run_id === requestedRunId)
+);
+const missingModel = requestedRunId && !requestedModelRow
+  ? {kind: "missing", label: `Unavailable model for run · ${requestedRunId}`, run_id: requestedRunId}
   : null;
-const availableRunOptions = currentRuns.map((run) => ({
-  kind: "run",
-  label: `${formatRunLabel(run)} · ${run.run_id}`,
-  run
+const availableModelOptions = modelRows.map((row) => ({
+  kind: "model",
+  label: `${row.model_cell.model} · ${row.model_cell.provider} · ${formatPercent(row.accuracy)} overall`,
+  row
 }));
-const noRuns = {kind: "empty", label: "No complete evaluation runs available"};
-const runOptions = [
-  ...(missingRun ? [missingRun] : []),
-  ...availableRunOptions,
-  ...(!missingRun && !availableRunOptions.length ? [noRuns] : [])
+const noModels = {kind: "empty", label: "No complete model configurations available"};
+const modelOptions = [
+  ...(missingModel ? [missingModel] : []),
+  ...availableModelOptions,
+  ...(!missingModel && !availableModelOptions.length ? [noModels] : [])
 ];
-const defaultRunOption = runOptions.find(
-  (option) => option.kind === "run" && option.run === requestedRun
-) ?? missingRun ?? availableRunOptions[0] ?? noRuns;
+const defaultModelOption = modelOptions.find(
+  (option) => option.kind === "model" && option.row === requestedModelRow
+) ?? missingModel ?? availableModelOptions[0] ?? noModels;
 const taskName = (taskFamily) => ({
   clinvar: "ClinVar",
   vep_most_severe_consequence: "Consequence classification"
@@ -61,7 +70,11 @@ const resultLabel = (correct) => correct === true
     : "Not scored";
 const questionEntries = entriesForQuestions(questionState.document.questions).map((entry) => ({
   ...entry,
-  task: taskName(entry.question.metadata.task_family)
+  task: taskName(entry.question.metadata.task_family),
+  consequence: metadataState.document.by_task_family
+    ?.[entry.question.metadata.task_family]
+    ?.[entry.question.provenance.source_record_id]
+    ?.consequence ?? "—"
 }));
 const requestedQuestion = questionEntries.find(
   (entry) => entry.question_id === requestedQuestionId
@@ -70,25 +83,28 @@ const requestedQuestion = questionEntries.find(
 
 # Questions
 
-Inspect a benchmark question alongside one lazily loaded response from a selected evaluation run.
+Inspect a benchmark question alongside the matching response from a selected model.
 
 ```js
 if (runsState.error || questionState.error) {
   display(html`<div class="note" label="Published data unavailable">The official benchmark data could not be loaded from <code>versions/main</code>.</div>`);
 }
+if (metadataState.error) {
+  display(html`<div class="note" label="Metadata unavailable">Question consequence metadata could not be loaded.</div>`);
+}
 ```
 
 ```js
 const controlsInput = Inputs.form({
-  run: Inputs.select(runOptions, {
-    label: "Evaluation run",
-    value: defaultRunOption,
+  model: Inputs.select(modelOptions, {
+    label: "Model",
+    value: defaultModelOption,
     format: (option) => option.label
   }),
   search: Inputs.search(questionEntries, {
     label: "Find a question",
-    placeholder: "Question ID, variant, reference answer, or choice…",
-    columns: ["question_id", "variant", "answer", "task"]
+    placeholder: "Question ID, variant, consequence, reference answer, or choice…",
+    columns: ["question_id", "variant", "consequence", "answer", "task"]
   }),
   task: Inputs.select([
     "All tasks",
@@ -128,22 +144,31 @@ const controls = view(controlsInput);
 ```
 
 ```js
-const runOption = controls.run;
-const run = runOption.kind === "run" ? runOption.run : null;
-const outcomeState = run?.outcome_index_path
-  ? await fetchOutcomeIndex(config.data_base_url, run)
-      .then((value) => ({value, error: null}))
-      .catch((error) => ({value: null, error}))
-  : {value: null, error: null};
+const modelOption = controls.model;
+const modelRow = modelOption.kind === "model" ? modelOption.row : null;
+const selectedModelRuns = modelRow?.runs ?? [];
+const outcomeStates = await Promise.all(selectedModelRuns.map(async (run) => ({
+  run,
+  ...(run.outcome_index_path
+    ? await fetchOutcomeIndex(config.data_base_url, run)
+        .then((value) => ({value, error: null}))
+        .catch((error) => ({value: null, error}))
+    : {value: null, error: new Error("Run has no outcome index")})
+})));
+const outcomeStateByRun = new Map(
+  outcomeStates.map((state) => [state.run.run_id, state])
+);
 const outcomesByQuestion = new Map(
-  (outcomeState.value?.outcomes ?? []).map((outcome) => [
-    outcome.question_id,
-    resultLabel(outcome.correct)
-  ])
+  outcomeStates.flatMap((state) =>
+    (state.value?.outcomes ?? []).map((outcome) => [
+      outcome.question_id,
+      resultLabel(outcome.correct)
+    ])
+  )
 );
 const entriesWithResults = controls.search.map((entry) => ({
   ...entry,
-  outcome: run
+  outcome: modelRow
     ? (outcomesByQuestion.get(entry.question_id) ?? "Unavailable")
     : "Not evaluated"
 }));
@@ -155,7 +180,7 @@ const visibleEntries = entriesWithResults.filter((entry) =>
 const defaultQuestion = requestedQuestionId
   ? (visibleEntries.find((entry) => entry.question_id === requestedQuestionId) ?? null)
   : (
-      (run
+      (modelRow
         ? visibleEntries.find((entry) => outcomesByQuestion.has(entry.question_id))
         : null)
       ?? visibleEntries[0]
@@ -164,11 +189,12 @@ const defaultQuestion = requestedQuestionId
 
 ```js
 const questionTable = Inputs.table(visibleEntries, {
-  columns: ["question_label", "task", "variant", "answer", "outcome"],
+  columns: ["question_label", "task", "variant", "consequence", "answer", "outcome"],
   header: {
     question_label: "Question",
     task: "Task",
     variant: "Source record",
+    consequence: "Consequence",
     answer: "Reference answer",
     outcome: "Result"
   },
@@ -177,9 +203,10 @@ const questionTable = Inputs.table(visibleEntries, {
   },
   width: {
     question_label: 70,
-    task: 210,
+    task: 180,
     variant: 150,
-    answer: 280,
+    consequence: 210,
+    answer: 230,
     outcome: 100
   },
   multiple: false,
@@ -202,6 +229,12 @@ ${questionTable}
 const selectedIndex = selected
   ? questionEntries.findIndex((entry) => entry.question_id === selected.question_id)
   : -1;
+const run = selected && modelRow
+  ? runForTask(modelRow, selected.question.metadata.task_family)
+  : null;
+const outcomeState = run
+  ? (outcomeStateByRun.get(run.run_id) ?? {value: null, error: null})
+  : {value: null, error: null};
 const answerState = selected && run
   ? await fetchAnswerIfAvailable(
       config.data_base_url,
@@ -216,13 +249,16 @@ const rawArchiveUrl = answerState.value
   ? artifactUrl(config.data_base_url, answerState.value.raw_archive_path)
   : null;
 const recordEntry = selected
-  ? entryForAnswer(
-      selected.question,
-      selectedIndex,
-      answerState.value,
-      run,
-      rawArchiveUrl
-    )
+  ? {
+      ...entryForAnswer(
+        selected.question,
+        selectedIndex,
+        answerState.value,
+        run,
+        rawArchiveUrl
+      ),
+      consequence: selected.consequence
+    }
   : null;
 ```
 
@@ -230,8 +266,8 @@ const recordEntry = selected
 if (requestedQuestionId && !requestedQuestion && !selected) {
   display(html`<div class="note" label="Question not found">No benchmark question has ID <code>${requestedQuestionId}</code>.</div>`);
 }
-if (runOption.kind === "missing") {
-  display(html`<div class="note" label="Response not found">No complete current evaluation has run ID <code>${runOption.run_id}</code>.</div>`);
+if (modelOption.kind === "missing") {
+  display(html`<div class="note" label="Model not found">No complete current model configuration contains run ID <code>${modelOption.run_id}</code>.</div>`);
 }
 if (run && (!run.outcome_index_path || outcomeState.error)) {
   display(html`<div class="note" label="Results unavailable">The result column could not be loaded for this evaluation run.</div>`);
@@ -252,7 +288,7 @@ display(recordEntry
     requestedQuestionId && !requestedQuestion ? requestedQuestionId : null
   );
   const runId = run?.run_id ?? (
-    runOption.kind === "missing" ? runOption.run_id : null
+    modelOption.kind === "missing" ? modelOption.run_id : null
   );
   if (questionId) nextParameters.set("question", questionId);
   if (runId) nextParameters.set("run", runId);

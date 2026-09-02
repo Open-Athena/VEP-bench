@@ -1,6 +1,7 @@
 """VEPBench command-line interface."""
 
 import argparse
+import json
 import os
 import re
 import shutil
@@ -21,7 +22,7 @@ from .builder import BuildError, build_file, read_jsonl
 from .evaluator import ProviderError, evaluate_file
 from .model_profile import load_model_profile
 from .publication import build_version, promote_version, validate_version
-from .site import build_site
+from .site import build_question_metadata, build_site
 from .task_profile import load_task_profile
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -462,9 +463,26 @@ def main(argv: Sequence[str] | None = None) -> int:
             with tempfile.TemporaryDirectory(prefix="vepbench-observable-") as temporary:
                 project = Path(temporary)
                 source = project / "web"
+                consequence_manifest = json.loads(
+                    (PROJECT_ROOT / "data/sources/chr17-vep-consequences.manifest.json").read_text(
+                        encoding="utf-8"
+                    )
+                )
+                question_metadata = build_question_metadata(
+                    source_paths=[
+                        PROJECT_ROOT / "data/sources/chr17-vep-consequences.jsonl",
+                        PROJECT_ROOT / "data/sources/clinvar-july-2026.jsonl",
+                    ],
+                    consequence_overrides={
+                        "vep_most_severe_consequence": consequence_manifest[
+                            "record_source_consequences"
+                        ]
+                    },
+                )
                 manifest = build_site(
                     assets_dir=PROJECT_ROOT / "web",
                     output=source,
+                    question_metadata=question_metadata,
                 )
                 shutil.copy2(
                     PROJECT_ROOT / "observablehq.config.js",

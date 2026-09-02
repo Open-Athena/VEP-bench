@@ -101,11 +101,12 @@ for check in \
   'question.dom.html|>Correct</option>' \
   'question.dom.html|>Incorrect</option>' \
   'question.dom.html|Reference answer: C13' \
+  'question.dom.html|VEP consequence: start_lost' \
   'question.dom.html|Parsed prediction: C17' \
   'question.dom.html|<td><span class="vepbench-outcome-badge vepbench-outcome-correct">Correct</span></td>' \
   'question.dom.html|<td><span class="vepbench-outcome-badge vepbench-outcome-incorrect">Incorrect</span></td>' \
   'question.dom.html|>Reasoning<' \
-  'question-neutral.dom.html|Unavailable run · missing-run' \
+  'question-neutral.dom.html|Unavailable model for run · missing-run' \
   'question-neutral.dom.html|<td><span>Not evaluated</span></td>' \
   "question.dom.html|href=\"http://127.0.0.1:$port/publication/versions/main/raw/browser-qa.jsonl.zst\""
 do

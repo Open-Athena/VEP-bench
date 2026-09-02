@@ -11,8 +11,10 @@ import {
   groupCurrentRuns,
   leaderboardLineSeries,
   leaderboardRows,
+  modelSelectionRows,
   overallLeaderboardRows,
-  outcomeIndexPath
+  outcomeIndexPath,
+  runForTask
 } from "./benchmark-data.js";
 
 function run({
@@ -132,6 +134,43 @@ test("overall leaderboard rejects unknown aggregation metadata", () => {
     aggregation_method: "question_micro_average_v0",
     evaluation_profiles: []
   }), []);
+});
+
+test("model selection has one best-first row with a task run for each model", () => {
+  const leaderboard = {
+    aggregation_method: "task_macro_average_v0",
+    evaluation_profiles: [
+      {task_family: "clinvar", evaluation_profile: "clinvar:clinvar-snv-v1@1.0"},
+      {
+        task_family: "vep_most_severe_consequence",
+        evaluation_profile: "vep_most_severe_consequence:vep-most-severe-v1@1.2"
+      }
+    ]
+  };
+  const specifications = [
+    ["gpt-5.6-luna", "clinvar", 0.55],
+    ["gpt-5.6-luna", "vep", 0.27],
+    ["gpt-5.6-sol", "clinvar", 0.55],
+    ["gpt-5.6-sol", "vep", 0.41]
+  ];
+  const rows = modelSelectionRows(specifications.map(([model, task, accuracy], index) => run({
+    accuracy,
+    configurationKey: `cfg-${String(index).repeat(64)}`,
+    evaluationProfile: task === "clinvar"
+      ? "clinvar:clinvar-snv-v1@1.0"
+      : "vep_most_severe_consequence:vep-most-severe-v1@1.2",
+    modelId: `openai/${model}`,
+    runId: `${model}-${task}`
+  })), leaderboard);
+
+  assert.equal(rows.length, 2);
+  assert.equal(rows[0].model_cell.model, "GPT 5.6 Sol (medium)");
+  assert.equal(rows[0].accuracy, 0.48);
+  assert.equal(runForTask(rows[0], "clinvar").run_id, "gpt-5.6-sol-clinvar");
+  assert.equal(
+    runForTask(rows[0], "vep_most_severe_consequence").run_id,
+    "gpt-5.6-sol-vep"
+  );
 });
 
 test("line chart data groups model families and sorts points by the selected metric", () => {

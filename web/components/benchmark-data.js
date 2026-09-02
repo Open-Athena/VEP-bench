@@ -156,6 +156,16 @@ export function overallLeaderboardRows(runs, leaderboard) {
   return sortLeaderboardRows(rows);
 }
 
+export function modelSelectionRows(runs, leaderboard) {
+  if (leaderboard) return overallLeaderboardRows(runs, leaderboard);
+  return leaderboardRows(runs).map((row) => ({...row, runs: [row.run]}));
+}
+
+export function runForTask(row, taskFamily) {
+  const taskRun = row?.task_scores?.find((task) => task.task_family === taskFamily)?.run;
+  return taskRun ?? (row?.runs?.length === 1 ? row.runs[0] : null);
+}
+
 export function leaderboardLineSeries(rows, metric) {
   if (metric !== "cost" && metric !== "tokens") {
     throw new Error(`Unknown leaderboard line metric ${metric}`);
