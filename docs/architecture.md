@@ -155,8 +155,14 @@ count. Displayed overall token usage and cost are sums across the included task
 runs. A future aggregation change must use a new method identifier rather than
 silently changing this rule.
 
-The leaderboard line chart connects configurations within each published model
-family and can compare exact-match score against total cost or total tokens.
+The leaderboard task selector controls both its table and line chart. `All
+tasks` uses the macro-average score and summed cost and token usage described
+above; a specific task uses that task run's exact-match score, cost, and token
+usage. The score column retains the generic `Score` label because the selector
+provides its scope. The line chart connects configurations within each
+published model family and can compare the selected score against cost or total
+tokens. The page uses Observable's native inputs, table, and plot so both views
+react to the same selected row set.
 
 The question explorer selects complete model configurations, ranked by overall
 score, and resolves the task-specific run only after a question is selected.

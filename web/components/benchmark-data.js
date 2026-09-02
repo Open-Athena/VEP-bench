@@ -4,6 +4,12 @@ const EXPLORER_TASK_ORDER = new Map([
   ["clinvar", 1]
 ]);
 
+function compareTaskFamilies(left, right) {
+  return (EXPLORER_TASK_ORDER.get(left) ?? Number.MAX_SAFE_INTEGER)
+    - (EXPLORER_TASK_ORDER.get(right) ?? Number.MAX_SAFE_INTEGER)
+    || left.localeCompare(right);
+}
+
 function modelName(modelId, generationParameters) {
   const name = modelId.split("/").at(-1) ?? modelId;
   const displayName = {
@@ -160,6 +166,23 @@ export function overallLeaderboardRows(runs, leaderboard) {
   return sortLeaderboardRows(rows);
 }
 
+export function leaderboardRowsForScope(runs, leaderboard, taskFamily = null) {
+  if (taskFamily === null) {
+    return leaderboard ? overallLeaderboardRows(runs, leaderboard) : leaderboardRows(runs);
+  }
+  const profile = leaderboard?.evaluation_profiles?.find(
+    (candidate) => candidate.task_family === taskFamily
+  );
+  if (!profile) return [];
+  return leaderboardRows(
+    runs.filter((run) => run.evaluation_profile === profile.evaluation_profile)
+  );
+}
+
+export function orderTaskFamilies(taskFamilies) {
+  return taskFamilies.toSorted(compareTaskFamilies);
+}
+
 export function modelSelectionRows(runs, leaderboard) {
   if (leaderboard) return overallLeaderboardRows(runs, leaderboard);
   return leaderboardRows(runs).map((row) => ({...row, runs: [row.run]}));
@@ -174,39 +197,9 @@ export function orderQuestionsForExplorer(questions) {
   return questions.toSorted((left, right) => {
     const leftFamily = left?.metadata?.task_family ?? "";
     const rightFamily = right?.metadata?.task_family ?? "";
-    return (EXPLORER_TASK_ORDER.get(leftFamily) ?? Number.MAX_SAFE_INTEGER)
-      - (EXPLORER_TASK_ORDER.get(rightFamily) ?? Number.MAX_SAFE_INTEGER)
-      || leftFamily.localeCompare(rightFamily)
+    return compareTaskFamilies(leftFamily, rightFamily)
       || (left?.question_id ?? "").localeCompare(right?.question_id ?? "");
   });
-}
-
-export function leaderboardLineSeries(rows, metric) {
-  if (metric !== "cost" && metric !== "tokens") {
-    throw new Error(`Unknown leaderboard line metric ${metric}`);
-  }
-  const byFamily = new Map();
-  for (const row of rows) {
-    const x = nonnegativeNumber(row[metric]);
-    const accuracy = nonnegativeNumber(row.accuracy);
-    if (x === null || accuracy === null) continue;
-    let series = byFamily.get(row.family_id);
-    if (!series) {
-      series = {family_id: row.family_id, family: row.family, points: []};
-      byFamily.set(row.family_id, series);
-    }
-    series.points.push({x, accuracy, row});
-  }
-  return [...byFamily.values()]
-    .map((series) => ({
-      ...series,
-      points: series.points.toSorted((a, b) =>
-        a.x - b.x
-        || a.accuracy - b.accuracy
-        || a.row.model_cell.model.localeCompare(b.row.model_cell.model)
-      )
-    }))
-    .sort((a, b) => a.family.localeCompare(b.family));
 }
 
 export function groupCurrentRuns(runs) {

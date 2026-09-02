@@ -85,8 +85,12 @@ for check in \
   'leaderboard.dom.html|>Tokens<' \
   'leaderboard.dom.html|>Cost<' \
   'leaderboard.dom.html|>Score<' \
+  'leaderboard.dom.html|>Task</label>' \
+  'leaderboard.dom.html|>All tasks</option>' \
+  'leaderboard.dom.html|>Consequence classification</option>' \
   'leaderboard.dom.html|Score by cost and token usage' \
-  'leaderboard.dom.html|Score versus Total cost' \
+  'leaderboard.dom.html|>Compare score against</label>' \
+  'leaderboard.dom.html|>Total cost</option>' \
   'leaderboard.dom.html|https://github.com/Open-Athena/VEPBench' \
   'leaderboard.dom.html|View source' \
   'tasks.dom.html|Browse benchmark tasks' \
@@ -133,13 +137,23 @@ if grep -Pzoq '<div class="card">(?:\s|<!--[^>]*-->)*</div>' \
 fi
 
 header_order=$(
-  { grep -o '<strong role="columnheader"[^>]*>[^<]*</strong>' "$output_dir/leaderboard.dom.html" || true; } \
+  { grep -o '<th title="[^"]*"><span>[^<]*</span>[^<]*</th>' "$output_dir/leaderboard.dom.html" || true; } \
     | head -5 \
-    | sed -E 's/<[^>]+>//g' \
+    | sed -E 's/<span>[^<]*<\/span>//; s/<[^>]+>//g' \
     | paste -sd '|' -
 )
-if [[ "$header_order" != 'Model|Overall score|Release date|Tokens|Cost' ]]; then
+if [[ "$header_order" != 'Model|Score|Release date|Tokens|Cost' ]]; then
   echo "unexpected leaderboard column order: $header_order" >&2
+  status=1
+fi
+
+if grep -q '<th title="provider"' "$output_dir/leaderboard.dom.html"; then
+  echo "unexpected Provider column in leaderboard.dom.html" >&2
+  status=1
+fi
+
+if grep -q 'Overall score' "$output_dir/leaderboard.dom.html"; then
+  echo "unexpected Overall score label in leaderboard.dom.html" >&2
   status=1
 fi
 
@@ -148,7 +162,7 @@ if grep -q '>Correct<' "$output_dir/leaderboard.dom.html"; then
   status=1
 fi
 
-if grep -q '>Task<' "$output_dir/leaderboard.dom.html"; then
+if grep -q '<th title="task"' "$output_dir/leaderboard.dom.html"; then
   echo "unexpected Task column in leaderboard.dom.html" >&2
   status=1
 fi

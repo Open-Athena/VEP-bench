@@ -9,10 +9,11 @@ import {
   fetchJson,
   fetchOutcomeIndex,
   groupCurrentRuns,
-  leaderboardLineSeries,
   leaderboardRows,
+  leaderboardRowsForScope,
   modelSelectionRows,
   orderQuestionsForExplorer,
+  orderTaskFamilies,
   overallLeaderboardRows,
   outcomeIndexPath,
   runForTask
@@ -137,6 +138,61 @@ test("overall leaderboard rejects unknown aggregation metadata", () => {
   }), []);
 });
 
+test("leaderboard scope switches score, tokens, and cost to one task", () => {
+  const leaderboard = {
+    aggregation_method: "task_macro_average_v0",
+    evaluation_profiles: [
+      {task_family: "clinvar", evaluation_profile: "clinvar:clinvar-snv-v1@1.0"},
+      {
+        task_family: "vep_most_severe_consequence",
+        evaluation_profile: "vep_most_severe_consequence:vep-most-severe-v1@1.2"
+      }
+    ]
+  };
+  const runs = [
+    run({
+      accuracy: 0.8,
+      cost: 0.6,
+      evaluationProfile: "clinvar:clinvar-snv-v1@1.0",
+      runId: "model-clinvar",
+      tokens: 600
+    }),
+    run({
+      accuracy: 0.2,
+      configurationKey: `cfg-${"1".repeat(64)}`,
+      cost: 0.4,
+      evaluationProfile: "vep_most_severe_consequence:vep-most-severe-v1@1.2",
+      runId: "model-consequence",
+      tokens: 400
+    })
+  ];
+
+  const allTasks = leaderboardRowsForScope(runs, leaderboard);
+  assert.equal(allTasks.length, 1);
+  assert.equal(allTasks[0].accuracy, 0.5);
+  assert.equal(allTasks[0].tokens, 1000);
+  assert.equal(allTasks[0].cost, 1);
+
+  const consequence = leaderboardRowsForScope(
+    runs,
+    leaderboard,
+    "vep_most_severe_consequence"
+  );
+  assert.equal(consequence.length, 1);
+  assert.equal(consequence[0].accuracy, 0.2);
+  assert.equal(consequence[0].tokens, 400);
+  assert.equal(consequence[0].cost, 0.4);
+  assert.equal(consequence[0].run.run_id, "model-consequence");
+  assert.deepEqual(leaderboardRowsForScope(runs, leaderboard, "unknown"), []);
+});
+
+test("task selectors use the benchmark presentation order", () => {
+  assert.deepEqual(
+    orderTaskFamilies(["clinvar", "future_task", "vep_most_severe_consequence"]),
+    ["vep_most_severe_consequence", "clinvar", "future_task"]
+  );
+});
+
 test("model selection has one best-first row with a task run for each model", () => {
   const leaderboard = {
     aggregation_method: "task_macro_average_v0",
@@ -194,50 +250,6 @@ test("question explorer puts consequence classification before ClinVar", () => {
     ["consequence-1", "consequence-2", "clinvar-1", "clinvar-2", "future-1"]
   );
   assert.equal(questions[0].question_id, "clinvar-2");
-});
-
-test("line chart data groups model families and sorts points by the selected metric", () => {
-  const rows = leaderboardRows([
-    run({
-      accuracy: 0.8,
-      configurationKey: `cfg-${"1".repeat(64)}`,
-      cost: 2,
-      effort: "high",
-      runId: "family-a-high",
-      tokens: 200
-    }),
-    run({
-      accuracy: 0.6,
-      configurationKey: `cfg-${"2".repeat(64)}`,
-      cost: 1,
-      effort: "low",
-      modelId: "test/model-v2",
-      runId: "family-a-low",
-      tokens: 100
-    }),
-    run({
-      accuracy: 0.7,
-      configurationKey: `cfg-${"3".repeat(64)}`,
-      cost: 1.5,
-      family: "Another family",
-      modelId: "test/another",
-      runId: "family-b",
-      tokens: null
-    })
-  ]);
-
-  const costSeries = leaderboardLineSeries(rows, "cost");
-  assert.deepEqual(costSeries.map((series) => series.family), [
-    "Another family",
-    "Test family"
-  ]);
-  assert.deepEqual(
-    costSeries[1].points.map((point) => point.x),
-    [1, 2]
-  );
-  const tokenSeries = leaderboardLineSeries(rows, "tokens");
-  assert.deepEqual(tokenSeries.map((series) => series.family), ["Test family"]);
-  assert.throws(() => leaderboardLineSeries(rows, "release_date"), /Unknown/);
 });
 
 test("question explorer exposes only complete runs", () => {
