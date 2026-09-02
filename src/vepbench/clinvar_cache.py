@@ -79,37 +79,6 @@ def processed_cache_prefix(release_month: str, cache_key: str) -> str:
     return f"{CACHE_ROOT}/v{CACHE_SCHEMA_VERSION}/{release_month}/{cache_key}"
 
 
-def implementation_digest(
-    paths: Sequence[str | Path],
-    *,
-    root: str | Path,
-) -> str:
-    """Hash the named preparation files, including their paths and contents."""
-
-    root_path = Path(root).resolve()
-    resolved: list[tuple[Path, Path]] = []
-    for path in paths:
-        item = Path(path).resolve()
-        if not item.is_file():
-            raise ClinVarPreparationError(f"implementation file does not exist: {item}")
-        try:
-            relative = item.relative_to(root_path)
-        except ValueError as exc:
-            raise ClinVarPreparationError(
-                f"implementation file is outside the digest root: {item}"
-            ) from exc
-        resolved.append((item, relative))
-    digest = hashlib.sha256()
-    for item, relative in sorted(resolved, key=lambda pair: pair[1].as_posix()):
-        digest.update(relative.as_posix().encode())
-        digest.update(b"\0")
-        with item.open("rb") as stream:
-            while chunk := stream.read(1024 * 1024):
-                digest.update(chunk)
-        digest.update(b"\0")
-    return digest.hexdigest()
-
-
 def write_processed_cache(
     cache_dir: str | Path,
     *,

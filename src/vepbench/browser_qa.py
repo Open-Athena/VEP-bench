@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import tempfile
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -54,31 +54,30 @@ class OfflineBrowserTransport:
 
 def prepare_fixture(
     *,
-    questions_path: Path,
+    questions_path: Path | Sequence[Path],
     output: Path,
     selected_question_id: str,
     prediction: str,
+    include_alternate_model: bool = False,
     site_root: Path | None = None,
     data_base_url: str | None = None,
 ) -> dict[str, Any]:
     """Build and promote a complete fake run, optionally configuring a site copy."""
 
-    questions = read_jsonl(questions_path)
+    question_files = [questions_path] if isinstance(questions_path, Path) else list(questions_path)
+    if not question_files:
+        raise BuildError("browser QA requires at least one question file")
+    question_sets = [(path, read_jsonl(path)) for path in question_files]
+    empty_files = [path for path, task_questions in question_sets if not task_questions]
+    if empty_files:
+        raise BuildError(f"browser QA question file is empty: {empty_files[0]}")
+    questions = [question for _, task_questions in question_sets for question in task_questions]
     selected = next(
         (question for question in questions if question["question_id"] == selected_question_id),
         None,
     )
     if selected is None:
         raise BuildError(f"browser QA question {selected_question_id!r} was not generated")
-    invalid_questions = [
-        question["question_id"]
-        for question in questions
-        if prediction not in {choice["choice_id"] for choice in question["choices"]}
-    ]
-    if invalid_questions:
-        raise BuildError(
-            f"browser QA prediction {prediction!r} is not valid for {invalid_questions[0]!r}"
-        )
     if (site_root is None) != (data_base_url is None):
         raise BuildError("site_root and data_base_url must be supplied together")
 
@@ -86,24 +85,59 @@ def prepare_fixture(
         work = Path(temporary)
         results = work / "results"
         results.mkdir()
-        evaluate_file(
-            questions_path=questions_path,
-            question_schema_path=PROJECT_ROOT / "schemas/question.schema.json",
-            result_schema_path=PROJECT_ROOT / "schemas/result.schema.json",
-            output=results / "browser-qa.jsonl",
-            run_id="browser-qa",
-            model_id="synthetic/browser-qa",
-            api_key="offline-browser-qa",
-            generation_parameters={
-                "max_tokens": 256,
-                "reasoning": {"effort": "low"},
-                "temperature": 0.0,
-            },
-            transport=OfflineBrowserTransport(prediction),
-            now=lambda: FIXED_TIME,
-            monotonic=lambda: 0.0,
-            concurrency=8,
-        )
+        model_ids = ["synthetic/browser-qa"]
+        if include_alternate_model:
+            model_ids.append("synthetic/browser-qa-alternate")
+        for model_index, model_id in enumerate(model_ids):
+            for task_index, (question_file, task_questions) in enumerate(question_sets):
+                primary_prediction = (
+                    prediction
+                    if any(
+                        question["question_id"] == selected_question_id
+                        for question in task_questions
+                    )
+                    else task_questions[0]["answer_choice_id"]
+                )
+                task_prediction = (
+                    primary_prediction
+                    if model_index == 0
+                    else next(
+                        choice["choice_id"]
+                        for choice in task_questions[0]["choices"]
+                        if choice["choice_id"] != primary_prediction
+                    )
+                )
+                invalid_questions = [
+                    question["question_id"]
+                    for question in task_questions
+                    if task_prediction
+                    not in {choice["choice_id"] for choice in question["choices"]}
+                ]
+                if invalid_questions:
+                    raise BuildError(
+                        f"browser QA prediction {task_prediction!r} is not valid for "
+                        f"{invalid_questions[0]!r}"
+                    )
+                run_prefix = "browser-qa" if model_index == 0 else "browser-qa-alternate"
+                run_id = run_prefix if task_index == 0 else f"{run_prefix}-task-{task_index + 1}"
+                evaluate_file(
+                    questions_path=question_file,
+                    question_schema_path=PROJECT_ROOT / "schemas/question.schema.json",
+                    result_schema_path=PROJECT_ROOT / "schemas/result.schema.json",
+                    output=results / f"{run_id}.jsonl",
+                    run_id=run_id,
+                    model_id=model_id,
+                    api_key="offline-browser-qa",
+                    generation_parameters={
+                        "max_tokens": 256,
+                        "reasoning": {"effort": "low"},
+                        "temperature": 0.0,
+                    },
+                    transport=OfflineBrowserTransport(task_prediction),
+                    now=lambda: FIXED_TIME,
+                    monotonic=lambda: 0.0,
+                    concurrency=8,
+                )
         candidate = work / "candidate"
         model_catalog = work / "model-catalog.json"
         catalog_document = {
@@ -112,7 +146,17 @@ def prepare_fixture(
                 "synthetic/browser-qa": {
                     "family": "Synthetic browser QA",
                     "release_date": "2026-08-01",
-                }
+                },
+                **(
+                    {
+                        "synthetic/browser-qa-alternate": {
+                            "family": "Synthetic browser QA alternate",
+                            "release_date": "2026-08-02",
+                        }
+                    }
+                    if include_alternate_model
+                    else {}
+                ),
             },
         }
         model_catalog.write_text(
@@ -121,7 +165,7 @@ def prepare_fixture(
             newline="\n",
         )
         build_version(
-            questions_path=questions_path,
+            questions_path=question_files,
             results_dir=results,
             result_schema_path=PROJECT_ROOT / "schemas/result.schema.json",
             schemas_dir=PROJECT_ROOT / "schemas",

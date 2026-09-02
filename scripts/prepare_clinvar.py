@@ -30,7 +30,6 @@ from vepbench.clinvar import (
 from vepbench.clinvar_cache import (
     CACHE_SCHEMA_VERSION,
     download_processed_cache,
-    implementation_digest,
     processed_cache_key,
     processed_cache_prefix,
     publish_processed_cache,
@@ -57,11 +56,8 @@ OUTPUT = ROOT / "data/sources/clinvar-july-2026.jsonl"
 MANIFEST_OUTPUT = ROOT / "data/sources/clinvar-july-2026.manifest.json"
 CACHE_BUCKET = "open-athena/vepbench"
 CACHE_RELEASE_MONTH = "2026-08"
-CACHE_IMPLEMENTATION_PATHS = (
-    ROOT / "scripts/prepare_clinvar.py",
-    ROOT / "src/vepbench/clinvar.py",
-    ROOT / "src/vepbench/clinvar_cache.py",
-    ROOT / "src/vepbench/genome.py",
+PRE_SAMPLING_IMPLEMENTATION_SHA256 = (
+    "756ae3bdb0f1ffc8b2aad6383b025a8a3ce2f018f584b82596d0535239a06cc6"
 )
 
 
@@ -113,10 +109,10 @@ def _cache_configuration(clinvar_sha256: str, config: PreparationConfig) -> dict
             "uppercase_sequence": True,
             "allowed_bases": "ACGT",
         },
-        "implementation_sha256": implementation_digest(
-            CACHE_IMPLEMENTATION_PATHS,
-            root=ROOT,
-        ),
+        # This is an explicit pre-sampling revision, not a digest of every file.
+        # Keep it stable for sampling-only changes and replace it whenever
+        # parsing, filtering, joining, or reference validation behavior changes.
+        "implementation_sha256": PRE_SAMPLING_IMPLEMENTATION_SHA256,
     }
 
 

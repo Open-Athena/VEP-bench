@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from vepbench.browser_qa import DEFAULT_PREDICTION, DEFAULT_QUESTION_ID, prepare_fixture
-from vepbench.builder import build_questions, load_template, read_jsonl
+from vepbench.builder import build_questions, canonical_json, load_template, read_jsonl
 from vepbench.publication import validate_version
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -72,4 +72,38 @@ def test_browser_qa_fixture_is_complete_and_offline(tmp_path: Path, config_relat
         "parse_error": None,
         "parsed_answer": "A",
         "value": 0,
+    }
+
+
+def test_browser_qa_fixture_supports_multiple_task_runs(tmp_path: Path) -> None:
+    secondary_questions = tmp_path / "secondary-questions.jsonl"
+    secondary = dict(read_jsonl(QUESTIONS)[0])
+    secondary["question_id"] = "secondary-task-v1:synthetic-001"
+    secondary["metadata"] = {
+        **secondary["metadata"],
+        "task_family": "secondary_task",
+    }
+    secondary_questions.write_text(
+        f"{canonical_json(secondary)}\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+
+    output = tmp_path / "publication"
+    prepare_fixture(
+        questions_path=[QUESTIONS, secondary_questions],
+        output=output,
+        selected_question_id="mc-effect-v1:synthetic-001",
+        prediction="A",
+        include_alternate_model=True,
+    )
+
+    runs_document = json.loads((output / "versions/main/runs.json").read_text(encoding="utf-8"))
+    assert len(runs_document["runs"]) == 4
+    assert {
+        profile["task_family"] for profile in runs_document["leaderboard"]["evaluation_profiles"]
+    } == {"synthetic_effect", "secondary_task"}
+    assert {run["model"]["model_id"] for run in runs_document["runs"]} == {
+        "synthetic/browser-qa",
+        "synthetic/browser-qa-alternate",
     }

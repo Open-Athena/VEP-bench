@@ -8,10 +8,15 @@ port=${VEPBENCH_BROWSER_QA_PORT:-4173}
 project_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 qa_root=$(mktemp -d)
 server_pid=
+browser_pid=
 
 # Invoked indirectly by the EXIT trap below.
 # shellcheck disable=SC2329
 cleanup() {
+  if [[ -n "$browser_pid" ]]; then
+    kill "$browser_pid" 2>/dev/null || true
+    wait "$browser_pid" 2>/dev/null || true
+  fi
   if [[ -n "$server_pid" ]]; then
     kill "$server_pid" 2>/dev/null || true
     wait "$server_pid" 2>/dev/null || true
@@ -24,12 +29,19 @@ mkdir -p "$output_dir"
 cp -a "$site_dir/." "$qa_root/"
 
 questions="$qa_root/questions.jsonl"
+clinvar_questions="$qa_root/clinvar-questions.jsonl"
 publication="$qa_root/publication"
 data_base_url="http://127.0.0.1:$port/publication/versions/main"
 uv run --project "$project_root" --locked vepbench build --output "$questions"
+uv run --project "$project_root" --locked vepbench build \
+  --source "$project_root/data/sources/clinvar-july-2026.jsonl" \
+  --template "$project_root/templates/clinvar.json" \
+  --output "$clinvar_questions"
 uv run --project "$project_root" --locked python \
   "$project_root/scripts/prepare_browser_qa_fixture.py" \
   --questions "$questions" \
+  --questions "$clinvar_questions" \
+  --alternate-model \
   --output "$publication" \
   --site-root "$qa_root" \
   --data-base-url "$data_base_url"
@@ -71,6 +83,9 @@ common=(
   --dump-dom "http://127.0.0.1:$port/tasks/consequence-classification.html" \
   >"$output_dir/task.dom.html"
 "$chrome" "${common[@]}" --window-size=1440,1600 \
+  --dump-dom "http://127.0.0.1:$port/tasks/clinvar.html" \
+  >"$output_dir/clinvar-task.dom.html"
+"$chrome" "${common[@]}" --window-size=1440,1600 \
   --dump-dom "http://127.0.0.1:$port/questions.html?question=vep-most-severe-v1%3A17%3A38786886%3AA%3AT&run=browser-qa" \
   >"$output_dir/question.dom.html"
 "$chrome" "${common[@]}" --window-size=1440,1600 \
@@ -90,6 +105,7 @@ for check in \
   'leaderboard.dom.html|>Task</label>' \
   'leaderboard.dom.html|>All tasks</option>' \
   'leaderboard.dom.html|>Consequence classification</option>' \
+  'leaderboard.dom.html|>ClinVar</option>' \
   'leaderboard.dom.html|Score by cost and token usage' \
   'leaderboard.dom.html|>Compare score against</label>' \
   'leaderboard.dom.html|>Total cost</option>' \
@@ -100,6 +116,7 @@ for check in \
   'task.dom.html|Leaderboard' \
   'task.dom.html|Task version' \
   'task.dom.html|questions match the current filters' \
+  'clinvar-task.dom.html|>Q052<' \
   'question.dom.html|>Questions<' \
   'question.dom.html|browser-qa' \
   'question.dom.html|>Result<' \
@@ -129,6 +146,11 @@ done
 
 if grep -q '<th title="answer"' "$output_dir/question.dom.html"; then
   echo "unexpected Reference answer column in question.dom.html" >&2
+  status=1
+fi
+
+if grep -q '>Q001<' "$output_dir/clinvar-task.dom.html"; then
+  echo "unexpected task-local numbering in clinvar-task.dom.html" >&2
   status=1
 fi
 
@@ -186,7 +208,7 @@ for pattern in 'Evaluation run' 'Model prediction' '>Outcome<'; do
   fi
 done
 
-for file in leaderboard.dom.html tasks.dom.html task.dom.html question.dom.html; do
+for file in leaderboard.dom.html tasks.dom.html task.dom.html clinvar-task.dom.html question.dom.html; do
   if grep -q 'observablehq--error' "$output_dir/$file"; then
     echo "rendered Observable error in $file" >&2
     status=1
@@ -229,6 +251,27 @@ for pattern in 'Raw provider response' 'Request and usage metadata'; do
     status=1
   fi
 done
+
+debug_port=${VEPBENCH_BROWSER_QA_DEBUG_PORT:-$((port + 1))}
+"$chrome" \
+  --headless \
+  --no-sandbox \
+  --disable-gpu \
+  --hide-scrollbars \
+  --remote-debugging-port="$debug_port" \
+  --remote-allow-origins='*' \
+  --user-data-dir="$qa_root/chrome-profile" \
+  about:blank \
+  >"$output_dir/interaction-browser.log" 2>&1 &
+browser_pid=$!
+curl --fail --retry 20 --retry-all-errors --retry-connrefused --retry-delay 1 \
+  "http://127.0.0.1:$debug_port/json/version" >/dev/null
+node "$project_root/scripts/browser_interaction_qa.mjs" \
+  "http://127.0.0.1:$port" \
+  "http://127.0.0.1:$debug_port"
+kill "$browser_pid" 2>/dev/null || true
+wait "$browser_pid" 2>/dev/null || true
+browser_pid=
 
 "$chrome" "${common[@]}" --window-size=1440,1200 \
   --screenshot="$output_dir/leaderboard-desktop.png" \

@@ -28,7 +28,6 @@ from vepbench.clinvar import (
 )
 from vepbench.clinvar_cache import (
     download_processed_cache,
-    implementation_digest,
     load_processed_cache,
     processed_cache_key,
     processed_cache_prefix,
@@ -495,33 +494,22 @@ def test_processed_cache_is_immutable_and_publishes_manifest_last(tmp_path: Path
     assert downloaded[:3] == (parsed, joined, validation)
 
 
-def test_cache_implementation_digest_is_workspace_independent(tmp_path: Path) -> None:
-    roots = [tmp_path / "first", tmp_path / "second"]
-    for root in roots:
-        source = root / "src/prepare.py"
-        source.parent.mkdir(parents=True)
-        source.write_text("PINNED = True\n", encoding="utf-8")
-
-    first = implementation_digest([roots[0] / "src/prepare.py"], root=roots[0])
-    second = implementation_digest([roots[1] / "src/prepare.py"], root=roots[1])
-
-    assert first == second
-    (roots[1] / "src/prepare.py").write_text("PINNED = False\n", encoding="utf-8")
-    assert implementation_digest([roots[1] / "src/prepare.py"], root=roots[1]) != first
-    with pytest.raises(ClinVarPreparationError, match="outside the digest root"):
-        implementation_digest([roots[0] / "src/prepare.py"], root=roots[1])
-
-
-def test_production_cache_digest_includes_preparation_entrypoint() -> None:
+def test_production_cache_configuration_reuses_presampling_state() -> None:
     preparation = runpy.run_path(ROOT / "scripts/prepare_clinvar.py")
-    implementation_paths = preparation["CACHE_IMPLEMENTATION_PATHS"]
-    entrypoint = ROOT / "scripts/prepare_clinvar.py"
-    assert entrypoint in implementation_paths
-    configuration = preparation["_cache_configuration"]("0" * 64, PreparationConfig())
-    assert configuration["implementation_sha256"] == implementation_digest(
-        implementation_paths,
-        root=ROOT,
+    cache_configuration = preparation["_cache_configuration"]
+    source_digest = preparation["CLINVAR_EXPECTED_SHA256"]
+    configuration = cache_configuration(source_digest, PreparationConfig())
+    expanded_configuration = cache_configuration(
+        source_digest,
+        PreparationConfig(target_pairs=100, seed=1),
     )
+
+    assert configuration == expanded_configuration
+    assert (
+        configuration["implementation_sha256"] == preparation["PRE_SAMPLING_IMPLEMENTATION_SHA256"]
+    )
+    production_manifest = json.loads(PRODUCTION_MANIFEST.read_text(encoding="utf-8"))
+    assert processed_cache_key(configuration) == production_manifest["processed_cache"]["cache_key"]
 
 
 def test_production_artifacts_are_pinned_balanced_and_deterministic(tmp_path: Path) -> None:

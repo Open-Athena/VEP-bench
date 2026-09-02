@@ -4,6 +4,7 @@ import test from "node:test";
 
 import {
   answerPath,
+  defaultQuestionForExplorer,
   fetchAnswer,
   fetchAnswerIfAvailable,
   fetchJson,
@@ -250,6 +251,39 @@ test("question explorer puts consequence classification before ClinVar", () => {
     ["consequence-1", "consequence-2", "clinvar-1", "clinvar-2", "future-1"]
   );
   assert.equal(questions[0].question_id, "clinvar-2");
+});
+
+test("question explorer preserves the current visible question across control changes", () => {
+  const entries = [
+    {question_id: "question-1"},
+    {question_id: "question-2"},
+    {question_id: "question-3"}
+  ];
+  const knownQuestionIds = new Set(entries.map((entry) => entry.question_id));
+
+  assert.equal(
+    defaultQuestionForExplorer(entries, {
+      currentQuestionId: "question-2",
+      knownQuestionIds,
+      evaluatedQuestionIds: new Set(["question-1"]),
+      preferEvaluated: true
+    }).question_id,
+    "question-2"
+  );
+  assert.equal(
+    defaultQuestionForExplorer(entries.slice(0, 1), {
+      currentQuestionId: "question-2",
+      knownQuestionIds
+    }).question_id,
+    "question-1"
+  );
+  assert.equal(
+    defaultQuestionForExplorer(entries, {
+      currentQuestionId: "missing-question",
+      knownQuestionIds
+    }),
+    null
+  );
 });
 
 test("question explorer exposes only complete runs", () => {

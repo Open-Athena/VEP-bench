@@ -139,9 +139,11 @@ The completion manifest is uploaded last; existing complete or incomplete
 prefixes are never overwritten.
 
 The cache key pins upstream release identities, preprocessing rules, window
-configuration, and the digest of the implementation files. Sampling target and
-seed are deliberately excluded, so the full reference-valid pool can be reused
-to expand beyond 50 variants or compare deterministic sampling policies. A cache
+configuration, and an explicit pre-sampling implementation revision. Maintainers
+must replace that revision whenever parsing, filtering, joining, or reference
+validation behavior changes. Sampling target, seed, and sampling implementation
+are deliberately excluded, so the full reference-valid pool can be reused to
+expand beyond 50 variants or compare deterministic sampling policies. A cache
 hit downloads and verifies every processed file before reconstructing the exact
 pre-sampling state.
 

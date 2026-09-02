@@ -13,6 +13,7 @@ import {
 } from "./components/vepbench.js";
 import {
   artifactUrl,
+  defaultQuestionForExplorer,
   fetchAnswerIfAvailable,
   fetchJson,
   fetchOutcomeIndex,
@@ -82,6 +83,7 @@ const questionEntries = entriesForQuestions(
 const requestedQuestion = questionEntries.find(
   (entry) => entry.question_id === requestedQuestionId
 );
+const knownQuestionIds = new Set(questionEntries.map((entry) => entry.question_id));
 ```
 
 # Questions
@@ -185,14 +187,13 @@ const visibleEntries = entriesWithResults.filter((entry) =>
   )
   && (controls.result === "All results" || entry.outcome === controls.result)
 );
-const defaultQuestion = requestedQuestionId
-  ? (visibleEntries.find((entry) => entry.question_id === requestedQuestionId) ?? null)
-  : (
-      (modelRow
-        ? visibleEntries.find((entry) => outcomesByQuestion.has(entry.question_id))
-        : null)
-      ?? visibleEntries[0]
-    );
+const currentQuestionId = new URLSearchParams(location.search).get("question");
+const defaultQuestion = defaultQuestionForExplorer(visibleEntries, {
+  currentQuestionId,
+  knownQuestionIds,
+  evaluatedQuestionIds: new Set(outcomesByQuestion.keys()),
+  preferEvaluated: Boolean(modelRow)
+});
 ```
 
 ```js

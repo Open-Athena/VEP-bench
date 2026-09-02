@@ -202,6 +202,27 @@ export function orderQuestionsForExplorer(questions) {
   });
 }
 
+export function defaultQuestionForExplorer(
+  visibleEntries,
+  {
+    currentQuestionId = null,
+    knownQuestionIds = new Set(),
+    evaluatedQuestionIds = new Set(),
+    preferEvaluated = false
+  } = {}
+) {
+  const current = visibleEntries.find((entry) => entry.question_id === currentQuestionId);
+  if (current) return current;
+  if (currentQuestionId && !knownQuestionIds.has(currentQuestionId)) return null;
+  return (
+    (preferEvaluated
+      ? visibleEntries.find((entry) => evaluatedQuestionIds.has(entry.question_id))
+      : null)
+    ?? visibleEntries[0]
+    ?? null
+  );
+}
+
 export function groupCurrentRuns(runs) {
   return runs
     .filter((run) => run.coverage.complete)
