@@ -150,6 +150,10 @@ streams so memory use does not grow with the total amount of model reasoning.
 Legacy result records without `result_type` remain publishable because the
 publisher derives the same classification from their score, finish reason, and
 retained structured provider response.
+For compatibility, `metrics.format_failures` continues to count every completed
+response with a parse error. The narrower five-way taxonomy is reported in
+`metrics.result_counts`, where only `format_error` excludes refusals and token
+limits.
 
 An official multi-task version publishes the sorted union of its task question
 sets as the browsable question artifact. Each run still records the digest,

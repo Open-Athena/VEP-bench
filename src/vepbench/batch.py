@@ -381,6 +381,16 @@ def collect_batch_file(
         or len(submitted_custom_ids) != len(set(submitted_custom_ids))
     ):
         raise BuildError(f"{state_file}: invalid submitted custom IDs")
+    if "submitted_custom_ids" in state:
+        question_positions = {
+            question_id: question_index for question_index, question_id in enumerate(question_ids)
+        }
+        expected_custom_ids = [
+            f"request_{question_positions[question_id]:06d}"
+            for question_id in submitted_question_ids
+        ]
+        if submitted_custom_ids != expected_custom_ids:
+            raise BuildError(f"{state_file}: submitted custom IDs do not match their question IDs")
 
     result_schema = json.loads(Path(result_schema_path).read_text(encoding="utf-8"))
     Draft202012Validator.check_schema(result_schema)

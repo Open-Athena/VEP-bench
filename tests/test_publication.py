@@ -142,6 +142,7 @@ def test_publication_is_deterministic_and_separates_browser_answers(tmp_path: Pa
             {
                 "response": {
                     "body": {
+                        "provider": "Synthetic fixture",
                         "choices": [
                             {
                                 "finish_reason": "stop",
@@ -150,22 +151,30 @@ def test_publication_is_deterministic_and_separates_browser_answers(tmp_path: Pa
                                     "refusal": "I cannot answer this request.",
                                 },
                             }
-                        ]
+                        ],
                     }
                 }
             },
             "refusal",
-            0,
+            1,
         ),
         (
             "length",
-            {"choices": [{"finish_reason": "length", "message": {"content": "Partial"}}]},
+            {
+                "provider": "Synthetic fixture",
+                "choices": [
+                    {"finish_reason": "length", "message": {"content": "Partial response"}}
+                ],
+            },
             "token_limit",
-            0,
+            1,
         ),
         (
             "stop",
-            {"choices": [{"finish_reason": "stop", "message": {"content": "No final"}}]},
+            {
+                "provider": "Synthetic fixture",
+                "choices": [{"finish_reason": "stop", "message": {"content": "Partial response"}}],
+            },
             "format_error",
             1,
         ),
@@ -184,6 +193,7 @@ def test_publication_derives_new_types_from_legacy_results(
     record["response"].update(
         {
             "content": None if expected_type == "refusal" else "Partial response",
+            "reasoning": None,
             "finish_reason": finish_reason,
             "raw": raw,
         }
@@ -505,6 +515,34 @@ def test_validate_version_rejects_tampered_answer(tmp_path: Path) -> None:
     answer_path.write_bytes(gzip.compress(f"{canonical_json(answer)}\n".encode(), mtime=0))
 
     with pytest.raises(BuildError, match="artifact digest or size mismatch"):
+        validate_version(output, version_name="candidate")
+
+
+def test_validate_version_rejects_raw_provider_disagreement(tmp_path: Path) -> None:
+    output = tmp_path / "publication"
+    build_synthetic(output)
+    manifest_path = output / "versions/candidate/manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    raw_descriptor = manifest["artifacts"]["raw"][0]
+    raw_path = output / raw_descriptor["path"]
+    with zstandard.ZstdDecompressor().stream_reader(raw_path.open("rb")) as reader:
+        raw_content = io.BufferedReader(reader).read()
+    envelope = json.loads(raw_content)
+    envelope["response"]["raw"]["provider"] = "Tampered provider"
+    updated_content = f"{canonical_json(envelope)}\n".encode()
+    updated_artifact = publication_module._write_zstd(raw_path, updated_content)
+    raw_descriptor.update(updated_artifact)
+
+    runs_path = output / "versions/candidate/runs.json"
+    runs = json.loads(runs_path.read_text(encoding="utf-8"))
+    runs["runs"][0]["raw_archive"].update(updated_artifact)
+    runs_bytes = publication_module._write_json(runs_path, runs)
+    manifest["artifacts"]["runs"] = publication_module._plain_artifact(
+        "versions/candidate/runs.json", runs_bytes, 1
+    )
+    publication_module._write_json(manifest_path, manifest)
+
+    with pytest.raises(BuildError, match="upstream provider does not match raw responses"):
         validate_version(output, version_name="candidate")
 
 

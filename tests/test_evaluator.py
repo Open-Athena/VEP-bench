@@ -16,6 +16,7 @@ from vepbench.evaluator import (
     ProviderError,
     classify_result_type,
     evaluate_file,
+    score_completed_response,
     score_multiple_choice,
     validate_result,
 )
@@ -107,6 +108,24 @@ def test_result_type_classification_is_flat_and_deterministic(
     )
 
 
+def test_refusal_precedence_forces_a_zero_score() -> None:
+    score, result_type = score_completed_response(
+        "FINAL: B",
+        {"A", "B"},
+        "B",
+        finish_reason="stop",
+        refusal="I cannot answer this request.",
+    )
+
+    assert result_type == "refusal"
+    assert (score.parsed_answer, score.value, score.correct, score.parse_error) == (
+        "B",
+        0,
+        False,
+        None,
+    )
+
+
 @pytest.mark.parametrize("content", ["FINAL:\nB", "FINAL: \nB", "FINAL:\r\nB"])
 def test_score_does_not_accept_answer_on_the_next_line(content: str) -> None:
     score = score_multiple_choice(content, {"A", "B"}, "B")
@@ -166,6 +185,16 @@ def test_completed_evaluation_is_valid_and_preserves_response(tmp_path: Path) ->
     assert result["generation_parameters"] == {"max_tokens": 4096, "temperature": 0.0}
     assert "test-secret" not in output.read_text(encoding="utf-8")
     assert transport.requests[0][0]["messages"][0]["content"] == result["question"]["prompt"]
+
+    mismatched_content = copy.deepcopy(result)
+    mismatched_content["response"]["content"] = "FINAL: A"
+    with pytest.raises(BuildError, match="normalized response"):
+        _validate_result(mismatched_content)
+
+    mismatched_provider = copy.deepcopy(result)
+    mismatched_provider["model"]["upstream_provider"] = "OtherProvider"
+    with pytest.raises(BuildError, match="upstream provider"):
+        _validate_result(mismatched_provider)
 
 
 def test_direct_evaluation_resumes_a_validated_ordered_prefix(tmp_path: Path) -> None:

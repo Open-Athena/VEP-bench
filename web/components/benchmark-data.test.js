@@ -137,6 +137,7 @@ test("overall leaderboard macro-averages complete task profiles", () => {
   assert.equal(rows[0].accuracy, 0.5);
   assert.equal(rows[0].tokens, 500);
   assert.equal(rows[0].cost, 0.75);
+  assert.equal(rows[0].model_cell.provider, "OpenRouter auto-routing");
   assert.deepEqual(
     rows[0].task_scores.map((task) => [task.task_family, task.accuracy]),
     [["clinvar", 0.75], ["vep_most_severe_consequence", 0.25]]
@@ -319,6 +320,13 @@ test("result types use stored values and preserve legacy fallbacks", () => {
   assert.equal(
     resultTypeForAnswer({scoring: {correct: false, parse_error: "missing"}}),
     "format_error"
+  );
+  assert.equal(
+    resultTypeForAnswer({
+      response: {status: "completed", finish_reason: "content_filter"},
+      scoring: {correct: true, parse_error: null}
+    }),
+    "refusal"
   );
   assert.equal(
     resultTypeForAnswer({

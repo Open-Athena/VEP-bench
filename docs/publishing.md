@@ -92,6 +92,10 @@ sizes, and content digests.
 
 The saved plan also covers the bucket README and shared schemas. A named version
 must match those shared files whenever a ready `main` already exists.
+Consequently, a release that changes a shared schema cannot upload its named
+version while the old `main` readiness marker exists. Validate the named build
+locally, derive and publish the promoted `main` tree first, then optionally
+upload the named archival version after the shared schemas match.
 
 ## Coordinate publication and explorer changes
 
@@ -103,7 +107,9 @@ change reads a new run field or artifact, use this rollout order:
 2. Merge and deploy the explorer change before publishing data that the previous
    UI would misinterpret. Verify the deployed UI still renders the live legacy
    publication correctly.
-3. Build, validate, review, and promote the updated `versions/main` publication.
+3. Build and validate a named candidate locally, review its promoted `main`
+   tree, and publish `versions/main`. If shared schemas changed, publish `main`
+   before optionally uploading the named candidate.
 4. Verify the live `runs.json` and `manifest.json`, then smoke-test the deployed
    explorer against the new official publication.
 

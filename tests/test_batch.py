@@ -96,6 +96,15 @@ class RequestedCompletedBatchTransport(FakeBatchTransport):
         }
 
 
+class LegacyCompletedBatchTransport(CompletedBatchTransport):
+    def retrieve(self, batch_id: str, api_key: str) -> dict[str, Any]:
+        response = super().retrieve(batch_id, api_key)
+        question_id = "mc-effect-v1:synthetic-001"
+        response["results"][0]["custom_id"] = question_id
+        response["results"][0]["id"] = question_id
+        return response
+
+
 class StateObservingTransport(FakeBatchTransport):
     def __init__(self, state_path: Path) -> None:
         super().__init__()
@@ -304,6 +313,72 @@ def test_submit_and_collect_batch_chunk_retains_full_question_set_identity(
     result = read_jsonl(result_output)[0]
     assert result["question_id"] == "mc-effect-v1:synthetic-002"
     assert result["question_set_size"] == 3
+
+
+def test_collect_rejects_reordered_persisted_custom_ids(tmp_path: Path) -> None:
+    questions = _three_question_file(tmp_path)
+    transport = RequestedCompletedBatchTransport()
+    state_path = tmp_path / "state.json"
+    submit_batch_file(
+        questions_path=questions,
+        question_schema_path=QUESTION_SCHEMA,
+        state_path=state_path,
+        result_output=tmp_path / "result.jsonl",
+        run_id="batch-run",
+        model_id="example/model",
+        api_key="test-secret",
+        generation_parameters={"max_tokens": 128},
+        batch_size=2,
+        transport=transport,
+    )
+    refresh_batch_state(state_path=state_path, api_key="test-secret", transport=transport)
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    state["submitted_custom_ids"].reverse()
+    state_path.write_text(f"{canonical_json(state)}\n", encoding="utf-8", newline="\n")
+
+    with pytest.raises(BuildError, match="custom IDs do not match their question IDs"):
+        collect_batch_file(
+            state_path=state_path,
+            questions_path=questions,
+            question_schema_path=QUESTION_SCHEMA,
+            result_schema_path=ROOT / "schemas/result.schema.json",
+            api_key="test-secret",
+            transport=transport,
+        )
+
+
+def test_collect_retains_legacy_question_id_custom_id_fallback(tmp_path: Path) -> None:
+    transport = LegacyCompletedBatchTransport()
+    state_path = tmp_path / "state.json"
+    result_output = tmp_path / "result.jsonl"
+    submit_batch_file(
+        questions_path=QUESTIONS,
+        question_schema_path=QUESTION_SCHEMA,
+        state_path=state_path,
+        result_output=result_output,
+        run_id="batch-run",
+        model_id="example/model",
+        api_key="test-secret",
+        generation_parameters={"max_tokens": 128},
+        transport=transport,
+    )
+    refresh_batch_state(state_path=state_path, api_key="test-secret", transport=transport)
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    del state["submitted_custom_ids"]
+    question_id = state["submitted_question_ids"][0]
+    state_path.write_text(f"{canonical_json(state)}\n", encoding="utf-8", newline="\n")
+
+    summary = collect_batch_file(
+        state_path=state_path,
+        questions_path=QUESTIONS,
+        question_schema_path=QUESTION_SCHEMA,
+        result_schema_path=ROOT / "schemas/result.schema.json",
+        api_key="test-secret",
+        transport=transport,
+    )
+
+    assert summary.is_complete
+    assert read_jsonl(result_output)[0]["question_id"] == question_id
 
 
 def test_merge_batch_chunks_writes_one_ordered_full_run(tmp_path: Path) -> None:

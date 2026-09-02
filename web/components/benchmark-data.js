@@ -1,4 +1,5 @@
 const SAFE_ID = /^[A-Za-z0-9][A-Za-z0-9._:-]*$/;
+const AUTO_ROUTED_PROVIDER = "OpenRouter auto-routing";
 const EXPLORER_TASK_ORDER = new Map([
   ["vep_most_severe_consequence", 0],
   ["clinvar", 1]
@@ -16,7 +17,7 @@ export function resultTypeForAnswer(result) {
   if (result.response?.status && result.response.status !== "completed") return null;
   const stored = result.scoring?.result_type;
   if (Object.hasOwn(RESULT_TYPE_LABELS, stored)) return stored;
-  if (result.scoring.parse_error !== null && result.response?.finish_reason === "content_filter") {
+  if (result.response?.finish_reason === "content_filter") {
     return "refusal";
   }
   if (result.scoring.parse_error !== null && result.response?.finish_reason === "length") {
@@ -171,6 +172,10 @@ export function overallLeaderboardRows(runs, leaderboard) {
     if (taskAccuracies.some((accuracy) => accuracy === null)) continue;
     const representative = taskRuns[0];
     const row = rowForRun(representative);
+    const providers = new Set(
+      taskRuns.map((run) => run.model.upstream_provider ?? "not reported")
+    );
+    if (providers.size > 1) row.model_cell.provider = AUTO_ROUTED_PROVIDER;
     row.runs = taskRuns;
     delete row.run;
     row.accuracy = taskAccuracies.reduce((total, accuracy) => total + accuracy, 0)
