@@ -8,7 +8,11 @@ import {
   formatInteger,
   questionUrl
 } from "../components/vepbench.js";
-import {artifactUrl, fetchJson} from "../components/benchmark-data.js";
+import {
+  artifactUrl,
+  fetchJson,
+  orderQuestionsForExplorer
+} from "../components/benchmark-data.js";
 
 const config = await FileAttachment("../data/config.json").json();
 const questionState = await fetchJson(
@@ -16,16 +20,19 @@ const questionState = await fetchJson(
 )
   .then((document) => ({document, error: null}))
   .catch((error) => ({document: {questions: []}, error}));
-const taskQuestions = questionState.document.questions.filter(
+const orderedQuestions = orderQuestionsForExplorer(questionState.document.questions);
+const taskQuestions = orderedQuestions.filter(
   (question) => question.metadata.task_family === "clinvar"
 );
-const entries = entriesForQuestions(taskQuestions).map((entry) => ({
-  ...entry,
-  question_link: {
-    label: entry.question_label,
-    href: questionUrl(entry.question_id, null, "../questions.html")
-  }
-}));
+const entries = entriesForQuestions(orderedQuestions)
+  .filter((entry) => entry.question.metadata.task_family === "clinvar")
+  .map((entry) => ({
+    ...entry,
+    question_link: {
+      label: entry.question_label,
+      href: questionUrl(entry.question_id, null, "../questions.html")
+    }
+  }));
 ```
 
 *Assay 02 · temporal sequence-context multiple choice*

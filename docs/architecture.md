@@ -168,6 +168,9 @@ numeric value used for sorting.
 
 The question explorer selects complete model configurations, ranked by overall
 score, and resolves the task-specific run only after a question is selected.
+Displayed `Qnnn` labels are global ordinals in the explorer's canonical task
+order, not per-task row numbers; task pages label their filtered questions from
+that same combined ordering.
 Its compact `question-metadata.json` asset is deterministically derived from
 committed task sources and provenance manifests. Every task must supply a VEP
 consequence for each source record, normally as
