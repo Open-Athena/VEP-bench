@@ -5,6 +5,7 @@ import test from "node:test";
 import {
   answerPath,
   fetchAnswer,
+  fetchAnswerIfAvailable,
   fetchJson,
   fetchOutcomeIndex,
   groupCurrentRuns,
@@ -216,6 +217,51 @@ test("fetchAnswer downloads and decompresses exactly one gzip object", async () 
   assert.deepEqual(requested, [
     "https://example.test/versions/main/answers/demo-run/task%3Aquestion-1.json.gz"
   ]);
+});
+
+test("fetchAnswerIfAvailable skips questions outside the selected run", async () => {
+  let requests = 0;
+  const fetcher = async () => {
+    requests += 1;
+    return new Response();
+  };
+  const outcomeIndex = {
+    outcomes: [{question_id: "task:question-1", correct: true}]
+  };
+
+  assert.equal(
+    await fetchAnswerIfAvailable(
+      "https://example.test/versions/main",
+      run({runId: "demo-run"}),
+      "other-task:question-1",
+      outcomeIndex,
+      fetcher
+    ),
+    null
+  );
+  assert.equal(requests, 0);
+});
+
+test("fetchAnswerIfAvailable loads a question covered by the selected run", async () => {
+  const answer = {question_id: "task:question-1", scoring: {correct: true}};
+  const compressed = gzipSync(`${JSON.stringify(answer)}\n`, {mtime: 0});
+  let requests = 0;
+  const fetcher = async () => {
+    requests += 1;
+    return new Response(compressed, {status: 200});
+  };
+
+  assert.deepEqual(
+    await fetchAnswerIfAvailable(
+      "https://example.test/versions/main",
+      run({runId: "demo-run"}),
+      answer.question_id,
+      {outcomes: [{question_id: answer.question_id, correct: true}]},
+      fetcher
+    ),
+    answer
+  );
+  assert.equal(requests, 1);
 });
 
 test("fetchOutcomeIndex downloads the compact results for one run", async () => {

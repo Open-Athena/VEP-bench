@@ -129,7 +129,7 @@ header_order=$(
     | sed -E 's/<[^>]+>//g' \
     | paste -sd '|' -
 )
-if [[ "$header_order" != 'Model|Score|Release date|Tokens|Cost' ]]; then
+if [[ "$header_order" != 'Model|Overall score|Release date|Tokens|Cost' ]]; then
   echo "unexpected leaderboard column order: $header_order" >&2
   status=1
 fi

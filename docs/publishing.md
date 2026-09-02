@@ -98,19 +98,19 @@ must match those shared files whenever a ready `main` already exists.
 GitHub Pages and the public bucket deploy independently. When an explorer
 change reads a new run field or artifact, use this rollout order:
 
-1. Keep the schema addition backward-compatible so the current explorer can
-   still read the future publication.
-2. Build, validate, review, and promote the updated `versions/main` publication
-   before merging the dependent explorer UI.
-3. Verify the live `runs.json` contains the new per-run metadata and the live
-   `manifest.json` lists the new artifacts.
-4. Merge the explorer change, wait for the Pages deployment, and smoke-test the
-   live page against the official bucket.
+1. Keep additions backward-compatible and give the new UI a useful fallback for
+   the currently published format.
+2. Merge and deploy the explorer change before publishing data that the previous
+   UI would misinterpret. Verify the deployed UI still renders the live legacy
+   publication correctly.
+3. Build, validate, review, and promote the updated `versions/main` publication.
+4. Verify the live `runs.json` and `manifest.json`, then smoke-test the deployed
+   explorer against the new official publication.
 
-If data cannot be published first, the new UI must retain a useful legacy-data
-fallback until promotion completes. The deterministic browser QA fixture is
-built with the current code and schemas, so it verifies the new format but
-cannot by itself detect that the live bucket is still on an older format.
+Data-first rollout is safe only when the deployed explorer already interprets
+the new format correctly. The deterministic browser QA fixture is built with
+the current code and schemas, so it verifies the new format but cannot by itself
+prove rollout compatibility with the previously published version.
 
 For the question explorer, **Unavailable run** means a deep-linked run ID is
 not present in the current `versions/main/runs.json`. **Results unavailable**

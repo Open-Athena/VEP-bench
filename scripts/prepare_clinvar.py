@@ -57,6 +57,12 @@ OUTPUT = ROOT / "data/sources/clinvar-july-2026.jsonl"
 MANIFEST_OUTPUT = ROOT / "data/sources/clinvar-july-2026.manifest.json"
 CACHE_BUCKET = "open-athena/vepbench"
 CACHE_RELEASE_MONTH = "2026-08"
+CACHE_IMPLEMENTATION_PATHS = (
+    ROOT / "scripts/prepare_clinvar.py",
+    ROOT / "src/vepbench/clinvar.py",
+    ROOT / "src/vepbench/clinvar_cache.py",
+    ROOT / "src/vepbench/genome.py",
+)
 
 
 def _download(url: str, output: Path) -> tuple[int, str]:
@@ -108,11 +114,7 @@ def _cache_configuration(clinvar_sha256: str, config: PreparationConfig) -> dict
             "allowed_bases": "ACGT",
         },
         "implementation_sha256": implementation_digest(
-            [
-                ROOT / "src/vepbench/clinvar.py",
-                ROOT / "src/vepbench/clinvar_cache.py",
-                ROOT / "src/vepbench/genome.py",
-            ],
+            CACHE_IMPLEMENTATION_PATHS,
             root=ROOT,
         ),
     }

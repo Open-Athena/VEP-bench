@@ -144,6 +144,23 @@ def _task_sets_from_questions(
     }
 
 
+def _overall_configuration_key(run: Mapping[str, Any]) -> str:
+    """Identify the model configuration shared by task-specific runs."""
+
+    model = run["model"]
+    return canonical_json(
+        {
+            "model": {
+                "gateway": model["gateway"],
+                "model_id": model["model_id"],
+                "model_revision": model.get("model_revision"),
+                "upstream_provider": model.get("upstream_provider"),
+            },
+            "generation_parameters": run["generation_parameters"],
+        }
+    )
+
+
 def build_version(
     *,
     questions_path: str | Path | Sequence[str | Path],
@@ -167,6 +184,11 @@ def build_version(
     model_catalog = (
         _load_model_catalog(Path(model_catalog_path)) if model_catalog_path is not None else None
     )
+    result_directories = _as_paths(results_dir)
+    invalid_result_directories = [path for path in result_directories if not path.is_dir()]
+    if invalid_result_directories:
+        invalid = ", ".join(str(path) for path in invalid_result_directories)
+        raise BuildError(f"result directory does not exist or is not a directory: {invalid}")
 
     question_validator = schema_validators["question.schema.json"]
     question_files = _as_paths(questions_path)
@@ -253,11 +275,7 @@ def build_version(
     configuration_keys: set[str] = set()
     seen_run_ids: set[str] = set()
     result_files = sorted(
-        chain.from_iterable(
-            source_results.glob("*.jsonl")
-            for source_results in _as_paths(results_dir)
-            if source_results.exists()
-        )
+        chain.from_iterable(source_results.glob("*.jsonl") for source_results in result_directories)
     )
     for result_file in result_files:
         run = _convert_run(
@@ -446,6 +464,23 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
             raise BuildError("versions/main must contain at least one complete run")
         if any(not run["coverage"]["complete"] for run in runs):
             raise BuildError("versions/main may contain only complete runs without API errors")
+        represented_task_families = set(run_task_families.values())
+        missing_task_families = sorted(set(task_sets) - represented_task_families)
+        if missing_task_families:
+            raise BuildError(
+                "versions/main is missing complete runs for task families: "
+                + ", ".join(missing_task_families)
+            )
+        tasks_by_configuration: dict[str, set[str]] = {}
+        for run in runs:
+            tasks_by_configuration.setdefault(_overall_configuration_key(run), set()).add(
+                run_task_families[run["run_id"]]
+            )
+        if not any(set(task_sets) <= families for families in tasks_by_configuration.values()):
+            raise BuildError(
+                "versions/main must contain at least one model configuration with complete runs "
+                "for every task family"
+            )
 
     index_descriptor = manifest["artifacts"]["question_index"]
     index_bytes = _verify_plain(root_dir / index_descriptor["path"], index_descriptor)

@@ -13,7 +13,7 @@ import {
 } from "./components/vepbench.js";
 import {
   artifactUrl,
-  fetchAnswer,
+  fetchAnswerIfAvailable,
   fetchJson,
   fetchOutcomeIndex,
   groupCurrentRuns
@@ -154,7 +154,12 @@ const visibleEntries = entriesWithResults.filter((entry) =>
 );
 const defaultQuestion = requestedQuestionId
   ? (visibleEntries.find((entry) => entry.question_id === requestedQuestionId) ?? null)
-  : visibleEntries[0];
+  : (
+      (run
+        ? visibleEntries.find((entry) => outcomesByQuestion.has(entry.question_id))
+        : null)
+      ?? visibleEntries[0]
+    );
 ```
 
 ```js
@@ -198,7 +203,12 @@ const selectedIndex = selected
   ? questionEntries.findIndex((entry) => entry.question_id === selected.question_id)
   : -1;
 const answerState = selected && run
-  ? await fetchAnswer(config.data_base_url, run, selected.question_id)
+  ? await fetchAnswerIfAvailable(
+      config.data_base_url,
+      run,
+      selected.question_id,
+      outcomeState.value
+    )
       .then((value) => ({value, error: null}))
       .catch((error) => ({value: null, error}))
   : {value: null, error: null};

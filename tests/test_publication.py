@@ -37,6 +37,40 @@ def build_synthetic(output: Path, version_name: str = "candidate") -> dict:
     )
 
 
+def write_second_task(
+    tmp_path: Path,
+    *,
+    temperature: float = 0.0,
+) -> tuple[Path, Path, dict, bytes]:
+    second_questions = tmp_path / "second-questions.jsonl"
+    second_question = deepcopy(json.loads(QUESTIONS.read_text(encoding="utf-8")))
+    second_question["question_id"] = "clinical-v1:synthetic-002"
+    second_question["metadata"]["task_family"] = "synthetic_clinical"
+    second_question["provenance"]["source_record_id"] = "synthetic-002"
+    second_question["provenance"]["template_id"] = "clinical-v1"
+    second_bytes = f"{canonical_json(second_question)}\n".encode()
+    second_questions.write_bytes(second_bytes)
+
+    second_results = tmp_path / "second-results"
+    second_results.mkdir()
+    second_record = deepcopy(
+        json.loads((RESULTS / "synthetic-demo.jsonl").read_text(encoding="utf-8"))
+    )
+    second_record["run_id"] = "synthetic-demo-clinical"
+    second_record["question_id"] = second_question["question_id"]
+    second_record["question"] = second_question
+    second_record["question_sha256"] = sha256_json(second_question)
+    second_record["question_set_sha256"] = hashlib.sha256(second_bytes).hexdigest()
+    second_record["generation_parameters"]["temperature"] = temperature
+    second_record["response"]["raw"]["id"] = "synthetic-clinical-generation"
+    (second_results / "synthetic-demo-clinical.jsonl").write_text(
+        f"{canonical_json(second_record)}\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    return second_questions, second_results, second_question, second_bytes
+
+
 def test_publication_is_deterministic_and_separates_browser_answers(tmp_path: Path) -> None:
     first = tmp_path / "first"
     second = tmp_path / "second"
@@ -92,31 +126,7 @@ def test_publication_is_deterministic_and_separates_browser_answers(tmp_path: Pa
 def test_publication_combines_task_question_sets_without_rewriting_run_identity(
     tmp_path: Path,
 ) -> None:
-    second_questions = tmp_path / "second-questions.jsonl"
-    second_question = deepcopy(json.loads(QUESTIONS.read_text(encoding="utf-8")))
-    second_question["question_id"] = "clinical-v1:synthetic-002"
-    second_question["metadata"]["task_family"] = "synthetic_clinical"
-    second_question["provenance"]["source_record_id"] = "synthetic-002"
-    second_question["provenance"]["template_id"] = "clinical-v1"
-    second_bytes = f"{canonical_json(second_question)}\n".encode()
-    second_questions.write_bytes(second_bytes)
-
-    second_results = tmp_path / "second-results"
-    second_results.mkdir()
-    second_record = deepcopy(
-        json.loads((RESULTS / "synthetic-demo.jsonl").read_text(encoding="utf-8"))
-    )
-    second_record["run_id"] = "synthetic-demo-clinical"
-    second_record["question_id"] = second_question["question_id"]
-    second_record["question"] = second_question
-    second_record["question_sha256"] = sha256_json(second_question)
-    second_record["question_set_sha256"] = hashlib.sha256(second_bytes).hexdigest()
-    second_record["response"]["raw"]["id"] = "synthetic-clinical-generation"
-    (second_results / "synthetic-demo-clinical.jsonl").write_text(
-        f"{canonical_json(second_record)}\n",
-        encoding="utf-8",
-        newline="\n",
-    )
+    second_questions, second_results, _, second_bytes = write_second_task(tmp_path)
 
     output = tmp_path / "publication"
     manifest = build_version(
@@ -155,6 +165,66 @@ def test_publication_combines_task_question_sets_without_rewriting_run_identity(
         hashlib.sha256(second_bytes).hexdigest(),
     }
     validate_version(output, version_name="candidate")
+    promote_version(
+        source_root=output,
+        source_version="candidate",
+        output=tmp_path / "main",
+    )
+
+
+def test_publication_rejects_missing_result_directory(tmp_path: Path) -> None:
+    output = tmp_path / "publication"
+    with pytest.raises(BuildError, match="result directory does not exist"):
+        build_version(
+            questions_path=QUESTIONS,
+            results_dir=tmp_path / "missing-results",
+            result_schema_path=RESULT_SCHEMA,
+            schemas_dir=SCHEMAS,
+            output=output,
+            version_name="candidate",
+        )
+    assert not output.exists()
+
+
+def test_main_rejects_multi_task_version_missing_one_task_run(tmp_path: Path) -> None:
+    second_questions, second_results, _, _ = write_second_task(tmp_path)
+    (second_results / "synthetic-demo-clinical.jsonl").unlink()
+    candidate = tmp_path / "candidate"
+    build_version(
+        questions_path=[QUESTIONS, second_questions],
+        results_dir=[RESULTS, second_results],
+        result_schema_path=RESULT_SCHEMA,
+        schemas_dir=SCHEMAS,
+        output=candidate,
+        version_name="candidate",
+    )
+
+    with pytest.raises(BuildError, match=r"missing complete runs.*synthetic_clinical"):
+        promote_version(
+            source_root=candidate,
+            source_version="candidate",
+            output=tmp_path / "main",
+        )
+
+
+def test_main_requires_one_configuration_across_every_task(tmp_path: Path) -> None:
+    second_questions, second_results, _, _ = write_second_task(tmp_path, temperature=0.5)
+    candidate = tmp_path / "candidate"
+    build_version(
+        questions_path=[QUESTIONS, second_questions],
+        results_dir=[RESULTS, second_results],
+        result_schema_path=RESULT_SCHEMA,
+        schemas_dir=SCHEMAS,
+        output=candidate,
+        version_name="candidate",
+    )
+
+    with pytest.raises(BuildError, match=r"one model configuration.*every task family"):
+        promote_version(
+            source_root=candidate,
+            source_version="candidate",
+            output=tmp_path / "main",
+        )
 
 
 def test_validate_version_accepts_legacy_raw_archive_without_usage(tmp_path: Path) -> None:

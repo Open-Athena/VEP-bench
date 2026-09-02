@@ -1,5 +1,6 @@
 import gzip
 import json
+import runpy
 import textwrap
 from collections import Counter
 from datetime import date
@@ -509,6 +510,18 @@ def test_cache_implementation_digest_is_workspace_independent(tmp_path: Path) ->
     assert implementation_digest([roots[1] / "src/prepare.py"], root=roots[1]) != first
     with pytest.raises(ClinVarPreparationError, match="outside the digest root"):
         implementation_digest([roots[0] / "src/prepare.py"], root=roots[1])
+
+
+def test_production_cache_digest_includes_preparation_entrypoint() -> None:
+    preparation = runpy.run_path(ROOT / "scripts/prepare_clinvar.py")
+    implementation_paths = preparation["CACHE_IMPLEMENTATION_PATHS"]
+    entrypoint = ROOT / "scripts/prepare_clinvar.py"
+    assert entrypoint in implementation_paths
+    configuration = preparation["_cache_configuration"]("0" * 64, PreparationConfig())
+    assert configuration["implementation_sha256"] == implementation_digest(
+        implementation_paths,
+        root=ROOT,
+    )
 
 
 def test_production_artifacts_are_pinned_balanced_and_deterministic(tmp_path: Path) -> None:

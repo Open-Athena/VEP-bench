@@ -238,6 +238,19 @@ export async function fetchAnswer(baseUrl, run, questionId, fetcher = fetch) {
   );
 }
 
+export async function fetchAnswerIfAvailable(
+  baseUrl,
+  run,
+  questionId,
+  outcomeIndex,
+  fetcher = fetch
+) {
+  const available = outcomeIndex?.outcomes?.some(
+    (outcome) => outcome?.question_id === questionId
+  );
+  return available ? fetchAnswer(baseUrl, run, questionId, fetcher) : null;
+}
+
 export async function fetchOutcomeIndex(baseUrl, run, fetcher = fetch) {
   const document = await fetchGzipJson(
     artifactUrl(baseUrl, outcomeIndexPath(run)),
