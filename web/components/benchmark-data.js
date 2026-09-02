@@ -1,4 +1,8 @@
 const SAFE_ID = /^[A-Za-z0-9][A-Za-z0-9._:-]*$/;
+const EXPLORER_TASK_ORDER = new Map([
+  ["vep_most_severe_consequence", 0],
+  ["clinvar", 1]
+]);
 
 function modelName(modelId, generationParameters) {
   const name = modelId.split("/").at(-1) ?? modelId;
@@ -164,6 +168,17 @@ export function modelSelectionRows(runs, leaderboard) {
 export function runForTask(row, taskFamily) {
   const taskRun = row?.task_scores?.find((task) => task.task_family === taskFamily)?.run;
   return taskRun ?? (row?.runs?.length === 1 ? row.runs[0] : null);
+}
+
+export function orderQuestionsForExplorer(questions) {
+  return questions.toSorted((left, right) => {
+    const leftFamily = left?.metadata?.task_family ?? "";
+    const rightFamily = right?.metadata?.task_family ?? "";
+    return (EXPLORER_TASK_ORDER.get(leftFamily) ?? Number.MAX_SAFE_INTEGER)
+      - (EXPLORER_TASK_ORDER.get(rightFamily) ?? Number.MAX_SAFE_INTEGER)
+      || leftFamily.localeCompare(rightFamily)
+      || (left?.question_id ?? "").localeCompare(right?.question_id ?? "");
+  });
 }
 
 export function leaderboardLineSeries(rows, metric) {

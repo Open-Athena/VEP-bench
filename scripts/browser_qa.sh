@@ -97,6 +97,9 @@ for check in \
   'question.dom.html|>Questions<' \
   'question.dom.html|browser-qa' \
   'question.dom.html|>Result<' \
+  'question.dom.html|>Consequence</label>' \
+  'question.dom.html|>All consequences</option>' \
+  'question.dom.html|<th title="consequence"><span></span>Consequence</th><th title="outcome"><span></span>Result</th>' \
   'question.dom.html|>All results</option>' \
   'question.dom.html|>Correct</option>' \
   'question.dom.html|>Incorrect</option>' \
@@ -117,6 +120,11 @@ do
     status=1
   fi
 done
+
+if grep -q '<th title="answer"' "$output_dir/question.dom.html"; then
+  echo "unexpected Reference answer column in question.dom.html" >&2
+  status=1
+fi
 
 if grep -Pzoq '<div class="card">(?:\s|<!--[^>]*-->)*</div>' \
   "$output_dir/question.dom.html"; then

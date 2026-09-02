@@ -12,6 +12,7 @@ import {
   leaderboardLineSeries,
   leaderboardRows,
   modelSelectionRows,
+  orderQuestionsForExplorer,
   overallLeaderboardRows,
   outcomeIndexPath,
   runForTask
@@ -171,6 +172,28 @@ test("model selection has one best-first row with a task run for each model", ()
     runForTask(rows[0], "vep_most_severe_consequence").run_id,
     "gpt-5.6-sol-vep"
   );
+});
+
+test("question explorer puts consequence classification before ClinVar", () => {
+  const questions = [
+    {question_id: "clinvar-2", metadata: {task_family: "clinvar"}},
+    {question_id: "future-1", metadata: {task_family: "future_task"}},
+    {
+      question_id: "consequence-2",
+      metadata: {task_family: "vep_most_severe_consequence"}
+    },
+    {question_id: "clinvar-1", metadata: {task_family: "clinvar"}},
+    {
+      question_id: "consequence-1",
+      metadata: {task_family: "vep_most_severe_consequence"}
+    }
+  ];
+
+  assert.deepEqual(
+    orderQuestionsForExplorer(questions).map((question) => question.question_id),
+    ["consequence-1", "consequence-2", "clinvar-1", "clinvar-2", "future-1"]
+  );
+  assert.equal(questions[0].question_id, "clinvar-2");
 });
 
 test("line chart data groups model families and sorts points by the selected metric", () => {

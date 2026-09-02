@@ -17,6 +17,7 @@ import {
   fetchJson,
   fetchOutcomeIndex,
   modelSelectionRows,
+  orderQuestionsForExplorer,
   runForTask
 } from "./components/benchmark-data.js";
 
@@ -68,7 +69,9 @@ const resultLabel = (correct) => correct === true
   : correct === false
     ? "Incorrect"
     : "Not scored";
-const questionEntries = entriesForQuestions(questionState.document.questions).map((entry) => ({
+const questionEntries = entriesForQuestions(
+  orderQuestionsForExplorer(questionState.document.questions)
+).map((entry) => ({
   ...entry,
   task: taskName(entry.question.metadata.task_family),
   consequence: metadataState.document.by_task_family
@@ -103,17 +106,19 @@ const controlsInput = Inputs.form({
   }),
   search: Inputs.search(questionEntries, {
     label: "Find a question",
-    placeholder: "Question ID, variant, consequence, reference answer, or choice…",
-    columns: ["question_id", "variant", "consequence", "answer", "task"]
+    placeholder: "Question ID, variant, consequence, or task…",
+    columns: ["question_id", "variant", "consequence", "task"]
   }),
   task: Inputs.select([
     "All tasks",
-    ...[...new Set(questionEntries.map((entry) => entry.task))].sort()
+    ...new Set(questionEntries.map((entry) => entry.task))
   ], {label: "Task"}),
-  answer: Inputs.select([
-    "All answers",
-    ...[...new Set(questionEntries.map((entry) => entry.answer))].sort()
-  ], {label: "Reference answer"}),
+  consequence: Inputs.select([
+    "All consequences",
+    ...[...new Set(questionEntries.map((entry) => entry.consequence))]
+      .filter((consequence) => consequence !== "—")
+      .sort()
+  ], {label: "Consequence"}),
   result: Inputs.select([
     "All results",
     "Correct",
@@ -174,7 +179,10 @@ const entriesWithResults = controls.search.map((entry) => ({
 }));
 const visibleEntries = entriesWithResults.filter((entry) =>
   (controls.task === "All tasks" || entry.task === controls.task)
-  && (controls.answer === "All answers" || entry.answer === controls.answer)
+  && (
+    controls.consequence === "All consequences"
+    || entry.consequence === controls.consequence
+  )
   && (controls.result === "All results" || entry.outcome === controls.result)
 );
 const defaultQuestion = requestedQuestionId
@@ -189,13 +197,12 @@ const defaultQuestion = requestedQuestionId
 
 ```js
 const questionTable = Inputs.table(visibleEntries, {
-  columns: ["question_label", "task", "variant", "consequence", "answer", "outcome"],
+  columns: ["question_label", "task", "variant", "consequence", "outcome"],
   header: {
     question_label: "Question",
     task: "Task",
     variant: "Source record",
     consequence: "Consequence",
-    answer: "Reference answer",
     outcome: "Result"
   },
   format: {
@@ -203,10 +210,9 @@ const questionTable = Inputs.table(visibleEntries, {
   },
   width: {
     question_label: 70,
-    task: 180,
-    variant: 150,
-    consequence: 210,
-    answer: 230,
+    task: 190,
+    variant: 170,
+    consequence: 230,
     outcome: 100
   },
   multiple: false,
