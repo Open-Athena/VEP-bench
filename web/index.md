@@ -63,6 +63,9 @@ if (runsState.error) {
 
 ```js
 const selectedTask = view(taskInput);
+```
+
+```js
 const rows = leaderboardRowsForScope(
   runsState.document.runs,
   aggregation,
@@ -124,9 +127,9 @@ const leaderboardTable = Inputs.table(tableRows, {
 });
 ```
 
-<div class="card">
-  ${leaderboardTable}
-</div>
+```js
+display(html`<div class="card">${leaderboardTable}</div>`);
+```
 
 ## Score by cost and token usage
 
@@ -135,6 +138,9 @@ The task selector above controls both the table and this plot. For All tasks, co
 
 ```js
 const selectedMetric = view(metricInput);
+```
+
+```js
 const metric = selectedMetric?.key ?? metricInput.value?.key ?? "cost";
 const metricLabel = metricOptions.find((option) => option.key === metric)?.axis_label
   ?? "Total cost (USD)";
@@ -191,6 +197,8 @@ function scoreEfficiencyPlot(data, {width}) {
   ${metricInput}
 </div>
 
-<div class="card" aria-label="${selectedTask.label} score versus ${metricLabel}">
+```js
+display(html`<div class="card" aria-label=${`${selectedTask.label} score versus ${metricLabel}`}>
   ${resize((width) => scoreEfficiencyPlot(efficiencyRows, {width}))}
-</div>
+</div>`);
+```

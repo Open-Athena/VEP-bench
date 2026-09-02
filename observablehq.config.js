@@ -96,7 +96,7 @@ export default {
         font-variant-numeric: tabular-nums;
         padding: 0 0.3rem;
         position: relative;
-        text-align: right;
+        text-align: center;
       }
 
       @media (prefers-color-scheme: dark) {
