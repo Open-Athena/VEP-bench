@@ -126,6 +126,9 @@ for check in \
   'question.dom.html|>All results</option>' \
   'question.dom.html|>Correct</option>' \
   'question.dom.html|>Incorrect</option>' \
+  'question.dom.html|>Refusal</option>' \
+  'question.dom.html|>Token limit</option>' \
+  'question.dom.html|>Format error</option>' \
   'question.dom.html|Reference answer: C13' \
   'question.dom.html|VEP consequence: start_lost' \
   'question.dom.html|Parsed prediction: C17' \

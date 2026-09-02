@@ -28,6 +28,7 @@ from .builder import (
 OPENROUTER_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions"
 FINAL_ANSWER = re.compile(r"^FINAL:[ \t]*([A-Za-z0-9_-]+)[ \t]*\r?$", re.MULTILINE)
 RECORD_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]*$")
+RESULT_TYPES = ("correct", "incorrect", "refusal", "token_limit", "format_error")
 
 
 @dataclass
@@ -120,6 +121,61 @@ def score_multiple_choice(
         return Score(selected, 0, False, f"unknown choice ID {selected!r}")
     correct = selected == answer_choice_id
     return Score(selected, int(correct), correct, None)
+
+
+def classify_result_type(
+    *,
+    correct: bool,
+    parse_error: str | None,
+    finish_reason: str | None,
+    refusal: Any = None,
+) -> str:
+    """Classify one completed response into the public flat result taxonomy."""
+
+    if (isinstance(refusal, str) and refusal.strip()) or finish_reason == "content_filter":
+        return "refusal"
+    if parse_error is None:
+        return "correct" if correct else "incorrect"
+    if finish_reason == "length":
+        return "token_limit"
+    return "format_error"
+
+
+def score_completed_response(
+    content: str | None,
+    valid_choice_ids: set[str],
+    answer_choice_id: str,
+    *,
+    finish_reason: str | None,
+    refusal: Any = None,
+) -> tuple[Score, str]:
+    """Score and classify a completed response with refusal precedence."""
+
+    score = score_multiple_choice(content, valid_choice_ids, answer_choice_id)
+    result_type = classify_result_type(
+        correct=score.correct,
+        parse_error=score.parse_error,
+        finish_reason=finish_reason,
+        refusal=refusal,
+    )
+    if result_type == "refusal" and score.correct:
+        score = Score(score.parsed_answer, 0, False, score.parse_error)
+    return score, result_type
+
+
+def result_type_for_record(record: Mapping[str, Any]) -> str | None:
+    """Derive a result type, including for legacy records that did not store one."""
+
+    response = record["response"]
+    if response["status"] != "completed":
+        return None
+    scoring = record["scoring"]
+    return classify_result_type(
+        correct=scoring["correct"],
+        parse_error=scoring["parse_error"],
+        finish_reason=response["finish_reason"],
+        refusal=_provider_refusal(response.get("raw")),
+    )
 
 
 def validate_generation_parameters(parameters: Mapping[str, Any]) -> None:
@@ -363,10 +419,32 @@ def validate_result(result: Mapping[str, Any], validator: Draft202012Validator) 
 
     status = result["response"]["status"]
     if status == "completed":
-        expected = score_multiple_choice(
-            result["response"]["content"],
+        try:
+            snapshot = provider_response_snapshot(result["response"].get("raw"))
+        except ProviderError as exc:
+            raise BuildError(
+                f"{result['question_id']}: invalid raw provider completion: {exc}"
+            ) from exc
+        normalized_response = {
+            field: result["response"][field] for field in ("content", "reasoning", "finish_reason")
+        }
+        raw_response = {
+            field: snapshot[field] for field in ("content", "reasoning", "finish_reason")
+        }
+        if normalized_response != raw_response:
+            raise BuildError(
+                f"{result['question_id']}: normalized response does not match raw provider payload"
+            )
+        if result["model"]["upstream_provider"] != snapshot["upstream_provider"]:
+            raise BuildError(
+                f"{result['question_id']}: upstream provider does not match raw provider payload"
+            )
+        expected, expected_result_type = score_completed_response(
+            snapshot["content"],
             set(choice_ids),
             question["answer_choice_id"],
+            finish_reason=snapshot["finish_reason"],
+            refusal=snapshot["refusal"],
         )
         expected_scoring = {
             "metric": "exact_match",
@@ -375,8 +453,13 @@ def validate_result(result: Mapping[str, Any], validator: Draft202012Validator) 
             "correct": expected.correct,
             "parse_error": expected.parse_error,
         }
-        if result["scoring"] != expected_scoring:
+        actual_scoring = dict(result["scoring"])
+        has_result_type = "result_type" in actual_scoring
+        actual_result_type = actual_scoring.pop("result_type", None)
+        if actual_scoring != expected_scoring:
             raise BuildError(f"{result['question_id']}: stored score does not match response")
+        if has_result_type and actual_result_type != expected_result_type:
+            raise BuildError(f"{result['question_id']}: stored result type does not match response")
         if result["error"] is not None:
             raise BuildError(f"{result['question_id']}: completed response must not have error")
     else:
@@ -387,7 +470,12 @@ def validate_result(result: Mapping[str, Any], validator: Draft202012Validator) 
             "correct": None,
             "parse_error": None,
         }
-        if result["scoring"] != expected_scoring:
+        actual_scoring = dict(result["scoring"])
+        has_result_type = "result_type" in actual_scoring
+        actual_result_type = actual_scoring.pop("result_type", None)
+        if actual_scoring != expected_scoring or (
+            has_result_type and actual_result_type is not None
+        ):
             raise BuildError(f"{result['question_id']}: API error must have null scoring")
         if any(
             result["response"][field] is not None
@@ -494,19 +582,14 @@ def completed_result(
     latency_seconds: float | None,
     provider_response: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    choice, message = _first_choice(raw)
-    content = message.get("content")
-    if content is not None and not isinstance(content, str):
-        raise ProviderError("OpenRouter response content is not a string", raw_response=raw)
-    finish_reason = choice.get("finish_reason")
-    if finish_reason is not None and not isinstance(finish_reason, str):
-        raise ProviderError("OpenRouter response finish_reason is not a string", raw_response=raw)
-    score = score_multiple_choice(
-        content,
+    snapshot = provider_response_snapshot(raw)
+    score, result_type = score_completed_response(
+        snapshot["content"],
         {choice["choice_id"] for choice in question["choices"]},
         question["answer_choice_id"],
+        finish_reason=snapshot["finish_reason"],
+        refusal=snapshot["refusal"],
     )
-    provider = _extract_provider(raw)
 
     usage = raw.get("usage")
     if not isinstance(usage, dict):
@@ -517,14 +600,14 @@ def completed_result(
         question_set_size=question_set_size,
         run_id=run_id,
         model_id=model_id,
-        upstream_provider=provider,
+        upstream_provider=snapshot["upstream_provider"],
         generation_parameters=generation_parameters,
         evaluated_at=evaluated_at,
         response={
             "status": "completed",
-            "content": content,
-            "reasoning": _extract_reasoning(message),
-            "finish_reason": finish_reason,
+            "content": snapshot["content"],
+            "reasoning": snapshot["reasoning"],
+            "finish_reason": snapshot["finish_reason"],
             "latency_seconds": latency_seconds,
             "raw": raw if provider_response is None else provider_response,
         },
@@ -534,6 +617,7 @@ def completed_result(
             "value": score.value,
             "correct": score.correct,
             "parse_error": score.parse_error,
+            "result_type": result_type,
         },
         usage=usage,
         error=None,
@@ -575,6 +659,7 @@ def error_result(
             "value": None,
             "correct": None,
             "parse_error": None,
+            "result_type": None,
         },
         usage={},
         error={
@@ -633,6 +718,51 @@ def _first_choice(raw: Mapping[str, Any]) -> tuple[dict[str, Any], dict[str, Any
     if not isinstance(message, dict):
         raise ProviderError("OpenRouter response choice has no message", raw_response=dict(raw))
     return choice, message
+
+
+def _completion_payload(raw: Any) -> Mapping[str, Any]:
+    if not isinstance(raw, Mapping):
+        raise ProviderError("OpenRouter response is not an object")
+    response = raw.get("response")
+    if isinstance(response, Mapping) and isinstance(response.get("body"), Mapping):
+        return response["body"]
+    return raw
+
+
+def provider_response_snapshot(raw: Any) -> dict[str, Any]:
+    """Extract normalized completion fields from a direct or batch payload."""
+
+    body = _completion_payload(raw)
+    choice, message = _first_choice(body)
+    content = message.get("content")
+    if content is not None and not isinstance(content, str):
+        raise ProviderError("OpenRouter response content is not a string", raw_response=dict(body))
+    finish_reason = choice.get("finish_reason")
+    if finish_reason is not None and not isinstance(finish_reason, str):
+        raise ProviderError(
+            "OpenRouter response finish_reason is not a string", raw_response=dict(body)
+        )
+    return {
+        "content": content,
+        "reasoning": _extract_reasoning(message),
+        "finish_reason": finish_reason,
+        "upstream_provider": _extract_provider(body),
+        "refusal": message.get("refusal"),
+    }
+
+
+def _provider_refusal(raw: Any) -> Any:
+    """Return a structured refusal from a direct or batch OpenRouter payload."""
+
+    try:
+        body = _completion_payload(raw)
+    except ProviderError:
+        return None
+    choices = body.get("choices")
+    if not isinstance(choices, list) or not choices or not isinstance(choices[0], Mapping):
+        return None
+    message = choices[0].get("message")
+    return message.get("refusal") if isinstance(message, Mapping) else None
 
 
 def _extract_reasoning(message: Mapping[str, Any]) -> str | None:

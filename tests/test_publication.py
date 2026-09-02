@@ -112,15 +112,170 @@ def test_publication_is_deterministic_and_separates_browser_answers(tmp_path: Pa
     runs = json.loads((version / "runs.json").read_text(encoding="utf-8"))["runs"]
     assert runs[0]["metrics"]["total_tokens"] == 98
     assert runs[0]["metrics"]["total_cost_usd"] == 0
+    assert runs[0]["metrics"]["result_counts"] == {
+        "correct": 1,
+        "incorrect": 0,
+        "refusal": 0,
+        "token_limit": 0,
+        "format_error": 0,
+    }
     assert runs[0]["outcome_index_path"] == "outcomes/synthetic-demo.json.gz"
 
     outcome_path = version / runs[0]["outcome_index_path"]
     outcome_index = json.loads(gzip.decompress(outcome_path.read_bytes()))
     assert outcome_index["run_id"] == "synthetic-demo"
     assert outcome_index["outcomes"] == [
-        {"question_id": "mc-effect-v1:synthetic-001", "correct": True}
+        {
+            "question_id": "mc-effect-v1:synthetic-001",
+            "correct": True,
+            "result_type": "correct",
+        }
     ]
     assert manifest["artifacts"]["outcomes"][0]["records"] == 1
+
+
+@pytest.mark.parametrize(
+    ("finish_reason", "raw", "expected_type", "expected_format_failures"),
+    [
+        (
+            "stop",
+            {
+                "response": {
+                    "body": {
+                        "provider": "Synthetic fixture",
+                        "choices": [
+                            {
+                                "finish_reason": "stop",
+                                "message": {
+                                    "content": None,
+                                    "refusal": "I cannot answer this request.",
+                                },
+                            }
+                        ],
+                    }
+                }
+            },
+            "refusal",
+            1,
+        ),
+        (
+            "length",
+            {
+                "provider": "Synthetic fixture",
+                "choices": [
+                    {"finish_reason": "length", "message": {"content": "Partial response"}}
+                ],
+            },
+            "token_limit",
+            1,
+        ),
+        (
+            "stop",
+            {
+                "provider": "Synthetic fixture",
+                "choices": [{"finish_reason": "stop", "message": {"content": "Partial response"}}],
+            },
+            "format_error",
+            1,
+        ),
+    ],
+)
+def test_publication_derives_new_types_from_legacy_results(
+    tmp_path: Path,
+    finish_reason: str,
+    raw: dict,
+    expected_type: str,
+    expected_format_failures: int,
+) -> None:
+    results = tmp_path / "results"
+    results.mkdir()
+    record = deepcopy(json.loads((RESULTS / "synthetic-demo.jsonl").read_text()))
+    record["response"].update(
+        {
+            "content": None if expected_type == "refusal" else "Partial response",
+            "reasoning": None,
+            "finish_reason": finish_reason,
+            "raw": raw,
+        }
+    )
+    record["scoring"].update(
+        {
+            "parsed_answer": None,
+            "value": 0,
+            "correct": False,
+            "parse_error": "missing FINAL: <choice-id> line",
+        }
+    )
+    (results / "legacy.jsonl").write_text(
+        f"{canonical_json(record)}\n", encoding="utf-8", newline="\n"
+    )
+
+    output = tmp_path / "publication"
+    build_version(
+        questions_path=QUESTIONS,
+        results_dir=results,
+        result_schema_path=RESULT_SCHEMA,
+        schemas_dir=SCHEMAS,
+        output=output,
+        version_name="candidate",
+    )
+    version = output / "versions/candidate"
+    run = json.loads((version / "runs.json").read_text())["runs"][0]
+    outcome = json.loads(gzip.decompress((version / run["outcome_index_path"]).read_bytes()))[
+        "outcomes"
+    ][0]
+
+    assert outcome["result_type"] == expected_type
+    assert run["metrics"]["result_counts"][expected_type] == 1
+    assert run["metrics"]["format_failures"] == expected_format_failures
+
+
+def test_publication_accepts_one_run_routed_across_upstream_providers(tmp_path: Path) -> None:
+    first_question = json.loads(QUESTIONS.read_text())
+    second_question = deepcopy(first_question)
+    second_question["question_id"] = "mc-effect-v1:synthetic-002"
+    second_question["provenance"]["source_record_id"] = "synthetic-002"
+    questions = [first_question, second_question]
+    question_bytes = b"".join(f"{canonical_json(question)}\n".encode() for question in questions)
+    questions_path = tmp_path / "questions.jsonl"
+    questions_path.write_bytes(question_bytes)
+
+    base_record = json.loads((RESULTS / "synthetic-demo.jsonl").read_text())
+    records = []
+    for index, (question, provider) in enumerate(
+        zip(questions, ("Provider A", "Provider B"), strict=True)
+    ):
+        record = deepcopy(base_record)
+        record["question_id"] = question["question_id"]
+        record["question"] = question
+        record["question_sha256"] = sha256_json(question)
+        record["question_set_sha256"] = hashlib.sha256(question_bytes).hexdigest()
+        record["question_set_size"] = len(questions)
+        record["model"]["upstream_provider"] = provider
+        record["response"]["raw"]["id"] = f"synthetic-generation-{index}"
+        record["response"]["raw"]["provider"] = provider
+        records.append(record)
+
+    results = tmp_path / "results"
+    results.mkdir()
+    (results / "routed.jsonl").write_text(
+        "".join(f"{canonical_json(record)}\n" for record in records),
+        encoding="utf-8",
+        newline="\n",
+    )
+    output = tmp_path / "publication"
+    build_version(
+        questions_path=questions_path,
+        results_dir=results,
+        result_schema_path=RESULT_SCHEMA,
+        schemas_dir=SCHEMAS,
+        output=output,
+        version_name="candidate",
+    )
+
+    run = json.loads((output / "versions/candidate/runs.json").read_text())["runs"][0]
+    assert run["model"]["upstream_provider"] == "OpenRouter auto-routing"
+    assert run["coverage"]["complete"] is True
 
 
 def test_publication_combines_task_question_sets_without_rewriting_run_identity(
@@ -360,6 +515,34 @@ def test_validate_version_rejects_tampered_answer(tmp_path: Path) -> None:
     answer_path.write_bytes(gzip.compress(f"{canonical_json(answer)}\n".encode(), mtime=0))
 
     with pytest.raises(BuildError, match="artifact digest or size mismatch"):
+        validate_version(output, version_name="candidate")
+
+
+def test_validate_version_rejects_raw_provider_disagreement(tmp_path: Path) -> None:
+    output = tmp_path / "publication"
+    build_synthetic(output)
+    manifest_path = output / "versions/candidate/manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    raw_descriptor = manifest["artifacts"]["raw"][0]
+    raw_path = output / raw_descriptor["path"]
+    with zstandard.ZstdDecompressor().stream_reader(raw_path.open("rb")) as reader:
+        raw_content = io.BufferedReader(reader).read()
+    envelope = json.loads(raw_content)
+    envelope["response"]["raw"]["provider"] = "Tampered provider"
+    updated_content = f"{canonical_json(envelope)}\n".encode()
+    updated_artifact = publication_module._write_zstd(raw_path, updated_content)
+    raw_descriptor.update(updated_artifact)
+
+    runs_path = output / "versions/candidate/runs.json"
+    runs = json.loads(runs_path.read_text(encoding="utf-8"))
+    runs["runs"][0]["raw_archive"].update(updated_artifact)
+    runs_bytes = publication_module._write_json(runs_path, runs)
+    manifest["artifacts"]["runs"] = publication_module._plain_artifact(
+        "versions/candidate/runs.json", runs_bytes, 1
+    )
+    publication_module._write_json(manifest_path, manifest)
+
+    with pytest.raises(BuildError, match="upstream provider does not match raw responses"):
         validate_version(output, version_name="candidate")
 
 

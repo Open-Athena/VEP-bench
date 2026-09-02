@@ -162,6 +162,9 @@ uv run --locked vepbench build \
   --output /tmp/clinvar-questions.jsonl
 ```
 
+The task-level completion ceiling is 128,000 tokens and is versioned in
+[`configs/tasks/clinvar.yaml`](../../configs/tasks/clinvar.yaml).
+
 ## Interpretation and limitations
 
 Membership means only that the aggregate VCV record first became public in

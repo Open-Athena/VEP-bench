@@ -1,0 +1,10 @@
+# Medium-effort Claude Fable 5.1 comparison. The canonical base model ID is
+# used because OpenRouter's Batch API selects the discounted batch route.
+# Temperature and seed are omitted because the model does not advertise them.
+schema_version: "1.0"
+label: claude-fable-5.1-medium
+model: anthropic/claude-fable-5.1
+generation:
+  reasoning:
+    effort: medium
+    exclude: false

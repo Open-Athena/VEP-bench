@@ -129,7 +129,7 @@ The committed compact
 [`source manifest`](../../data/sources/chr17-vep-consequences.manifest.json)
 record the selected variants, source versions, raw counts, collapse mapping,
 class composition, seed, and output digest. The task-level completion ceiling
-is 262,144 tokens (2^18) and is versioned in
+is 128,000 tokens and is versioned in
 [`configs/tasks/vep-most-severe-consequence.yaml`](../../configs/tasks/vep-most-severe-consequence.yaml).
 
 ## Interpretation and limitation

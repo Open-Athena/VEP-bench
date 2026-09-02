@@ -229,6 +229,10 @@
         },
         "parse_error": {
           "type": ["string", "null"]
+        },
+        "result_type": {
+          "description": "Deterministic outcome for a completed response; null for an API failure.",
+          "enum": ["correct", "incorrect", "refusal", "token_limit", "format_error", null]
         }
       }
     },
@@ -290,6 +294,9 @@
                 "const": null
               },
               "parse_error": {
+                "const": null
+              },
+              "result_type": {
                 "const": null
               }
             }

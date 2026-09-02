@@ -19,6 +19,7 @@ import {
   fetchOutcomeIndex,
   modelSelectionRows,
   orderQuestionsForExplorer,
+  resultTypeLabel,
   runForTask
 } from "./components/benchmark-data.js";
 
@@ -65,11 +66,6 @@ const taskName = (taskFamily) => ({
   clinvar: "ClinVar",
   vep_most_severe_consequence: "Consequence classification"
 })[taskFamily] ?? taskFamily;
-const resultLabel = (correct) => correct === true
-  ? "Correct"
-  : correct === false
-    ? "Incorrect"
-    : "Not scored";
 const questionEntries = entriesForQuestions(
   orderQuestionsForExplorer(questionState.document.questions)
 ).map((entry) => ({
@@ -124,7 +120,10 @@ const controlsInput = Inputs.form({
   result: Inputs.select([
     "All results",
     "Correct",
-    "Incorrect"
+    "Incorrect",
+    "Refusal",
+    "Token limit",
+    "Format error"
   ], {label: "Result"})
 });
 controlsInput.style.display = "flex";
@@ -169,7 +168,7 @@ const outcomesByQuestion = new Map(
   outcomeStates.flatMap((state) =>
     (state.value?.outcomes ?? []).map((outcome) => [
       outcome.question_id,
-      resultLabel(outcome.correct)
+      resultTypeLabel(outcome.result_type, outcome.correct)
     ])
   )
 );
