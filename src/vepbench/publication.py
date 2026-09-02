@@ -7,7 +7,7 @@ import json
 import math
 import re
 import shutil
-from collections.abc import Iterator, Mapping
+from collections.abc import Iterator, Mapping, Sequence
 from datetime import date
 from itertools import chain
 from pathlib import Path
@@ -94,10 +94,77 @@ def _load_model_catalog(path: Path) -> dict[str, dict[str, str]]:
     return models
 
 
+def _as_paths(value: str | Path | Sequence[str | Path]) -> list[Path]:
+    values = [value] if isinstance(value, (str, Path)) else list(value)
+    if not values:
+        raise BuildError("at least one path is required")
+    return [Path(path) for path in values]
+
+
+def _evaluation_profile(questions: Sequence[Mapping[str, Any]]) -> str:
+    return ",".join(
+        sorted(
+            {
+                (
+                    f"{question['metadata']['task_family']}:"
+                    f"{question['provenance']['template_id']}@"
+                    f"{question['provenance']['template_version']}"
+                )
+                for question in questions
+            }
+        )
+    )
+
+
+def _task_set(questions: list[dict[str, Any]], content: bytes) -> dict[str, Any]:
+    return {
+        "questions": questions,
+        "question_by_id": {question["question_id"]: question for question in questions},
+        "question_digest": {
+            question["question_id"]: sha256_json(question) for question in questions
+        },
+        "question_set_sha256": hashlib.sha256(content).hexdigest(),
+        "question_set_size": len(questions),
+        "evaluation_profile": _evaluation_profile(questions),
+    }
+
+
+def _task_sets_from_questions(
+    questions: Sequence[dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    grouped: dict[str, list[dict[str, Any]]] = {}
+    for question in questions:
+        grouped.setdefault(question["metadata"]["task_family"], []).append(question)
+    return {
+        task_family: _task_set(
+            task_questions,
+            b"".join(f"{canonical_json(question)}\n".encode() for question in task_questions),
+        )
+        for task_family, task_questions in grouped.items()
+    }
+
+
+def _overall_configuration_key(run: Mapping[str, Any]) -> str:
+    """Identify the model configuration shared by task-specific runs."""
+
+    model = run["model"]
+    return canonical_json(
+        {
+            "model": {
+                "gateway": model["gateway"],
+                "model_id": model["model_id"],
+                "model_revision": model.get("model_revision"),
+                "upstream_provider": model.get("upstream_provider"),
+            },
+            "generation_parameters": run["generation_parameters"],
+        }
+    )
+
+
 def build_version(
     *,
-    questions_path: str | Path,
-    results_dir: str | Path,
+    questions_path: str | Path | Sequence[str | Path],
+    results_dir: str | Path | Sequence[str | Path],
     result_schema_path: str | Path,
     schemas_dir: str | Path,
     model_catalog_path: str | Path | None = None,
@@ -117,25 +184,48 @@ def build_version(
     model_catalog = (
         _load_model_catalog(Path(model_catalog_path)) if model_catalog_path is not None else None
     )
+    result_directories = _as_paths(results_dir)
+    invalid_result_directories = [path for path in result_directories if not path.is_dir()]
+    if invalid_result_directories:
+        invalid = ", ".join(str(path) for path in invalid_result_directories)
+        raise BuildError(f"result directory does not exist or is not a directory: {invalid}")
 
-    questions_file = Path(questions_path)
-    questions = read_jsonl(questions_file)
     question_validator = schema_validators["question.schema.json"]
-    question_ids = [question["question_id"] for question in questions]
-    if question_ids != sorted(question_ids):
-        raise BuildError(f"{questions_file}: questions must be sorted by question_id")
-    if len(question_ids) != len(set(question_ids)):
-        raise BuildError(f"{questions_file}: duplicate question IDs")
-    for question in questions:
-        validate_question(question, question_validator)
+    question_files = _as_paths(questions_path)
+    questions: list[dict[str, Any]] = []
+    task_sets: dict[str, dict[str, Any]] = {}
+    for questions_file in question_files:
+        file_questions = read_jsonl(questions_file)
+        question_ids = [question["question_id"] for question in file_questions]
+        if question_ids != sorted(question_ids):
+            raise BuildError(f"{questions_file}: questions must be sorted by question_id")
+        if len(question_ids) != len(set(question_ids)):
+            raise BuildError(f"{questions_file}: duplicate question IDs")
+        for question in file_questions:
+            validate_question(question, question_validator)
+        file_bytes = b"".join(
+            f"{canonical_json(question)}\n".encode() for question in file_questions
+        )
+        if file_bytes != questions_file.read_bytes():
+            raise BuildError(
+                f"{questions_file}: questions must use canonical JSON, UTF-8, and LF endings"
+            )
+        task_families = {question["metadata"]["task_family"] for question in file_questions}
+        if len(task_families) != 1:
+            raise BuildError(f"{questions_file}: each question file must contain one task family")
+        task_family = next(iter(task_families))
+        if task_family in task_sets:
+            raise BuildError(f"multiple question files define task family {task_family!r}")
+        task_sets[task_family] = _task_set(file_questions, file_bytes)
+        questions.extend(file_questions)
 
+    questions.sort(key=lambda question: question["question_id"])
+    question_ids = [question["question_id"] for question in questions]
+    if len(question_ids) != len(set(question_ids)):
+        raise BuildError("question files contain duplicate question IDs")
     question_set_bytes = b"".join(
         f"{canonical_json(question)}\n".encode() for question in questions
     )
-    if question_set_bytes != questions_file.read_bytes():
-        raise BuildError(
-            f"{questions_file}: questions must use canonical JSON, UTF-8, and LF endings"
-        )
     question_set_sha256 = hashlib.sha256(question_set_bytes).hexdigest()
     question_by_id = {question["question_id"]: question for question in questions}
     question_digest = {
@@ -184,35 +274,33 @@ def build_version(
     raw_artifacts: list[dict[str, Any]] = []
     configuration_keys: set[str] = set()
     seen_run_ids: set[str] = set()
-    source_results = Path(results_dir)
-    if source_results.exists():
-        for result_file in sorted(source_results.glob("*.jsonl")):
-            run = _convert_run(
-                result_file=result_file,
-                result_validator=result_validator,
-                answer_validator=schema_validators["answer.schema.json"],
-                raw_validator=schema_validators["raw-response.schema.json"],
-                question_by_id=question_by_id,
-                question_digest=question_digest,
-                question_set_sha256=question_set_sha256,
-                question_set_size=len(questions),
-                model_catalog=model_catalog,
-                version_dir=version_dir,
+    result_files = sorted(
+        chain.from_iterable(source_results.glob("*.jsonl") for source_results in result_directories)
+    )
+    for result_file in result_files:
+        run = _convert_run(
+            result_file=result_file,
+            result_validator=result_validator,
+            answer_validator=schema_validators["answer.schema.json"],
+            raw_validator=schema_validators["raw-response.schema.json"],
+            task_sets=task_sets,
+            model_catalog=model_catalog,
+            version_dir=version_dir,
+        )
+        run_id = run["record"]["run_id"]
+        if run_id in seen_run_ids:
+            raise BuildError(f"{result_file}: duplicate run_id {run_id!r}")
+        seen_run_ids.add(run_id)
+        configuration_key = run["record"]["configuration_key"]
+        if configuration_key in configuration_keys:
+            raise BuildError(
+                f"{result_file}: another run has configuration key {configuration_key!r}"
             )
-            run_id = run["record"]["run_id"]
-            if run_id in seen_run_ids:
-                raise BuildError(f"{result_file}: duplicate run_id {run_id!r}")
-            seen_run_ids.add(run_id)
-            configuration_key = run["record"]["configuration_key"]
-            if configuration_key in configuration_keys:
-                raise BuildError(
-                    f"{result_file}: another run has configuration key {configuration_key!r}"
-                )
-            configuration_keys.add(configuration_key)
-            run_records.append(run["record"])
-            answer_artifacts.extend(run["answers"])
-            outcome_artifacts.append(run["outcomes"])
-            raw_artifacts.append(run["raw"])
+        configuration_keys.add(configuration_key)
+        run_records.append(run["record"])
+        answer_artifacts.extend(run["answers"])
+        outcome_artifacts.append(run["outcomes"])
+        raw_artifacts.append(run["raw"])
 
     run_records.sort(key=lambda run: run["run_id"])
     for run in run_records:
@@ -223,6 +311,16 @@ def build_version(
         "schema_version": "1.0",
         "question_set_sha256": question_set_sha256,
         "question_set_size": len(questions),
+        "leaderboard": {
+            "aggregation_method": "task_macro_average_v0",
+            "evaluation_profiles": [
+                {
+                    "task_family": task_family,
+                    "evaluation_profile": task_set["evaluation_profile"],
+                }
+                for task_family, task_set in sorted(task_sets.items())
+            ],
+        },
         "runs": run_records,
     }
     runs_bytes = _write_json(version_dir / "runs.json", runs)
@@ -303,6 +401,7 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
     if len(questions) != manifest["question_set_size"]:
         raise BuildError("manifest question-set size does not match questions")
     question_by_id = {question["question_id"]: question for question in questions}
+    task_sets = _task_sets_from_questions(questions)
 
     runs_descriptor = manifest["artifacts"]["runs"]
     runs_bytes = _verify_plain(root_dir / runs_descriptor["path"], runs_descriptor)
@@ -314,6 +413,20 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
         or runs_document.get("question_set_size") != manifest["question_set_size"]
     ):
         raise BuildError("runs.json does not match the manifest question set")
+    expected_leaderboard = {
+        "aggregation_method": "task_macro_average_v0",
+        "evaluation_profiles": [
+            {
+                "task_family": task_family,
+                "evaluation_profile": task_set["evaluation_profile"],
+            }
+            for task_family, task_set in sorted(task_sets.items())
+        ],
+    }
+    if "leaderboard" in runs_document and runs_document["leaderboard"] != expected_leaderboard:
+        raise BuildError("runs.json has invalid leaderboard aggregation metadata")
+    if len(task_sets) > 1 and "leaderboard" not in runs_document:
+        raise BuildError("multi-task runs.json is missing leaderboard aggregation metadata")
     runs = runs_document["runs"]
     if len(runs) != runs_descriptor["records"]:
         raise BuildError("run artifact record count does not match its contents")
@@ -323,20 +436,51 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
     configuration_keys = {run["configuration_key"] for run in runs}
     if len(configuration_keys) != len(runs):
         raise BuildError("runs.json contains duplicate model configuration keys")
+    run_task_families: dict[str, str] = {}
     for run in runs:
         errors = list(validators["run.schema.json"].iter_errors(run))
         if errors:
             raise BuildError(_schema_error(run["run_id"], errors))
-        if (
-            run["question_set_sha256"] != manifest["question_set_sha256"]
-            or run["question_set_size"] != manifest["question_set_size"]
+        matching_families = [
+            candidate_family
+            for candidate_family, task_set in task_sets.items()
+            if run["question_set_sha256"] == task_set["question_set_sha256"]
+            and run["question_set_size"] == task_set["question_set_size"]
+            and run["evaluation_profile"] == task_set["evaluation_profile"]
+        ]
+        if len(matching_families) != 1:
+            raise BuildError(f"run {run['run_id']!r} has no unique task family")
+        task_family = matching_families[0]
+        task_set = task_sets.get(task_family)
+        if task_set is None or (
+            run["question_set_sha256"] != task_set["question_set_sha256"]
+            or run["question_set_size"] != task_set["question_set_size"]
+            or run["evaluation_profile"] != task_set["evaluation_profile"]
         ):
-            raise BuildError(f"run {run['run_id']!r} uses the wrong question set")
+            raise BuildError(f"run {run['run_id']!r} uses the wrong task question set")
+        run_task_families[run["run_id"]] = task_family
     if version_name == "main":
         if not runs:
             raise BuildError("versions/main must contain at least one complete run")
         if any(not run["coverage"]["complete"] for run in runs):
             raise BuildError("versions/main may contain only complete runs without API errors")
+        represented_task_families = set(run_task_families.values())
+        missing_task_families = sorted(set(task_sets) - represented_task_families)
+        if missing_task_families:
+            raise BuildError(
+                "versions/main is missing complete runs for task families: "
+                + ", ".join(missing_task_families)
+            )
+        tasks_by_configuration: dict[str, set[str]] = {}
+        for run in runs:
+            tasks_by_configuration.setdefault(_overall_configuration_key(run), set()).add(
+                run_task_families[run["run_id"]]
+            )
+        if not any(set(task_sets) <= families for families in tasks_by_configuration.values()):
+            raise BuildError(
+                "versions/main must contain at least one model configuration with complete runs "
+                "for every task family"
+            )
 
     index_descriptor = manifest["artifacts"]["question_index"]
     index_bytes = _verify_plain(root_dir / index_descriptor["path"], index_descriptor)
@@ -409,6 +553,8 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
         answer_question = question_by_id.get(answer["question_id"])
         if run is None or answer_question is None:
             raise BuildError(f"answer {key!r} references an unknown run or question")
+        if answer_question["metadata"]["task_family"] != run_task_families[run["run_id"]]:
+            raise BuildError(f"answer {key!r} belongs to the wrong task family")
         if answer["question_sha256"] != sha256_json(answer_question):
             raise BuildError(f"answer {key!r} has the wrong question digest")
         _validate_answer_scoring(answer, answer_question)
@@ -468,8 +614,8 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
         ):
             raise BuildError(f"{descriptor['path']}: outcome index is stored at the wrong path")
         if (
-            outcome_index["question_set_sha256"] != manifest["question_set_sha256"]
-            or outcome_index["question_set_size"] != manifest["question_set_size"]
+            outcome_index["question_set_sha256"] != run["question_set_sha256"]
+            or outcome_index["question_set_size"] != run["question_set_size"]
         ):
             raise BuildError(f"{descriptor['path']}: outcome index has the wrong question set")
         outcomes = outcome_index["outcomes"]
@@ -577,10 +723,9 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
             "attempted": per_run_answers[run_id],
             "completed": stats["completed"],
             "api_errors": stats["api_errors"],
-            "missing": manifest["question_set_size"] - per_run_answers[run_id],
+            "missing": run["question_set_size"] - per_run_answers[run_id],
             "complete": (
-                per_run_answers[run_id] == manifest["question_set_size"]
-                and stats["api_errors"] == 0
+                per_run_answers[run_id] == run["question_set_size"] and stats["api_errors"] == 0
             ),
         }
         accuracy = stats["correct"] / stats["completed"] if stats["completed"] else None
@@ -729,10 +874,7 @@ def _convert_run(
     result_validator: Draft202012Validator,
     answer_validator: Draft202012Validator,
     raw_validator: Draft202012Validator,
-    question_by_id: Mapping[str, Mapping[str, Any]],
-    question_digest: Mapping[str, str],
-    question_set_sha256: str,
-    question_set_size: int,
+    task_sets: Mapping[str, Mapping[str, Any]],
     model_catalog: Mapping[str, Mapping[str, str]] | None,
     version_dir: Path,
 ) -> dict[str, Any]:
@@ -742,23 +884,20 @@ def _convert_run(
     except StopIteration as exc:
         raise BuildError(f"{result_file}: no result records found") from exc
     validate_result(first_record, result_validator)
+    task_family = first_record["question"]["metadata"]["task_family"]
+    task_set = task_sets.get(task_family)
+    if task_set is None:
+        raise BuildError(f"{result_file}: unknown task family {task_family!r}")
+    question_by_id = task_set["question_by_id"]
+    question_digest = task_set["question_digest"]
+    question_set_sha256 = task_set["question_set_sha256"]
+    question_set_size = task_set["question_set_size"]
+    evaluation_profile = task_set["evaluation_profile"]
     run_id = first_record["run_id"]
     model = json.loads(canonical_json(first_record["model"]))
     generation_parameters = json.loads(canonical_json(first_record["generation_parameters"]))
     model_json = canonical_json(model)
     parameters_json = canonical_json(generation_parameters)
-    evaluation_profile = ",".join(
-        sorted(
-            {
-                (
-                    f"{question['metadata']['task_family']}:"
-                    f"{question['provenance']['template_id']}@"
-                    f"{question['provenance']['template_version']}"
-                )
-                for question in question_by_id.values()
-            }
-        )
-    )
     configuration_key = "cfg-" + sha256_json(
         {
             "model": model,

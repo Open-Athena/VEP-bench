@@ -22,14 +22,15 @@ The benchmark is intentionally transparent:
 - evaluations use one OpenRouter integration; and
 - results are published to a static explorer with no database or backend.
 
-VEPBench measures current model capability and is not designed to resist
-training-data contamination.
+VEPBench measures current model capability. Temporal task cohorts can reduce
+direct source leakage but do not guarantee absence from training data.
 
 ## Benchmark tasks
 
 | Task | Model input | Target | Questions |
 | --- | --- | --- | ---: |
 | [Ensembl VEP most-severe consequence](docs/tasks/vep-most-severe-consequence.md) | A centered GRCh38 sequence window and SNV alleles | Ensembl VEP consequence class | 51 |
+| [ClinVar](docs/tasks/clinvar.md) | A centered GRCh38 sequence window and SNV alleles | ClinVar Benign or Pathogenic | 42 |
 
 Each task has its own versioned sources, prompt, methodology, limitations, and
 results. Task details live under [`docs/tasks/`](docs/tasks/README.md) so new
@@ -37,10 +38,12 @@ tasks can be added without making this README task-specific.
 
 ## Results
 
-The [explorer](https://openathena.ai/VEPBench/) provides task-level results and
-question-level prompts, reference answers, model responses, available
-reasoning, and exact-match scores. Each score should be interpreted alongside
-the corresponding task's methodology and limitations.
+The [explorer](https://openathena.ai/VEPBench/) provides a provisional overall
+score that weights each task equally, plus task-level results and question-level
+prompts, reference answers, model responses, available reasoning, and
+exact-match scores. A model configuration receives an overall score only after
+completing every published task. Each score should be interpreted alongside the
+corresponding tasks' methodology and limitations.
 
 ## Documentation
 

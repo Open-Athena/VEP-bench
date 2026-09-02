@@ -19,3 +19,17 @@ Predict the most severe consequence assigned by Ensembl VEP from a centered huma
 [Open task →](./tasks/consequence-classification.html)
 
 </div>
+
+<div class="card">
+
+## ClinVar
+
+Classify a GRCh38 SNV as Benign or Pathogenic from local sequence, using a July 2026 first-public ClinVar cohort matched within exact VEP consequences.
+
+- 42 consequence-matched SNVs (21 balanced pairs)
+- Fixed Benign and Pathogenic choices
+- Temporal public development questions with hidden clinical provenance
+
+[Open task →](./tasks/clinvar.html)
+
+</div>

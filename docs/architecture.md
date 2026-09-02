@@ -48,6 +48,13 @@ Each task owns:
 - task-specific validity checks and tests;
 - a methodology page under [`docs/tasks/`](tasks/README.md).
 
+Expensive task preparation may keep immutable, content-addressed processed
+intermediates under the public bucket's separate `data_prep/` namespace. Such a
+cache is task-owned, is not an official benchmark version, and must not contain
+raw upstream data that can be fetched from its authoritative archive. Cache
+completion manifests are installed last so readers never mistake a partial
+upload for a reusable result.
+
 Task-specific assumptions should not be added to shared evaluator,
 publication, or explorer code. Published questions identify their task through
 `metadata.task_family`, and task-profile evaluation checks that a question set
@@ -73,10 +80,9 @@ Use a stable slug consistently and add, as applicable:
 
 Question IDs must be globally unique across tasks. New task families should use
 explicit source, template, and profile paths rather than relying on the current
-single-task CLI defaults. Before combining multiple task families into one
-official evaluation, define deterministic aggregation and task-profile
-semantics explicitly; the current evaluator intentionally accepts one task
-family at a time.
+single-task CLI defaults. The evaluator intentionally accepts one task family
+at a time. Publication combines those independently pinned task runs without
+rewriting their question-set identities.
 
 ## Data contracts
 
@@ -92,6 +98,11 @@ The public on-disk contracts are:
 Generated questions are sorted by `question_id` and written as UTF-8 JSONL with
 LF line endings. The complete file has a lowercase SHA-256 fingerprint; each
 question is also fingerprinted from canonical compact JSON.
+
+Task source records may contain a `source_metadata` object for audit fields
+that must remain out of model-visible prompts. The builder includes that object
+in the source-record fingerprint but does not copy it into generated questions;
+task-specific compact-source validators own its structure.
 
 JSON Schema cannot express every question invariant. The builder additionally
 checks that choice IDs are unique, that `answer_choice_id` identifies exactly
@@ -129,8 +140,43 @@ accepts only complete runs without API errors and at most one run for each
 configuration key. Publication processes result and raw-response data as
 streams so memory use does not grow with the total amount of model reasoning.
 
-The leaderboard line chart connects configurations within each published model
-family and can compare exact-match score against total cost or total tokens.
+An official multi-task version publishes the sorted union of its task question
+sets as the browsable question artifact. Each run still records the digest,
+size, and evaluation profile of the single task question set that was actually
+evaluated. The publication's `runs.json` maps those profiles to task families
+and records the complete list required by the leaderboard.
+
+The provisional `task_macro_average_v0` overall score groups runs with identical
+model, upstream-provider, model-revision, and fully resolved generation
+parameters. A configuration is eligible only when it has one complete run for
+every published evaluation profile. Its overall score is the arithmetic mean
+of the task accuracies, so every task has equal weight regardless of question
+count. Displayed overall token usage and cost are sums across the included task
+runs. A future aggregation change must use a new method identifier rather than
+silently changing this rule.
+
+The leaderboard task selector controls both its table and line chart. `All
+tasks` uses the macro-average score and summed cost and token usage described
+above; a specific task uses that task run's exact-match score, cost, and token
+usage. The score column retains the generic `Score` label because the selector
+provides its scope. The line chart connects configurations within each
+published model family and can compare the selected score against cost or total
+tokens. The page uses Observable's native inputs, table, and plot so both views
+react to the same selected row set. The native table's score formatter adds an
+absolute zero-to-one inline bar behind the percentage without changing the
+numeric value used for sorting.
+
+The question explorer selects complete model configurations, ranked by overall
+score, and resolves the task-specific run only after a question is selected.
+Displayed `Qnnn` labels are global ordinals in the explorer's canonical task
+order, not per-task row numbers; task pages label their filtered questions from
+that same combined ordering.
+Its compact `question-metadata.json` asset is deterministically derived from
+committed task sources and provenance manifests. Every task must supply a VEP
+consequence for each source record, normally as
+`source_metadata.vep_consequence`; legacy task manifests may provide an explicit
+override. This display-only metadata is never added to model-visible prompts and
+does not change question or historical result fingerprints.
 
 Only `versions/main/` in the public bucket is official. Named lowercase-slug
 versions are reviewable release candidates or disposable experiments. The

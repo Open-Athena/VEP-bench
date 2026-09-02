@@ -1,6 +1,7 @@
 """VEPBench command-line interface."""
 
 import argparse
+import json
 import os
 import re
 import shutil
@@ -21,7 +22,7 @@ from .builder import BuildError, build_file, read_jsonl
 from .evaluator import ProviderError, evaluate_file
 from .model_profile import load_model_profile
 from .publication import build_version, promote_version, validate_version
-from .site import build_site
+from .site import build_question_metadata, build_site
 from .task_profile import load_task_profile
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -177,10 +178,14 @@ def build_parser() -> argparse.ArgumentParser:
     version_build.add_argument(
         "--questions",
         type=Path,
-        default=PROJECT_ROOT / ".vepbench/questions.jsonl",
+        action="append",
+        help="question JSONL for one task family; repeat for multi-task publication",
     )
     version_build.add_argument(
-        "--results-dir", type=Path, default=PROJECT_ROOT / ".vepbench/results"
+        "--results-dir",
+        type=Path,
+        action="append",
+        help="directory of result JSONL files; repeat for multiple staging directories",
     )
     version_build.add_argument(
         "--result-schema",
@@ -388,8 +393,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 0 if merged.is_complete else 1
         if args.command == "version-build":
             manifest = build_version(
-                questions_path=args.questions,
-                results_dir=args.results_dir,
+                questions_path=args.questions or [PROJECT_ROOT / ".vepbench/questions.jsonl"],
+                results_dir=args.results_dir or [PROJECT_ROOT / ".vepbench/results"],
                 result_schema_path=args.result_schema,
                 schemas_dir=args.schemas_dir,
                 model_catalog_path=args.model_catalog,
@@ -458,9 +463,26 @@ def main(argv: Sequence[str] | None = None) -> int:
             with tempfile.TemporaryDirectory(prefix="vepbench-observable-") as temporary:
                 project = Path(temporary)
                 source = project / "web"
+                consequence_manifest = json.loads(
+                    (PROJECT_ROOT / "data/sources/chr17-vep-consequences.manifest.json").read_text(
+                        encoding="utf-8"
+                    )
+                )
+                question_metadata = build_question_metadata(
+                    source_paths=[
+                        PROJECT_ROOT / "data/sources/chr17-vep-consequences.jsonl",
+                        PROJECT_ROOT / "data/sources/clinvar-july-2026.jsonl",
+                    ],
+                    consequence_overrides={
+                        "vep_most_severe_consequence": consequence_manifest[
+                            "record_source_consequences"
+                        ]
+                    },
+                )
                 manifest = build_site(
                     assets_dir=PROJECT_ROOT / "web",
                     output=source,
+                    question_metadata=question_metadata,
                 )
                 shutil.copy2(
                     PROJECT_ROOT / "observablehq.config.js",

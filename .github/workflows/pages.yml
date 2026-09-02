@@ -65,8 +65,16 @@ jobs:
       - name: Verify generated benchmark artifacts
         run: |
           uv run --locked python scripts/validate_vep_consequence_artifacts.py
+          uv run --locked python scripts/validate_clinvar_artifacts.py
           uv run --locked vepbench build --output /tmp/questions.jsonl
           cmp benchmark/expected-manifest.json /tmp/questions.manifest.json
+          uv run --locked vepbench build \
+            --source data/sources/clinvar-july-2026.jsonl \
+            --template templates/clinvar.json \
+            --output /tmp/clinvar-questions.jsonl
+          cmp \
+            benchmark/clinvar-expected-manifest.json \
+            /tmp/clinvar-questions.manifest.json
 
       - name: Build validated static site
         run: uv run --locked vepbench site --output _site

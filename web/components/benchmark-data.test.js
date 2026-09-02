@@ -4,13 +4,20 @@ import test from "node:test";
 
 import {
   answerPath,
+  defaultQuestionForExplorer,
   fetchAnswer,
+  fetchAnswerIfAvailable,
   fetchJson,
   fetchOutcomeIndex,
   groupCurrentRuns,
-  leaderboardLineSeries,
   leaderboardRows,
-  outcomeIndexPath
+  leaderboardRowsForScope,
+  modelSelectionRows,
+  orderQuestionsForExplorer,
+  orderTaskFamilies,
+  overallLeaderboardRows,
+  outcomeIndexPath,
+  runForTask
 } from "./benchmark-data.js";
 
 function run({
@@ -19,6 +26,7 @@ function run({
   completedAt = "2026-08-31T00:00:00Z",
   configurationKey = `cfg-${"0".repeat(64)}`,
   effort = "medium",
+  evaluationProfile = "synthetic_effect:mc-effect-v1@1.0",
   family = "Test family",
   modelId = "test/model",
   releaseDate = "2026-07-09",
@@ -32,6 +40,7 @@ function run({
     configuration_key: configurationKey,
     coverage: {complete},
     generation_parameters: {reasoning: {effort}},
+    evaluation_profile: evaluationProfile,
     metrics: {
       accuracy,
       format_failures: 0,
@@ -68,48 +77,213 @@ test("leaderboard keeps the latest complete run per model configuration", () => 
   assert.equal(rows[0].cost, 0.25);
 });
 
-test("line chart data groups model families and sorts points by the selected metric", () => {
-  const rows = leaderboardRows([
+test("overall leaderboard macro-averages complete task profiles", () => {
+  const leaderboard = {
+    aggregation_method: "task_macro_average_v0",
+    evaluation_profiles: [
+      {
+        task_family: "clinvar",
+        evaluation_profile: "clinvar:clinvar-snv-v1@1.0"
+      },
+      {
+        task_family: "vep_most_severe_consequence",
+        evaluation_profile: "vep_most_severe_consequence:vep-most-severe-v1@1.2"
+      }
+    ]
+  };
+  const rows = overallLeaderboardRows([
     run({
-      accuracy: 0.8,
+      accuracy: 0.75,
       configurationKey: `cfg-${"1".repeat(64)}`,
-      cost: 2,
-      effort: "high",
-      runId: "family-a-high",
+      cost: 0.5,
+      evaluationProfile: "clinvar:clinvar-snv-v1@1.0",
+      runId: "medium-clinvar",
+      tokens: 300
+    }),
+    run({
+      accuracy: 0.25,
+      configurationKey: `cfg-${"2".repeat(64)}`,
+      cost: 0.25,
+      evaluationProfile: "vep_most_severe_consequence:vep-most-severe-v1@1.2",
+      runId: "medium-consequence",
       tokens: 200
     }),
     run({
-      accuracy: 0.6,
-      configurationKey: `cfg-${"2".repeat(64)}`,
-      cost: 1,
+      accuracy: 0.9,
+      configurationKey: `cfg-${"3".repeat(64)}`,
       effort: "low",
-      modelId: "test/model-v2",
-      runId: "family-a-low",
-      tokens: 100
+      evaluationProfile: "vep_most_severe_consequence:vep-most-severe-v1@1.2",
+      runId: "low-consequence-only"
+    })
+  ], leaderboard);
+
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0].accuracy, 0.5);
+  assert.equal(rows[0].tokens, 500);
+  assert.equal(rows[0].cost, 0.75);
+  assert.deepEqual(
+    rows[0].task_scores.map((task) => [task.task_family, task.accuracy]),
+    [["clinvar", 0.75], ["vep_most_severe_consequence", 0.25]]
+  );
+  assert.deepEqual(rows[0].runs.map((candidate) => candidate.run_id), [
+    "medium-clinvar",
+    "medium-consequence"
+  ]);
+});
+
+test("overall leaderboard rejects unknown aggregation metadata", () => {
+  assert.deepEqual(overallLeaderboardRows([], null), []);
+  assert.deepEqual(overallLeaderboardRows([], {
+    aggregation_method: "question_micro_average_v0",
+    evaluation_profiles: []
+  }), []);
+});
+
+test("leaderboard scope switches score, tokens, and cost to one task", () => {
+  const leaderboard = {
+    aggregation_method: "task_macro_average_v0",
+    evaluation_profiles: [
+      {task_family: "clinvar", evaluation_profile: "clinvar:clinvar-snv-v1@1.0"},
+      {
+        task_family: "vep_most_severe_consequence",
+        evaluation_profile: "vep_most_severe_consequence:vep-most-severe-v1@1.2"
+      }
+    ]
+  };
+  const runs = [
+    run({
+      accuracy: 0.8,
+      cost: 0.6,
+      evaluationProfile: "clinvar:clinvar-snv-v1@1.0",
+      runId: "model-clinvar",
+      tokens: 600
     }),
     run({
-      accuracy: 0.7,
-      configurationKey: `cfg-${"3".repeat(64)}`,
-      cost: 1.5,
-      family: "Another family",
-      modelId: "test/another",
-      runId: "family-b",
-      tokens: null
+      accuracy: 0.2,
+      configurationKey: `cfg-${"1".repeat(64)}`,
+      cost: 0.4,
+      evaluationProfile: "vep_most_severe_consequence:vep-most-severe-v1@1.2",
+      runId: "model-consequence",
+      tokens: 400
     })
-  ]);
+  ];
 
-  const costSeries = leaderboardLineSeries(rows, "cost");
-  assert.deepEqual(costSeries.map((series) => series.family), [
-    "Another family",
-    "Test family"
-  ]);
-  assert.deepEqual(
-    costSeries[1].points.map((point) => point.x),
-    [1, 2]
+  const allTasks = leaderboardRowsForScope(runs, leaderboard);
+  assert.equal(allTasks.length, 1);
+  assert.equal(allTasks[0].accuracy, 0.5);
+  assert.equal(allTasks[0].tokens, 1000);
+  assert.equal(allTasks[0].cost, 1);
+
+  const consequence = leaderboardRowsForScope(
+    runs,
+    leaderboard,
+    "vep_most_severe_consequence"
   );
-  const tokenSeries = leaderboardLineSeries(rows, "tokens");
-  assert.deepEqual(tokenSeries.map((series) => series.family), ["Test family"]);
-  assert.throws(() => leaderboardLineSeries(rows, "release_date"), /Unknown/);
+  assert.equal(consequence.length, 1);
+  assert.equal(consequence[0].accuracy, 0.2);
+  assert.equal(consequence[0].tokens, 400);
+  assert.equal(consequence[0].cost, 0.4);
+  assert.equal(consequence[0].run.run_id, "model-consequence");
+  assert.deepEqual(leaderboardRowsForScope(runs, leaderboard, "unknown"), []);
+});
+
+test("task selectors use the benchmark presentation order", () => {
+  assert.deepEqual(
+    orderTaskFamilies(["clinvar", "future_task", "vep_most_severe_consequence"]),
+    ["vep_most_severe_consequence", "clinvar", "future_task"]
+  );
+});
+
+test("model selection has one best-first row with a task run for each model", () => {
+  const leaderboard = {
+    aggregation_method: "task_macro_average_v0",
+    evaluation_profiles: [
+      {task_family: "clinvar", evaluation_profile: "clinvar:clinvar-snv-v1@1.0"},
+      {
+        task_family: "vep_most_severe_consequence",
+        evaluation_profile: "vep_most_severe_consequence:vep-most-severe-v1@1.2"
+      }
+    ]
+  };
+  const specifications = [
+    ["gpt-5.6-luna", "clinvar", 0.55],
+    ["gpt-5.6-luna", "vep", 0.27],
+    ["gpt-5.6-sol", "clinvar", 0.55],
+    ["gpt-5.6-sol", "vep", 0.41]
+  ];
+  const rows = modelSelectionRows(specifications.map(([model, task, accuracy], index) => run({
+    accuracy,
+    configurationKey: `cfg-${String(index).repeat(64)}`,
+    evaluationProfile: task === "clinvar"
+      ? "clinvar:clinvar-snv-v1@1.0"
+      : "vep_most_severe_consequence:vep-most-severe-v1@1.2",
+    modelId: `openai/${model}`,
+    runId: `${model}-${task}`
+  })), leaderboard);
+
+  assert.equal(rows.length, 2);
+  assert.equal(rows[0].model_cell.model, "GPT 5.6 Sol (medium)");
+  assert.equal(rows[0].accuracy, 0.48);
+  assert.equal(runForTask(rows[0], "clinvar").run_id, "gpt-5.6-sol-clinvar");
+  assert.equal(
+    runForTask(rows[0], "vep_most_severe_consequence").run_id,
+    "gpt-5.6-sol-vep"
+  );
+});
+
+test("question explorer puts consequence classification before ClinVar", () => {
+  const questions = [
+    {question_id: "clinvar-2", metadata: {task_family: "clinvar"}},
+    {question_id: "future-1", metadata: {task_family: "future_task"}},
+    {
+      question_id: "consequence-2",
+      metadata: {task_family: "vep_most_severe_consequence"}
+    },
+    {question_id: "clinvar-1", metadata: {task_family: "clinvar"}},
+    {
+      question_id: "consequence-1",
+      metadata: {task_family: "vep_most_severe_consequence"}
+    }
+  ];
+
+  assert.deepEqual(
+    orderQuestionsForExplorer(questions).map((question) => question.question_id),
+    ["consequence-1", "consequence-2", "clinvar-1", "clinvar-2", "future-1"]
+  );
+  assert.equal(questions[0].question_id, "clinvar-2");
+});
+
+test("question explorer preserves the current visible question across control changes", () => {
+  const entries = [
+    {question_id: "question-1"},
+    {question_id: "question-2"},
+    {question_id: "question-3"}
+  ];
+  const knownQuestionIds = new Set(entries.map((entry) => entry.question_id));
+
+  assert.equal(
+    defaultQuestionForExplorer(entries, {
+      currentQuestionId: "question-2",
+      knownQuestionIds,
+      evaluatedQuestionIds: new Set(["question-1"]),
+      preferEvaluated: true
+    }).question_id,
+    "question-2"
+  );
+  assert.equal(
+    defaultQuestionForExplorer(entries.slice(0, 1), {
+      currentQuestionId: "question-2",
+      knownQuestionIds
+    }).question_id,
+    "question-1"
+  );
+  assert.equal(
+    defaultQuestionForExplorer(entries, {
+      currentQuestionId: "missing-question",
+      knownQuestionIds
+    }),
+    null
+  );
 });
 
 test("question explorer exposes only complete runs", () => {
@@ -151,6 +325,51 @@ test("fetchAnswer downloads and decompresses exactly one gzip object", async () 
   assert.deepEqual(requested, [
     "https://example.test/versions/main/answers/demo-run/task%3Aquestion-1.json.gz"
   ]);
+});
+
+test("fetchAnswerIfAvailable skips questions outside the selected run", async () => {
+  let requests = 0;
+  const fetcher = async () => {
+    requests += 1;
+    return new Response();
+  };
+  const outcomeIndex = {
+    outcomes: [{question_id: "task:question-1", correct: true}]
+  };
+
+  assert.equal(
+    await fetchAnswerIfAvailable(
+      "https://example.test/versions/main",
+      run({runId: "demo-run"}),
+      "other-task:question-1",
+      outcomeIndex,
+      fetcher
+    ),
+    null
+  );
+  assert.equal(requests, 0);
+});
+
+test("fetchAnswerIfAvailable loads a question covered by the selected run", async () => {
+  const answer = {question_id: "task:question-1", scoring: {correct: true}};
+  const compressed = gzipSync(`${JSON.stringify(answer)}\n`, {mtime: 0});
+  let requests = 0;
+  const fetcher = async () => {
+    requests += 1;
+    return new Response(compressed, {status: 200});
+  };
+
+  assert.deepEqual(
+    await fetchAnswerIfAvailable(
+      "https://example.test/versions/main",
+      run({runId: "demo-run"}),
+      answer.question_id,
+      {outcomes: [{question_id: answer.question_id, correct: true}]},
+      fetcher
+    ),
+    answer
+  );
+  assert.equal(requests, 1);
 });
 
 test("fetchOutcomeIndex downloads the compact results for one run", async () => {

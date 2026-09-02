@@ -8,7 +8,11 @@ import {
   formatInteger,
   questionUrl
 } from "../components/vepbench.js";
-import {artifactUrl, fetchJson} from "../components/benchmark-data.js";
+import {
+  artifactUrl,
+  fetchJson,
+  orderQuestionsForExplorer
+} from "../components/benchmark-data.js";
 import {
   ENSEMBL_CONSEQUENCE_SOURCE,
   consequenceTableRows,
@@ -23,7 +27,8 @@ const questionState = await fetchJson(
   .catch((error) => ({document: {questions: []}, error}));
 const consequenceDiagramUrl = FileAttachment("./consequences.svg").href;
 const taskFamily = "vep_most_severe_consequence";
-const taskQuestions = questionState.document.questions.filter(
+const orderedQuestions = orderQuestionsForExplorer(questionState.document.questions);
+const taskQuestions = orderedQuestions.filter(
   (question) => question.metadata.task_family === taskFamily
 );
 const consequenceCount = new Set(taskQuestions[0]?.choices.map((choice) => choice.text)).size;
@@ -202,15 +207,17 @@ display(consequenceTableCard);
 Browse the current task questions and open one to inspect it in detail.
 
 ```js
-const entries = entriesForQuestions(taskQuestions).map(
-  (entry) => ({
-    ...entry,
-    question_link: {
-      label: entry.question_label,
-      href: questionUrl(entry.question_id, null, "../questions.html")
-    }
-  })
-);
+const entries = entriesForQuestions(orderedQuestions)
+  .filter((entry) => entry.question.metadata.task_family === taskFamily)
+  .map(
+    (entry) => ({
+      ...entry,
+      question_link: {
+        label: entry.question_label,
+        href: questionUrl(entry.question_id, null, "../questions.html")
+      }
+    })
+  );
 ```
 
 ```js

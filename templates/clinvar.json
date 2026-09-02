@@ -1,0 +1,5 @@
+{
+  "template_id": "clinvar-snv-v1",
+  "template_version": "1.0",
+  "prompt": "Classify the SNV as ClinVar Benign or Pathogenic using only the local sequence context below.\n\n**Reference genome:** human GRCh38\n\n**FASTA formatting:** Sequence lines contain 80 bases except the final line.\n\n{variant}\n\n{question}\n\nChoices:\n{choices}\n\nYou may explain your reasoning.\n\nYour final line must contain only the word `FINAL`, a colon, a space, and the choice ID.\nExample: `FINAL: C01`\nDo not include the classification name, a period, or any other text on that line."
+}

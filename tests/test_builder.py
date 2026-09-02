@@ -129,3 +129,22 @@ def test_source_records_generate_in_question_id_order(schema: dict) -> None:
         "mc-effect-v1:synthetic-001",
         "mc-effect-v1:synthetic-002",
     ]
+
+
+def test_source_metadata_is_fingerprinted_but_not_model_visible(schema: dict) -> None:
+    record = read_jsonl(SOURCE)[0]
+    record["source_metadata"] = {"classification": "hidden-one"}
+    first = build_questions([record], load_template(TEMPLATE), schema)[0]
+    record["source_metadata"] = {"classification": "hidden-two"}
+    second = build_questions([record], load_template(TEMPLATE), schema)[0]
+
+    assert first["prompt"] == second["prompt"]
+    assert "source_metadata" not in first
+    assert "hidden-one" not in first["prompt"]
+    assert (
+        first["provenance"]["source_record_sha256"] != second["provenance"]["source_record_sha256"]
+    )
+
+    record["source_metadata"] = []
+    with pytest.raises(BuildError, match="source_metadata must be an object"):
+        build_questions([record], load_template(TEMPLATE), schema)

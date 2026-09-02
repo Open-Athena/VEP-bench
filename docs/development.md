@@ -28,6 +28,10 @@ Do not add a parallel pip, Poetry, Pipenv, or Conda workflow. Commit both
 | `web/` | Static Observable Framework explorer |
 | `docs/tasks/` | Scientific methodology, one page per benchmark task |
 
+Large remote preparation jobs may reuse processed, pre-sampling intermediates
+from `data_prep/` in the same Hugging Face bucket. That namespace is isolated
+from the official `versions/` publication tree and is not mirrored into Git.
+
 See [Architecture](architecture.md) before changing shared data flow or adding
 a task.
 
@@ -37,6 +41,7 @@ Run the locked offline checks before opening a pull request:
 
 ```bash
 uv run --locked python scripts/validate_vep_consequence_artifacts.py
+uv run --locked python scripts/validate_clinvar_artifacts.py
 uv run --locked pytest --cov=vepbench --cov-report=term-missing:skip-covered
 uv run --locked ruff check .
 uv run --locked ruff format --check .
@@ -45,11 +50,17 @@ npm test
 uv run --locked pre-commit run --all-files
 uv run --locked vepbench build --output /tmp/questions.jsonl
 cmp benchmark/expected-manifest.json /tmp/questions.manifest.json
+uv run --locked vepbench build \
+  --source data/sources/clinvar-july-2026.jsonl \
+  --template templates/clinvar.json \
+  --output /tmp/clinvar-questions.jsonl
+cmp benchmark/clinvar-expected-manifest.json \
+  /tmp/clinvar-questions.manifest.json
 uv run --locked vepbench site --output /tmp/vepbench-site
 ```
 
-The source-artifact validator is specific to the current consequence task; each
-new task should add its own deterministic validation entry point where needed.
+Each committed prepared source has its own deterministic offline validation
+entry point.
 
 CI runs the offline suites, validates deterministic regeneration against the
 expected manifest, compiles the explorer, and performs browser smoke QA with

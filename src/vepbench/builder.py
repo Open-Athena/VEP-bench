@@ -19,7 +19,7 @@ REQUIRED_SOURCE_FIELDS = {
     "answer_choice_id",
     "task_family",
 }
-ALLOWED_SOURCE_FIELDS = REQUIRED_SOURCE_FIELDS | {"tags"}
+ALLOWED_SOURCE_FIELDS = REQUIRED_SOURCE_FIELDS | {"source_metadata", "tags"}
 REQUIRED_TEMPLATE_FIELDS = {"template_id", "template_version", "prompt"}
 PROMPT_FIELDS = {"variant", "question", "choices"}
 
@@ -231,6 +231,9 @@ def _validate_source_record(record: dict[str, Any], index: int) -> None:
         or len(tags) != len(set(tags))
     ):
         raise BuildError(f"source record {index}: tags must be unique non-empty strings")
+    source_metadata = record.get("source_metadata", {})
+    if not isinstance(source_metadata, dict):
+        raise BuildError(f"source record {index}: source_metadata must be an object")
     choices = record["choices"]
     if not isinstance(choices, list) or len(choices) < 2:
         raise BuildError(f"source record {index}: choices must contain at least two items")
