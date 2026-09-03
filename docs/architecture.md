@@ -30,6 +30,22 @@ Only the model-visible prompt is sent to OpenRouter. Answer keys stay local and
 are applied after a response is returned. Tests, CI, and static-site builds do
 not make model calls.
 
+## Prompt minimality and causal context
+
+Model-visible prompts should contain the least information needed to define the
+prediction target and the experimental conditions that affect its
+interpretation. Prefer molecular inputs and assay context that are causally
+connected to the measured outcome. The benchmark should test reasoning about
+those mechanisms rather than recognition, lookup, or memorization.
+
+Names, genomic coordinates, disease or phenotype labels, accessions, and
+derived annotations should remain in source provenance or display metadata
+unless a task's methodology establishes that they are necessary inputs to the
+prediction. Minimal does not mean context-free: include details that change the
+physical reporter construct, cellular state, perturbation, or meaning of the
+measurement. Each task methodology should explain why every model-visible
+context field is needed.
+
 ## Shared and task-specific concerns
 
 The shared layer owns:
