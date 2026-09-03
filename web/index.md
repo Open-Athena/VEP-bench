@@ -12,8 +12,7 @@ import {
 import {
   artifactUrl,
   fetchJson,
-  leaderboardRowsForScope,
-  orderTaskFamilies
+  leaderboardRowsForScope
 } from "./components/benchmark-data.js";
 
 const config = await FileAttachment("data/config.json").json();
@@ -21,25 +20,7 @@ const runsState = await fetchJson(artifactUrl(config.data_base_url, "runs.json")
   .then((document) => ({document, error: null}))
   .catch((error) => ({document: {runs: []}, error}));
 const aggregation = runsState.document.leaderboard;
-const taskName = (taskFamily) => ({
-  clinvar: "ClinVar",
-  satmut_mpra: "satMutMPRA ranking",
-  vep_most_severe_consequence: "Consequence classification"
-})[taskFamily] ?? taskFamily;
-const taskOptions = [
-  {task_family: null, label: "All classification tasks"},
-  ...orderTaskFamilies([
-    ...new Set(
-      (aggregation?.evaluation_profiles ?? []).map((profile) => profile.task_family)
-    )
-  ]).map((taskFamily) => ({task_family: taskFamily, label: taskName(taskFamily)}))
-];
-const taskInput = Inputs.select(taskOptions, {
-  label: "Task",
-  value: taskOptions[0],
-  format: (option) => option.label
-});
-taskInput.style.maxWidth = "22rem";
+const taskFamily = "satmut_mpra";
 const metricOptions = [
   {key: "cost", label: "Total cost", axis_label: "Total cost (USD)"},
   {key: "tokens", label: "Total tokens", axis_label: "Total tokens"}
@@ -57,46 +38,23 @@ metricInput.style.maxWidth = "22rem";
 ```js
 if (runsState.error) {
   display(html`<div class="note" label="Published data unavailable">The official benchmark data could not be loaded from <code>versions/main</code>.</div>`);
-} else if (!aggregation) {
-  display(html`<div class="note" label="Single-task publication">The current official version predates multi-task overall scoring, so these are individual run scores.</div>`);
+} else if (!aggregation?.evaluation_profiles?.some(
+  (profile) => profile.task_family === taskFamily
+)) {
+  display(html`<div class="note" label="satMutMPRA unavailable">The current official version does not contain a satMutMPRA evaluation profile.</div>`);
 }
-```
-
-```js
-const selectedTask = view(taskInput);
 ```
 
 ```js
 const rows = leaderboardRowsForScope(
   runsState.document.runs,
   aggregation,
-  selectedTask.task_family
+  taskFamily
 );
-const selectedProfile = selectedTask.task_family === null
-  ? null
-  : aggregation?.evaluation_profiles?.find(
-      (profile) => profile.task_family === selectedTask.task_family
-    );
-const selectedPrimaryMetric = selectedProfile?.primary_metric ?? "exact_match";
-const formatScore = (value) => selectedPrimaryMetric === "spearman"
-  ? (value === null ? "—" : value.toFixed(3))
-  : formatPercent(value);
+const formatScore = (value) => value === null ? "—" : value.toFixed(3);
 ```
 
-<div style="display: flex; justify-content: flex-end; margin: 0.75rem 0;">
-  ${taskInput}
-</div>
-
-```js
-if (!runsState.error && aggregation) {
-  display(selectedTask.task_family === null
-    ? html`<p>For <strong>All classification tasks</strong>, score is the unweighted mean of exact-match accuracy across published classification tasks. Ranking tasks keep separate leaderboards and are not combined with accuracy.</p>`
-    : selectedPrimaryMetric === "spearman"
-      ? html`<p>Showing mean within-element Spearman rho for <strong>${selectedTask.label}</strong>. Pearson correlation and valid-output rate remain separate diagnostics.</p>`
-      : html`<p>Showing exact-match accuracy for <strong>${selectedTask.label}</strong>.</p>`
-  );
-}
-```
+Showing mean within-element Spearman rho for **satMutMPRA**. Pearson correlation and valid-output rate are separate diagnostics.
 
 ```js
 const tableRows = rows.map((row) => ({
@@ -111,7 +69,7 @@ const tableRows = rows.map((row) => ({
 }));
 function scoreBar(value) {
   if (!Number.isFinite(value)) return "—";
-  const normalized = selectedPrimaryMetric === "spearman" ? (value + 1) / 2 : value;
+  const normalized = (value + 1) / 2;
   const width = Math.max(0, Math.min(1, normalized)) * 100;
   return html`<span class="vepbench-score-cell" style=${`--vepbench-score-width: ${width}%`}>
     <span class="vepbench-score-bar" aria-hidden="true"></span>
@@ -119,9 +77,7 @@ function scoreBar(value) {
   </span>`;
 }
 const leaderboardTable = Inputs.table(tableRows, {
-  columns: selectedPrimaryMetric === "spearman"
-    ? ["model", "score", "pearson", "valid_output_rate", "release_date", "tokens", "cost"]
-    : ["model", "score", "release_date", "tokens", "cost"],
+  columns: ["model", "score", "pearson", "valid_output_rate", "release_date", "tokens", "cost"],
   header: {
     model: "Model",
     score: "Score",
@@ -168,8 +124,7 @@ display(html`<div class="card">${leaderboardTable}</div>`);
 
 ## Score by cost and token usage
 
-Each line connects evaluated configurations from the same model family. Use the selector to compare the selected task's primary score with total run cost or total token usage.
-The task selector above controls both the table and this plot. For All classification tasks, cost and tokens are summed across included classification-task runs.
+Each line connects evaluated configurations from the same model family. Use the selector to compare the satMutMPRA score with total run cost or total token usage.
 
 ```js
 const selectedMetric = view(metricInput);
@@ -197,7 +152,7 @@ function scoreEfficiencyPlot(data, {width}) {
         : (value) => Intl.NumberFormat("en-US", {notation: "compact"}).format(value)
     },
     y: {
-      label: selectedPrimaryMetric === "spearman" ? "Mean Spearman ρ" : "Score",
+      label: "Mean Spearman ρ",
       grid: true,
       tickFormat: formatScore
     },
@@ -233,7 +188,7 @@ function scoreEfficiencyPlot(data, {width}) {
 </div>
 
 ```js
-display(html`<div class="card" aria-label=${`${selectedTask.label} score versus ${metricLabel}`}>
+display(html`<div class="card" aria-label=${`satMutMPRA score versus ${metricLabel}`}>
   ${resize((width) => scoreEfficiencyPlot(efficiencyRows, {width}))}
 </div>`);
 ```

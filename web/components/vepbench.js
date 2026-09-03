@@ -59,7 +59,7 @@ export function entryForAnswer(question, index, result, run, rawArchiveUrl = nul
     question_label: `Q${String(index + 1).padStart(3, "0")}`,
     variant: question.provenance.source_record_id,
     answer: ranking
-      ? `${question.candidates.length} measured effects`
+      ? `${question.candidates.length} candidate variants`
       : choiceText(question, question.answer_choice_id),
     prediction: ranking
       ? (result?.scoring.parsed_answer
@@ -80,7 +80,7 @@ export function entriesForQuestions(questions) {
     question_label: `Q${String(index + 1).padStart(3, "0")}`,
     variant: question.provenance.source_record_id,
     answer: question.task_type === "ranking"
-      ? `${question.candidates.length} measured effects`
+      ? `${question.candidates.length} candidate variants`
       : choiceText(question, question.answer_choice_id),
     prediction: "—",
     outcome: "Select to load",
@@ -120,33 +120,6 @@ function markdownNode(source) {
   return node;
 }
 
-function rankingReferenceTable(question, result) {
-  const section = element("section");
-  section.append(element("h3", null, "Reference effects"));
-  const table = element("table");
-  const head = element("thead");
-  const header = element("tr");
-  for (const label of ["Candidate", "Measured effect", "Predicted effect"]) {
-    header.append(element("th", null, label));
-  }
-  head.append(header);
-  const body = element("tbody");
-  const parsed = result?.scoring?.parsed_answer;
-  for (const candidate of question.candidates) {
-    const row = element("tr");
-    const predicted = parsed?.[candidate.candidate_id];
-    row.append(
-      element("td", null, candidate.candidate_id),
-      element("td", null, String(candidate.reference_score)),
-      element("td", null, typeof predicted === "number" ? String(predicted) : "—")
-    );
-    body.append(row);
-  }
-  table.append(head, body);
-  section.append(table);
-  return section;
-}
-
 export function questionRecord(entry) {
   const {question, result, run} = entry;
   const root = element("article");
@@ -167,7 +140,7 @@ export function questionRecord(entry) {
   questionHeader.style.justifyContent = "space-between";
   questionHeader.style.gap = "1rem";
   questionHeader.append(
-    element("h2", null, "Question"),
+    element("h2", null, "Prompt given to model"),
     element("span", "muted", entry.question_label)
   );
   const reference = question.task_type === "ranking"
@@ -187,9 +160,6 @@ export function questionRecord(entry) {
   questionColumn.append(questionHeader, reference);
   if (question.task_type !== "ranking") questionColumn.append(consequence);
   questionColumn.append(questionBody);
-  if (question.task_type === "ranking") {
-    questionColumn.append(rankingReferenceTable(question, result));
-  }
 
   const responseBody = result?.response.content
     ? markdownNode(result.response.content)

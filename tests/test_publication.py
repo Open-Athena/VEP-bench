@@ -418,7 +418,7 @@ def test_publication_aggregates_ranking_metrics_without_classification_accuracy(
     assert document["leaderboard"]["aggregation_method"] == ("classification_task_macro_average_v0")
     assert document["leaderboard"]["evaluation_profiles"] == [
         {
-            "evaluation_profile": "synthetic_ranking:satmut-mpra-ranking-v1@1.0",
+            "evaluation_profile": "synthetic_ranking:satmut-mpra-ranking-v1@1.1",
             "primary_metric": "spearman",
             "task_family": "synthetic_ranking",
             "task_type": "ranking",

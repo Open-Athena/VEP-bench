@@ -5,23 +5,14 @@ by tests or CI, and the credential is read only from `OPENROUTER_API_KEY`.
 
 ## Build questions
 
-The default build targets the Ensembl VEP consequence task:
+The default build targets satMutMPRA:
 
 ```bash
 uv run --locked vepbench build
 ```
 
-The command accepts explicit `--source`, `--template`, `--schema`, and
-`--output` paths. Build ClinVar with explicit task paths:
-
-```bash
-uv run --locked vepbench build \
-  --source data/sources/clinvar-july-2026.jsonl \
-  --template templates/clinvar.json \
-  --output .vepbench/clinvar-questions.jsonl
-```
-
-Build the satMutMPRA ranking questions the same way:
+This writes `.vepbench/satmut-mpra-questions.jsonl`. The command also accepts
+explicit `--source`, `--template`, `--schema`, and `--output` paths:
 
 ```bash
 uv run --locked vepbench build \
@@ -37,7 +28,7 @@ on that task, such as the completion-token ceiling. A model profile contains
 only model- or provider-specific settings. Question paths, result paths, run
 IDs, and secrets remain run-specific.
 
-All current task profiles use a 128,000-token completion ceiling. This fits
+The satMutMPRA task profile uses a 128,000-token completion ceiling. This fits
 the supported output limit of every benchmarked model while leaving substantial
 headroom for reasoning and the required final answer.
 
@@ -50,7 +41,7 @@ reproducibility.
 ```bash
 export OPENROUTER_API_KEY=...
 uv run --locked vepbench evaluate \
-  --task-profile configs/tasks/vep-most-severe-consequence.yaml \
+  --task-profile configs/tasks/satmut-mpra.yaml \
   --model-profile configs/models/openai-gpt-5.6-luna-medium.yaml
 ```
 
@@ -85,7 +76,7 @@ chunks sequentially while retaining the identity of the complete question set:
 
 ```bash
 uv run --locked vepbench evaluate \
-  --task-profile configs/tasks/vep-most-severe-consequence.yaml \
+  --task-profile configs/tasks/satmut-mpra.yaml \
   --model-profile configs/models/openai-gpt-5.6-sol-medium.yaml \
   --run-id <shared-run-id> --batch-offset 0 --batch-size 7 \
   --batch-state <chunk-01-state.json> --output <chunk-01-results.jsonl>
@@ -109,7 +100,7 @@ Use direct evaluation when a model has no live batch endpoint:
 
 ```bash
 uv run --locked vepbench evaluate --direct \
-  --task-profile configs/tasks/vep-most-severe-consequence.yaml \
+  --task-profile configs/tasks/satmut-mpra.yaml \
   --model-profile configs/models/openai-gpt-5.6-luna-high.yaml
 ```
 
@@ -125,8 +116,8 @@ profile can only be changed in that profile.
 
 ## Completion and failure semantics
 
-Only prompts cross the provider boundary; answer keys never do. A complete
-multiple-choice response receives one flat, deterministic
+Only prompts cross the provider boundary; answer keys never do. The shared
+evaluator still supports a complete multiple-choice response with one flat, deterministic
 `scoring.result_type`:
 
 - `correct` or `incorrect` when the last well-formed `FINAL: <choice-id>` line
@@ -149,8 +140,8 @@ it avoids treating malformed output as equivalent to a valid, perfectly
 reversed ranking. A constant valid vector also receives correlation zero but
 remains distinguishable through its valid-output status.
 
-The multiple-choice taxonomy does not include provider or transport failures.
-For either task type, an API failure has null scoring, makes the run incomplete,
+That taxonomy does not include provider or transport failures. For either task
+type, an API failure has null scoring, makes the run incomplete,
 and causes direct evaluation to exit nonzero. Such a run cannot appear in the
 official leaderboard.
 

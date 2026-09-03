@@ -25,24 +25,19 @@ and total USD cost per run. Every published model must have a catalog entry;
 use `--model-catalog` to select another reviewed catalog. Named versions use
 lowercase slugs. Only `main` is official.
 
-For a multi-task version, repeat `--questions` once per task question set and
-`--results-dir` for each curated result staging directory:
+For satMutMPRA, name the question set and curated result staging directory explicitly:
 
 ```bash
 uv run --locked vepbench version-build \
-  --version two-task-medium \
-  --questions .vepbench/questions.jsonl \
-  --questions .vepbench/clinvar-questions.jsonl \
+  --version satmut-mpra-prompt-v1-1 \
   --questions .vepbench/satmut-mpra-questions.jsonl \
-  --results-dir .vepbench/publication-results/consequence \
-  --results-dir .vepbench/publication-results/clinvar \
   --results-dir .vepbench/publication-results/satmut-mpra \
   --output /tmp/vepbench-publication
 ```
 
-Each question file must contain exactly one task family. Result files retain
-the digest and size of that task's question set. Curate staging directories so
-they contain only the intended full result files, not batch chunks or
+The question file must contain exactly one task family. Result files retain
+the digest and size of that question set. Curate the staging directory so it
+contains only the intended full result files, not batch chunks or
 superseded runs.
 
 ## Plan and apply a bucket update
@@ -139,19 +134,12 @@ first, including the leaderboard's model release date, total tokens, and total
 cost. The score-efficiency chart switches between cost and tokens and draws one
 line per model family. The explorer fetches the question index and a compact
 outcome index for the selected run when a user opens the question explorer.
-This supports the result column and filters for correct, incorrect, refusal,
-token-limit, and format-error outcomes while full answer content is still
-loaded one compressed object at a time. Outcome indexes built before the flat
-result taxonomy remain readable through their boolean correctness field.
-Complete raw archives remain downloadable without requiring a backend.
+This supports valid-output and format-failure filters while full answer content
+is loaded one compressed object at a time. The question pane renders the exact
+stored model prompt; it does not display a measured-versus-predicted effect
+table. Complete raw archives remain downloadable without requiring a backend.
 
-For multi-task publications, `runs.json` also names each evaluation profile,
-its task type and primary metric, and the aggregation method. The current
-provisional overall score is an equal-weight mean of classification-task
-exact-match accuracies and is shown only for configurations with complete
-coverage of every classification profile. Ranking tasks have task-specific
-leaderboards using mean Spearman correlation; Pearson correlation and valid
-output rate are also published. Each task must have at least one complete run,
-but the official version does not require one model configuration to cover
-every task. Overall cost and token counts sum only the classification runs
-included in the overall score.
+`runs.json` names the satMutMPRA evaluation profile and its Spearman primary
+metric. Pearson correlation and valid-output rate are also published. A single
+complete model run is sufficient for a working leaderboard; additional model
+configurations add rows without changing the publication contract.

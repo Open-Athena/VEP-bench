@@ -186,44 +186,18 @@ response with a parse error. The narrower five-way taxonomy is reported in
 `metrics.result_counts`, where only `format_error` excludes refusals and token
 limits.
 
-An official multi-task version publishes the sorted union of its task question
-sets as the browsable question artifact. Each run still records the digest,
-size, and evaluation profile of the single task question set that was actually
-evaluated. The publication's `runs.json` maps those profiles to task families
-and records the complete list required by the leaderboard.
+The current official version contains only satMutMPRA. Its leaderboard uses
+mean within-element Spearman correlation, with Pearson correlation and valid
+output rate as diagnostics. The score-efficiency chart compares that score to
+cost or total tokens and works with one or more complete model runs.
 
-The provisional `classification_task_macro_average_v0` overall score groups
-runs with identical gateway, model, model revision, and fully resolved
-generation parameters. A configuration is eligible only when it has
-one complete run for every published classification profile. Its overall score
-is the arithmetic mean of classification-task accuracies, so every included
-task has equal weight regardless of question count. Quantitative ranking tasks
-remain visible as task-specific Spearman leaderboards and are not mixed with
-accuracy. Displayed overall token usage and cost sum only the included
-classification runs. A future aggregation change must use a new method
-identifier rather than silently changing this rule.
-
-The leaderboard task selector controls both its table and line chart. `All
-classification tasks` uses the macro-average score and summed cost and token
-usage described above; a specific task uses that task run's exact-match score
-or mean within-element Spearman correlation, plus its cost and token usage. The
-score column retains the generic `Score` label because the selector
-provides its scope. The line chart connects configurations within each
-published model family and can compare the selected score against cost or total
-tokens. The page uses Observable's native inputs, table, and plot so both views
-react to the same selected row set. The native table's score formatter adds an
-absolute zero-to-one inline bar behind the percentage without changing the
-numeric value used for sorting.
-
-The question explorer selects complete model configurations, ranked by overall
-score, and resolves the task-specific run only after a question is selected.
-Displayed `Qnnn` labels are global ordinals in the explorer's canonical task
-order, not per-task row numbers; task pages label their filtered questions from
-that same combined ordering.
+The question explorer selects complete model configurations and resolves the
+satMutMPRA run after a question is selected. It renders the exact stored prompt
+given to the model alongside the complete response and does not expose the
+measured reference effects in a comparison table.
 Its compact `question-metadata.json` asset is deterministically derived from
-committed task sources and provenance manifests. Classification tasks normally
-supply `source_metadata.vep_consequence`; other tasks may supply an appropriate
-display label such as `source_metadata.model_visible_name`. This display-only
+committed task sources and provenance manifests. satMutMPRA supplies its
+element label as `source_metadata.display_name`. This display-only
 metadata is never added to model-visible prompts and does not change question
 or historical result fingerprints.
 

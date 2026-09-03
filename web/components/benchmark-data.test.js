@@ -113,12 +113,12 @@ test("overall leaderboard macro-averages complete task profiles", () => {
     aggregation_method: "task_macro_average_v0",
     evaluation_profiles: [
       {
-        task_family: "clinvar",
-        evaluation_profile: "clinvar:clinvar-snv-v1@1.0"
+        task_family: "synthetic_alpha",
+        evaluation_profile: "synthetic_alpha:synthetic_alpha-snv-v1@1.0"
       },
       {
-        task_family: "vep_most_severe_consequence",
-        evaluation_profile: "vep_most_severe_consequence:vep-most-severe-v1@1.2"
+        task_family: "synthetic_beta",
+        evaluation_profile: "synthetic_beta:synthetic-beta-v1@1.2"
       }
     ]
   };
@@ -127,15 +127,15 @@ test("overall leaderboard macro-averages complete task profiles", () => {
       accuracy: 0.75,
       configurationKey: `cfg-${"1".repeat(64)}`,
       cost: 0.5,
-      evaluationProfile: "clinvar:clinvar-snv-v1@1.0",
-      runId: "medium-clinvar",
+      evaluationProfile: "synthetic_alpha:synthetic_alpha-snv-v1@1.0",
+      runId: "medium-synthetic_alpha",
       tokens: 300
     }),
     run({
       accuracy: 0.25,
       configurationKey: `cfg-${"2".repeat(64)}`,
       cost: 0.25,
-      evaluationProfile: "vep_most_severe_consequence:vep-most-severe-v1@1.2",
+      evaluationProfile: "synthetic_beta:synthetic-beta-v1@1.2",
       provider: "Another routed provider",
       runId: "medium-consequence",
       tokens: 200
@@ -144,7 +144,7 @@ test("overall leaderboard macro-averages complete task profiles", () => {
       accuracy: 0.9,
       configurationKey: `cfg-${"3".repeat(64)}`,
       effort: "low",
-      evaluationProfile: "vep_most_severe_consequence:vep-most-severe-v1@1.2",
+      evaluationProfile: "synthetic_beta:synthetic-beta-v1@1.2",
       runId: "low-consequence-only"
     })
   ], leaderboard);
@@ -156,10 +156,10 @@ test("overall leaderboard macro-averages complete task profiles", () => {
   assert.equal(rows[0].model_cell.provider, "OpenRouter auto-routing");
   assert.deepEqual(
     rows[0].task_scores.map((task) => [task.task_family, task.accuracy]),
-    [["clinvar", 0.75], ["vep_most_severe_consequence", 0.25]]
+    [["synthetic_alpha", 0.75], ["synthetic_beta", 0.25]]
   );
   assert.deepEqual(rows[0].runs.map((candidate) => candidate.run_id), [
-    "medium-clinvar",
+    "medium-synthetic_alpha",
     "medium-consequence"
   ]);
 });
@@ -176,10 +176,10 @@ test("leaderboard scope switches score, tokens, and cost to one task", () => {
   const leaderboard = {
     aggregation_method: "task_macro_average_v0",
     evaluation_profiles: [
-      {task_family: "clinvar", evaluation_profile: "clinvar:clinvar-snv-v1@1.0"},
+      {task_family: "synthetic_alpha", evaluation_profile: "synthetic_alpha:synthetic_alpha-snv-v1@1.0"},
       {
-        task_family: "vep_most_severe_consequence",
-        evaluation_profile: "vep_most_severe_consequence:vep-most-severe-v1@1.2"
+        task_family: "synthetic_beta",
+        evaluation_profile: "synthetic_beta:synthetic-beta-v1@1.2"
       }
     ]
   };
@@ -187,15 +187,15 @@ test("leaderboard scope switches score, tokens, and cost to one task", () => {
     run({
       accuracy: 0.8,
       cost: 0.6,
-      evaluationProfile: "clinvar:clinvar-snv-v1@1.0",
-      runId: "model-clinvar",
+      evaluationProfile: "synthetic_alpha:synthetic_alpha-snv-v1@1.0",
+      runId: "model-synthetic_alpha",
       tokens: 600
     }),
     run({
       accuracy: 0.2,
       configurationKey: `cfg-${"1".repeat(64)}`,
       cost: 0.4,
-      evaluationProfile: "vep_most_severe_consequence:vep-most-severe-v1@1.2",
+      evaluationProfile: "synthetic_beta:synthetic-beta-v1@1.2",
       runId: "model-consequence",
       tokens: 400
     })
@@ -210,7 +210,7 @@ test("leaderboard scope switches score, tokens, and cost to one task", () => {
   const consequence = leaderboardRowsForScope(
     runs,
     leaderboard,
-    "vep_most_severe_consequence"
+    "synthetic_beta"
   );
   assert.equal(consequence.length, 1);
   assert.equal(consequence[0].accuracy, 0.2);
@@ -220,15 +220,15 @@ test("leaderboard scope switches score, tokens, and cost to one task", () => {
   assert.deepEqual(leaderboardRowsForScope(runs, leaderboard, "unknown"), []);
 });
 
-test("task selectors use the benchmark presentation order", () => {
+test("task ordering keeps satMutMPRA first", () => {
   assert.deepEqual(
     orderTaskFamilies([
       "satmut_mpra",
-      "clinvar",
+      "synthetic_alpha",
       "future_task",
-      "vep_most_severe_consequence"
+      "synthetic_beta"
     ]),
-    ["vep_most_severe_consequence", "clinvar", "satmut_mpra", "future_task"]
+    ["satmut_mpra", "future_task", "synthetic_alpha", "synthetic_beta"]
   );
 });
 
@@ -266,8 +266,8 @@ test("classification overall excludes ranking but model selection retains its ru
     aggregation_method: "classification_task_macro_average_v0",
     evaluation_profiles: [
       {
-        task_family: "clinvar",
-        evaluation_profile: "clinvar:clinvar-snv-v1@1.0",
+        task_family: "synthetic_alpha",
+        evaluation_profile: "synthetic_alpha:synthetic_alpha-snv-v1@1.0",
         primary_metric: "exact_match",
         task_type: "multiple_choice"
       },
@@ -282,8 +282,8 @@ test("classification overall excludes ranking but model selection retains its ru
   const runs = [
     run({
       accuracy: 0.75,
-      evaluationProfile: "clinvar:clinvar-snv-v1@1.0",
-      runId: "model-clinvar"
+      evaluationProfile: "synthetic_alpha:synthetic_alpha-snv-v1@1.0",
+      runId: "model-synthetic_alpha"
     }),
     run({
       configurationKey: `cfg-${"1".repeat(64)}`,
@@ -299,7 +299,7 @@ test("classification overall excludes ranking but model selection retains its ru
   const overall = overallLeaderboardRows(runs, leaderboard);
   assert.equal(overall.length, 1);
   assert.equal(overall[0].score, 0.75);
-  assert.deepEqual(overall[0].runs.map((candidate) => candidate.run_id), ["model-clinvar"]);
+  assert.deepEqual(overall[0].runs.map((candidate) => candidate.run_id), ["model-synthetic_alpha"]);
 
   const selections = modelSelectionRows(runs, leaderboard);
   assert.equal(selections.length, 1);
@@ -311,8 +311,8 @@ test("model selection includes a configuration with only a complete ranking run"
     aggregation_method: "classification_task_macro_average_v0",
     evaluation_profiles: [
       {
-        task_family: "clinvar",
-        evaluation_profile: "clinvar:clinvar-snv-v1@1.0",
+        task_family: "synthetic_alpha",
+        evaluation_profile: "synthetic_alpha:synthetic_alpha-snv-v1@1.0",
         primary_metric: "exact_match",
         task_type: "multiple_choice"
       },
@@ -345,25 +345,25 @@ test("model selection has one best-first row with a task run for each model", ()
   const leaderboard = {
     aggregation_method: "task_macro_average_v0",
     evaluation_profiles: [
-      {task_family: "clinvar", evaluation_profile: "clinvar:clinvar-snv-v1@1.0"},
+      {task_family: "synthetic_alpha", evaluation_profile: "synthetic_alpha:synthetic_alpha-snv-v1@1.0"},
       {
-        task_family: "vep_most_severe_consequence",
-        evaluation_profile: "vep_most_severe_consequence:vep-most-severe-v1@1.2"
+        task_family: "synthetic_beta",
+        evaluation_profile: "synthetic_beta:synthetic-beta-v1@1.2"
       }
     ]
   };
   const specifications = [
-    ["gpt-5.6-luna", "clinvar", 0.55],
+    ["gpt-5.6-luna", "synthetic_alpha", 0.55],
     ["gpt-5.6-luna", "vep", 0.27],
-    ["gpt-5.6-sol", "clinvar", 0.55],
+    ["gpt-5.6-sol", "synthetic_alpha", 0.55],
     ["gpt-5.6-sol", "vep", 0.41]
   ];
   const rows = modelSelectionRows(specifications.map(([model, task, accuracy], index) => run({
     accuracy,
     configurationKey: `cfg-${String(index).repeat(64)}`,
-    evaluationProfile: task === "clinvar"
-      ? "clinvar:clinvar-snv-v1@1.0"
-      : "vep_most_severe_consequence:vep-most-severe-v1@1.2",
+    evaluationProfile: task === "synthetic_alpha"
+      ? "synthetic_alpha:synthetic_alpha-snv-v1@1.0"
+      : "synthetic_beta:synthetic-beta-v1@1.2",
     modelId: `openai/${model}`,
     runId: `${model}-${task}`
   })), leaderboard);
@@ -371,33 +371,34 @@ test("model selection has one best-first row with a task run for each model", ()
   assert.equal(rows.length, 2);
   assert.equal(rows[0].model_cell.model, "GPT 5.6 Sol (medium)");
   assert.equal(rows[0].accuracy, 0.48);
-  assert.equal(runForTask(rows[0], "clinvar").run_id, "gpt-5.6-sol-clinvar");
+  assert.equal(runForTask(rows[0], "synthetic_alpha").run_id, "gpt-5.6-sol-synthetic_alpha");
   assert.equal(
-    runForTask(rows[0], "vep_most_severe_consequence").run_id,
+    runForTask(rows[0], "synthetic_beta").run_id,
     "gpt-5.6-sol-vep"
   );
 });
 
-test("question explorer puts consequence classification before ClinVar", () => {
+test("question explorer puts satMutMPRA before unknown task families", () => {
   const questions = [
-    {question_id: "clinvar-2", metadata: {task_family: "clinvar"}},
+    {question_id: "synthetic_alpha-2", metadata: {task_family: "synthetic_alpha"}},
+    {question_id: "satmut-1", metadata: {task_family: "satmut_mpra"}},
     {question_id: "future-1", metadata: {task_family: "future_task"}},
     {
       question_id: "consequence-2",
-      metadata: {task_family: "vep_most_severe_consequence"}
+      metadata: {task_family: "synthetic_beta"}
     },
-    {question_id: "clinvar-1", metadata: {task_family: "clinvar"}},
+    {question_id: "synthetic_alpha-1", metadata: {task_family: "synthetic_alpha"}},
     {
       question_id: "consequence-1",
-      metadata: {task_family: "vep_most_severe_consequence"}
+      metadata: {task_family: "synthetic_beta"}
     }
   ];
 
   assert.deepEqual(
     orderQuestionsForExplorer(questions).map((question) => question.question_id),
-    ["consequence-1", "consequence-2", "clinvar-1", "clinvar-2", "future-1"]
+    ["satmut-1", "future-1", "synthetic_alpha-1", "synthetic_alpha-2", "consequence-1", "consequence-2"]
   );
-  assert.equal(questions[0].question_id, "clinvar-2");
+  assert.equal(questions[0].question_id, "synthetic_alpha-2");
 });
 
 test("question explorer preserves the current visible question across control changes", () => {

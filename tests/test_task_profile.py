@@ -9,14 +9,6 @@ from vepbench.task_profile import load_task_profile
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_consequence_task_owns_completion_ceiling() -> None:
-    profile = load_task_profile(ROOT / "configs/tasks/vep-most-severe-consequence.yaml")
-
-    assert profile.task_family == "vep_most_severe_consequence"
-    assert profile.generation_parameters == {"max_tokens": 128_000}
-    assert len(profile.content_sha256) == 64
-
-
 def test_ranking_task_uses_shared_completion_ceiling() -> None:
     profile = load_task_profile(ROOT / "configs/tasks/satmut-mpra.yaml")
 
@@ -71,7 +63,7 @@ def test_task_profile_rejects_run_level_completion_override(
                 "--model-profile",
                 str(ROOT / "configs/models/openai-gpt-5.6-luna-low.yaml"),
                 "--task-profile",
-                str(ROOT / "configs/tasks/vep-most-severe-consequence.yaml"),
+                str(ROOT / "configs/tasks/satmut-mpra.yaml"),
                 "--max-tokens",
                 "4096",
             ]

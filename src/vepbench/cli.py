@@ -1,7 +1,6 @@
 """VEP-bench command-line interface."""
 
 import argparse
-import json
 import os
 import re
 import shutil
@@ -26,6 +25,7 @@ from .site import build_question_metadata, build_site
 from .task_profile import load_task_profile
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_QUESTIONS = PROJECT_ROOT / ".vepbench/satmut-mpra-questions.jsonl"
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -36,12 +36,12 @@ def build_parser() -> argparse.ArgumentParser:
     build.add_argument(
         "--source",
         type=Path,
-        default=PROJECT_ROOT / "data/sources/chr17-vep-consequences.jsonl",
+        default=PROJECT_ROOT / "data/sources/satmut-mpra-cadd-v1.7.jsonl",
     )
     build.add_argument(
         "--template",
         type=Path,
-        default=PROJECT_ROOT / "templates/vep_most_severe_consequence.json",
+        default=PROJECT_ROOT / "templates/satmut_mpra.json",
     )
     build.add_argument(
         "--schema",
@@ -51,7 +51,7 @@ def build_parser() -> argparse.ArgumentParser:
     build.add_argument(
         "--output",
         type=Path,
-        default=PROJECT_ROOT / ".vepbench/questions.jsonl",
+        default=DEFAULT_QUESTIONS,
     )
 
     evaluate = subparsers.add_parser(
@@ -67,7 +67,7 @@ def build_parser() -> argparse.ArgumentParser:
     evaluate.add_argument(
         "--questions",
         type=Path,
-        default=PROJECT_ROOT / ".vepbench/questions.jsonl",
+        default=DEFAULT_QUESTIONS,
     )
     evaluate.add_argument(
         "--task-profile",
@@ -139,7 +139,7 @@ def build_parser() -> argparse.ArgumentParser:
     batch_collect.add_argument(
         "--questions",
         type=Path,
-        default=PROJECT_ROOT / ".vepbench/questions.jsonl",
+        default=DEFAULT_QUESTIONS,
     )
     batch_collect.add_argument(
         "--schema",
@@ -158,7 +158,7 @@ def build_parser() -> argparse.ArgumentParser:
     batch_merge.add_argument(
         "--questions",
         type=Path,
-        default=PROJECT_ROOT / ".vepbench/questions.jsonl",
+        default=DEFAULT_QUESTIONS,
     )
     batch_merge.add_argument(
         "--schema",
@@ -393,7 +393,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 0 if merged.is_complete else 1
         if args.command == "version-build":
             manifest = build_version(
-                questions_path=args.questions or [PROJECT_ROOT / ".vepbench/questions.jsonl"],
+                questions_path=args.questions or [DEFAULT_QUESTIONS],
                 results_dir=args.results_dir or [PROJECT_ROOT / ".vepbench/results"],
                 result_schema_path=args.result_schema,
                 schemas_dir=args.schemas_dir,
@@ -463,22 +463,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             with tempfile.TemporaryDirectory(prefix="vepbench-observable-") as temporary:
                 project = Path(temporary)
                 source = project / "web"
-                consequence_manifest = json.loads(
-                    (PROJECT_ROOT / "data/sources/chr17-vep-consequences.manifest.json").read_text(
-                        encoding="utf-8"
-                    )
-                )
                 question_metadata = build_question_metadata(
                     source_paths=[
-                        PROJECT_ROOT / "data/sources/chr17-vep-consequences.jsonl",
-                        PROJECT_ROOT / "data/sources/clinvar-july-2026.jsonl",
                         PROJECT_ROOT / "data/sources/satmut-mpra-cadd-v1.7.jsonl",
-                    ],
-                    consequence_overrides={
-                        "vep_most_severe_consequence": consequence_manifest[
-                            "record_source_consequences"
-                        ]
-                    },
+                    ]
                 )
                 manifest = build_site(
                     assets_dir=PROJECT_ROOT / "web",

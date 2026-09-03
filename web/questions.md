@@ -7,7 +7,6 @@ import {
   entriesForQuestions,
   entryForAnswer,
   formatInteger,
-  formatPercent,
   outcomeBadge,
   questionRecord
 } from "./components/vepbench.js";
@@ -38,10 +37,11 @@ const [runsState, questionState, metadataState] = await Promise.all([
 const parameters = new URLSearchParams(location.search);
 const requestedQuestionId = parameters.get("question");
 const requestedRunId = parameters.get("run");
+const taskFamily = "satmut_mpra";
 const modelRows = modelSelectionRows(
   runsState.document.runs,
   runsState.document.leaderboard
-);
+).filter((row) => runForTask(row, taskFamily));
 const requestedModelRow = modelRows.find((row) =>
   row.runs.some((run) => run.run_id === requestedRunId)
 );
@@ -51,12 +51,9 @@ const missingModel = requestedRunId && !requestedModelRow
 const availableModelOptions = modelRows.map((row) => ({
   kind: "model",
   label: `${row.model_cell.model} · ${row.model_cell.provider} · ${
-    row.accuracy !== null
-      ? `${formatPercent(row.accuracy)} classification overall`
-      : row.primary_metric === "spearman" && row.score !== null
-        ? `${row.score.toFixed(3)} Spearman ρ`
-        : "complete task run"
-  }`,
+    runForTask(row, taskFamily)?.metrics?.mean_spearman_rho?.toFixed(3)
+      ?? "—"
+  } Spearman ρ`,
   row
 }));
 const noModels = {kind: "empty", label: "No complete model configurations available"};
@@ -68,11 +65,6 @@ const modelOptions = [
 const defaultModelOption = modelOptions.find(
   (option) => option.kind === "model" && option.row === requestedModelRow
 ) ?? missingModel ?? availableModelOptions[0] ?? noModels;
-const taskName = (taskFamily) => ({
-  clinvar: "ClinVar",
-  satmut_mpra: "satMutMPRA ranking",
-  vep_most_severe_consequence: "Consequence classification"
-})[taskFamily] ?? taskFamily;
 const resultLabel = (outcome) => outcome?.result_type !== undefined
   ? resultTypeLabel(outcome.result_type, outcome.correct)
   : outcome?.valid === true
@@ -81,17 +73,14 @@ const resultLabel = (outcome) => outcome?.result_type !== undefined
       ? "Format failure"
       : "Not scored";
 const questionEntries = entriesForQuestions(
-  orderQuestionsForExplorer(questionState.document.questions)
+  orderQuestionsForExplorer(questionState.document.questions).filter(
+    (question) => question.metadata.task_family === taskFamily
+  )
 ).map((entry) => ({
   ...entry,
-  task: taskName(entry.question.metadata.task_family),
-  consequence: (
+  element: (
     metadataState.document.by_task_family
-      ?.[entry.question.metadata.task_family]
-      ?.[entry.question.provenance.source_record_id]
-      ?.consequence
-    ?? metadataState.document.by_task_family
-      ?.[entry.question.metadata.task_family]
+      ?.[taskFamily]
       ?.[entry.question.provenance.source_record_id]
       ?.element
     ?? "—"
@@ -105,7 +94,7 @@ const knownQuestionIds = new Set(questionEntries.map((entry) => entry.question_i
 
 # Questions
 
-Inspect a benchmark question alongside the matching response from a selected model.
+Inspect the exact satMutMPRA prompt given to a model alongside its complete response.
 
 ```js
 if (runsState.error || questionState.error) {
@@ -125,26 +114,17 @@ const controlsInput = Inputs.form({
   }),
   search: Inputs.search(questionEntries, {
     label: "Find a question",
-    placeholder: "Question ID, variant, consequence, or task…",
-    columns: ["question_id", "variant", "consequence", "task"]
+    placeholder: "Question ID or element…",
+    columns: ["question_id", "variant", "element"]
   }),
-  task: Inputs.select([
-    "All tasks",
-    ...new Set(questionEntries.map((entry) => entry.task))
-  ], {label: "Task"}),
-  consequence: Inputs.select([
-    "All consequences",
-    ...[...new Set(questionEntries.map((entry) => entry.consequence))]
-      .filter((consequence) => consequence !== "—")
+  element: Inputs.select([
+    "All elements",
+    ...[...new Set(questionEntries.map((entry) => entry.element))]
+      .filter((element) => element !== "—")
       .sort()
-  ], {label: "Consequence / element"}),
+  ], {label: "Element"}),
   result: Inputs.select([
     "All results",
-    "Correct",
-    "Incorrect",
-    "Refusal",
-    "Token limit",
-    "Format error",
     "Valid prediction",
     "Format failure"
   ], {label: "Result"})
@@ -202,10 +182,9 @@ const entriesWithResults = controls.search.map((entry) => ({
     : "Not evaluated"
 }));
 const visibleEntries = entriesWithResults.filter((entry) =>
-  (controls.task === "All tasks" || entry.task === controls.task)
-  && (
-    controls.consequence === "All consequences"
-    || entry.consequence === controls.consequence
+  (
+    controls.element === "All elements"
+    || entry.element === controls.element
   )
   && (controls.result === "All results" || entry.outcome === controls.result)
 );
@@ -220,12 +199,10 @@ const defaultQuestion = defaultQuestionForExplorer(visibleEntries, {
 
 ```js
 const questionTable = Inputs.table(visibleEntries, {
-  columns: ["question_label", "task", "variant", "consequence", "outcome"],
+  columns: ["question_label", "element", "outcome"],
   header: {
     question_label: "Question",
-    task: "Task",
-    variant: "Source record",
-    consequence: "Consequence / element",
+    element: "Element",
     outcome: "Result"
   },
   format: {
@@ -233,9 +210,7 @@ const questionTable = Inputs.table(visibleEntries, {
   },
   width: {
     question_label: 70,
-    task: 190,
-    variant: 170,
-    consequence: 230,
+    element: 230,
     outcome: 100
   },
   multiple: false,
@@ -286,7 +261,7 @@ const recordEntry = selected
         run,
         rawArchiveUrl
       ),
-      consequence: selected.consequence
+      element: selected.element
     }
   : null;
 ```

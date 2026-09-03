@@ -1,4 +1,4 @@
-# satMutMPRA regulatory-effect ranking
+# satMutMPRA
 
 This task asks a model to predict the signed reporter-activity effect of 50
 variants from one saturation-mutagenesis MPRA, then evaluates the ranking and
@@ -6,18 +6,29 @@ relative numerical spacing of those predictions within the regulatory element.
 
 - **Task family:** `satmut_mpra`
 - **Question schema:** 2.0
-- **Prompt version:** 1.0
+- **Prompt version:** 1.1
 - **Size:** 16 questions, one per regulatory element and 50 candidates per question
 - **Primary metric:** mean within-element Spearman rank correlation
 - **Secondary metrics:** mean within-element Pearson correlation and valid-output rate
 
 ## Model-visible input and output
 
-Every prompt contains the regulatory-element name and class, assay cell line,
-experimental context, the complete uppercase reference sequence in its physical
-reporter-construct orientation, and a compact VCF table with `CHROM`, `POS`,
+Every prompt contains the assay cell line, measurement time and perturbation,
+physical reporter configuration, the complete uppercase mutagenized insert in
+reporter-construct orientation, any fixed downstream sequence needed to define
+the insert-to-reporter interface, and a compact VCF table with `CHROM`, `POS`,
 opaque candidate ID, `REF`, and `ALT`. FASTA sequence lines contain 80 bases
-except the final line.
+except the final line. Element and gene names, source-study labels, accessions,
+genomic coordinates, and vector names are retained as provenance or site
+display metadata but omitted from the model prompt.
+
+For promoter constructs, the mutagenized insert directly drives luciferase and
+the prompt states that no separate minimal promoter is present. For standard
+enhancer constructs, the prompt includes the complete fixed 54 bp minimal
+promoter sequence between the insert and luciferase. For ZRS, it includes the
+complete fixed 143 bp sequence between the mutagenized insert and luciferase.
+The whole plasmid backbone is excluded because it is shared assay machinery,
+not local regulatory context needed to interpret the tested sequence.
 
 Every VCF record uses the synthetic contig `element`, with 1-based
 positions relative to the first base of the displayed sequence. Genomic
@@ -56,7 +67,7 @@ Every CADD row is independently cross-checked against a pinned
 alleles, effect after CADD's decimal rounding, p-value, and barcode count. The
 crosswalk is:
 
-| CADD label | MaveDB score set | Model-visible element |
+| CADD label | MaveDB score set | Display element |
 | --- | --- | --- |
 | F9 | `urn:mavedb:00000015-a-1` | F9 promoter |
 | GP1BA | `urn:mavedb:00000017-a-1` | GP1BB promoter |
@@ -75,10 +86,11 @@ crosswalk is:
 | ZFAND3 | `urn:mavedb:00000033-a-1` | ZFAND3 enhancer |
 | ZRSh13 | `urn:mavedb:00000034-a-1` | ZRS enhancer, Hoxd13 |
 
-`GP1BA` is the historical CADD filename; the matched MaveDB target and prompt
-correctly call the assayed sequence the GP1BB promoter. The exact mapping,
-upstream digests, retrieval date, MaveDB modification dates, and validation
-counts are retained in the
+`GP1BA` is the historical CADD filename; the matched MaveDB target and site
+display metadata correctly call the assayed sequence the GP1BB promoter. The
+exact mapping, reporter vector and GenBank accession, transfection time,
+perturbation, upstream digests, retrieval date, MaveDB modification dates, and
+validation counts are retained in the
 [`source manifest`](../../data/sources/satmut-mpra-cadd-v1.7.manifest.json).
 
 ## Reference validation and one excluded discrepancy
