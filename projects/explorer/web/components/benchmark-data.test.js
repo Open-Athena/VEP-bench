@@ -5,6 +5,7 @@ import test from "node:test";
 import {
   answerPath,
   defaultQuestionForExplorer,
+  displayScore,
   fetchAnswer,
   fetchAnswerIfAvailable,
   fetchJson,
@@ -22,6 +23,14 @@ import {
   resultTypeLabel,
   runForTask
 } from "./benchmark-data.js";
+
+test("display scores use a fixed zero-to-one percentage domain", () => {
+  assert.equal(displayScore(-0.22), 0);
+  assert.equal(displayScore(0.42), 0.42);
+  assert.equal(displayScore(1.2), 1);
+  assert.equal(displayScore(null), null);
+  assert.equal(displayScore(Number.NaN), null);
+});
 
 function run({
   accuracy = 0.5,

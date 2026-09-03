@@ -11,6 +11,7 @@ import {
 } from "./components/vepbench.js";
 import {
   artifactUrl,
+  displayScore,
   fetchJson,
   leaderboardRowsForScope,
   orderTaskFamilies
@@ -82,13 +83,7 @@ const rows = leaderboardRowsForScope(
   aggregation,
   selectedTaskFamily
 );
-const selectedProfile = aggregation?.evaluation_profiles?.find(
-  (profile) => profile.task_family === selectedTaskFamily
-);
-const selectedPrimaryMetric = selectedProfile?.primary_metric ?? "exact_match";
-const formatScore = (value) => selectedPrimaryMetric === "spearman"
-  ? (value === null ? "—" : value.toFixed(3))
-  : formatPercent(value);
+const formatScore = (value) => formatPercent(displayScore(value));
 ```
 
 Showing the primary score for **${selectedTask.label}**.
@@ -96,7 +91,7 @@ Showing the primary score for **${selectedTask.label}**.
 ```js
 const tableRows = rows.map((row) => ({
   model: row.model_cell.model,
-  score: row.score,
+  score: displayScore(row.score),
   release_date: row.release_date,
   tokens: row.tokens,
   cost: row.cost,
@@ -104,8 +99,7 @@ const tableRows = rows.map((row) => ({
 }));
 function scoreBar(value) {
   if (!Number.isFinite(value)) return "—";
-  const normalized = selectedPrimaryMetric === "spearman" ? (value + 1) / 2 : value;
-  const width = Math.max(0, Math.min(1, normalized)) * 100;
+  const width = Math.max(0, Math.min(1, value)) * 100;
   return html`<span class="vepbench-score-cell" style=${`--vepbench-score-width: ${width}%`}>
     <span class="vepbench-score-bar" aria-hidden="true"></span>
     <span class="vepbench-score-value">${formatScore(value)}</span>
