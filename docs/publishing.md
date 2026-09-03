@@ -2,16 +2,24 @@
 
 Evaluation never uploads automatically. Publication is a separate,
 review-before-apply workflow scoped to one version prefix in the public Hugging
-Face Storage Bucket.
+Face Storage Bucket. Install its private workspace project; the `bucket` extra
+is needed only for remote Hugging Face operations:
+
+```bash
+uv sync --locked --package vepbench-publishing --extra bucket
+```
 
 ## Build and validate a named version
 
 ```bash
-uv run --locked vepbench version-build \
+uv run --no-sync vepbench-publish version build \
+  --config projects/publishing/config/publishing.yaml \
   --version prompt-redesign \
+  --questions .vepbench/questions/satmut-mpra.jsonl \
+  --results-dir .vepbench/publication-results/satmut-mpra \
   --output /tmp/vepbench-publication
 
-uv run --locked vepbench version-validate \
+uv run --no-sync vepbench-publish version validate \
   --version prompt-redesign \
   --root /tmp/vepbench-publication
 ```
@@ -19,18 +27,20 @@ uv run --locked vepbench version-validate \
 The version builder joins each result to its exact generated task question set
 and validates schemas, fingerprints, run completeness, and configuration
 identity.
-It uses `configs/models/catalog.json` by default for leaderboard family and
-release-date metadata, and aggregates provider-reported usage into total tokens
-and total USD cost per run. Every published model must have a catalog entry;
-use `--model-catalog` to select another reviewed catalog. Named versions use
-lowercase slugs. Only `main` is official.
+The publishing config selects the reviewed bucket and model catalog, resolving
+its catalog path relative to the YAML file. The catalog supplies leaderboard
+family and release-date metadata. `--model-catalog` can select another reviewed
+catalog for an experiment. Publication aggregates provider-reported usage into
+total tokens and total USD cost per run. Every published model must have a
+catalog entry. Named versions use lowercase slugs. Only `main` is official.
 
 For satMutMPRA, name the question set and curated result staging directory explicitly:
 
 ```bash
-uv run --locked vepbench version-build \
+uv run --no-sync vepbench-publish version build \
+  --config projects/publishing/config/publishing.yaml \
   --version satmut-mpra-prompt-v1-1 \
-  --questions .vepbench/satmut-mpra-questions.jsonl \
+  --questions .vepbench/questions/satmut-mpra.jsonl \
   --results-dir .vepbench/publication-results/satmut-mpra \
   --output /tmp/vepbench-publication
 ```
@@ -45,7 +55,8 @@ superseded runs.
 With `HF_TOKEN` set, create a non-mutating plan for exactly one version prefix:
 
 ```bash
-uv run --locked vepbench bucket-plan \
+uv run --no-sync vepbench-publish bucket plan \
+  --config projects/publishing/config/publishing.yaml \
   --root /tmp/vepbench-publication \
   --version prompt-redesign \
   --plan /tmp/prompt-redesign.plan.jsonl
@@ -54,7 +65,7 @@ uv run --locked vepbench bucket-plan \
 Review the JSONL plan, then apply it with an exact destination confirmation:
 
 ```bash
-uv run --locked vepbench bucket-apply \
+uv run --no-sync vepbench-publish bucket apply \
   --plan /tmp/prompt-redesign.plan.jsonl \
   --confirm-destination \
     hf://buckets/open-athena/VEP-bench/versions/prompt-redesign
@@ -69,19 +80,20 @@ Replacing protected `main` requires `--promote-main` on both bucket commands.
 First derive a complete future `main` tree from a validated named version:
 
 ```bash
-uv run --locked vepbench version-promote \
+uv run --no-sync vepbench-publish version promote \
   --source-root /tmp/vepbench-publication \
   --source-version prompt-redesign \
   --output /tmp/vepbench-main
 
-uv run --locked vepbench bucket-plan \
+uv run --no-sync vepbench-publish bucket plan \
+  --config projects/publishing/config/publishing.yaml \
   --root /tmp/vepbench-main \
   --version main \
   --promote-main \
   --plan /tmp/main.plan.jsonl
 ```
 
-Apply that reviewed plan with `bucket-apply --promote-main` and the confirmed
+Apply that reviewed plan with `bucket apply --promote-main` and the confirmed
 `versions/main` destination. Promotion removes the old readiness marker before
 updating shared files, scopes additions and stale-file deletions to
 `versions/main/`, uploads `manifest.json` last, and verifies remote paths,
@@ -126,7 +138,11 @@ order mismatch first.
 Build the explorer locally with:
 
 ```bash
-uv run --locked vepbench site --output /tmp/vepbench-site
+uv sync --locked --package vepbench-explorer
+npm ci --prefix projects/explorer
+uv run --no-sync vepbench-site build \
+  --config projects/explorer/config/site.yaml \
+  --output /tmp/vepbench-site
 ```
 
 The explorer is a read-only static site. It loads `versions/main/runs.json`

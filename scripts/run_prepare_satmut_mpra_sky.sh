@@ -39,10 +39,10 @@ scp \
   "${cluster}:~/sky_workdir/data/sources/satmut-mpra-cadd-v1.7.manifest.json" \
   data/sources/satmut-mpra-cadd-v1.7.manifest.json
 
-uv run --locked python scripts/validate_satmut_mpra_artifacts.py
-uv run --locked vepbench build \
-  --source data/sources/satmut-mpra-cadd-v1.7.jsonl \
-  --template templates/satmut_mpra.json \
+uv run --locked --package vepbench-task-satmut-mpra \
+  vepbench-satmut-mpra validate
+uv run --locked --package vepbench vepbench questions build \
+  --task configs/tasks/satmut-mpra/task.yaml \
   --output .vepbench/satmut-mpra-questions.jsonl
 
 sky down --yes "${cluster}"

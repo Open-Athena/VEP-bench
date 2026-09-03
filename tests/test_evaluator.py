@@ -10,8 +10,9 @@ from typing import Any
 import pytest
 from jsonschema import Draft202012Validator, FormatChecker
 
-from vepbench.builder import BuildError, build_file, canonical_json, read_jsonl
-from vepbench.evaluator import (
+from vepbench.artifacts import canonical_json, read_jsonl
+from vepbench.errors import BuildError
+from vepbench.evaluation.core import (
     OpenRouterTransport,
     ProviderError,
     classify_result_type,
@@ -21,14 +22,15 @@ from vepbench.evaluator import (
     score_ranking,
     validate_result,
 )
+from vepbench.questions.builder import build_file
 
 ROOT = Path(__file__).resolve().parents[1]
 QUESTIONS = ROOT / "tests/fixtures/synthetic-questions.jsonl"
-QUESTION_SCHEMA = ROOT / "schemas/question.schema.json"
-RESULT_SCHEMA = ROOT / "schemas/result.schema.json"
+QUESTION_SCHEMA = ROOT / "src/vepbench/schemas/question.schema.json"
+RESULT_SCHEMA = ROOT / "src/vepbench/schemas/result.schema.json"
 FIXED_TIME = datetime(2026, 8, 28, 12, 0, tzinfo=UTC)
 RANKING_SOURCE = ROOT / "tests/fixtures/synthetic-ranking-source.jsonl"
-RANKING_TEMPLATE = ROOT / "templates/satmut_mpra.json"
+RANKING_TEMPLATE = ROOT / "configs/tasks/satmut-mpra/prompt.yaml"
 
 
 class FakeTransport:

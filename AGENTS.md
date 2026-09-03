@@ -49,7 +49,8 @@ These instructions apply to the entire VEP-bench repository.
 
 ## Data invariants
 
-- Treat `schemas/question.schema.json` and `schemas/result.schema.json` as the
+- Treat `src/vepbench/schemas/question.schema.json` and
+  `src/vepbench/schemas/result.schema.json` as the
   public on-disk contracts.
 - Version a schema when a change is not backward-compatible, and update its
   examples and tests in the same change.

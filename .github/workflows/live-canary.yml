@@ -2,7 +2,7 @@ name: Live explorer canary
 
 on:
   workflow_run:
-    workflows: [Test and deploy Pages]
+    workflows: [Website]
     types: [completed]
   schedule:
     - cron: "17 6 * * *"
@@ -32,7 +32,7 @@ jobs:
 
       - name: Check deployed explorer
         run: >-
-          bash scripts/browser_live_canary.sh
+          bash projects/explorer/scripts/browser_live_canary.sh
           https://openathena.ai/VEP-bench
           browser-live-canary
 

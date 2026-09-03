@@ -5,31 +5,47 @@ description = "Tool-free genetic variant effect prediction benchmark"
 readme = "README.md"
 requires-python = "==3.14.*"
 dependencies = [
-    "huggingface-hub[hf-xet]>=1.6,<2",
+    "cyclopts>=4.22,<5",
     "jsonschema>=4.23,<5",
     "pyyaml>=6.0,<7",
     "rfc3339-validator>=0.1.4,<1",
-    "zstandard>=0.23,<1",
 ]
 
 [project.scripts]
 vepbench = "vepbench.cli:main"
 
 [dependency-groups]
-prepare = [
-    "fsspec[http]>=2026.5.0,<2027",
-    "pyfaidx>=0.9,<1",
-]
-dev = [
-    { include-group = "prepare" },
-    "mypy>=1.18,<3",
-    "pre-commit>=4.3,<5",
+test = [
     "pytest>=8.3,<10",
     "pytest-cov>=7,<8",
+]
+quality = [
+    "mypy>=1.18,<3",
+    "pre-commit>=4.3,<5",
     "ruff>=0.16.5",
     "types-jsonschema>=4.25,<5",
     "types-pyyaml>=6.0.12,<7",
 ]
+dev = [
+    { include-group = "test" },
+    { include-group = "quality" },
+]
+
+[tool.uv]
+default-groups = []
+
+[tool.uv.workspace]
+members = [
+    "projects/explorer",
+    "projects/publishing",
+    "tasks/satmut-mpra",
+]
+
+[tool.uv.sources]
+vepbench = { workspace = true }
+vepbench-explorer = { workspace = true }
+vepbench-publishing = { workspace = true }
+vepbench-task-satmut-mpra = { workspace = true }
 
 [build-system]
 requires = ["hatchling>=1.27"]
@@ -48,7 +64,12 @@ select = ["B", "C4", "E", "F", "I", "RUF", "SIM", "UP"]
 
 [tool.mypy]
 python_version = "3.14"
-files = ["src/vepbench"]
+files = [
+    "src/vepbench",
+    "projects/explorer/src",
+    "projects/publishing/src",
+    "tasks/satmut-mpra/src",
+]
 check_untyped_defs = true
 disallow_untyped_defs = true
 no_implicit_optional = true

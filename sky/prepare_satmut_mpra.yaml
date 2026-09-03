@@ -10,8 +10,7 @@ workdir: .
 
 setup: |
   python3 -m pip install --user uv==0.12.5
-  ~/.local/bin/uv sync --locked --group prepare
+  ~/.local/bin/uv sync --locked --package vepbench-task-satmut-mpra
 
 run: |
-  ~/.local/bin/uv run --locked --group prepare \
-    python scripts/prepare_satmut_mpra.py
+  ~/.local/bin/uv run --no-sync vepbench-satmut-mpra prepare

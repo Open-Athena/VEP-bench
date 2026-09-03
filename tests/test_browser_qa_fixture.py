@@ -3,16 +3,17 @@ import json
 from pathlib import Path
 
 import pytest
+from vepbench_explorer.browser_qa import DEFAULT_PREDICTION, DEFAULT_QUESTION_ID, prepare_fixture
+from vepbench_publishing.publication import validate_version
 
-from vepbench.browser_qa import DEFAULT_PREDICTION, DEFAULT_QUESTION_ID, prepare_fixture
-from vepbench.builder import build_questions, canonical_json, load_template, read_jsonl
-from vepbench.publication import validate_version
+from vepbench.artifacts import canonical_json, read_jsonl
+from vepbench.questions.builder import build_questions, load_template
 
 ROOT = Path(__file__).resolve().parents[1]
 QUESTIONS = ROOT / "tests/fixtures/synthetic-questions.jsonl"
 PRODUCTION_SOURCE = ROOT / "data/sources/satmut-mpra-cadd-v1.7.jsonl"
-PRODUCTION_TEMPLATE = ROOT / "templates/satmut_mpra.json"
-QUESTION_SCHEMA = ROOT / "schemas/question.schema.json"
+PRODUCTION_TEMPLATE = ROOT / "configs/tasks/satmut-mpra/prompt.yaml"
+QUESTION_SCHEMA = ROOT / "src/vepbench/schemas/question.schema.json"
 
 
 def test_browser_qa_defaults_match_production_question_set() -> None:

@@ -3,23 +3,40 @@
 Evaluation is an explicit local operation through OpenRouter. It is never run
 by tests or CI, and the credential is read only from `OPENROUTER_API_KEY`.
 
-## Build questions
+## Install and fetch questions
 
-The default build targets satMutMPRA:
-
-```bash
-uv run --locked vepbench build
-```
-
-This writes `.vepbench/satmut-mpra-questions.jsonl`. The command also accepts
-explicit `--source`, `--template`, `--schema`, and `--output` paths:
+The default locked sync installs only the evaluator runtime. It does not install
+the explorer, publishing, Hugging Face, or task-preparation dependencies:
 
 ```bash
-uv run --locked vepbench build \
-  --source data/sources/satmut-mpra-cadd-v1.7.jsonl \
-  --template templates/satmut_mpra.json \
-  --output .vepbench/satmut-mpra-questions.jsonl
+uv sync --locked
 ```
+
+`evaluate` fetches and verifies the published `main` question set when
+`--questions` is omitted. To populate or inspect the content-addressed cache
+without evaluating a model, run:
+
+```bash
+uv run --no-sync vepbench questions fetch --version main
+```
+
+The command downloads the version manifest and zstd archive, verifies the
+compressed and decompressed sizes and SHA-256 digests, validates the record
+count, and caches the JSONL under `.vepbench/questions/` with its content digest.
+Use a named version for an immutable historical release, or pass
+`--questions path/to/questions.jsonl` to `evaluate` for an explicit local file.
+
+Maintainers can generate questions from any strict YAML task descriptor:
+
+```bash
+uv run --no-sync vepbench questions build \
+  --task configs/tasks/satmut-mpra/task.yaml \
+  --output .vepbench/questions/satmut-mpra.jsonl
+```
+
+The descriptor selects the question type, prepared source, prompt, and
+task-owned evaluation settings. Its relative paths are resolved from the
+descriptor's directory.
 
 ## Profiles
 
@@ -41,7 +58,7 @@ reproducibility.
 ```bash
 export OPENROUTER_API_KEY=...
 uv run --locked vepbench evaluate \
-  --task-profile configs/tasks/satmut-mpra.yaml \
+  --task configs/tasks/satmut-mpra/task.yaml \
   --model-profile configs/models/openai-gpt-5.6-luna-medium.yaml
 ```
 
@@ -50,8 +67,8 @@ asynchronous Batch API and records state under `.vepbench/batches/`. Refresh and
 collect a submitted batch with:
 
 ```bash
-uv run --locked vepbench batch-status --state <state.json>
-uv run --locked vepbench batch-collect --state <state.json>
+uv run --locked vepbench batch status --state <state.json>
+uv run --locked vepbench batch collect --state <state.json>
 ```
 
 Collection writes canonical scored JSONL in deterministic question order.
@@ -76,7 +93,7 @@ chunks sequentially while retaining the identity of the complete question set:
 
 ```bash
 uv run --locked vepbench evaluate \
-  --task-profile configs/tasks/satmut-mpra.yaml \
+  --task configs/tasks/satmut-mpra/task.yaml \
   --model-profile configs/models/openai-gpt-5.6-sol-medium.yaml \
   --run-id <shared-run-id> --batch-offset 0 --batch-size 7 \
   --batch-state <chunk-01-state.json> --output <chunk-01-results.jsonl>
@@ -87,7 +104,7 @@ Refresh and collect each chunk before submitting the next one, advancing
 the chunk result files into one complete, deterministically ordered run:
 
 ```bash
-uv run --locked vepbench batch-merge \
+uv run --locked vepbench batch merge \
   --output .vepbench/results/<shared-run-id>.jsonl \
   <chunk-01-results.jsonl> <chunk-02-results.jsonl> ...
 ```
@@ -100,7 +117,7 @@ Use direct evaluation when a model has no live batch endpoint:
 
 ```bash
 uv run --locked vepbench evaluate --direct \
-  --task-profile configs/tasks/satmut-mpra.yaml \
+  --task configs/tasks/satmut-mpra/task.yaml \
   --model-profile configs/models/openai-gpt-5.6-luna-high.yaml
 ```
 

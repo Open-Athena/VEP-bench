@@ -2,13 +2,16 @@ import json
 from pathlib import Path
 
 import pytest
+from vepbench_explorer.site import build_question_metadata, build_site
 
-from vepbench.builder import BuildError
-from vepbench.site import OFFICIAL_DATA_BASE_URL, build_question_metadata, build_site
+from vepbench.errors import BuildError
 
 ROOT = Path(__file__).resolve().parents[1]
-ASSETS = ROOT / "web"
+ASSETS = ROOT / "projects/explorer/web"
 SATMUT_SOURCE = ROOT / "data/sources/satmut-mpra-cadd-v1.7.jsonl"
+OFFICIAL_DATA_BASE_URL = (
+    "https://huggingface.co/buckets/open-athena/VEP-bench/resolve/versions/main"
+)
 
 
 def production_question_metadata() -> dict:
@@ -18,7 +21,12 @@ def production_question_metadata() -> dict:
 def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path) -> None:
     output = tmp_path / "site"
     metadata = production_question_metadata()
-    config = build_site(assets_dir=ASSETS, output=output, question_metadata=metadata)
+    config = build_site(
+        assets_dir=ASSETS,
+        output=output,
+        data_base_url=OFFICIAL_DATA_BASE_URL,
+        question_metadata=metadata,
+    )
 
     assert config["data_base_url"] == OFFICIAL_DATA_BASE_URL
     assert json.loads((output / "data/config.json").read_text()) == config
@@ -69,14 +77,19 @@ def test_question_metadata_requires_display_metadata_for_every_task_record(tmp_p
     "url",
     [
         "http://example.test/versions/main",
-        "https://example.test/versions/experiment",
-        "https://example.test/versions/main",
         "file:///tmp/versions/main",
     ],
 )
-def test_site_rejects_noncanonical_data_source(tmp_path: Path, url: str) -> None:
-    with pytest.raises(BuildError, match="canonical HF Bucket main"):
+def test_site_rejects_insecure_data_source(tmp_path: Path, url: str) -> None:
+    with pytest.raises(BuildError, match="must use HTTPS"):
         build_site(assets_dir=ASSETS, output=tmp_path / "site", data_base_url=url)
+
+
+def test_site_accepts_configured_https_data_source(tmp_path: Path) -> None:
+    url = "https://example.test/versions/experiment"
+    config = build_site(assets_dir=ASSETS, output=tmp_path / "site", data_base_url=url)
+
+    assert config["data_base_url"] == url
 
 
 def test_site_build_refuses_nonempty_output(tmp_path: Path) -> None:
@@ -85,4 +98,4 @@ def test_site_build_refuses_nonempty_output(tmp_path: Path) -> None:
     (output / "keep.txt").write_text("user data", encoding="utf-8")
 
     with pytest.raises(BuildError, match="refusing to overwrite"):
-        build_site(assets_dir=ASSETS, output=output)
+        build_site(assets_dir=ASSETS, output=output, data_base_url=OFFICIAL_DATA_BASE_URL)

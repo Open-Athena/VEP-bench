@@ -7,29 +7,39 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
+import vepbench_publishing.publication as publication_module
 import zstandard
 from jsonschema import Draft202012Validator, FormatChecker
-
-import vepbench.publication as publication_module
-from vepbench.builder import BuildError, build_file, canonical_json, sha256_json
-from vepbench.evaluator import ProviderError, error_result, evaluate_file
-from vepbench.publication import (
+from vepbench_publishing.config import load_publishing_config
+from vepbench_publishing.publication import (
     build_version,
     promote_version,
     validate_version,
     validate_version_name,
 )
 
+from vepbench.artifacts import canonical_json, sha256_json
+from vepbench.errors import BuildError
+from vepbench.evaluation.core import ProviderError, error_result, evaluate_file
+from vepbench.questions.builder import build_file
+
 ROOT = Path(__file__).resolve().parents[1]
 QUESTIONS = ROOT / "tests/fixtures/synthetic-questions.jsonl"
 RESULTS = ROOT / "tests/fixtures/results"
-RESULT_SCHEMA = ROOT / "schemas/result.schema.json"
-ANSWER_SCHEMA = ROOT / "schemas/answer.schema.json"
-RUN_SCHEMA = ROOT / "schemas/run.schema.json"
-SCHEMAS = ROOT / "schemas"
+RESULT_SCHEMA = ROOT / "src/vepbench/schemas/result.schema.json"
+ANSWER_SCHEMA = ROOT / "src/vepbench/schemas/answer.schema.json"
+RUN_SCHEMA = ROOT / "src/vepbench/schemas/run.schema.json"
+SCHEMAS = ROOT / "src/vepbench/schemas"
 RANKING_SOURCE = ROOT / "tests/fixtures/synthetic-ranking-source.jsonl"
-RANKING_TEMPLATE = ROOT / "templates/satmut_mpra.json"
-QUESTION_SCHEMA = ROOT / "schemas/question.schema.json"
+RANKING_TEMPLATE = ROOT / "configs/tasks/satmut-mpra/prompt.yaml"
+QUESTION_SCHEMA = ROOT / "src/vepbench/schemas/question.schema.json"
+
+
+def test_publishing_config_resolves_human_maintained_defaults() -> None:
+    config = load_publishing_config(ROOT / "projects/publishing/config/publishing.yaml")
+
+    assert config.bucket == "open-athena/VEP-bench"
+    assert config.model_catalog == ROOT / "configs/models/catalog.yaml"
 
 
 class RankingTransport:

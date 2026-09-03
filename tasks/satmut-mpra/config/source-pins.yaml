@@ -1,0 +1,170 @@
+schema_version: '1.0'
+retrieval_date: '2026-09-02'
+cadd_md5_manifest:
+  bytes: 926
+  sha256: aa8dde2026e2bf65adf09c0b854d9dec6da487eb4382f4f749a86528be18a6de
+cadd:
+  SatMut.all.F9.vcf.gz:
+    bytes: 23501
+    sha256: 43826280be83c2fea62cbd961bd97f62193b0a388510e45ee7edd1456c70e294
+  SatMut.all.GP1BA.vcf.gz:
+    bytes: 30345
+    sha256: 3c7d7bf38e8b37cf51add3335fea8be754c293297a8917a71c3769c65138a31c
+  SatMut.all.HBB.vcf.gz:
+    bytes: 15187
+    sha256: d115561476e0c867527286b8e88ac41604ae8cbd295d1b7dffa74e8eee71edc4
+  SatMut.all.HBG1.vcf.gz:
+    bytes: 21815
+    sha256: 2ff2a103f2d4d450fc363bcc3a3e75af69b58897f36d89ab18665ff5a5e2da73
+  SatMut.all.HNF4A.vcf.gz:
+    bytes: 23496
+    sha256: 56f05f6d6f0b4fd4b45e70405b03f68c37ff3e238144fd5c7cd94bdfcc8c83ce
+  SatMut.all.IRF4.vcf.gz:
+    bytes: 36230
+    sha256: 9d16f11c4972cf4cf58675347ffbf8d732b9047b3a07e2b3412d235d26c3c1d9
+  SatMut.all.IRF6.vcf.gz:
+    bytes: 44439
+    sha256: f8958d10627cfd02cbb1ac442885bc98e34aff43d1bb4e0345fef68945287857
+  SatMut.all.LDLR.vcf.gz:
+    bytes: 25854
+    sha256: 99271daf883ef9b2ce703c0ac2c9a44b45e13dd542801926541581b375033c95
+  SatMut.all.MSMB.vcf.gz:
+    bytes: 48747
+    sha256: 5c48933c681f4fcb7631cf3a74214feea9fc309ffd6935eb13333c548c32b125
+  SatMut.all.MYCrs6983267.vcf.gz:
+    bytes: 44898
+    sha256: 691ee199f66ddbe3976490e7086f7b47b47d541aa0df60c2f4fee1331a4b3b80
+  SatMut.all.PKLR.vcf.gz:
+    bytes: 42243
+    sha256: 58586276dfb1d4335f75a98e67d7b2653ec397241d3967058b8aecaa81235657
+  SatMut.all.SORT1.vcf.gz:
+    bytes: 45583
+    sha256: 6a6b98f3bbe7e220f52ac07f19aa5821bfd3805c1331227b7dc87cf973fb2744
+  SatMut.all.TCF7L2.vcf.gz:
+    bytes: 44339
+    sha256: f5dd589bcacd0460d737242f496f6e0d0da1ef1cb7170fae8b82448d87c203cc
+  SatMut.all.TERT.vcf.gz:
+    bytes: 23043
+    sha256: cd9a21b6b335bf8a3772b5ec9f3a12e3a82f4be803fadc4b26ea32d74b3ea1cb
+  SatMut.all.ZFAND3.vcf.gz:
+    bytes: 47703
+    sha256: e4881e64b4526220d0d66372e8a87aae004a7ef66d9ec83b3e40aa1d9eac79b6
+  SatMut.all.ZRSh13.vcf.gz:
+    bytes: 39739
+    sha256: 1c9b03f4056e8ecc2a630347cc86e612df8200890030b2b717af5640371209f2
+mavedb:
+  urn:mavedb:00000015-a-1:
+    metadata:
+      bytes: 10964
+      sha256: b269cba3ace783377d527bb21ba3f81b1935baabef77b7549fbf16b05e40988e
+    scores:
+      bytes: 76029
+      sha256: a1e1c80f6caa22c33d6e462deccce590b96a495e7df601a2e131a053ba661e14
+  urn:mavedb:00000017-a-1:
+    metadata:
+      bytes: 11085
+      sha256: 0ec4d692775f351a729f92db806ba2ebfe011a53f47737fcf2361096b9c9f935
+    scores:
+      bytes: 101320
+      sha256: 407e14088f2b4770450c13cb05103ba254b765e969bde2509db89eb289fb1c36
+  urn:mavedb:00000018-a-1:
+    metadata:
+      bytes: 10870
+      sha256: ce69bbe5d5af9e907500019ccb62ffd45d808582556e88ebf458bc3c104e4b96
+    scores:
+      bytes: 48580
+      sha256: ec8b189f70c740f0ab2a11863a0a464fb421d93fefb9da1240cd3831872f57c6
+  urn:mavedb:00000019-a-1:
+    metadata:
+      bytes: 10963
+      sha256: 74c8a1dd2dab5344b4c1f0f2b92354b8f2df9a1452f82fa4f01396030818584a
+    scores:
+      bytes: 71065
+      sha256: 8a9e1d4c1ff15a5eb97f8cb4bd66455d83386f43fc62b35d8274da1e5ef66335
+  urn:mavedb:00000020-a-1:
+    metadata:
+      bytes: 10978
+      sha256: f6a7dd5403593d65d604ede75dd1cc74b69530edaad50f69a52de1a0825a4fdc
+    scores:
+      bytes: 77273
+      sha256: 6dc2555a40aaf5a96f75484442bd3d37c3569d1343d74c6a5a8034d53e6a7e9b
+  urn:mavedb:00000021-a-1:
+    metadata:
+      bytes: 11133
+      sha256: e1b5888ba915adb22baa70942c00000c183c6fef24e01d1c8621162c9e510e00
+    scores:
+      bytes: 118455
+      sha256: a94694a90445bf9852d46f5d4e84a1ad699f69e74309fe8136b94e30267922d7
+  urn:mavedb:00000022-a-1:
+    metadata:
+      bytes: 10586
+      sha256: 14d14dc617d3fa79bfb07edff221ab172d9f509a045ceb416f36d9ff69fe4669
+    scores:
+      bytes: 149656
+      sha256: b8e0665dea043e6f710ebb2642d22f6ee2ed3a947e61888725776823ae8c7470
+  urn:mavedb:00000023-a-2:
+    metadata:
+      bytes: 10844
+      sha256: 93277dbc0c179d2a0472203291686c8a44fac5fd051964e64eb83de265ac713a
+    scores:
+      bytes: 84106
+      sha256: eb7fed22c8e38c24c89158ba7c6eb70ad5185728931e27b294d34c4c922d0cba
+  urn:mavedb:00000024-a-1:
+    metadata:
+      bytes: 11279
+      sha256: 09d63c53fef0744afc241610374d06c09c1e7e793ce2e510d8854948b9476b4c
+    scores:
+      bytes: 160153
+      sha256: e3cf661f6be83859bed5903d71c8f641190c2af7bcf910018ad1bc01fd62a3d1
+  urn:mavedb:00000025-a-1:
+    metadata:
+      bytes: 11344
+      sha256: 81e1c0bb17119f2d590562caa369780cd33c7993d31a79d3705eb24ca085715c
+    scores:
+      bytes: 155382
+      sha256: 56e62b14175173f7947634f0f43e990a58664571a5b0ed6e31729e6068dd90bb
+  urn:mavedb:00000027-b-1:
+    metadata:
+      bytes: 11210
+      sha256: dadb63175b9c8cf73ad6b07ad2deaaa7947c93d3eaab52e0869aa43f7cef802f
+    scores:
+      bytes: 138931
+      sha256: c2df8c0d1e6018c82615494e9020d06f00abdab0a61254787690da64fb185509
+  urn:mavedb:00000029-a-1:
+    metadata:
+      bytes: 11255
+      sha256: c8466437dae674c8fdc175aced635b47165d4e919eb7d6be992d504bac131554
+    scores:
+      bytes: 150227
+      sha256: c22f993fcc4fa2167424394919fe9a303fbf81c95fc7b4cab8e1bad2a3887019
+  urn:mavedb:00000030-a-1:
+    metadata:
+      bytes: 11298
+      sha256: 6c12b4e369a0cdaf80cc19576be952b7da20ce2506aada65e093c475dc236826
+    scores:
+      bytes: 152510
+      sha256: 5d650f2c6440b0e4d49afa239bb6511a843c5521ebb5fd669fc66503a5545b67
+  urn:mavedb:00000031-a-1:
+    metadata:
+      bytes: 10950
+      sha256: 4d9b34503d296a8bd10e60eadb9e843262a40722b895995491aea1a441313bad
+    scores:
+      bytes: 75124
+      sha256: 320f9e1d9446265f024367fde3994831d8dc4aa2f8b262fac77003929ae456d1
+  urn:mavedb:00000033-a-1:
+    metadata:
+      bytes: 11271
+      sha256: 706505687f946ac775d45c621f8af86d5db12df7af510d4168136cdd459e7bc1
+    scores:
+      bytes: 158098
+      sha256: f52ffc5762f63d8a28fe0f5afc93f345aaaeed239dba1762b5103bc848694677
+  urn:mavedb:00000034-a-1:
+    metadata:
+      bytes: 11978
+      sha256: e0b1b36752164e723892ae881a6f0a5690d5cce31a5ef69834b6036dc16b10f6
+    scores:
+      bytes: 132613
+      sha256: d6714aad7a8897af4cb273033e33bc7d599a4946399899cab3bd959017620d25
+reference:
+  bytes: 3151426433
+  sha256: 3a624ebac370d5aed77e80d36163b7ac190e2380c3841d92e6cd077150265a2f

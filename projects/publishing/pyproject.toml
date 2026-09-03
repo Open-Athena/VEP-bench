@@ -1,0 +1,19 @@
+[project]
+name = "vepbench-publishing"
+version = "0.1.0"
+description = "Private VEP-bench publication and bucket tooling"
+requires-python = "==3.14.*"
+dependencies = [
+    "vepbench",
+    "zstandard>=0.23,<1",
+]
+
+[project.optional-dependencies]
+bucket = ["huggingface-hub[hf-xet]>=1.6,<2"]
+
+[project.scripts]
+vepbench-publish = "vepbench_publishing.cli:main"
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"

@@ -1,0 +1,10 @@
+# Human-maintained descriptor for deterministic question construction and evaluation.
+schema_version: "1.0"
+task_family: satmut_mpra
+question:
+  type: ranking
+  source: ../../../data/sources/satmut-mpra-cadd-v1.7.jsonl
+  prompt: prompt.yaml
+evaluation:
+  generation:
+    max_tokens: 128000
