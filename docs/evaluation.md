@@ -143,8 +143,11 @@ A valid final answer remains `correct` or `incorrect` when the finish reason is
 
 A complete ranking response must end with a strict JSON mapping containing
 every expected candidate ID exactly once and finite numeric predictions.
-Invalid ranking output receives `-1` for both Spearman and Pearson and is
-counted as a format failure; a constant valid vector receives correlation zero.
+Invalid completed ranking output contributes zero to both Spearman and Pearson
+and is counted as a format failure. Zero represents no usable ranking signal;
+it avoids treating malformed output as equivalent to a valid, perfectly
+reversed ranking. A constant valid vector also receives correlation zero but
+remains distinguishable through its valid-output status.
 
 The multiple-choice taxonomy does not include provider or transport failures.
 For either task type, an API failure has null scoring, makes the run incomplete,

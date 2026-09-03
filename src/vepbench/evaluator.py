@@ -274,7 +274,7 @@ def _last_final_json_object(content: str | None) -> tuple[dict[str, Any] | None,
 
 
 def _invalid_ranking_score(message: str) -> RankingScore:
-    return RankingScore(None, -1.0, -1.0, -1.0, False, message)
+    return RankingScore(None, 0.0, 0.0, 0.0, False, message)
 
 
 def _average_ranks(values: list[float]) -> list[float]:

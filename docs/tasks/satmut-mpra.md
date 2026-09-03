@@ -140,10 +140,12 @@ with invalid content is a format failure.
 For valid output, Spearman uses average ranks for ties and Pearson uses the raw
 predicted and measured effects. If either input vector is constant, the
 corresponding correlation is defined as zero. Invalid completed output receives
-the fixed floor `-1` for both correlations and is included in the 16-question
-mean; it also lowers valid-output rate. API failures remain null and make the
-run incomplete. The task score is the arithmetic mean of the 16 per-element
-Spearman values, with mean Pearson and valid-output rate reported alongside it.
+zero for both correlations and is included in the 16-question mean; zero
+represents no usable ranking signal without equating malformed output to a
+valid, perfectly reversed ranking. Invalid output also lowers valid-output
+rate. API failures remain null and make the run incomplete. The task score is
+the arithmetic mean of the 16 per-element Spearman values, with mean Pearson
+and valid-output rate reported alongside it.
 
 ## Artifacts, cache, and regeneration
 
