@@ -22,7 +22,7 @@ common=(
   --dump-dom "$site_url/index.html" \
   >"$output_dir/leaderboard.dom.html"
 "$chrome" "${common[@]}" --window-size=1440,1600 \
-  --dump-dom "$site_url/tasks/consequence-classification.html" \
+  --dump-dom "$site_url/tasks/satmut-mpra.html" \
   >"$output_dir/task.dom.html"
 "$chrome" "${common[@]}" --window-size=1440,1600 \
   --dump-dom "$site_url/questions.html" \
@@ -33,12 +33,13 @@ for check in \
   'leaderboard.dom.html|>Leaderboard<' \
   'leaderboard.dom.html|>Model<' \
   'leaderboard.dom.html|>Score<' \
-  'task.dom.html|>Consequence classification<' \
+  'task.dom.html|>satMutMPRA</a></h1>' \
   'task.dom.html|>Task version<' \
   'task.dom.html|questions match the current filters' \
   'question.dom.html|>Questions<' \
-  'question.dom.html|Reference answer:' \
-  'question.dom.html|Parsed prediction:' \
+  'question.dom.html|>Prompt given to model<' \
+  'question.dom.html|Reference panel: 50 candidate variants' \
+  'question.dom.html|Spearman ρ:' \
   'question.dom.html|>Reasoning<'
 do
   file=${check%%|*}

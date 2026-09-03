@@ -9,6 +9,8 @@ from jsonschema import Draft202012Validator
 from vepbench.builder import build_questions, load_template, read_jsonl
 from vepbench.satmut_mpra import (
     ELEMENT_SPECS,
+    PGL4_23_MINIMAL_PROMOTER_SEQUENCE,
+    PGL4Z_FIXED_DOWNSTREAM_SEQUENCE,
     ElementMetadata,
     PreparedElement,
     SatMutPreparationError,
@@ -40,14 +42,10 @@ def test_ranking_builder_emits_structured_candidates_and_exact_prompt_rows() -> 
     assert question["question_id"] == "satmut-mpra-ranking-v1:synthetic-ranking-001"
     assert len(question["candidates"]) == 5
     assert "element\t1\tV01\tA\tC" in question["prompt"]
+    assert "Sequence lines contain 80 bases except the final line." in question["prompt"]
     assert (
-        "**FASTA formatting:** Sequence lines contain 80 bases except the final line."
-        in question["prompt"]
-    )
-    assert (
-        "**FASTA formatting:** Sequence lines contain 80 bases except the final line.\n\n"
-        "**Reference regulatory-element sequence (reporter-construct orientation):**"
-        in question["prompt"]
+        "**Complete mutagenized insert (reporter-construct orientation):**\n\n"
+        "Sequence lines contain 80 bases except the final line.\n\n```fasta" in question["prompt"]
     )
     assert "**Reference genome:**" not in question["prompt"]
     assert "synthetic contig" not in question["prompt"]
@@ -157,6 +155,11 @@ def test_source_record_keeps_qc_private_and_assigns_opaque_ids() -> None:
     )
     assert all(candidate["chrom"] == "element" for candidate in record["candidates"])
     assert record["reference_sequence"] == "A" * 60
+    assert record["source_metadata"]["display_name"] == "F9 promoter"
+    assert "F9" not in record["assay_context"]
+    assert "F9" not in record["reporter_context"]
+    assert "directly drives" in record["assay_context"]
+    assert "no separate minimal promoter" in record["reporter_context"]
     assert record["source_metadata"]["target"]["sequence_basis"] == "reporter_construct"
     assert record["source_metadata"]["target"]["genomic_mapping_orientation"] == "forward"
     assert [candidate["pos"] for candidate in record["candidates"]] == [
@@ -254,8 +257,32 @@ def test_committed_satmut_artifacts_and_question_set_are_complete() -> None:
             for candidate in question["candidates"]
         )
         assert all(marker not in question["prompt"] for marker in ("EF=", "PV=", "BC="))
+        assert record["source_metadata"]["display_name"] not in question["prompt"]
         assert "rs6983267" not in question["prompt"]
         assert "\nX\t" not in question["prompt"]
+
+    question_by_id = {question["question_id"]: question for question in questions}
+    f9_prompt = question_by_id["satmut-mpra-ranking-v1:F9"]["prompt"]
+    assert "F9" not in f9_prompt
+    assert "directly drives a firefly luciferase reporter" in f9_prompt
+    assert PGL4_23_MINIMAL_PROMOTER_SEQUENCE not in f9_prompt
+
+    irf4_prompt = question_by_id["satmut-mpra-ranking-v1:IRF4"]["prompt"]
+    assert "IRF4" not in irf4_prompt
+    assert PGL4_23_MINIMAL_PROMOTER_SEQUENCE in irf4_prompt
+    assert "24 hours after transfection" in irf4_prompt
+
+    myc_prompt = question_by_id["satmut-mpra-ranking-v1:MYCrs6983267"]["prompt"]
+    assert "MYC" not in myc_prompt
+    assert "rs6983267" not in myc_prompt
+    assert "32 hours after transfection" in myc_prompt
+    assert "20 nM LiCl was added 24 hours after transfection" in myc_prompt
+
+    zrs_prompt = question_by_id["satmut-mpra-ranking-v1:ZRSh13"]["prompt"]
+    assert "ZRS" not in zrs_prompt
+    assert "Hoxd13" in zrs_prompt
+    assert PGL4Z_FIXED_DOWNSTREAM_SEQUENCE[:80] in zrs_prompt
+    assert PGL4Z_FIXED_DOWNSTREAM_SEQUENCE[80:] in zrs_prompt
 
     zrs = manifest["population"]["elements"]["ZRSh13"]
     zrs_record = next(record for record in records if record["source_record_id"] == "ZRSh13")

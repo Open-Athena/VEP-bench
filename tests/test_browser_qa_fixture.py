@@ -10,8 +10,8 @@ from vepbench.publication import validate_version
 
 ROOT = Path(__file__).resolve().parents[1]
 QUESTIONS = ROOT / "tests/fixtures/synthetic-questions.jsonl"
-PRODUCTION_SOURCE = ROOT / "data/sources/chr17-vep-consequences.jsonl"
-PRODUCTION_TEMPLATE = ROOT / "templates/vep_most_severe_consequence.json"
+PRODUCTION_SOURCE = ROOT / "data/sources/satmut-mpra-cadd-v1.7.jsonl"
+PRODUCTION_TEMPLATE = ROOT / "templates/satmut_mpra.json"
 QUESTION_SCHEMA = ROOT / "schemas/question.schema.json"
 
 
@@ -25,9 +25,9 @@ def test_browser_qa_defaults_match_production_question_set() -> None:
         question for question in questions if question["question_id"] == DEFAULT_QUESTION_ID
     )
 
-    assert selected["answer_choice_id"] == "C13"
-    assert DEFAULT_PREDICTION == "C17"
-    assert DEFAULT_PREDICTION in {choice["choice_id"] for choice in selected["choices"]}
+    assert selected["task_type"] == "ranking"
+    assert len(selected["candidates"]) == 50
+    assert DEFAULT_PREDICTION == "unused-for-ranking"
 
 
 @pytest.mark.parametrize("config_relative", ["data/config.json", "_file/data/config.abc123.json"])

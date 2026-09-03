@@ -1,9 +1,7 @@
 const SAFE_ID = /^[A-Za-z0-9][A-Za-z0-9._:-]*$/;
 const AUTO_ROUTED_PROVIDER = "OpenRouter auto-routing";
 const EXPLORER_TASK_ORDER = new Map([
-  ["vep_most_severe_consequence", 0],
-  ["clinvar", 1],
-  ["satmut_mpra", 2]
+  ["satmut_mpra", 0]
 ]);
 const RESULT_TYPE_LABELS = Object.freeze({
   correct: "Correct",

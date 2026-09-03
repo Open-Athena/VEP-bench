@@ -19,8 +19,8 @@ from vepbench.builder import (
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "tests/fixtures/synthetic-source.jsonl"
 TEMPLATE = ROOT / "tests/fixtures/synthetic-template.json"
-PRODUCTION_SOURCE = ROOT / "data/sources/chr17-vep-consequences.jsonl"
-PRODUCTION_TEMPLATE = ROOT / "templates/vep_most_severe_consequence.json"
+PRODUCTION_SOURCE = ROOT / "data/sources/satmut-mpra-cadd-v1.7.jsonl"
+PRODUCTION_TEMPLATE = ROOT / "templates/satmut_mpra.json"
 SCHEMA = ROOT / "schemas/question.schema.json"
 
 
@@ -77,15 +77,17 @@ def test_ranking_source_rejects_integer_too_large_for_float() -> None:
 
 
 def test_production_questions_match_expected_manifest(tmp_path: Path) -> None:
-    rebuilt = tmp_path / "questions.jsonl"
+    rebuilt = tmp_path / "satmut-mpra-questions.jsonl"
     build_file(PRODUCTION_SOURCE, PRODUCTION_TEMPLATE, SCHEMA, rebuilt)
 
-    generated_manifest = json.loads((tmp_path / "questions.manifest.json").read_text())
-    expected_manifest = json.loads((ROOT / "benchmark/expected-manifest.json").read_text())
+    generated_manifest = json.loads((tmp_path / "satmut-mpra-questions.manifest.json").read_text())
+    expected_manifest = json.loads(
+        (ROOT / "benchmark/satmut-mpra-expected-manifest.json").read_text()
+    )
     assert generated_manifest == expected_manifest
 
 
-def test_production_prompt_has_unambiguous_final_line_instructions(
+def test_production_prompt_has_minimal_causal_context_and_exact_output_contract(
     schema: dict,
 ) -> None:
     questions = build_questions(
@@ -93,12 +95,11 @@ def test_production_prompt_has_unambiguous_final_line_instructions(
     )
     prompt = questions[0]["prompt"]
 
-    assert questions[0]["provenance"]["template_version"] == "1.2"
-    assert "**FASTA formatting:** Sequence lines contain 80 bases except the final line." in prompt
-    assert "Example: `FINAL: C07`" in prompt
-    assert (
-        "Do not include the consequence name, a period, or any other text on that line." in prompt
-    )
+    assert questions[0]["provenance"]["template_version"] == "1.1"
+    assert "Sequence lines contain 80 bases except the final line." in prompt
+    assert "Complete mutagenized insert (reporter-construct orientation)" in prompt
+    assert 'Example form: `FINAL: {"V01": -0.42, "V02": 0.08}`' in prompt
+    assert "F9" not in prompt
 
 
 def test_generated_question_satisfies_schema(generated_question: dict, schema: dict) -> None:

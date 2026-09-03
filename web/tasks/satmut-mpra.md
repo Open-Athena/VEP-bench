@@ -1,5 +1,5 @@
 ---
-title: satMutMPRA ranking
+title: satMutMPRA
 ---
 
 ```js
@@ -36,9 +36,7 @@ const entries = entriesForQuestions(orderedQuestions)
   }));
 ```
 
-*Assay 03 · quantitative regulatory-effect ranking*
-
-# satMutMPRA regulatory-effect ranking
+# satMutMPRA
 
 ```js
 if (questionState.error) {
@@ -54,7 +52,7 @@ Predict signed reporter-activity effects for variants in saturation-mutagenesis 
   <p><strong>${formatInteger(taskQuestions.length)} published element panels</strong>, each containing 50 variants sampled as five candidates from each of ten measured-effect quantiles. Every panel uses opaque candidate IDs and contains no measured effect or selection label in its prompt.</p>
   <p>The primary score is mean within-element Spearman correlation. Mean Pearson correlation reports numerical agreement, valid-output rate reports strict JSON compliance, and invalid completed outputs contribute zero while remaining identifiable as format failures.</p>
   <dl>
-    <div><dt>Task version</dt><dd>1.0 · question schema 2.0</dd></div>
+    <div><dt>Task version</dt><dd>1.1 · question schema 2.0</dd></div>
     <div><dt>Output</dt><dd><code>FINAL: {"V01": number, ...}</code></dd></div>
     <div><dt>Questions</dt><dd>Public development set</dd></div>
   </dl>

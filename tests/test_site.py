@@ -8,20 +8,11 @@ from vepbench.site import OFFICIAL_DATA_BASE_URL, build_question_metadata, build
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / "web"
-CONSEQUENCE_SOURCE = ROOT / "data/sources/chr17-vep-consequences.jsonl"
-CONSEQUENCE_MANIFEST = ROOT / "data/sources/chr17-vep-consequences.manifest.json"
-CLINVAR_SOURCE = ROOT / "data/sources/clinvar-july-2026.jsonl"
 SATMUT_SOURCE = ROOT / "data/sources/satmut-mpra-cadd-v1.7.jsonl"
 
 
 def production_question_metadata() -> dict:
-    consequence_manifest = json.loads(CONSEQUENCE_MANIFEST.read_text(encoding="utf-8"))
-    return build_question_metadata(
-        source_paths=[CONSEQUENCE_SOURCE, CLINVAR_SOURCE, SATMUT_SOURCE],
-        consequence_overrides={
-            "vep_most_severe_consequence": consequence_manifest["record_source_consequences"]
-        },
-    )
+    return build_question_metadata(source_paths=[SATMUT_SOURCE])
 
 
 def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path) -> None:
@@ -32,21 +23,14 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     assert config["data_base_url"] == OFFICIAL_DATA_BASE_URL
     assert json.loads((output / "data/config.json").read_text()) == config
     assert json.loads((output / "data/question-metadata.json").read_text()) == metadata
-    assert len(metadata["by_task_family"]["clinvar"]) == 42
+    assert set(metadata["by_task_family"]) == {"satmut_mpra"}
     assert len(metadata["by_task_family"]["satmut_mpra"]) == 16
-    assert len(metadata["by_task_family"]["vep_most_severe_consequence"]) == 51
-    assert metadata["by_task_family"]["clinvar"]["VCV004857040.1"] == {
-        "consequence": "missense_variant"
-    }
-    assert metadata["by_task_family"]["vep_most_severe_consequence"]["17:38786886:A:T"] == {
-        "consequence": "start_lost"
-    }
     assert metadata["by_task_family"]["satmut_mpra"]["GP1BA"] == {"element": "GP1BB promoter"}
     assert (output / "index.md").is_file()
     assert (output / "questions.md").is_file()
-    assert (output / "tasks/consequence-classification.md").is_file()
-    assert (output / "tasks/clinvar.md").is_file()
     assert (output / "tasks/satmut-mpra.md").is_file()
+    assert not (output / "tasks/consequence-classification.md").exists()
+    assert not (output / "tasks/clinvar.md").exists()
     assert not (output / "data/explorer.json").exists()
     assert not (output / "data/questions.jsonl").exists()
     assert not (output / "data/results").exists()
@@ -54,6 +38,11 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     assert "const controls = view(controlsInput);" in question_source
     assert "const selected = view(questionTable);" in question_source
     assert "Generators.input" not in question_source
+    component_source = (output / "components/vepbench.js").read_text(encoding="utf-8")
+    assert 'element("h2", null, "Prompt given to model")' in component_source
+    assert "markdownNode(question.prompt)" in component_source
+    assert "Reference effects" not in component_source
+    assert "Measured effect" not in component_source
 
 
 def test_question_metadata_requires_display_metadata_for_every_task_record(tmp_path: Path) -> None:

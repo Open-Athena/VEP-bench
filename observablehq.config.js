@@ -11,13 +11,7 @@ export default {
       name: "Tasks",
       path: "/tasks",
       pages: [{
-        name: "Consequence classification",
-        path: "/tasks/consequence-classification"
-      }, {
-        name: "ClinVar",
-        path: "/tasks/clinvar"
-      }, {
-        name: "satMutMPRA ranking",
+        name: "satMutMPRA",
         path: "/tasks/satmut-mpra"
       }]
     },

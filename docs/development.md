@@ -40,8 +40,6 @@ a task.
 Run the locked offline checks before opening a pull request:
 
 ```bash
-uv run --locked python scripts/validate_vep_consequence_artifacts.py
-uv run --locked python scripts/validate_clinvar_artifacts.py
 uv run --locked python scripts/validate_satmut_mpra_artifacts.py
 uv run --locked pytest --cov=vepbench --cov-report=term-missing:skip-covered
 uv run --locked ruff check .
@@ -49,25 +47,14 @@ uv run --locked ruff format --check .
 uv run --locked mypy
 npm test
 uv run --locked pre-commit run --all-files
-uv run --locked vepbench build --output /tmp/questions.jsonl
-cmp benchmark/expected-manifest.json /tmp/questions.manifest.json
-uv run --locked vepbench build \
-  --source data/sources/clinvar-july-2026.jsonl \
-  --template templates/clinvar.json \
-  --output /tmp/clinvar-questions.jsonl
-cmp benchmark/clinvar-expected-manifest.json \
-  /tmp/clinvar-questions.manifest.json
-uv run --locked vepbench build \
-  --source data/sources/satmut-mpra-cadd-v1.7.jsonl \
-  --template templates/satmut_mpra.json \
-  --output /tmp/satmut-mpra-questions.jsonl
+uv run --locked vepbench build --output /tmp/satmut-mpra-questions.jsonl
 cmp benchmark/satmut-mpra-expected-manifest.json \
   /tmp/satmut-mpra-questions.manifest.json
 uv run --locked vepbench site --output /tmp/vepbench-site
 ```
 
-Each committed prepared source has its own deterministic offline validation
-entry point.
+The committed prepared source has a deterministic offline validation entry
+point.
 
 CI runs the offline suites, validates deterministic regeneration against the
 expected manifest, compiles the explorer, and performs browser smoke QA with
@@ -101,7 +88,7 @@ hand when a preparation script can reproduce them.
 default. Generated question JSONL and production result JSONL are ignored and
 are not tracked in Git. The public bucket is their canonical published home;
 Git keeps generation code, compact sources, schemas, tests, and the small
-`benchmark/expected-manifest.json` fingerprint.
+`benchmark/satmut-mpra-expected-manifest.json` fingerprint.
 
 Live or paid model calls must remain explicit local actions. Tests and CI use
 fake transports and never read `OPENROUTER_API_KEY`. Small synthetic fixtures

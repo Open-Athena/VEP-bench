@@ -16,11 +16,9 @@ OFFICIAL_DATA_BASE_URL = (
 def build_question_metadata(
     *,
     source_paths: Sequence[str | Path],
-    consequence_overrides: Mapping[str, Mapping[str, str]] | None = None,
 ) -> dict[str, Any]:
     """Build safe display metadata without changing model-visible questions."""
 
-    overrides = consequence_overrides or {}
     by_task_family: dict[str, dict[str, dict[str, str]]] = {}
     for source_path in source_paths:
         for record in read_jsonl(source_path):
@@ -34,21 +32,13 @@ def build_question_metadata(
                     f"{source_path}: duplicate display metadata record {source_record_id!r}"
                 )
             source_metadata = record.get("source_metadata", {})
-            consequence = (
-                source_metadata.get("vep_consequence")
-                if isinstance(source_metadata, dict)
-                else None
-            )
-            if consequence is None:
-                consequence = overrides.get(task_family, {}).get(source_record_id)
-            if isinstance(consequence, str) and consequence:
-                display_metadata = {"consequence": consequence}
-            elif isinstance(source_metadata, dict) and all(
-                isinstance(source_metadata.get(field), str) and source_metadata[field]
-                for field in ("model_visible_name",)
+            if (
+                isinstance(source_metadata, dict)
+                and isinstance(source_metadata.get("display_name"), str)
+                and source_metadata["display_name"]
             ):
                 display_metadata = {
-                    "element": source_metadata["model_visible_name"],
+                    "element": source_metadata["display_name"],
                 }
             else:
                 raise BuildError(f"{source_path}: {source_record_id!r} is missing display metadata")

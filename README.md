@@ -25,27 +25,20 @@ The benchmark is intentionally transparent:
 VEP-bench measures current model capability. Temporal task cohorts can reduce
 direct source leakage but do not guarantee absence from training data.
 
-## Benchmark tasks
+## Benchmark task
 
 | Task | Model input | Target | Questions |
 | --- | --- | --- | ---: |
-| [Ensembl VEP most-severe consequence](docs/tasks/vep-most-severe-consequence.md) | A centered GRCh38 sequence window and SNV alleles | Ensembl VEP consequence class | 51 |
-| [ClinVar](docs/tasks/clinvar.md) | A centered GRCh38 sequence window and SNV alleles | ClinVar Benign or Pathogenic | 42 |
-| [satMutMPRA regulatory-effect ranking](docs/tasks/satmut-mpra.md) | Assay context, a full assayed regulatory-element sequence, and a 50-variant panel | Signed reporter-activity effects | 16 |
+| [satMutMPRA](docs/tasks/satmut-mpra.md) | Physical reporter context, the complete mutagenized insert, and a 50-variant panel | Signed reporter-activity effects | 16 |
 
-Each task has its own versioned sources, prompt, methodology, limitations, and
-results. Task details live under [`docs/tasks/`](docs/tasks/README.md) so new
-tasks can be added without making this README task-specific.
+The task has versioned sources, a prompt, methodology, limitations, and results.
 
 ## Results
 
-The [explorer](https://openathena.ai/VEP-bench/) provides a provisional overall
-score that weights each classification task equally, plus task-level results
-and question-level prompts, reference answers, model responses, available
-reasoning, and deterministic scores. Quantitative ranking tasks have separate
-leaderboards because correlation is not commensurate with exact match. Each
-score should be interpreted alongside the corresponding task's methodology and
-limitations.
+The [explorer](https://openathena.ai/VEP-bench/) provides the satMutMPRA
+leaderboard and lets readers inspect the exact prompt given to a model, its
+complete response, available reasoning, and deterministic score. Interpret the
+score alongside the task's methodology and limitations.
 
 ## Documentation
 

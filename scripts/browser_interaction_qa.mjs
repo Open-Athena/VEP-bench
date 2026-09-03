@@ -58,22 +58,6 @@ async function navigate(path) {
   await waitFor('document.readyState === "complete"', `${path} document load`);
 }
 
-function chooseOption(optionText) {
-  return evaluate(`(() => {
-    const select = [...document.querySelectorAll("select")].find((candidate) =>
-      [...candidate.options].some((option) => option.textContent.trim() === ${JSON.stringify(optionText)})
-    );
-    const option = [...(select?.options ?? [])].find(
-      (candidate) => candidate.textContent.trim() === ${JSON.stringify(optionText)}
-    );
-    if (!select || !option) return false;
-    select.value = option.value;
-    select.dispatchEvent(new Event("input", {bubbles: true}));
-    select.dispatchEvent(new Event("change", {bubbles: true}));
-    return true;
-  })()`);
-}
-
 function chooseOptionContaining(optionText) {
   return evaluate(`(() => {
     const select = [...document.querySelectorAll("select")].find((candidate) =>
@@ -96,33 +80,21 @@ await send("Runtime.enable");
 await navigate("/index.html");
 await waitFor(
   `document.querySelectorAll(".vepbench-score-cell").length === 2
-    && [...document.querySelectorAll("option")].some(
-      (option) => option.textContent.trim() === "ClinVar"
-    )
-    && document.querySelector('.card[aria-label^="All classification tasks score versus"]') !== null`,
-  "two-model leaderboard"
+    && document.querySelector('.card[aria-label^="satMutMPRA score versus"]') !== null`,
+  "two-model satMutMPRA leaderboard"
 );
-const allTaskTable = await evaluate('document.querySelector("table tbody").innerText');
 assert.equal(
   await evaluate('getComputedStyle(document.querySelector(\'th[title="score"]\')).textAlign'),
   "center",
   "score column header is not centered"
 );
-assert.equal(await chooseOption("ClinVar"), true);
+assert.equal(await chooseOptionContaining("Total tokens"), true);
 await waitFor(
-  `document.querySelector('.card[aria-label^="ClinVar score versus"]') !== null`,
-  "ClinVar leaderboard scope"
-);
-const clinvarTable = await evaluate('document.querySelector("table tbody").innerText');
-assert.notEqual(clinvarTable, allTaskTable, "task selection did not update the leaderboard table");
-
-assert.equal(await chooseOption("Total tokens"), true);
-await waitFor(
-  `document.querySelector('.card[aria-label="ClinVar score versus Total tokens"]') !== null`,
+  `document.querySelector('.card[aria-label="satMutMPRA score versus Total tokens"]') !== null`,
   "token plot"
 );
 
-const initialQuestionId = "vep-most-severe-v1:17:38786886:A:T";
+const initialQuestionId = "satmut-mpra-ranking-v1:F9";
 await navigate(
   `/questions.html?question=${encodeURIComponent(initialQuestionId)}&run=browser-qa`
 );

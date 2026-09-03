@@ -14,9 +14,9 @@ These instructions apply to the entire VEP-bench repository.
 
 ## Product boundaries
 
-- Keep the MVP limited to generated multiple-choice questions, deterministic
-  exact-match scoring, one OpenRouter integration, reproducible public
-  artifacts, and a static results explorer.
+- Keep the MVP limited to generated versioned questions, deterministic
+  exact-match or rank-correlation scoring, one OpenRouter integration,
+  reproducible public artifacts, and a static results explorer.
 - Do not introduce a database, backend service, authentication, submissions
   system, provider abstraction, LLM judge, or statistical framework unless a
   scoped issue explicitly requires it.

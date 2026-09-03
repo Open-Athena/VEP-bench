@@ -14,8 +14,8 @@ from .publication import build_version, promote_version
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 FIXED_TIME = datetime(2026, 8, 31, 12, 0, tzinfo=UTC)
-DEFAULT_QUESTION_ID = "vep-most-severe-v1:17:38786886:A:T"
-DEFAULT_PREDICTION = "C17"
+DEFAULT_QUESTION_ID = "satmut-mpra-ranking-v1:F9"
+DEFAULT_PREDICTION = "unused-for-ranking"
 
 
 class OfflineBrowserTransport:

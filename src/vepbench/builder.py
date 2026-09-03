@@ -27,13 +27,19 @@ RANKING_SOURCE_FIELDS = {
     "source_record_id",
     "assay_context",
     "reference_sequence",
+    "reporter_context",
     "candidates",
     "task_family",
 }
 OPTIONAL_SOURCE_FIELDS = {"source_metadata", "tags"}
 REQUIRED_TEMPLATE_FIELDS = {"template_id", "template_version", "prompt"}
 MULTIPLE_CHOICE_PROMPT_FIELDS = {"variant", "question", "choices"}
-RANKING_PROMPT_FIELDS = {"assay_context", "reference_sequence", "candidate_table"}
+RANKING_PROMPT_FIELDS = {
+    "assay_context",
+    "reference_sequence",
+    "reporter_context",
+    "candidate_table",
+}
 
 
 class BuildError(ValueError):
@@ -179,6 +185,7 @@ def build_questions(
             prompt = template["prompt"].format(
                 assay_context=source_record["assay_context"],
                 reference_sequence=_format_sequence(source_record["reference_sequence"]),
+                reporter_context=source_record["reporter_context"],
                 candidate_table=candidate_table,
             )
             task_fields = {

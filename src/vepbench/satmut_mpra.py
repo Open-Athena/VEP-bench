@@ -27,6 +27,11 @@ SAMPLING_SEED = "2026090200"
 SAMPLING_ALGORITHM = "sha256_rank_quantile_v1"
 MODEL_VISIBLE_SEQUENCE_POLICY = "MaveDB target sequence in reporter-construct orientation"
 TARGET_SEQUENCE_MISMATCH_TREATMENT = "retain_reporter_construct_base_in_model_visible_reference"
+PGL4_23_MINIMAL_PROMOTER_SEQUENCE = "CACTAGAGGGTATATAATGGAAGCTCGACTTCCAGCTTGGCAATCCGGTACTGT"
+PGL4Z_FIXED_DOWNSTREAM_SEQUENCE = (
+    "CTTAAGCTTAGATCATCAAGATCGATCTGGATCCATGGGTGTTCCTGAAGGGGGGCTATAAAAGGGGGT"
+    "GGGGGCGCGTTCGTCCTCACTCTCTTCCGAATTCGCGGCCAGCTTGGCAATCCGGTACTGTTGGTAAAGCCACC"
+)
 EXPECTED_FILTER_COUNTS = {"SIGN": 4_332, "MIN": 17_685, "QUAL": 1_499}
 KNOWN_REFERENCE_MISMATCHES = {("7", 156_791_603, "CA", "C")}
 KNOWN_TARGET_SEQUENCE_MISMATCHES = {("7", 156_791_604, "A", "T")}
@@ -48,6 +53,11 @@ class ElementSpec:
     cell_line: str
     experimental_context: str
     mavedb_target_name: str | None = None
+    transfection_hours: int = 24
+    reporter_vector: str = "pGL4.11c"
+    reporter_vector_accession: str = "MK484104.1"
+    reporter_context_label: str | None = None
+    reporter_context_sequence: str | None = None
 
     @property
     def cadd_filename(self) -> str:
@@ -108,6 +118,10 @@ ELEMENT_SPECS = (
         "enhancer",
         "SK-MEL-28",
         "No additional treatment was applied.",
+        reporter_vector="pGL4.23d",
+        reporter_vector_accession="MK484106.1",
+        reporter_context_label="Minimal-promoter sequence",
+        reporter_context_sequence=PGL4_23_MINIMAL_PROMOTER_SEQUENCE,
     ),
     ElementSpec(
         "IRF6",
@@ -117,6 +131,10 @@ ELEMENT_SPECS = (
         "enhancer",
         "HaCaT",
         "No additional treatment was applied.",
+        reporter_vector="pGL4.23c",
+        reporter_vector_accession="MK484105.1",
+        reporter_context_label="Minimal-promoter sequence",
+        reporter_context_sequence=PGL4_23_MINIMAL_PROMOTER_SEQUENCE,
     ),
     ElementSpec(
         "LDLR",
@@ -125,7 +143,9 @@ ELEMENT_SPECS = (
         "LDLR promoter, replicate 2",
         "promoter",
         "HepG2",
-        "Biological replicate 2 of 2.",
+        "No additional treatment was applied.",
+        reporter_vector="pGL4.11b",
+        reporter_vector_accession="MK484103.1",
     ),
     ElementSpec(
         "MSMB",
@@ -143,8 +163,13 @@ ELEMENT_SPECS = (
         "MYC enhancer (rs6983267)",
         "enhancer",
         "HEK293T",
-        "No additional treatment was applied.",
+        "20 nM LiCl was added 24 hours after transfection.",
         "MYC enhancer (rs6983267)",
+        transfection_hours=32,
+        reporter_vector="pGL4.23c",
+        reporter_vector_accession="MK484105.1",
+        reporter_context_label="Minimal-promoter sequence",
+        reporter_context_sequence=PGL4_23_MINIMAL_PROMOTER_SEQUENCE,
     ),
     ElementSpec(
         "PKLR",
@@ -153,7 +178,8 @@ ELEMENT_SPECS = (
         "PKLR promoter, 48h",
         "promoter",
         "K562",
-        "Reporter activity was measured 48 hours after transfection.",
+        "No additional treatment was applied.",
+        transfection_hours=48,
     ),
     ElementSpec(
         "SORT1",
@@ -162,7 +188,11 @@ ELEMENT_SPECS = (
         "SORT1 enhancer, replicate 1",
         "enhancer",
         "HepG2",
-        "Biological replicate 1 of 2.",
+        "No additional treatment was applied.",
+        reporter_vector="pGL4.23c",
+        reporter_vector_accession="MK484105.1",
+        reporter_context_label="Minimal-promoter sequence",
+        reporter_context_sequence=PGL4_23_MINIMAL_PROMOTER_SEQUENCE,
     ),
     ElementSpec(
         "TCF7L2",
@@ -172,6 +202,10 @@ ELEMENT_SPECS = (
         "enhancer",
         "MIN6",
         "No additional treatment was applied.",
+        reporter_vector="pGL4.23d",
+        reporter_vector_accession="MK484106.1",
+        reporter_context_label="Minimal-promoter sequence",
+        reporter_context_sequence=PGL4_23_MINIMAL_PROMOTER_SEQUENCE,
     ),
     ElementSpec(
         "TERT",
@@ -181,6 +215,8 @@ ELEMENT_SPECS = (
         "promoter",
         "HEK293T",
         "No additional treatment or siRNA was applied.",
+        reporter_vector="pGL4.11b",
+        reporter_vector_accession="MK484103.1",
     ),
     ElementSpec(
         "ZFAND3",
@@ -190,6 +226,10 @@ ELEMENT_SPECS = (
         "enhancer",
         "MIN6",
         "No additional treatment was applied.",
+        reporter_vector="pGL4.23c",
+        reporter_vector_accession="MK484105.1",
+        reporter_context_label="Minimal-promoter sequence",
+        reporter_context_sequence=PGL4_23_MINIMAL_PROMOTER_SEQUENCE,
     ),
     ElementSpec(
         "ZRSh13",
@@ -199,6 +239,12 @@ ELEMENT_SPECS = (
         "enhancer",
         "NIH3T3",
         "Cells were co-transfected with Hoxd13.",
+        reporter_vector="pGL4Zc",
+        reporter_vector_accession="MK484108.1",
+        reporter_context_label=(
+            "Fixed sequence between the mutagenized insert and luciferase coding region"
+        ),
+        reporter_context_sequence=PGL4Z_FIXED_DOWNSTREAM_SEQUENCE,
     ),
 )
 
@@ -568,14 +614,43 @@ def build_source_record(element: PreparedElement) -> dict[str, Any]:
                 "quantile_bin": quantile_bin,
             }
         )
+    if element.spec.element_class == "promoter":
+        reporter_configuration = (
+            "The complete mutagenized insert shown below directly drives a firefly "
+            "luciferase reporter from an episomal plasmid."
+        )
+        reporter_context = (
+            "**Reporter interface:** The mutagenized insert directly drives the reporter; "
+            "no separate minimal promoter is present."
+        )
+    else:
+        reporter_configuration = (
+            "The complete mutagenized insert shown below is placed upstream of a minimal promoter "
+            "that drives a firefly luciferase reporter from an episomal plasmid."
+        )
+        if (
+            element.spec.reporter_context_label is None
+            or element.spec.reporter_context_sequence is None
+        ):
+            raise SatMutPreparationError(
+                f"{element.spec.cadd_label}: enhancer reporter context is missing"
+            )
+        reporter_context = (
+            f"**{element.spec.reporter_context_label} (reporter-construct orientation):**\n\n"
+            "```fasta\n"
+            ">reporter_context\n"
+            f"{_format_fasta_sequence(element.spec.reporter_context_sequence)}\n"
+            "```"
+        )
     assay_context = "\n".join(
         (
-            f"- Regulatory element: {element.spec.model_name}",
-            f"- Element class: {element.spec.element_class}",
-            f"- Cell line: {element.spec.cell_line}",
-            "- Assay: saturation-mutagenesis MPRA with barcode-linked reporter "
-            "quantification; activity effects are signed log2-scale regression coefficients.",
-            f"- Experimental context: {element.spec.experimental_context}",
+            f"- Reporter configuration: {reporter_configuration} Linked random barcodes "
+            "are in the reporter transcript's 3-prime UTR.",
+            f"- Cellular context: {element.spec.cell_line} cells.",
+            f"- Measurement: Reporter activity was measured "
+            f"{element.spec.transfection_hours} hours after transfection. "
+            f"{element.spec.experimental_context} Activity effects are signed log2-scale "
+            "regression coefficients from barcode-linked reporter quantification.",
         )
     )
     return {
@@ -583,6 +658,7 @@ def build_source_record(element: PreparedElement) -> dict[str, Any]:
         "source_record_id": element.spec.cadd_label,
         "assay_context": assay_context,
         "reference_sequence": element.metadata.mavedb_sequence,
+        "reporter_context": reporter_context,
         "candidates": candidates,
         "task_family": TASK_FAMILY,
         "tags": ["grch38", "mpra", "noncoding", "quantitative", "ranking", "satmut"],
@@ -591,8 +667,19 @@ def build_source_record(element: PreparedElement) -> dict[str, Any]:
             "cadd_element_label": element.spec.cadd_label,
             "mavedb_score_set_urn": element.spec.mavedb_urn,
             "source_study_element_label": element.spec.source_study_label,
-            "model_visible_name": element.spec.model_name,
+            "display_name": element.spec.model_name,
             "assembly": "GRCh38",
+            "element_class": element.spec.element_class,
+            "measurement": {
+                "transfection_hours": element.spec.transfection_hours,
+                "experimental_context": element.spec.experimental_context,
+            },
+            "reporter": {
+                "vector": element.spec.reporter_vector,
+                "genbank_accession": element.spec.reporter_vector_accession,
+                "context_label": element.spec.reporter_context_label,
+                "context_sequence": element.spec.reporter_context_sequence,
+            },
             "target": {
                 "chrom": element.metadata.chrom,
                 "start": element.metadata.start,
@@ -605,6 +692,10 @@ def build_source_record(element: PreparedElement) -> dict[str, Any]:
             "selected_candidates": private_candidates,
         },
     }
+
+
+def _format_fasta_sequence(sequence: str, width: int = 80) -> str:
+    return "\n".join(sequence[index : index + width] for index in range(0, len(sequence), width))
 
 
 def write_prepared_dataset(
@@ -670,6 +761,11 @@ def write_prepared_dataset(
                 "synthetic contig element; 1-based POS relative to displayed reference sequence"
             ),
             "model_visible_sequence": MODEL_VISIBLE_SEQUENCE_POLICY,
+            "model_visible_identity": "omitted; retained as display metadata",
+            "model_visible_reporter_context": (
+                "physical promoter/enhancer reporter architecture; fixed promoter sequence "
+                "for enhancer constructs"
+            ),
         },
         "sources": dict(source_provenance),
         "crosswalk": [
@@ -678,10 +774,15 @@ def write_prepared_dataset(
                 "cadd_element_label": spec.cadd_label,
                 "mavedb_score_set_urn": spec.mavedb_urn,
                 "source_study_element_label": spec.source_study_label,
-                "model_visible_name": spec.model_name,
+                "display_name": spec.model_name,
                 "element_class": spec.element_class,
                 "cell_line": spec.cell_line,
+                "transfection_hours": spec.transfection_hours,
                 "experimental_context": spec.experimental_context,
+                "reporter_vector": spec.reporter_vector,
+                "reporter_vector_accession": spec.reporter_vector_accession,
+                "reporter_context_label": spec.reporter_context_label,
+                "reporter_context_sequence": spec.reporter_context_sequence,
             }
             for spec in ELEMENT_SPECS
         ],
@@ -746,7 +847,20 @@ def validate_prepared_artifacts(
     population_elements = population["elements"]
     crosswalk = manifest.get("crosswalk")
     expected_crosswalk = {
-        (spec.cadd_filename, spec.mavedb_urn, spec.source_study_label, spec.model_name)
+        (
+            spec.cadd_filename,
+            spec.mavedb_urn,
+            spec.source_study_label,
+            spec.model_name,
+            spec.element_class,
+            spec.cell_line,
+            spec.transfection_hours,
+            spec.experimental_context,
+            spec.reporter_vector,
+            spec.reporter_vector_accession,
+            spec.reporter_context_label,
+            spec.reporter_context_sequence,
+        )
         for spec in ELEMENT_SPECS
     }
     if (
@@ -756,7 +870,15 @@ def validate_prepared_artifacts(
                 row.get("cadd_filename"),
                 row.get("mavedb_score_set_urn"),
                 row.get("source_study_element_label"),
-                row.get("model_visible_name"),
+                row.get("display_name"),
+                row.get("element_class"),
+                row.get("cell_line"),
+                row.get("transfection_hours"),
+                row.get("experimental_context"),
+                row.get("reporter_vector"),
+                row.get("reporter_vector_accession"),
+                row.get("reporter_context_label"),
+                row.get("reporter_context_sequence"),
             )
             for row in crosswalk
             if isinstance(row, dict)
@@ -777,14 +899,38 @@ def validate_prepared_artifacts(
         labels.append(label)
         candidates = record.get("candidates")
         metadata = record.get("source_metadata")
+        spec = SPEC_BY_LABEL[label]
         if not isinstance(candidates, list) or len(candidates) != PANEL_SIZE:
             raise SatMutPreparationError(f"{label}: expected exactly 50 candidates")
         if not isinstance(metadata, dict):
             raise SatMutPreparationError(f"{label}: missing private source metadata")
         private = metadata.get("selected_candidates")
         target = metadata.get("target")
+        measurement = metadata.get("measurement")
+        reporter = metadata.get("reporter")
         if not isinstance(private, list) or len(private) != PANEL_SIZE:
             raise SatMutPreparationError(f"{label}: private candidate provenance mismatch")
+        if measurement != {
+            "transfection_hours": spec.transfection_hours,
+            "experimental_context": spec.experimental_context,
+        }:
+            raise SatMutPreparationError(f"{label}: measurement provenance mismatch")
+        if reporter != {
+            "vector": spec.reporter_vector,
+            "genbank_accession": spec.reporter_vector_accession,
+            "context_label": spec.reporter_context_label,
+            "context_sequence": spec.reporter_context_sequence,
+        }:
+            raise SatMutPreparationError(f"{label}: reporter provenance mismatch")
+        if (
+            not isinstance(record.get("reporter_context"), str)
+            or not record["reporter_context"]
+            or spec.model_name in record.get("assay_context", "")
+            or spec.source_study_label in record.get("assay_context", "")
+            or spec.model_name in record["reporter_context"]
+            or spec.source_study_label in record["reporter_context"]
+        ):
+            raise SatMutPreparationError(f"{label}: model-visible context is invalid")
         if (
             not isinstance(target, dict)
             or not isinstance(target.get("chrom"), str)
