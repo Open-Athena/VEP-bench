@@ -151,6 +151,8 @@ def test_ranking_score_handles_perfect_reversed_tied_and_constant_vectors() -> N
     assert perfect.valid is True
     assert perfect.spearman_rho == pytest.approx(1.0)
     assert perfect.pearson_r == pytest.approx(1.0)
+    assert reversed_score.valid is True
+    assert reversed_score.value == pytest.approx(-1.0)
     assert reversed_score.spearman_rho == pytest.approx(-1.0)
     assert reversed_score.pearson_r == pytest.approx(-1.0)
     assert tied.spearman_rho == pytest.approx(1.0)
