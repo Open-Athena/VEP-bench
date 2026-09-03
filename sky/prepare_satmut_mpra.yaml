@@ -1,0 +1,17 @@
+name: vepbench-prepare-satmut-mpra
+
+resources:
+  cpus: 4+
+  memory: 16+
+  disk_size: 20
+  use_spot: false
+
+workdir: .
+
+setup: |
+  python3 -m pip install --user uv==0.12.5
+  ~/.local/bin/uv sync --locked --group prepare
+
+run: |
+  ~/.local/bin/uv run --locked --group prepare \
+    python scripts/prepare_satmut_mpra.py

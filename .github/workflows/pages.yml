@@ -66,6 +66,7 @@ jobs:
         run: |
           uv run --locked python scripts/validate_vep_consequence_artifacts.py
           uv run --locked python scripts/validate_clinvar_artifacts.py
+          uv run --locked python scripts/validate_satmut_mpra_artifacts.py
           uv run --locked vepbench build --output /tmp/questions.jsonl
           cmp benchmark/expected-manifest.json /tmp/questions.manifest.json
           uv run --locked vepbench build \
@@ -75,6 +76,13 @@ jobs:
           cmp \
             benchmark/clinvar-expected-manifest.json \
             /tmp/clinvar-questions.manifest.json
+          uv run --locked vepbench build \
+            --source data/sources/satmut-mpra-cadd-v1.7.jsonl \
+            --template templates/satmut_mpra.json \
+            --output /tmp/satmut-mpra-questions.jsonl
+          cmp \
+            benchmark/satmut-mpra-expected-manifest.json \
+            /tmp/satmut-mpra-questions.manifest.json
 
       - name: Build validated static site
         run: uv run --locked vepbench site --output _site

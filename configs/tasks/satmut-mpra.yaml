@@ -1,0 +1,5 @@
+# Evaluation settings shared by every model run for this task.
+schema_version: "1.0"
+task_family: satmut_mpra
+generation:
+  max_tokens: 128000

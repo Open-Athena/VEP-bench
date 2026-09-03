@@ -46,16 +46,26 @@ function choiceText(question, choiceId) {
 
 export function resultOutcome(result) {
   if (!result) return "Not evaluated";
+  if (result.scoring.metric === "rank_correlation") {
+    return result.scoring.parse_error !== null ? "Format failure" : "Valid prediction";
+  }
   return resultTypeLabel(resultTypeForAnswer(result), result.scoring.correct);
 }
 
 export function entryForAnswer(question, index, result, run, rawArchiveUrl = null) {
+  const ranking = question.task_type === "ranking";
   return {
     question_id: question.question_id,
     question_label: `Q${String(index + 1).padStart(3, "0")}`,
     variant: question.provenance.source_record_id,
-    answer: choiceText(question, question.answer_choice_id),
-    prediction: choiceText(question, result?.scoring.parsed_answer),
+    answer: ranking
+      ? `${question.candidates.length} measured effects`
+      : choiceText(question, question.answer_choice_id),
+    prediction: ranking
+      ? (result?.scoring.parsed_answer
+          ? `${Object.keys(result.scoring.parsed_answer).length} numeric predictions`
+          : "—")
+      : choiceText(question, result?.scoring.parsed_answer),
     outcome: resultOutcome(result),
     question,
     result,
@@ -69,7 +79,9 @@ export function entriesForQuestions(questions) {
     question_id: question.question_id,
     question_label: `Q${String(index + 1).padStart(3, "0")}`,
     variant: question.provenance.source_record_id,
-    answer: choiceText(question, question.answer_choice_id),
+    answer: question.task_type === "ranking"
+      ? `${question.candidates.length} measured effects`
+      : choiceText(question, question.answer_choice_id),
     prediction: "—",
     outcome: "Select to load",
     question,
@@ -85,7 +97,9 @@ export function outcomeBadge(value) {
     Incorrect: "incorrect",
     Refusal: "refusal",
     "Token limit": "token-limit",
-    "Format error": "format-error"
+    "Format error": "format-error",
+    "Format failure": "format-failure",
+    "Valid prediction": "correct"
   }[value] ?? "";
   if (outcome) badge.className = `vepbench-outcome-badge vepbench-outcome-${outcome}`;
   badge.textContent = value;
@@ -104,6 +118,33 @@ function markdownNode(source) {
   node.innerHTML = markdown.render(source ?? "");
   for (const anchor of node.querySelectorAll("a")) anchor.rel = "noreferrer";
   return node;
+}
+
+function rankingReferenceTable(question, result) {
+  const section = element("section");
+  section.append(element("h3", null, "Reference effects"));
+  const table = element("table");
+  const head = element("thead");
+  const header = element("tr");
+  for (const label of ["Candidate", "Measured effect", "Predicted effect"]) {
+    header.append(element("th", null, label));
+  }
+  head.append(header);
+  const body = element("tbody");
+  const parsed = result?.scoring?.parsed_answer;
+  for (const candidate of question.candidates) {
+    const row = element("tr");
+    const predicted = parsed?.[candidate.candidate_id];
+    row.append(
+      element("td", null, candidate.candidate_id),
+      element("td", null, String(candidate.reference_score)),
+      element("td", null, typeof predicted === "number" ? String(predicted) : "—")
+    );
+    body.append(row);
+  }
+  table.append(head, body);
+  section.append(table);
+  return section;
 }
 
 export function questionRecord(entry) {
@@ -129,11 +170,13 @@ export function questionRecord(entry) {
     element("h2", null, "Question"),
     element("span", "muted", entry.question_label)
   );
-  const reference = element(
-    "p",
-    "muted",
-    `Reference answer: ${question.answer_choice_id} · ${entry.answer}`
-  );
+  const reference = question.task_type === "ranking"
+    ? element("p", "muted", `Reference panel: ${entry.answer}`)
+    : element(
+        "p",
+        "muted",
+        `Reference answer: ${question.answer_choice_id} · ${entry.answer}`
+      );
   const consequence = element(
     "p",
     "muted",
@@ -141,7 +184,12 @@ export function questionRecord(entry) {
   );
   const questionBody = markdownNode(question.prompt);
   questionBody.className = "vepbench-record-content";
-  questionColumn.append(questionHeader, reference, consequence, questionBody);
+  questionColumn.append(questionHeader, reference);
+  if (question.task_type !== "ranking") questionColumn.append(consequence);
+  questionColumn.append(questionBody);
+  if (question.task_type === "ranking") {
+    questionColumn.append(rankingReferenceTable(question, result));
+  }
 
   const responseBody = result?.response.content
     ? markdownNode(result.response.content)
@@ -166,11 +214,20 @@ export function questionRecord(entry) {
     element("h2", null, "Answer"),
     outcomeBadge(entry.outcome)
   );
-  const prediction = element(
-    "p",
-    "muted",
-    `Parsed prediction: ${result?.scoring.parsed_answer ?? "—"} · ${entry.prediction}`
-  );
+  const prediction = question.task_type === "ranking"
+    ? element(
+        "p",
+        "muted",
+        result?.scoring.metric === "rank_correlation"
+          ? `Spearman ρ: ${result.scoring.spearman_rho?.toFixed(3) ?? "—"} · `
+            + `Pearson r: ${result.scoring.pearson_r?.toFixed(3) ?? "—"} · ${entry.prediction}`
+          : "No parsed ranking prediction."
+      )
+    : element(
+        "p",
+        "muted",
+        `Parsed prediction: ${result?.scoring.parsed_answer ?? "—"} · ${entry.prediction}`
+      );
   const answerBody = element("div", "vepbench-record-content");
   answerBody.append(responseBody);
 

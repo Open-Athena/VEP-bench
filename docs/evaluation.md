@@ -21,6 +21,15 @@ uv run --locked vepbench build \
   --output .vepbench/clinvar-questions.jsonl
 ```
 
+Build the satMutMPRA ranking questions the same way:
+
+```bash
+uv run --locked vepbench build \
+  --source data/sources/satmut-mpra-cadd-v1.7.jsonl \
+  --template templates/satmut_mpra.json \
+  --output .vepbench/satmut-mpra-questions.jsonl
+```
+
 ## Profiles
 
 A task profile contains settings that must be shared by every model evaluated
@@ -28,7 +37,7 @@ on that task, such as the completion-token ceiling. A model profile contains
 only model- or provider-specific settings. Question paths, result paths, run
 IDs, and secrets remain run-specific.
 
-Both current task profiles use a 128,000-token completion ceiling. This fits
+All current task profiles use a 128,000-token completion ceiling. This fits
 the supported output limit of every benchmarked model while leaving substantial
 headroom for reasoning and the required final answer.
 
@@ -117,7 +126,8 @@ profile can only be changed in that profile.
 ## Completion and failure semantics
 
 Only prompts cross the provider boundary; answer keys never do. A complete
-response receives one flat, deterministic `scoring.result_type`:
+multiple-choice response receives one flat, deterministic
+`scoring.result_type`:
 
 - `correct` or `incorrect` when the last well-formed `FINAL: <choice-id>` line
   identifies a known choice;
@@ -129,10 +139,17 @@ response receives one flat, deterministic `scoring.result_type`:
   answer.
 
 A valid final answer remains `correct` or `incorrect` when the finish reason is
-`length`. Refusal evidence takes precedence over answer parsing. The taxonomy
-does not include provider or transport failures: an API failure has null
-scoring, makes the run incomplete, and causes direct evaluation to exit
-nonzero. Such a run cannot appear in the official leaderboard.
+`length`. Refusal evidence takes precedence over answer parsing.
+
+A complete ranking response must end with a strict JSON mapping containing
+every expected candidate ID exactly once and finite numeric predictions.
+Invalid ranking output receives `-1` for both Spearman and Pearson and is
+counted as a format failure; a constant valid vector receives correlation zero.
+
+The multiple-choice taxonomy does not include provider or transport failures.
+For either task type, an API failure has null scoring, makes the run incomplete,
+and causes direct evaluation to exit nonzero. Such a run cannot appear in the
+official leaderboard.
 
 Local results are written under `.vepbench/results/` unless an output path is
 provided. They preserve provider-exposed reasoning when present, but do not

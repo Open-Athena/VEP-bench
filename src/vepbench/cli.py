@@ -472,6 +472,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     source_paths=[
                         PROJECT_ROOT / "data/sources/chr17-vep-consequences.jsonl",
                         PROJECT_ROOT / "data/sources/clinvar-july-2026.jsonl",
+                        PROJECT_ROOT / "data/sources/satmut-mpra-cadd-v1.7.jsonl",
                     ],
                     consequence_overrides={
                         "vep_most_severe_consequence": consequence_manifest[

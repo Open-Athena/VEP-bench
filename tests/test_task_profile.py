@@ -17,6 +17,13 @@ def test_consequence_task_owns_completion_ceiling() -> None:
     assert len(profile.content_sha256) == 64
 
 
+def test_ranking_task_uses_shared_completion_ceiling() -> None:
+    profile = load_task_profile(ROOT / "configs/tasks/satmut-mpra.yaml")
+
+    assert profile.task_family == "satmut_mpra"
+    assert profile.generation_parameters == {"max_tokens": 128_000}
+
+
 def test_task_profile_rejects_model_specific_generation_settings(
     tmp_path: Path,
 ) -> None:

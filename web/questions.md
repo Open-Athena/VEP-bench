@@ -50,7 +50,13 @@ const missingModel = requestedRunId && !requestedModelRow
   : null;
 const availableModelOptions = modelRows.map((row) => ({
   kind: "model",
-  label: `${row.model_cell.model} · ${row.model_cell.provider} · ${formatPercent(row.accuracy)} overall`,
+  label: `${row.model_cell.model} · ${row.model_cell.provider} · ${
+    row.accuracy !== null
+      ? `${formatPercent(row.accuracy)} classification overall`
+      : row.primary_metric === "spearman" && row.score !== null
+        ? `${row.score.toFixed(3)} Spearman ρ`
+        : "complete task run"
+  }`,
   row
 }));
 const noModels = {kind: "empty", label: "No complete model configurations available"};
@@ -64,17 +70,32 @@ const defaultModelOption = modelOptions.find(
 ) ?? missingModel ?? availableModelOptions[0] ?? noModels;
 const taskName = (taskFamily) => ({
   clinvar: "ClinVar",
+  satmut_mpra: "satMutMPRA ranking",
   vep_most_severe_consequence: "Consequence classification"
 })[taskFamily] ?? taskFamily;
+const resultLabel = (outcome) => outcome?.result_type !== undefined
+  ? resultTypeLabel(outcome.result_type, outcome.correct)
+  : outcome?.valid === true
+    ? "Valid prediction"
+    : outcome?.valid === false
+      ? "Format failure"
+      : "Not scored";
 const questionEntries = entriesForQuestions(
   orderQuestionsForExplorer(questionState.document.questions)
 ).map((entry) => ({
   ...entry,
   task: taskName(entry.question.metadata.task_family),
-  consequence: metadataState.document.by_task_family
-    ?.[entry.question.metadata.task_family]
-    ?.[entry.question.provenance.source_record_id]
-    ?.consequence ?? "—"
+  consequence: (
+    metadataState.document.by_task_family
+      ?.[entry.question.metadata.task_family]
+      ?.[entry.question.provenance.source_record_id]
+      ?.consequence
+    ?? metadataState.document.by_task_family
+      ?.[entry.question.metadata.task_family]
+      ?.[entry.question.provenance.source_record_id]
+      ?.element
+    ?? "—"
+  )
 }));
 const requestedQuestion = questionEntries.find(
   (entry) => entry.question_id === requestedQuestionId
@@ -91,7 +112,7 @@ if (runsState.error || questionState.error) {
   display(html`<div class="note" label="Published data unavailable">The official benchmark data could not be loaded from <code>versions/main</code>.</div>`);
 }
 if (metadataState.error) {
-  display(html`<div class="note" label="Metadata unavailable">Question consequence metadata could not be loaded.</div>`);
+  display(html`<div class="note" label="Metadata unavailable">Question display metadata could not be loaded.</div>`);
 }
 ```
 
@@ -116,14 +137,16 @@ const controlsInput = Inputs.form({
     ...[...new Set(questionEntries.map((entry) => entry.consequence))]
       .filter((consequence) => consequence !== "—")
       .sort()
-  ], {label: "Consequence"}),
+  ], {label: "Consequence / element"}),
   result: Inputs.select([
     "All results",
     "Correct",
     "Incorrect",
     "Refusal",
     "Token limit",
-    "Format error"
+    "Format error",
+    "Valid prediction",
+    "Format failure"
   ], {label: "Result"})
 });
 controlsInput.style.display = "flex";
@@ -168,7 +191,7 @@ const outcomesByQuestion = new Map(
   outcomeStates.flatMap((state) =>
     (state.value?.outcomes ?? []).map((outcome) => [
       outcome.question_id,
-      resultTypeLabel(outcome.result_type, outcome.correct)
+      resultLabel(outcome)
     ])
   )
 );
@@ -202,7 +225,7 @@ const questionTable = Inputs.table(visibleEntries, {
     question_label: "Question",
     task: "Task",
     variant: "Source record",
-    consequence: "Consequence",
+    consequence: "Consequence / element",
     outcome: "Result"
   },
   format: {

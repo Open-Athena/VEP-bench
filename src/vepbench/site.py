@@ -39,11 +39,18 @@ def build_question_metadata(
             )
             if consequence is None:
                 consequence = overrides.get(task_family, {}).get(source_record_id)
-            if not isinstance(consequence, str) or not consequence:
-                raise BuildError(
-                    f"{source_path}: {source_record_id!r} is missing consequence metadata"
-                )
-            task_records[source_record_id] = {"consequence": consequence}
+            if isinstance(consequence, str) and consequence:
+                display_metadata = {"consequence": consequence}
+            elif isinstance(source_metadata, dict) and all(
+                isinstance(source_metadata.get(field), str) and source_metadata[field]
+                for field in ("model_visible_name",)
+            ):
+                display_metadata = {
+                    "element": source_metadata["model_visible_name"],
+                }
+            else:
+                raise BuildError(f"{source_path}: {source_record_id!r} is missing display metadata")
+            task_records[source_record_id] = display_metadata
     return {
         "schema_version": "1.0",
         "by_task_family": {

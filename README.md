@@ -11,12 +11,12 @@ explorer.
 
 VEPBench uses deterministic, versioned question sets built from biological
 reference data. Models receive only the model-visible prompt; answer keys stay
-local and scoring is deterministic exact match.
+local and scoring is deterministic.
 
 The benchmark is intentionally transparent:
 
 - questions and reference answers are public development data;
-- prompts use multiple-choice answers with an unambiguous final-answer format;
+- prompts use strict, machine-readable final-answer formats;
 - complete responses and provider-exposed reasoning are preserved when
   available;
 - evaluations use one OpenRouter integration; and
@@ -31,6 +31,7 @@ direct source leakage but do not guarantee absence from training data.
 | --- | --- | --- | ---: |
 | [Ensembl VEP most-severe consequence](docs/tasks/vep-most-severe-consequence.md) | A centered GRCh38 sequence window and SNV alleles | Ensembl VEP consequence class | 51 |
 | [ClinVar](docs/tasks/clinvar.md) | A centered GRCh38 sequence window and SNV alleles | ClinVar Benign or Pathogenic | 42 |
+| [satMutMPRA regulatory-effect ranking](docs/tasks/satmut-mpra.md) | Assay context, a full GRCh38 regulatory-element sequence, and a 50-variant panel | Signed reporter-activity effects | 16 |
 
 Each task has its own versioned sources, prompt, methodology, limitations, and
 results. Task details live under [`docs/tasks/`](docs/tasks/README.md) so new
@@ -39,11 +40,12 @@ tasks can be added without making this README task-specific.
 ## Results
 
 The [explorer](https://openathena.ai/VEPBench/) provides a provisional overall
-score that weights each task equally, plus task-level results and question-level
-prompts, reference answers, model responses, available reasoning, and
-exact-match scores. A model configuration receives an overall score only after
-completing every published task. Each score should be interpreted alongside the
-corresponding tasks' methodology and limitations.
+score that weights each classification task equally, plus task-level results
+and question-level prompts, reference answers, model responses, available
+reasoning, and deterministic scores. Quantitative ranking tasks have separate
+leaderboards because correlation is not commensurate with exact match. Each
+score should be interpreted alongside the corresponding task's methodology and
+limitations.
 
 ## Documentation
 

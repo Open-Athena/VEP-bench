@@ -33,8 +33,10 @@ uv run --locked vepbench version-build \
   --version two-task-medium \
   --questions .vepbench/questions.jsonl \
   --questions .vepbench/clinvar-questions.jsonl \
+  --questions .vepbench/satmut-mpra-questions.jsonl \
   --results-dir .vepbench/publication-results/consequence \
   --results-dir .vepbench/publication-results/clinvar \
+  --results-dir .vepbench/publication-results/satmut-mpra \
   --output /tmp/vepbench-publication
 ```
 
@@ -143,8 +145,11 @@ loaded one compressed object at a time. Outcome indexes built before the flat
 result taxonomy remain readable through their boolean correctness field.
 Complete raw archives remain downloadable without requiring a backend.
 
-For multi-task publications, `runs.json` also names the required evaluation
-profiles and the aggregation method. The current provisional overall score is
-an equal-weight mean of per-task exact-match accuracies and is shown only for
-configurations with complete coverage of every required profile. Overall cost
-and token counts are sums across those task runs.
+For multi-task publications, `runs.json` also names each evaluation profile,
+its task type and primary metric, and the aggregation method. The current
+provisional overall score is an equal-weight mean of classification-task
+exact-match accuracies and is shown only for configurations with complete
+coverage of every classification profile. Ranking tasks have task-specific
+leaderboards using mean Spearman correlation; Pearson correlation and valid
+output rate are also published. Overall cost and token counts sum only the
+classification runs included in the overall score.

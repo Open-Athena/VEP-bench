@@ -11,6 +11,7 @@ task-specific manual.
 | --- | --- | --- |
 | [Ensembl VEP most-severe consequence](vep-most-severe-consequence.md) | `vep_most_severe_consequence` | Published public development set |
 | [ClinVar](clinvar.md) | `clinvar` | Prepared temporal public development set |
+| [satMutMPRA regulatory-effect ranking](satmut-mpra.md) | `satmut_mpra` | Prepared public development set |
 
 ## Documentation convention
 
