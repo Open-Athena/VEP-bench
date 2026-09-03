@@ -36,8 +36,6 @@ const entries = entriesForQuestions(orderedQuestions)
   }));
 ```
 
-*Assay 03 · quantitative regulatory-effect ranking*
-
 # satMutMPRA
 
 ```js
