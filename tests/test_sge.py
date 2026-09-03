@@ -376,11 +376,11 @@ def test_committed_sge_artifacts_and_question_set_are_complete() -> None:
     )
     assert all(summary["status"] == "included" for summary in manifest["population"].values())
     assert expected_questions == {
-        "bytes": 136_048,
+        "bytes": 135_178,
         "path": "sge-questions.jsonl",
         "records": 15,
         "schema_version": "1.0",
-        "sha256": "70f96a265a08d11d931ec7fe30d8f9a34c37d0a593cd63124d55fb5fe60e6d00",
+        "sha256": "7f82c0e4851e3cf3e4379d8439d536ec5fb91bfafd0c8d87d36509a0524958f5",
     }
     assert len(records) == len(questions) == 15
 
