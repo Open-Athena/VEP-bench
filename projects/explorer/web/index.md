@@ -1,5 +1,5 @@
 ---
-title: Leaderboard
+title: VEP-bench
 ---
 
 ```js
@@ -54,7 +54,13 @@ const metricInput = Inputs.select(metricOptions, {
 metricInput.style.maxWidth = "22rem";
 ```
 
-# Leaderboard
+# VEP-bench
+
+VEP-bench is a public benchmark of language models' native ability to predict
+genetic variant effects. Models answer without internet access or tools, and
+every response and deterministic score can be inspected.
+
+## Leaderboard
 
 ```js
 const selectedTask = view(taskInput);
