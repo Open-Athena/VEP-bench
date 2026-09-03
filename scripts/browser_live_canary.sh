@@ -35,7 +35,7 @@ for check in \
   'leaderboard.dom.html|>Score<' \
   'task.dom.html|>satMutMPRA</a></h1>' \
   'task.dom.html|>Task version<' \
-  'task.dom.html|questions match the current filters' \
+  'task.dom.html|element panels match the current filter' \
   'question.dom.html|>Questions<' \
   'question.dom.html|>Prompt given to model<' \
   'question.dom.html|Reference panel: 50 candidate variants' \
