@@ -59,7 +59,7 @@ jobs:
                 evaluator=true
                 task=true
                 ;;
-              data/sources/*|tasks/satmut-mpra/*|sky/prepare_satmut_mpra.yaml|scripts/run_prepare_satmut_mpra_sky.sh|scripts/validate_satmut_mpra_artifacts.py|tests/test_satmut_cache.py|tests/test_satmut_mpra.py)
+              data/sources/*|tasks/satmut-mpra/*|tasks/sge/*|sky/prepare_satmut_mpra.yaml|sky/prepare_sge.yaml|scripts/run_prepare_satmut_mpra_sky.sh|scripts/run_prepare_sge_sky.sh|scripts/validate_satmut_mpra_artifacts.py|scripts/validate_sge_artifacts.py|tests/test_satmut_cache.py|tests/test_satmut_mpra.py|tests/test_sge_cache.py|tests/test_sge.py)
                 task=true
                 ;;
               tests/test_batch.py|tests/test_builder.py|tests/test_cli.py|tests/test_evaluator.py|tests/test_model_profile.py|tests/test_question_fetch.py|tests/test_task_profile.py)
@@ -141,11 +141,11 @@ jobs:
         run: uv run --no-sync pytest tests/test_publication.py tests/test_bucket.py
 
   task:
-    name: satMutMPRA task
+    name: Benchmark tasks
     if: needs.changes.outputs.task == 'true'
     needs: changes
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -157,10 +157,15 @@ jobs:
           enable-cache: true
 
       - name: Install task tests
-        run: uv sync --locked --package vepbench-task-satmut-mpra --group test
+        run: uv sync --locked --all-packages --group test
 
       - name: Run task tests
-        run: uv run --no-sync pytest tests/test_satmut_mpra.py tests/test_satmut_cache.py
+        run: >-
+          uv run --no-sync pytest
+          tests/test_satmut_mpra.py
+          tests/test_satmut_cache.py
+          tests/test_sge.py
+          tests/test_sge_cache.py
 
       - name: Verify generated benchmark artifacts
         run: |
@@ -171,6 +176,13 @@ jobs:
           cmp \
             benchmark/satmut-mpra-expected-manifest.json \
             /tmp/satmut-mpra-questions.manifest.json
+          uv run --no-sync vepbench-sge validate
+          uv run --no-sync vepbench questions build \
+            --task configs/tasks/sge/task.yaml \
+            --output /tmp/sge-questions.jsonl
+          cmp \
+            benchmark/sge-expected-manifest.json \
+            /tmp/sge-questions.manifest.json
 
   test:
     name: Test

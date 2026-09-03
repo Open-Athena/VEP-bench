@@ -24,6 +24,9 @@ uv sync --locked --package vepbench-publishing --extra bucket --group test
 # satMutMPRA source preparation
 uv sync --locked --package vepbench-task-satmut-mpra --group test
 
+# SGE source preparation and its offline tests
+uv sync --locked --package vepbench-task-sge --group test
+
 # Repository-wide Python quality tools
 uv sync --locked --all-packages --all-extras --group quality
 uv run --no-sync pre-commit install
@@ -41,6 +44,7 @@ PyPI. Do not add a parallel pip, Poetry, Pipenv, or Conda workflow. Commit both
 | `projects/explorer/` | Private static-site Python and Node project |
 | `projects/publishing/` | Private publication and bucket project |
 | `tasks/satmut-mpra/` | Private satMutMPRA preparation project and YAML configuration |
+| `tasks/sge/` | Private SGE catalog, coordinate, consequence, and panel preparation project |
 | `data/sources/` | Compact deterministic task sources and provenance manifests |
 | `configs/tasks/` | Versioned YAML task descriptors and model-visible prompts |
 | `configs/models/` | Model- and provider-specific YAML settings |
@@ -70,6 +74,12 @@ uv run --no-sync vepbench questions build \
   --output /tmp/satmut-mpra-questions.jsonl
 cmp benchmark/satmut-mpra-expected-manifest.json \
   /tmp/satmut-mpra-questions.manifest.json
+uv run --no-sync vepbench-sge validate
+uv run --no-sync vepbench questions build \
+  --task configs/tasks/sge/task.yaml \
+  --output /tmp/sge-questions.jsonl
+cmp benchmark/sge-expected-manifest.json \
+  /tmp/sge-questions.manifest.json
 npm test --prefix projects/explorer
 uv run --no-sync vepbench-site build \
   --config projects/explorer/config/site.yaml \
@@ -110,7 +120,13 @@ published questions there under a content-digest filename. Generated question
 JSONL and production result JSONL are ignored and are not tracked in Git. The
 public bucket is their canonical published home; Git keeps generation code,
 compact sources, schemas, tests, and the small
-`benchmark/satmut-mpra-expected-manifest.json` fingerprint.
+task-specific expected-manifest fingerprints under `benchmark/`.
+
+The full SGE source build must use the checked-in SkyPilot entry point because
+its pinned chromosome consequence objects exceed the shared VM's memory and
+I/O limits. The compact generated source and manifest are copied back and
+validated locally; tests never download MaveDB, cdot, reference, GTF, or
+consequence inputs.
 
 Live or paid model calls must remain explicit local actions. Tests and CI use
 fake transports and never read `OPENROUTER_API_KEY`. Small synthetic fixtures

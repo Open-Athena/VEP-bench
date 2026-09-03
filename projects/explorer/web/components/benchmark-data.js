@@ -1,7 +1,8 @@
 const SAFE_ID = /^[A-Za-z0-9][A-Za-z0-9._:-]*$/;
 const AUTO_ROUTED_PROVIDER = "OpenRouter auto-routing";
 const EXPLORER_TASK_ORDER = new Map([
-  ["satmut_mpra", 0]
+  ["satmut_mpra", 0],
+  ["sge", 1]
 ]);
 const RESULT_TYPE_LABELS = Object.freeze({
   correct: "Correct",
@@ -226,6 +227,14 @@ export function overallLeaderboardRows(runs, leaderboard) {
     rows.push(row);
   }
   return sortLeaderboardRows(rows);
+}
+
+export function supportsOverallLeaderboard(leaderboard) {
+  const profiles = leaderboard?.evaluation_profiles;
+  if (!Array.isArray(profiles) || profiles.length === 0) return false;
+  if (leaderboard.aggregation_method === "task_macro_average_v0") return true;
+  return leaderboard.aggregation_method === "classification_task_macro_average_v0"
+    && profiles.some((profile) => profile.task_type === "multiple_choice");
 }
 
 export function leaderboardRowsForScope(runs, leaderboard, taskFamily = null) {

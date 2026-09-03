@@ -1,0 +1,23 @@
+[project]
+name = "vepbench-task-sge"
+version = "0.1.0"
+description = "Private preparation tooling for the VEP-bench SGE task"
+requires-python = "==3.14.*"
+dependencies = [
+    "fsspec[http]>=2026.5.0,<2027",
+    "huggingface-hub[hf-xet]>=1.6,<2",
+    "polars>=1.37,<2",
+    "pyfaidx>=0.9,<1",
+    "pyhgvs>=0.11.1,<0.12",
+    "vepbench",
+]
+
+[project.scripts]
+vepbench-sge = "vepbench_sge.cli:main"
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/vepbench_sge"]

@@ -9,13 +9,14 @@ from vepbench.errors import BuildError
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / "projects/explorer/web"
 SATMUT_SOURCE = ROOT / "data/sources/satmut-mpra-cadd-v1.7.jsonl"
+SGE_SOURCE = ROOT / "data/sources/sge-mavedb-2026-09-03.jsonl"
 OFFICIAL_DATA_BASE_URL = (
     "https://huggingface.co/buckets/open-athena/VEP-bench/resolve/versions/main"
 )
 
 
 def production_question_metadata() -> dict:
-    return build_question_metadata(source_paths=[SATMUT_SOURCE])
+    return build_question_metadata(source_paths=[SATMUT_SOURCE, SGE_SOURCE])
 
 
 def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path) -> None:
@@ -31,12 +32,15 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     assert config["data_base_url"] == OFFICIAL_DATA_BASE_URL
     assert json.loads((output / "data/config.json").read_text()) == config
     assert json.loads((output / "data/question-metadata.json").read_text()) == metadata
-    assert set(metadata["by_task_family"]) == {"satmut_mpra"}
+    assert set(metadata["by_task_family"]) == {"satmut_mpra", "sge"}
     assert len(metadata["by_task_family"]["satmut_mpra"]) == 16
+    assert len(metadata["by_task_family"]["sge"]) == 15
     assert metadata["by_task_family"]["satmut_mpra"]["GP1BA"] == {"element": "GP1BB promoter"}
+    assert metadata["by_task_family"]["sge"]["BAP1"] == {"element": "BAP1"}
     assert (output / "index.md").is_file()
     assert not (output / "questions.md").exists()
     assert (output / "tasks/satmut-mpra.md").is_file()
+    assert (output / "tasks/sge.md").is_file()
     assert not (output / "tasks/consequence-classification.md").exists()
     assert not (output / "tasks/clinvar.md").exists()
     assert not (output / "data/explorer.json").exists()
@@ -44,7 +48,8 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     assert not (output / "data/results").exists()
     leaderboard_source = (output / "index.md").read_text(encoding="utf-8")
     assert 'label: "Task"' in leaderboard_source
-    assert '{task_family: null, label: "All tasks"}' in leaderboard_source
+    assert "supportsOverallLeaderboard(aggregation)" in leaderboard_source
+    assert "? [null]" in leaderboard_source
     assert "value: taskOptions[0]" in leaderboard_source
     assert 'columns: ["model", "score", "release_date", "tokens", "cost"]' in (leaderboard_source)
     assert "Unscored model attempts" in leaderboard_source
@@ -70,6 +75,10 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     assert "markdownNode(question.prompt)" in component_source
     assert "Reference effects" not in component_source
     assert "Measured effect" not in component_source
+    sge_source = (output / "tasks/sge.md").read_text(encoding="utf-8")
+    assert 'const taskFamily = "sge";' in sge_source
+    assert "gene: Inputs.select([" in sge_source
+    assert "Reference effects" not in sge_source
 
 
 def test_question_metadata_requires_display_metadata_for_every_task_record(tmp_path: Path) -> None:
