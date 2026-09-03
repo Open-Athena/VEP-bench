@@ -4,7 +4,7 @@ title: Tasks
 
 # Tasks
 
-Browse benchmark tasks and inspect their published questions, reference answers, model responses, and exact-match scores.
+Browse benchmark tasks and inspect their published questions, reference answers, model responses, and deterministic scores.
 
 <div class="card">
 
@@ -31,5 +31,19 @@ Classify a GRCh38 SNV as Benign or Pathogenic from local sequence, using a July 
 - Temporal public development questions with hidden clinical provenance
 
 [Open task →](./tasks/clinvar.html)
+
+</div>
+
+<div class="card">
+
+## satMutMPRA regulatory-effect ranking
+
+Predict signed reporter-activity effects for panels sampled across the measured effect distribution of 16 regulatory elements.
+
+- 16 element-level questions with 50 variants each
+- Full assayed element sequence, assay context, and compact VCF input
+- Mean within-element Spearman correlation, with Pearson and output-validity diagnostics
+
+[Open task →](./tasks/satmut-mpra.html)
 
 </div>

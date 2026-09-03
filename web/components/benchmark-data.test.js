@@ -33,24 +33,38 @@ function run({
   family = "Test family",
   modelId = "test/model",
   provider = "Test provider",
+  pearson = null,
   releaseDate = "2026-07-09",
   runId = "test-run",
+  spearman = null,
+  taskType = null,
   tokens = 1200,
-  cost = 0.25
+  cost = 0.25,
+  validOutputRate = null
 } = {}) {
-  return {
+  const metrics = taskType === "ranking"
+    ? {
+        format_failures: validOutputRate === 1 ? 0 : 1,
+        mean_pearson_r: pearson,
+        mean_spearman_rho: spearman,
+        total_tokens: tokens,
+        total_cost_usd: cost,
+        valid_output_rate: validOutputRate
+      }
+    : {
+        accuracy,
+        format_failures: 0,
+        total_tokens: tokens,
+        total_cost_usd: cost
+      };
+  const value = {
     answer_prefix: `answers/${runId}/`,
     completed_at: completedAt,
     configuration_key: configurationKey,
     coverage: {complete},
     generation_parameters: {reasoning: {effort}},
     evaluation_profile: evaluationProfile,
-    metrics: {
-      accuracy,
-      format_failures: 0,
-      total_tokens: tokens,
-      total_cost_usd: cost
-    },
+    metrics,
     model: {
       model_id: modelId,
       family,
@@ -62,6 +76,8 @@ function run({
     question_set_size: 1,
     run_id: runId
   };
+  if (taskType) value.task_type = taskType;
+  return value;
 }
 
 test("leaderboard keeps the latest complete run per model configuration", () => {
@@ -206,9 +222,123 @@ test("leaderboard scope switches score, tokens, and cost to one task", () => {
 
 test("task selectors use the benchmark presentation order", () => {
   assert.deepEqual(
-    orderTaskFamilies(["clinvar", "future_task", "vep_most_severe_consequence"]),
-    ["vep_most_severe_consequence", "clinvar", "future_task"]
+    orderTaskFamilies([
+      "satmut_mpra",
+      "clinvar",
+      "future_task",
+      "vep_most_severe_consequence"
+    ]),
+    ["vep_most_severe_consequence", "clinvar", "satmut_mpra", "future_task"]
   );
+});
+
+test("ranking scope uses Spearman and exposes ranking diagnostics", () => {
+  const leaderboard = {
+    aggregation_method: "classification_task_macro_average_v0",
+    evaluation_profiles: [{
+      task_family: "satmut_mpra",
+      evaluation_profile: "satmut_mpra:satmut-mpra-ranking-v1@1.0",
+      primary_metric: "spearman",
+      task_type: "ranking"
+    }]
+  };
+  const rows = leaderboardRowsForScope([
+    run({
+      accuracy: null,
+      evaluationProfile: "satmut_mpra:satmut-mpra-ranking-v1@1.0",
+      pearson: 0.41,
+      runId: "ranking-run",
+      spearman: -0.22,
+      taskType: "ranking",
+      validOutputRate: 0.9375
+    })
+  ], leaderboard, "satmut_mpra");
+
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0].score, -0.22);
+  assert.equal(rows[0].pearson, 0.41);
+  assert.equal(rows[0].valid_output_rate, 0.9375);
+  assert.equal(rows[0].primary_metric, "spearman");
+});
+
+test("classification overall excludes ranking but model selection retains its run", () => {
+  const leaderboard = {
+    aggregation_method: "classification_task_macro_average_v0",
+    evaluation_profiles: [
+      {
+        task_family: "clinvar",
+        evaluation_profile: "clinvar:clinvar-snv-v1@1.0",
+        primary_metric: "exact_match",
+        task_type: "multiple_choice"
+      },
+      {
+        task_family: "satmut_mpra",
+        evaluation_profile: "satmut_mpra:satmut-mpra-ranking-v1@1.0",
+        primary_metric: "spearman",
+        task_type: "ranking"
+      }
+    ]
+  };
+  const runs = [
+    run({
+      accuracy: 0.75,
+      evaluationProfile: "clinvar:clinvar-snv-v1@1.0",
+      runId: "model-clinvar"
+    }),
+    run({
+      configurationKey: `cfg-${"1".repeat(64)}`,
+      evaluationProfile: "satmut_mpra:satmut-mpra-ranking-v1@1.0",
+      pearson: 0.3,
+      runId: "model-ranking",
+      spearman: 0.4,
+      taskType: "ranking",
+      validOutputRate: 1
+    })
+  ];
+
+  const overall = overallLeaderboardRows(runs, leaderboard);
+  assert.equal(overall.length, 1);
+  assert.equal(overall[0].score, 0.75);
+  assert.deepEqual(overall[0].runs.map((candidate) => candidate.run_id), ["model-clinvar"]);
+
+  const selections = modelSelectionRows(runs, leaderboard);
+  assert.equal(selections.length, 1);
+  assert.equal(runForTask(selections[0], "satmut_mpra").run_id, "model-ranking");
+});
+
+test("model selection includes a configuration with only a complete ranking run", () => {
+  const leaderboard = {
+    aggregation_method: "classification_task_macro_average_v0",
+    evaluation_profiles: [
+      {
+        task_family: "clinvar",
+        evaluation_profile: "clinvar:clinvar-snv-v1@1.0",
+        primary_metric: "exact_match",
+        task_type: "multiple_choice"
+      },
+      {
+        task_family: "satmut_mpra",
+        evaluation_profile: "satmut_mpra:satmut-mpra-ranking-v1@1.0",
+        primary_metric: "spearman",
+        task_type: "ranking"
+      }
+    ]
+  };
+  const ranking = run({
+    evaluationProfile: "satmut_mpra:satmut-mpra-ranking-v1@1.0",
+    pearson: 0.3,
+    runId: "ranking-only",
+    spearman: 0.4,
+    taskType: "ranking",
+    validOutputRate: 1
+  });
+
+  const selections = modelSelectionRows([ranking], leaderboard);
+
+  assert.equal(selections.length, 1);
+  assert.equal(selections[0].accuracy, null);
+  assert.equal(selections[0].score, 0.4);
+  assert.equal(runForTask(selections[0], "satmut_mpra").run_id, "ranking-only");
 });
 
 test("model selection has one best-first row with a task run for each model", () => {

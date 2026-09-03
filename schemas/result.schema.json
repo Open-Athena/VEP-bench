@@ -23,39 +23,175 @@
     "error"
   ],
   "properties": {
-    "schema_version": {
-      "const": "1.0"
-    },
-    "run_id": {
-      "type": "string",
-      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
-      "maxLength": 200
-    },
-    "question_id": {
-      "type": "string",
-      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
-      "maxLength": 200
-    },
-    "question_sha256": {
-      "$ref": "#/$defs/sha256"
-    },
-    "question_set_sha256": {
-      "$ref": "#/$defs/sha256"
-    },
-    "question_set_size": {
-      "type": "integer",
-      "minimum": 1
-    },
-    "completion_index": {
-      "type": "integer",
-      "minimum": 0
-    },
-    "evaluated_at": {
-      "type": "string",
-      "format": "date-time"
-    },
+    "schema_version": {"enum": ["1.0", "2.0"]},
+    "run_id": {"$ref": "#/$defs/id"},
+    "question_id": {"$ref": "#/$defs/id"},
+    "question_sha256": {"$ref": "#/$defs/sha256"},
+    "question_set_sha256": {"$ref": "#/$defs/sha256"},
+    "question_set_size": {"type": "integer", "minimum": 1},
+    "completion_index": {"type": "integer", "minimum": 0},
+    "evaluated_at": {"type": "string", "format": "date-time"},
     "question": {
       "description": "Complete immutable generated question that was scored.",
+      "oneOf": [
+        {"$ref": "#/$defs/multiple_choice_question"},
+        {"$ref": "#/$defs/ranking_question"}
+      ]
+    },
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gateway", "model_id", "upstream_provider"],
+      "properties": {
+        "gateway": {"const": "openrouter"},
+        "model_id": {"type": "string", "minLength": 1},
+        "model_revision": {"type": ["string", "null"]},
+        "upstream_provider": {"type": ["string", "null"]}
+      }
+    },
+    "generation_parameters": {
+      "description": "The non-secret request parameters that can affect the completion.",
+      "type": "object"
+    },
+    "response": {"$ref": "#/$defs/response"},
+    "scoring": {
+      "oneOf": [
+        {"$ref": "#/$defs/exact_match_scoring"},
+        {"$ref": "#/$defs/ranking_scoring"}
+      ]
+    },
+    "usage": {
+      "description": "Gateway usage plus explicit VEPBench normalization provenance when aggregate batch cost is allocated across results.",
+      "type": "object"
+    },
+    "error": {"type": ["object", "null"]}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"schema_version": {"const": "1.0"}}},
+      "then": {
+        "properties": {
+          "question": {"$ref": "#/$defs/multiple_choice_question"},
+          "scoring": {"$ref": "#/$defs/exact_match_scoring"}
+        }
+      },
+      "else": {
+        "properties": {
+          "question": {"$ref": "#/$defs/ranking_question"},
+          "scoring": {"$ref": "#/$defs/ranking_scoring"}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "response": {
+            "properties": {"status": {"const": "api_error"}},
+            "required": ["status"]
+          }
+        }
+      },
+      "then": {
+        "properties": {"error": {"type": "object"}},
+        "allOf": [
+          {
+            "if": {"properties": {"schema_version": {"const": "1.0"}}},
+            "then": {
+              "properties": {
+                "scoring": {
+                  "properties": {
+                    "value": {"const": null},
+                    "correct": {"const": null},
+                    "parsed_answer": {"const": null},
+                    "parse_error": {"const": null},
+                    "result_type": {"const": null}
+                  }
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "scoring": {
+                  "properties": {
+                    "value": {"const": null},
+                    "spearman_rho": {"const": null},
+                    "pearson_r": {"const": null},
+                    "valid": {"const": null},
+                    "parsed_answer": {"const": null},
+                    "parse_error": {"const": null}
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+      "maxLength": 200
+    },
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "choice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["choice_id", "text"],
+      "properties": {
+        "choice_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "maxLength": 40
+        },
+        "text": {"type": "string", "minLength": 1}
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidate_id", "chrom", "pos", "ref", "alt", "reference_score"],
+      "properties": {
+        "candidate_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "maxLength": 40
+        },
+        "chrom": {"const": "element"},
+        "pos": {"type": "integer", "minimum": 1},
+        "ref": {"type": "string", "pattern": "^[ACGT]+$"},
+        "alt": {"type": "string", "pattern": "^[ACGT]+$"},
+        "reference_score": {"type": "number"}
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_dataset", "source_record_id", "template_id", "template_version"],
+      "properties": {
+        "source_dataset": {"type": "string", "minLength": 1},
+        "source_record_id": {"type": "string", "minLength": 1},
+        "source_record_sha256": {"$ref": "#/$defs/sha256"},
+        "template_id": {"type": "string", "minLength": 1},
+        "template_version": {"type": "string", "minLength": 1}
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["task_family"],
+      "properties": {
+        "task_family": {"type": "string", "minLength": 1},
+        "tags": {
+          "type": "array",
+          "default": [],
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        }
+      }
+    },
+    "multiple_choice_question": {
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -69,110 +205,51 @@
         "metadata"
       ],
       "properties": {
-        "schema_version": {
-          "const": "1.0"
-        },
-        "question_id": {
-          "type": "string",
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
-          "maxLength": 200
-        },
-        "task_type": {
-          "const": "multiple_choice"
-        },
-        "prompt": {
-          "type": "string",
-          "minLength": 1
-        },
+        "schema_version": {"const": "1.0"},
+        "question_id": {"$ref": "#/$defs/id"},
+        "task_type": {"const": "multiple_choice"},
+        "prompt": {"type": "string", "minLength": 1},
         "choices": {
           "type": "array",
           "minItems": 2,
           "uniqueItems": true,
-          "items": {
-            "$ref": "#/$defs/choice"
-          }
+          "items": {"$ref": "#/$defs/choice"}
         },
         "answer_choice_id": {
           "type": "string",
           "pattern": "^[A-Za-z0-9_-]+$",
           "maxLength": 40
         },
-        "provenance": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "source_dataset",
-            "source_record_id",
-            "template_id",
-            "template_version"
-          ],
-          "properties": {
-            "source_dataset": {
-              "type": "string",
-              "minLength": 1
-            },
-            "source_record_id": {
-              "type": "string",
-              "minLength": 1
-            },
-            "source_record_sha256": {
-              "$ref": "#/$defs/sha256"
-            },
-            "template_id": {
-              "type": "string",
-              "minLength": 1
-            },
-            "template_version": {
-              "type": "string",
-              "minLength": 1
-            }
-          }
-        },
-        "metadata": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["task_family"],
-          "properties": {
-            "task_family": {
-              "type": "string",
-              "minLength": 1
-            },
-            "tags": {
-              "type": "array",
-              "default": [],
-              "items": {
-                "type": "string",
-                "minLength": 1
-              },
-              "uniqueItems": true
-            }
-          }
-        }
+        "provenance": {"$ref": "#/$defs/provenance"},
+        "metadata": {"$ref": "#/$defs/metadata"}
       }
     },
-    "model": {
+    "ranking_question": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["gateway", "model_id", "upstream_provider"],
+      "required": [
+        "schema_version",
+        "question_id",
+        "task_type",
+        "prompt",
+        "candidates",
+        "provenance",
+        "metadata"
+      ],
       "properties": {
-        "gateway": {
-          "const": "openrouter"
+        "schema_version": {"const": "2.0"},
+        "question_id": {"$ref": "#/$defs/id"},
+        "task_type": {"const": "ranking"},
+        "prompt": {"type": "string", "minLength": 1},
+        "candidates": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/candidate"}
         },
-        "model_id": {
-          "type": "string",
-          "minLength": 1
-        },
-        "model_revision": {
-          "type": ["string", "null"]
-        },
-        "upstream_provider": {
-          "type": ["string", "null"]
-        }
+        "provenance": {"$ref": "#/$defs/provenance"},
+        "metadata": {"$ref": "#/$defs/metadata"}
       }
-    },
-    "generation_parameters": {
-      "description": "The non-secret request parameters that can affect the completion.",
-      "type": "object"
     },
     "response": {
       "type": "object",
@@ -186,30 +263,21 @@
         "raw"
       ],
       "properties": {
-        "status": {
-          "enum": ["completed", "api_error"]
-        },
-        "content": {
-          "type": ["string", "null"]
-        },
+        "status": {"enum": ["completed", "api_error"]},
+        "content": {"type": ["string", "null"]},
         "reasoning": {
           "description": "Provider-exposed reasoning text or summary, when available.",
           "type": ["string", "null"]
         },
-        "finish_reason": {
-          "type": ["string", "null"]
-        },
-        "latency_seconds": {
-          "type": ["number", "null"],
-          "minimum": 0
-        },
+        "finish_reason": {"type": ["string", "null"]},
+        "latency_seconds": {"type": ["number", "null"], "minimum": 0},
         "raw": {
           "description": "Complete JSON response returned by OpenRouter, or null on transport failure.",
           "type": ["object", "null"]
         }
       }
     },
-    "scoring": {
+    "exact_match_scoring": {
       "type": "object",
       "additionalProperties": false,
       "required": ["metric", "parsed_answer", "value", "correct", "parse_error"],
@@ -236,76 +304,32 @@
         }
       }
     },
-    "usage": {
-      "description": "Gateway usage plus explicit VEPBench normalization provenance when aggregate batch cost is allocated across results.",
-      "type": "object"
-    },
-    "error": {
-      "type": ["object", "null"]
-    }
-  },
-  "$defs": {
-    "sha256": {
-      "type": "string",
-      "pattern": "^[0-9a-f]{64}$"
-    },
-    "choice": {
+    "ranking_scoring": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["choice_id", "text"],
+      "required": [
+        "metric",
+        "parsed_answer",
+        "value",
+        "spearman_rho",
+        "pearson_r",
+        "valid",
+        "parse_error"
+      ],
       "properties": {
-        "choice_id": {
-          "type": "string",
-          "pattern": "^[A-Za-z0-9_-]+$",
-          "maxLength": 40
+        "metric": {"const": "rank_correlation"},
+        "parsed_answer": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "object", "minProperties": 1, "additionalProperties": {"type": "number"}}
+          ]
         },
-        "text": {
-          "type": "string",
-          "minLength": 1
-        }
+        "value": {"type": ["number", "null"], "minimum": -1, "maximum": 1},
+        "spearman_rho": {"type": ["number", "null"], "minimum": -1, "maximum": 1},
+        "pearson_r": {"type": ["number", "null"], "minimum": -1, "maximum": 1},
+        "valid": {"type": ["boolean", "null"]},
+        "parse_error": {"type": ["string", "null"]}
       }
     }
-  },
-  "allOf": [
-    {
-      "if": {
-        "properties": {
-          "response": {
-            "properties": {
-              "status": {
-                "const": "api_error"
-              }
-            },
-            "required": ["status"]
-          }
-        }
-      },
-      "then": {
-        "properties": {
-          "scoring": {
-            "properties": {
-              "value": {
-                "const": null
-              },
-              "correct": {
-                "const": null
-              },
-              "parsed_answer": {
-                "const": null
-              },
-              "parse_error": {
-                "const": null
-              },
-              "result_type": {
-                "const": null
-              }
-            }
-          },
-          "error": {
-            "type": "object"
-          }
-        }
-      }
-    }
-  ]
+  }
 }

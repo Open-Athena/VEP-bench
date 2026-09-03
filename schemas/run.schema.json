@@ -6,7 +6,8 @@
   "additionalProperties": false,
   "required": ["schema_version", "run_id", "configuration_key", "question_set_sha256", "question_set_size", "model", "generation_parameters", "evaluation_profile", "started_at", "completed_at", "coverage", "metrics", "answer_prefix", "raw_archive"],
   "properties": {
-    "schema_version": {"const": "1.0"},
+    "schema_version": {"enum": ["1.0", "2.0"]},
+    "task_type": {"enum": ["multiple_choice", "ranking"]},
     "run_id": {"$ref": "#/$defs/id"},
     "configuration_key": {"type": "string", "pattern": "^cfg-[0-9a-f]{64}$"},
     "question_set_sha256": {"$ref": "#/$defs/sha256"},
@@ -41,6 +42,61 @@
       }
     },
     "metrics": {
+      "oneOf": [
+        {"$ref": "#/$defs/exact_match_metrics"},
+        {"$ref": "#/$defs/ranking_metrics"}
+      ]
+    },
+    "answer_prefix": {"type": "string", "pattern": "^answers/[A-Za-z0-9][A-Za-z0-9._:-]*/$"},
+    "outcome_index_path": {"type": "string", "pattern": "^outcomes/[A-Za-z0-9][A-Za-z0-9._:-]*\\.json\\.gz$"},
+    "raw_archive": {"$ref": "#/$defs/artifact"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"schema_version": {"const": "2.0"}}},
+      "then": {
+        "required": ["task_type"],
+        "properties": {
+          "task_type": {"const": "ranking"},
+          "metrics": {"$ref": "#/$defs/ranking_metrics"}
+        }
+      },
+      "else": {
+        "properties": {
+          "task_type": {"const": "multiple_choice"},
+          "metrics": {"$ref": "#/$defs/exact_match_metrics"}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$", "maxLength": 200},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "records", "content_sha256", "content_bytes", "artifact_sha256", "artifact_bytes"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "records": {"type": "integer", "minimum": 0},
+        "content_sha256": {"$ref": "#/$defs/sha256"},
+        "content_bytes": {"type": "integer", "minimum": 0},
+        "artifact_sha256": {"$ref": "#/$defs/sha256"},
+        "artifact_bytes": {"type": "integer", "minimum": 0}
+      }
+    },
+    "usage_metrics": {
+      "type": "object",
+      "properties": {
+        "total_tokens": {"type": ["integer", "null"], "minimum": 0},
+        "total_cost_usd": {"type": ["number", "null"], "minimum": 0}
+      },
+      "dependentRequired": {
+        "total_tokens": ["total_cost_usd"],
+        "total_cost_usd": ["total_tokens"]
+      }
+    },
+    "exact_match_metrics": {
       "type": "object",
       "additionalProperties": false,
       "required": ["scored", "correct", "accuracy", "format_failures"],
@@ -69,24 +125,30 @@
         "total_cost_usd": ["total_tokens"]
       }
     },
-    "answer_prefix": {"type": "string", "pattern": "^answers/[A-Za-z0-9][A-Za-z0-9._:-]*/$"},
-    "outcome_index_path": {"type": "string", "pattern": "^outcomes/[A-Za-z0-9][A-Za-z0-9._:-]*\\.json\\.gz$"},
-    "raw_archive": {"$ref": "#/$defs/artifact"}
-  },
-  "$defs": {
-    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$", "maxLength": 200},
-    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "artifact": {
+    "ranking_metrics": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["path", "records", "content_sha256", "content_bytes", "artifact_sha256", "artifact_bytes"],
+      "required": [
+        "scored",
+        "mean_spearman_rho",
+        "mean_pearson_r",
+        "valid_outputs",
+        "valid_output_rate",
+        "format_failures"
+      ],
       "properties": {
-        "path": {"type": "string", "minLength": 1},
-        "records": {"type": "integer", "minimum": 0},
-        "content_sha256": {"$ref": "#/$defs/sha256"},
-        "content_bytes": {"type": "integer", "minimum": 0},
-        "artifact_sha256": {"$ref": "#/$defs/sha256"},
-        "artifact_bytes": {"type": "integer", "minimum": 0}
+        "scored": {"type": "integer", "minimum": 0},
+        "mean_spearman_rho": {"type": ["number", "null"], "minimum": -1, "maximum": 1},
+        "mean_pearson_r": {"type": ["number", "null"], "minimum": -1, "maximum": 1},
+        "valid_outputs": {"type": "integer", "minimum": 0},
+        "valid_output_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "format_failures": {"type": "integer", "minimum": 0},
+        "total_tokens": {"type": ["integer", "null"], "minimum": 0},
+        "total_cost_usd": {"type": ["number", "null"], "minimum": 0}
+      },
+      "dependentRequired": {
+        "total_tokens": ["total_cost_usd"],
+        "total_cost_usd": ["total_tokens"]
       }
     }
   }

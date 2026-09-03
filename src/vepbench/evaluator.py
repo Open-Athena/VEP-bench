@@ -1,4 +1,4 @@
-"""Local OpenRouter evaluation and deterministic multiple-choice scoring."""
+"""Local OpenRouter evaluation and deterministic benchmark scoring."""
 
 import http.client
 import json
@@ -19,6 +19,7 @@ from jsonschema import Draft202012Validator, FormatChecker
 from .builder import (
     BuildError,
     canonical_json,
+    is_finite_number,
     read_jsonl,
     sha256_file,
     sha256_json,
@@ -99,6 +100,16 @@ class Score:
 
 
 @dataclass(frozen=True)
+class RankingScore:
+    parsed_answer: dict[str, float] | None
+    value: float
+    spearman_rho: float
+    pearson_r: float
+    valid: bool
+    parse_error: str | None
+
+
+@dataclass(frozen=True)
 class EvaluationSummary:
     run_id: str
     output: Path
@@ -170,12 +181,139 @@ def result_type_for_record(record: Mapping[str, Any]) -> str | None:
     if response["status"] != "completed":
         return None
     scoring = record["scoring"]
+    if scoring["metric"] != "exact_match":
+        return None
     return classify_result_type(
         correct=scoring["correct"],
         parse_error=scoring["parse_error"],
         finish_reason=response["finish_reason"],
         refusal=_provider_refusal(response.get("raw")),
     )
+
+
+def score_ranking(
+    content: str | None,
+    reference_scores: Mapping[str, float],
+) -> RankingScore:
+    """Parse a strict final JSON mapping and compute within-question correlations."""
+
+    parsed, parse_error = _last_final_json_object(content)
+    if parse_error is not None:
+        return _invalid_ranking_score(parse_error)
+    assert parsed is not None
+    expected_ids = set(reference_scores)
+    observed_ids = set(parsed)
+    missing = sorted(expected_ids - observed_ids)
+    extra = sorted(observed_ids - expected_ids)
+    if missing or extra:
+        details = []
+        if missing:
+            details.append(f"missing candidate IDs {missing}")
+        if extra:
+            details.append(f"additional candidate IDs {extra}")
+        return _invalid_ranking_score("; ".join(details))
+
+    predictions: dict[str, float] = {}
+    for candidate_id, value in parsed.items():
+        if isinstance(value, bool) or not isinstance(value, int | float):
+            return _invalid_ranking_score(f"prediction for {candidate_id!r} must be a JSON number")
+        try:
+            prediction = float(value)
+        except OverflowError:
+            return _invalid_ranking_score(f"prediction for {candidate_id!r} must be finite")
+        if not math.isfinite(prediction):
+            return _invalid_ranking_score(f"prediction for {candidate_id!r} must be finite")
+        predictions[candidate_id] = prediction
+
+    candidate_ids = list(reference_scores)
+    predicted = [predictions[candidate_id] for candidate_id in candidate_ids]
+    reference = []
+    for candidate_id in candidate_ids:
+        value = reference_scores[candidate_id]
+        if not is_finite_number(value):
+            return _invalid_ranking_score(f"reference score for {candidate_id!r} must be finite")
+        reference.append(float(value))
+    spearman = _pearson(_average_ranks(predicted), _average_ranks(reference))
+    pearson = _pearson(predicted, reference)
+    return RankingScore(predictions, spearman, spearman, pearson, True, None)
+
+
+def _last_final_json_object(content: str | None) -> tuple[dict[str, Any] | None, str | None]:
+    duplicate_error: str | None = None
+    for line in reversed((content or "").splitlines()):
+        match = re.fullmatch(r"FINAL:[ \t]*(\{.*\})[ \t]*", line)
+        if match is None:
+            continue
+        duplicate_error = None
+
+        def reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+            value: dict[str, Any] = {}
+            for key, item in pairs:
+                if key in value:
+                    raise ValueError(f"duplicate candidate ID {key!r}")
+                value[key] = item
+            return value
+
+        try:
+            parsed = json.loads(
+                match.group(1),
+                object_pairs_hook=reject_duplicate_keys,
+                parse_constant=lambda value: (_ for _ in ()).throw(
+                    ValueError(f"non-finite JSON number {value}")
+                ),
+            )
+        except json.JSONDecodeError:
+            continue
+        except ValueError as exc:
+            duplicate_error = str(exc)
+            break
+        if not isinstance(parsed, dict):
+            continue
+        return parsed, None
+    return None, duplicate_error or "missing FINAL: <json-object> line"
+
+
+def _invalid_ranking_score(message: str) -> RankingScore:
+    return RankingScore(None, -1.0, -1.0, -1.0, False, message)
+
+
+def _average_ranks(values: list[float]) -> list[float]:
+    order = sorted(range(len(values)), key=values.__getitem__)
+    ranks = [0.0] * len(values)
+    start = 0
+    while start < len(order):
+        end = start + 1
+        while end < len(order) and values[order[end]] == values[order[start]]:
+            end += 1
+        average = (start + 1 + end) / 2
+        for index in order[start:end]:
+            ranks[index] = average
+        start = end
+    return ranks
+
+
+def _pearson(left: list[float], right: list[float]) -> float:
+    if len(left) != len(right) or not left:
+        raise ValueError("correlation vectors must have the same non-zero length")
+    left_scale = max(abs(value) for value in left)
+    right_scale = max(abs(value) for value in right)
+    if left_scale == 0 or right_scale == 0:
+        return 0.0
+    scaled_left = [value / left_scale for value in left]
+    scaled_right = [value / right_scale for value in right]
+    left_mean = math.fsum(scaled_left) / len(scaled_left)
+    right_mean = math.fsum(scaled_right) / len(scaled_right)
+    left_delta = [value - left_mean for value in scaled_left]
+    right_delta = [value - right_mean for value in scaled_right]
+    left_ss = math.fsum(value * value for value in left_delta)
+    right_ss = math.fsum(value * value for value in right_delta)
+    if left_ss == 0 or right_ss == 0:
+        return 0.0
+    covariance = math.fsum(
+        left_value * right_value
+        for left_value, right_value in zip(left_delta, right_delta, strict=True)
+    )
+    return max(-1.0, min(1.0, covariance / math.sqrt(left_ss * right_ss)))
 
 
 def validate_generation_parameters(parameters: Mapping[str, Any]) -> None:
@@ -402,20 +540,38 @@ def validate_result(result: Mapping[str, Any], validator: Draft202012Validator) 
         raise BuildError(f"{result['question_id']}: embedded question_id does not match")
     if result["question_sha256"] != sha256_json(question):
         raise BuildError(f"{result['question_id']}: question digest does not match snapshot")
-    choice_ids = [choice["choice_id"] for choice in question["choices"]]
-    if len(choice_ids) != len(set(choice_ids)):
-        raise BuildError(f"{result['question_id']}: result choice IDs must be unique")
-    if choice_ids.count(question["answer_choice_id"]) != 1:
-        raise BuildError(
-            f"{result['question_id']}: result answer_choice_id must identify exactly one choice"
-        )
-    for choice in question["choices"]:
-        rendered = f"{choice['choice_id']}. {choice['text']}"
-        if question["prompt"].count(rendered) != 1:
+    task_type = question["task_type"]
+    if task_type == "multiple_choice":
+        choice_ids = [choice["choice_id"] for choice in question["choices"]]
+        if len(choice_ids) != len(set(choice_ids)):
+            raise BuildError(f"{result['question_id']}: result choice IDs must be unique")
+        if choice_ids.count(question["answer_choice_id"]) != 1:
             raise BuildError(
-                f"{result['question_id']}: result prompt must contain choice "
-                f"{rendered!r} exactly once"
+                f"{result['question_id']}: result answer_choice_id must identify exactly one choice"
             )
+        for choice in question["choices"]:
+            rendered = f"{choice['choice_id']}. {choice['text']}"
+            if question["prompt"].count(rendered) != 1:
+                raise BuildError(
+                    f"{result['question_id']}: result prompt must contain choice "
+                    f"{rendered!r} exactly once"
+                )
+    else:
+        candidate_ids = [candidate["candidate_id"] for candidate in question["candidates"]]
+        if len(candidate_ids) != len(set(candidate_ids)):
+            raise BuildError(f"{result['question_id']}: result candidate IDs must be unique")
+        for candidate in question["candidates"]:
+            if not is_finite_number(candidate["reference_score"]):
+                raise BuildError(f"{result['question_id']}: reference scores must be finite")
+            rendered = (
+                f"{candidate['chrom']}\t{candidate['pos']}\t{candidate['candidate_id']}\t"
+                f"{candidate['ref']}\t{candidate['alt']}"
+            )
+            if question["prompt"].count(rendered) != 1:
+                raise BuildError(
+                    f"{result['question_id']}: result prompt must contain candidate row "
+                    f"{rendered!r} exactly once"
+                )
 
     status = result["response"]["status"]
     if status == "completed":
@@ -439,37 +595,36 @@ def validate_result(result: Mapping[str, Any], validator: Draft202012Validator) 
             raise BuildError(
                 f"{result['question_id']}: upstream provider does not match raw provider payload"
             )
-        expected, expected_result_type = score_completed_response(
-            snapshot["content"],
-            set(choice_ids),
-            question["answer_choice_id"],
-            finish_reason=snapshot["finish_reason"],
-            refusal=snapshot["refusal"],
-        )
-        expected_scoring = {
-            "metric": "exact_match",
-            "parsed_answer": expected.parsed_answer,
-            "value": expected.value,
-            "correct": expected.correct,
-            "parse_error": expected.parse_error,
-        }
-        actual_scoring = dict(result["scoring"])
-        has_result_type = "result_type" in actual_scoring
-        actual_result_type = actual_scoring.pop("result_type", None)
-        if actual_scoring != expected_scoring:
+        if task_type == "multiple_choice":
+            expected, expected_result_type = score_completed_response(
+                snapshot["content"],
+                set(choice_ids),
+                question["answer_choice_id"],
+                finish_reason=snapshot["finish_reason"],
+                refusal=snapshot["refusal"],
+            )
+            expected_scoring = {
+                "metric": "exact_match",
+                "parsed_answer": expected.parsed_answer,
+                "value": expected.value,
+                "correct": expected.correct,
+                "parse_error": expected.parse_error,
+            }
+            actual_scoring = dict(result["scoring"])
+            has_result_type = "result_type" in actual_scoring
+            actual_result_type = actual_scoring.pop("result_type", None)
+            if actual_scoring != expected_scoring:
+                raise BuildError(f"{result['question_id']}: stored score does not match response")
+            if has_result_type and actual_result_type != expected_result_type:
+                raise BuildError(
+                    f"{result['question_id']}: stored result type does not match response"
+                )
+        elif result["scoring"] != _score_question(snapshot["content"], question):
             raise BuildError(f"{result['question_id']}: stored score does not match response")
-        if has_result_type and actual_result_type != expected_result_type:
-            raise BuildError(f"{result['question_id']}: stored result type does not match response")
         if result["error"] is not None:
             raise BuildError(f"{result['question_id']}: completed response must not have error")
     else:
-        expected_scoring = {
-            "metric": "exact_match",
-            "parsed_answer": None,
-            "value": None,
-            "correct": None,
-            "parse_error": None,
-        }
+        expected_scoring = _null_scoring(question)
         actual_scoring = dict(result["scoring"])
         has_result_type = "result_type" in actual_scoring
         actual_result_type = actual_scoring.pop("result_type", None)
@@ -484,6 +639,58 @@ def validate_result(result: Mapping[str, Any], validator: Draft202012Validator) 
             raise BuildError(f"{result['question_id']}: API error has completion data")
         if not isinstance(result["error"], Mapping):
             raise BuildError(f"{result['question_id']}: API error must include error details")
+
+
+def _score_question(content: str | None, question: Mapping[str, Any]) -> dict[str, Any]:
+    if question["task_type"] == "multiple_choice":
+        score = score_multiple_choice(
+            content,
+            {choice["choice_id"] for choice in question["choices"]},
+            question["answer_choice_id"],
+        )
+        return {
+            "metric": "exact_match",
+            "parsed_answer": score.parsed_answer,
+            "value": score.value,
+            "correct": score.correct,
+            "parse_error": score.parse_error,
+        }
+    ranking_score = score_ranking(
+        content,
+        {
+            candidate["candidate_id"]: candidate["reference_score"]
+            for candidate in question["candidates"]
+        },
+    )
+    return {
+        "metric": "rank_correlation",
+        "parsed_answer": ranking_score.parsed_answer,
+        "value": ranking_score.value,
+        "spearman_rho": ranking_score.spearman_rho,
+        "pearson_r": ranking_score.pearson_r,
+        "valid": ranking_score.valid,
+        "parse_error": ranking_score.parse_error,
+    }
+
+
+def _null_scoring(question: Mapping[str, Any]) -> dict[str, Any]:
+    if question["task_type"] == "multiple_choice":
+        return {
+            "metric": "exact_match",
+            "parsed_answer": None,
+            "value": None,
+            "correct": None,
+            "parse_error": None,
+        }
+    return {
+        "metric": "rank_correlation",
+        "parsed_answer": None,
+        "value": None,
+        "spearman_rho": None,
+        "pearson_r": None,
+        "valid": None,
+        "parse_error": None,
+    }
 
 
 def validate_batch_usage_allocations(records: Iterable[Mapping[str, Any]], *, context: str) -> None:
@@ -583,13 +790,24 @@ def completed_result(
     provider_response: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     snapshot = provider_response_snapshot(raw)
-    score, result_type = score_completed_response(
-        snapshot["content"],
-        {choice["choice_id"] for choice in question["choices"]},
-        question["answer_choice_id"],
-        finish_reason=snapshot["finish_reason"],
-        refusal=snapshot["refusal"],
-    )
+    if question["task_type"] == "multiple_choice":
+        score, result_type = score_completed_response(
+            snapshot["content"],
+            {choice["choice_id"] for choice in question["choices"]},
+            question["answer_choice_id"],
+            finish_reason=snapshot["finish_reason"],
+            refusal=snapshot["refusal"],
+        )
+        scoring = {
+            "metric": "exact_match",
+            "parsed_answer": score.parsed_answer,
+            "value": score.value,
+            "correct": score.correct,
+            "parse_error": score.parse_error,
+            "result_type": result_type,
+        }
+    else:
+        scoring = _score_question(snapshot["content"], question)
 
     usage = raw.get("usage")
     if not isinstance(usage, dict):
@@ -611,14 +829,7 @@ def completed_result(
             "latency_seconds": latency_seconds,
             "raw": raw if provider_response is None else provider_response,
         },
-        scoring={
-            "metric": "exact_match",
-            "parsed_answer": score.parsed_answer,
-            "value": score.value,
-            "correct": score.correct,
-            "parse_error": score.parse_error,
-            "result_type": result_type,
-        },
+        scoring=scoring,
         usage=usage,
         error=None,
     )
@@ -654,12 +865,8 @@ def error_result(
             "raw": error.raw_response,
         },
         scoring={
-            "metric": "exact_match",
-            "parsed_answer": None,
-            "value": None,
-            "correct": None,
-            "parse_error": None,
-            "result_type": None,
+            **_null_scoring(question),
+            **({"result_type": None} if question["task_type"] == "multiple_choice" else {}),
         },
         usage={},
         error={
@@ -686,7 +893,7 @@ def _result_base(
     error: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
     return {
-        "schema_version": "1.0",
+        "schema_version": "2.0" if question["task_type"] == "ranking" else "1.0",
         "run_id": run_id,
         "question_id": question["question_id"],
         "question_sha256": sha256_json(question),

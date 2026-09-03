@@ -30,6 +30,7 @@ from .evaluator import (
     provider_response_snapshot,
     result_type_for_record,
     score_completed_response,
+    score_ranking,
     validate_batch_usage_allocations,
     validate_result,
 )
@@ -122,6 +123,9 @@ def _evaluation_profile(questions: Sequence[Mapping[str, Any]]) -> str:
 
 
 def _task_set(questions: list[dict[str, Any]], content: bytes) -> dict[str, Any]:
+    task_types = {question["task_type"] for question in questions}
+    if len(task_types) != 1:
+        raise BuildError("one task question set cannot mix task types")
     return {
         "questions": questions,
         "question_by_id": {question["question_id"]: question for question in questions},
@@ -131,6 +135,7 @@ def _task_set(questions: list[dict[str, Any]], content: bytes) -> dict[str, Any]
         "question_set_sha256": hashlib.sha256(content).hexdigest(),
         "question_set_size": len(questions),
         "evaluation_profile": _evaluation_profile(questions),
+        "task_type": next(iter(task_types)),
     }
 
 
@@ -181,6 +186,36 @@ def _published_upstream_provider(providers: set[str | None]) -> str | None:
     if len(providers) == 1:
         return next(iter(providers))
     return AUTO_ROUTED_PROVIDER
+
+
+def _leaderboard_metadata(task_sets: Mapping[str, Mapping[str, Any]]) -> dict[str, Any]:
+    return {
+        "aggregation_method": "classification_task_macro_average_v0",
+        "evaluation_profiles": [
+            {
+                "task_family": task_family,
+                "evaluation_profile": task_set["evaluation_profile"],
+                "task_type": task_set["task_type"],
+                "primary_metric": (
+                    "exact_match" if task_set["task_type"] == "multiple_choice" else "spearman"
+                ),
+            }
+            for task_family, task_set in sorted(task_sets.items())
+        ],
+    }
+
+
+def _legacy_leaderboard_metadata(task_sets: Mapping[str, Mapping[str, Any]]) -> dict[str, Any]:
+    return {
+        "aggregation_method": "task_macro_average_v0",
+        "evaluation_profiles": [
+            {
+                "task_family": task_family,
+                "evaluation_profile": task_set["evaluation_profile"],
+            }
+            for task_family, task_set in sorted(task_sets.items())
+        ],
+    }
 
 
 def build_version(
@@ -333,16 +368,7 @@ def build_version(
         "schema_version": "1.0",
         "question_set_sha256": question_set_sha256,
         "question_set_size": len(questions),
-        "leaderboard": {
-            "aggregation_method": "task_macro_average_v0",
-            "evaluation_profiles": [
-                {
-                    "task_family": task_family,
-                    "evaluation_profile": task_set["evaluation_profile"],
-                }
-                for task_family, task_set in sorted(task_sets.items())
-            ],
-        },
+        "leaderboard": _leaderboard_metadata(task_sets),
         "runs": run_records,
     }
     runs_bytes = _write_json(version_dir / "runs.json", runs)
@@ -435,17 +461,14 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
         or runs_document.get("question_set_size") != manifest["question_set_size"]
     ):
         raise BuildError("runs.json does not match the manifest question set")
-    expected_leaderboard = {
-        "aggregation_method": "task_macro_average_v0",
-        "evaluation_profiles": [
-            {
-                "task_family": task_family,
-                "evaluation_profile": task_set["evaluation_profile"],
-            }
-            for task_family, task_set in sorted(task_sets.items())
-        ],
-    }
-    if "leaderboard" in runs_document and runs_document["leaderboard"] != expected_leaderboard:
+    expected_leaderboard = _leaderboard_metadata(task_sets)
+    accepted_leaderboards = {canonical_json(expected_leaderboard)}
+    if all(task_set["task_type"] == "multiple_choice" for task_set in task_sets.values()):
+        accepted_leaderboards.add(canonical_json(_legacy_leaderboard_metadata(task_sets)))
+    if (
+        "leaderboard" in runs_document
+        and canonical_json(runs_document["leaderboard"]) not in accepted_leaderboards
+    ):
         raise BuildError("runs.json has invalid leaderboard aggregation metadata")
     if len(task_sets) > 1 and "leaderboard" not in runs_document:
         raise BuildError("multi-task runs.json is missing leaderboard aggregation metadata")
@@ -480,6 +503,8 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
             or run["evaluation_profile"] != task_set["evaluation_profile"]
         ):
             raise BuildError(f"run {run['run_id']!r} uses the wrong task question set")
+        if run.get("task_type", "multiple_choice") != task_set["task_type"]:
+            raise BuildError(f"run {run['run_id']!r} uses the wrong task type")
         run_task_families[run["run_id"]] = task_family
     if version_name == "main":
         if not runs:
@@ -526,14 +551,17 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
     answers_seen: set[tuple[str, str, int]] = set()
     normalized_answer_state: dict[tuple[str, str, int], Mapping[str, Any]] = {}
     answer_usage_records: list[dict[str, Any]] = []
-    expected_outcomes: dict[tuple[str, str], tuple[bool | None, str | None]] = {}
+    expected_outcomes: dict[tuple[str, str], dict[str, Any]] = {}
     per_run_answers: dict[str, int] = dict.fromkeys(run_by_id, 0)
     per_run_stats: dict[str, dict[str, Any]] = {
         run_id: {
             "completed": 0,
             "api_errors": 0,
             "correct": 0,
-            "parse_failures": 0,
+            "spearman_values": [],
+            "pearson_values": [],
+            "valid_outputs": 0,
+            "format_failures": 0,
             "result_counts": dict.fromkeys(RESULT_TYPES, 0),
             "token_values": [],
             "cost_values": [],
@@ -573,10 +601,6 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
         if answer["question_sha256"] != sha256_json(answer_question):
             raise BuildError(f"answer {key!r} has the wrong question digest")
         result_type = _validate_answer_scoring(answer, answer_question)
-        expected_outcomes[(answer["run_id"], answer["question_id"])] = (
-            answer["scoring"]["correct"],
-            result_type,
-        )
         expected_path = (
             f"versions/{version_name}/answers/{answer['run_id']}/{answer['question_id']}.json.gz"
         )
@@ -587,10 +611,26 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
         status = answer["response"]["status"]
         stats["completed"] += status == "completed"
         stats["api_errors"] += status == "api_error"
-        stats["correct"] += answer["scoring"]["correct"] is True
-        stats["parse_failures"] += answer["scoring"]["parse_error"] is not None
-        if result_type is not None:
-            stats["result_counts"][result_type] += 1
+        if answer["scoring"]["metric"] == "exact_match":
+            stats["correct"] += answer["scoring"]["correct"] is True
+            expected_outcomes[(answer["run_id"], answer["question_id"])] = {
+                "question_id": answer["question_id"],
+                "correct": answer["scoring"]["correct"],
+                "result_type": result_type,
+            }
+            if result_type is not None:
+                stats["result_counts"][result_type] += 1
+        else:
+            if status == "completed":
+                stats["spearman_values"].append(answer["scoring"]["spearman_rho"])
+                stats["pearson_values"].append(answer["scoring"]["pearson_r"])
+                stats["valid_outputs"] += answer["scoring"]["valid"] is True
+            expected_outcomes[(answer["run_id"], answer["question_id"])] = {
+                "question_id": answer["question_id"],
+                "value": answer["scoring"]["value"],
+                "valid": answer["scoring"]["valid"],
+            }
+        stats["format_failures"] += answer["scoring"]["parse_error"] is not None
         usage_tokens, usage_cost = _usage_totals(answer["usage"])
         if status == "completed" and usage_tokens is not None:
             stats["token_values"].append(usage_tokens)
@@ -652,29 +692,16 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
         ) or len(outcomes) != len(question_ids_for_run):
             raise BuildError(f"{descriptor['path']}: outcomes do not match run answers")
         for row in outcomes:
-            if (
-                not isinstance(row, dict)
-                or set(row)
-                not in (
-                    {"question_id", "correct"},
-                    {"question_id", "correct", "result_type"},
-                )
-                or (row["correct"] is not None and not isinstance(row["correct"], bool))
-                or (
-                    "result_type" in row
-                    and row["result_type"] is not None
-                    and row["result_type"] not in RESULT_TYPES
-                )
-            ):
+            if not isinstance(row, dict):
                 raise BuildError(f"{descriptor['path']}: invalid outcome record")
             outcome_key = (run_id, row["question_id"])
-            if (
-                outcome_key not in expected_outcomes
-                or expected_outcomes[outcome_key][0] != row["correct"]
-                or (
-                    "result_type" in row and expected_outcomes[outcome_key][1] != row["result_type"]
-                )
-            ):
+            expected_row = expected_outcomes.get(outcome_key)
+            legacy_row = (
+                {key: value for key, value in expected_row.items() if key != "result_type"}
+                if expected_row is not None and "result_type" in expected_row
+                else None
+            )
+            if expected_row is None or (row != expected_row and row != legacy_row):
                 raise BuildError(f"{descriptor['path']}: outcome disagrees with its answer")
 
     runs_with_outcome_paths = {
@@ -747,28 +774,46 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
                 raw_response = {
                     field: snapshot[field] for field in ("content", "reasoning", "finish_reason")
                 }
-                expected_score, expected_result_type = score_completed_response(
-                    snapshot["content"],
-                    {choice["choice_id"] for choice in question["choices"]},
-                    question["answer_choice_id"],
-                    finish_reason=snapshot["finish_reason"],
-                    refusal=snapshot["refusal"],
-                )
-                expected_scoring = {
-                    "metric": "exact_match",
-                    "parsed_answer": expected_score.parsed_answer,
-                    "value": expected_score.value,
-                    "correct": expected_score.correct,
-                    "parse_error": expected_score.parse_error,
-                }
                 actual_scoring = dict(normalized_answer["scoring"])
-                has_result_type = "result_type" in actual_scoring
-                actual_result_type = actual_scoring.pop("result_type", None)
-                if (
-                    normalized_response != raw_response
-                    or actual_scoring != expected_scoring
-                    or (has_result_type and actual_result_type != expected_result_type)
-                ):
+                scoring_matches = False
+                if question["task_type"] == "multiple_choice":
+                    expected_score, expected_result_type = score_completed_response(
+                        snapshot["content"],
+                        {choice["choice_id"] for choice in question["choices"]},
+                        question["answer_choice_id"],
+                        finish_reason=snapshot["finish_reason"],
+                        refusal=snapshot["refusal"],
+                    )
+                    expected_scoring = {
+                        "metric": "exact_match",
+                        "parsed_answer": expected_score.parsed_answer,
+                        "value": expected_score.value,
+                        "correct": expected_score.correct,
+                        "parse_error": expected_score.parse_error,
+                    }
+                    has_result_type = "result_type" in actual_scoring
+                    actual_result_type = actual_scoring.pop("result_type", None)
+                    scoring_matches = actual_scoring == expected_scoring and (
+                        not has_result_type or actual_result_type == expected_result_type
+                    )
+                else:
+                    expected_ranking = score_ranking(
+                        snapshot["content"],
+                        {
+                            candidate["candidate_id"]: candidate["reference_score"]
+                            for candidate in question["candidates"]
+                        },
+                    )
+                    scoring_matches = actual_scoring == {
+                        "metric": "rank_correlation",
+                        "parsed_answer": expected_ranking.parsed_answer,
+                        "value": expected_ranking.value,
+                        "spearman_rho": expected_ranking.spearman_rho,
+                        "pearson_r": expected_ranking.pearson_r,
+                        "valid": expected_ranking.valid,
+                        "parse_error": expected_ranking.parse_error,
+                    }
+                if normalized_response != raw_response or not scoring_matches:
                     raise BuildError(
                         f"raw response {raw_key!r} disagrees with its normalized completion"
                     )
@@ -804,15 +849,35 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
                 per_run_answers[run_id] == run["question_set_size"] and stats["api_errors"] == 0
             ),
         }
-        accuracy = stats["correct"] / stats["completed"] if stats["completed"] else None
-        expected_metrics = {
-            "scored": stats["completed"],
-            "correct": stats["correct"],
-            "accuracy": accuracy,
-            "format_failures": stats["parse_failures"],
-        }
-        if "result_counts" in run["metrics"]:
-            expected_metrics["result_counts"] = stats["result_counts"]
+        if run.get("task_type", "multiple_choice") == "ranking":
+            expected_metrics = {
+                "scored": stats["completed"],
+                "mean_spearman_rho": (
+                    math.fsum(stats["spearman_values"]) / stats["completed"]
+                    if stats["completed"]
+                    else None
+                ),
+                "mean_pearson_r": (
+                    math.fsum(stats["pearson_values"]) / stats["completed"]
+                    if stats["completed"]
+                    else None
+                ),
+                "valid_outputs": stats["valid_outputs"],
+                "valid_output_rate": (
+                    stats["valid_outputs"] / stats["completed"] if stats["completed"] else None
+                ),
+                "format_failures": stats["format_failures"],
+            }
+        else:
+            accuracy = stats["correct"] / stats["completed"] if stats["completed"] else None
+            expected_metrics = {
+                "scored": stats["completed"],
+                "correct": stats["correct"],
+                "accuracy": accuracy,
+                "format_failures": stats["format_failures"],
+            }
+            if "result_counts" in run["metrics"]:
+                expected_metrics["result_counts"] = stats["result_counts"]
         if "total_tokens" in run["metrics"] or "total_cost_usd" in run["metrics"]:
             expected_metrics.update(
                 {
@@ -910,41 +975,72 @@ def promote_version(
 
 def _validate_answer_scoring(answer: Mapping[str, Any], question: Mapping[str, Any]) -> str | None:
     status = answer["response"]["status"]
+    expected_scoring: dict[str, Any]
     if status == "completed":
         actual_scoring = dict(answer["scoring"])
         has_result_type = "result_type" in actual_scoring
         actual_result_type = actual_scoring.pop("result_type", None)
-        expected, expected_result_type = score_completed_response(
-            answer["response"]["content"],
-            {choice["choice_id"] for choice in question["choices"]},
-            question["answer_choice_id"],
-            finish_reason=answer["response"]["finish_reason"],
-            refusal="published refusal" if actual_result_type == "refusal" else None,
-        )
-        expected_scoring = {
-            "metric": "exact_match",
-            "parsed_answer": expected.parsed_answer,
-            "value": expected.value,
-            "correct": expected.correct,
-            "parse_error": expected.parse_error,
-        }
-        if (
-            actual_scoring != expected_scoring
-            or answer["error"] is not None
-            or (has_result_type and actual_result_type != expected_result_type)
-        ):
+        if question["task_type"] == "multiple_choice":
+            expected, expected_result_type = score_completed_response(
+                answer["response"]["content"],
+                {choice["choice_id"] for choice in question["choices"]},
+                question["answer_choice_id"],
+                finish_reason=answer["response"]["finish_reason"],
+                refusal="published refusal" if actual_result_type == "refusal" else None,
+            )
+            expected_scoring = {
+                "metric": "exact_match",
+                "parsed_answer": expected.parsed_answer,
+                "value": expected.value,
+                "correct": expected.correct,
+                "parse_error": expected.parse_error,
+            }
+            scoring_matches = actual_scoring == expected_scoring and (
+                not has_result_type or actual_result_type == expected_result_type
+            )
+        else:
+            expected_ranking = score_ranking(
+                answer["response"]["content"],
+                {
+                    candidate["candidate_id"]: candidate["reference_score"]
+                    for candidate in question["candidates"]
+                },
+            )
+            expected_scoring = {
+                "metric": "rank_correlation",
+                "parsed_answer": expected_ranking.parsed_answer,
+                "value": expected_ranking.value,
+                "spearman_rho": expected_ranking.spearman_rho,
+                "pearson_r": expected_ranking.pearson_r,
+                "valid": expected_ranking.valid,
+                "parse_error": expected_ranking.parse_error,
+            }
+            expected_result_type = None
+            scoring_matches = not has_result_type and actual_scoring == expected_scoring
+        if not scoring_matches or answer["error"] is not None:
             raise BuildError(
                 f"answer {answer['run_id']}/{answer['question_id']} has an invalid score"
             )
         return actual_result_type if has_result_type else expected_result_type
     else:
-        expected_scoring = {
-            "metric": "exact_match",
-            "parsed_answer": None,
-            "value": None,
-            "correct": None,
-            "parse_error": None,
-        }
+        if question["task_type"] == "multiple_choice":
+            expected_scoring = {
+                "metric": "exact_match",
+                "parsed_answer": None,
+                "value": None,
+                "correct": None,
+                "parse_error": None,
+            }
+        else:
+            expected_scoring = {
+                "metric": "rank_correlation",
+                "parsed_answer": None,
+                "value": None,
+                "spearman_rho": None,
+                "pearson_r": None,
+                "valid": None,
+                "parse_error": None,
+            }
         completion_fields = ("content", "reasoning", "finish_reason")
         actual_scoring = dict(answer["scoring"])
         has_result_type = "result_type" in actual_scoring
@@ -986,6 +1082,7 @@ def _convert_run(
     question_set_sha256 = task_set["question_set_sha256"]
     question_set_size = task_set["question_set_size"]
     evaluation_profile = task_set["evaluation_profile"]
+    task_type = task_set["task_type"]
     run_id = first_record["run_id"]
     model = json.loads(canonical_json(first_record["model"]))
     model_identity = _model_identity(model)
@@ -1010,8 +1107,10 @@ def _convert_run(
         published_model.update(model_metadata)
     answer_descriptors: list[dict[str, Any]] = []
     outcome_rows: list[dict[str, Any]] = []
-    completed = api_errors = correct = 0
-    parse_failures = 0
+    completed = api_errors = correct = format_failures = 0
+    valid_outputs = 0
+    spearman_values: list[float] = []
+    pearson_values: list[float] = []
     result_counts = dict.fromkeys(RESULT_TYPES, 0)
     token_values: list[int] = []
     cost_values: list[float] = []
@@ -1066,11 +1165,19 @@ def _convert_run(
                 api_errors += status == "api_error"
                 if status == "completed":
                     observed_providers.add(record["model"]["upstream_provider"])
-                result_type = result_type_for_record(record)
-                if result_type is not None:
-                    result_counts[result_type] += 1
-                correct += result_type == "correct"
-                parse_failures += record["scoring"]["parse_error"] is not None
+                if task_type == "multiple_choice":
+                    result_type = result_type_for_record(record)
+                    if result_type is not None:
+                        result_counts[result_type] += 1
+                    correct += result_type == "correct"
+                elif status == "completed":
+                    result_type = None
+                    spearman_values.append(record["scoring"]["spearman_rho"])
+                    pearson_values.append(record["scoring"]["pearson_r"])
+                    valid_outputs += record["scoring"]["valid"] is True
+                else:
+                    result_type = None
+                format_failures += record["scoring"]["parse_error"] is not None
                 usage_tokens, usage_cost = _usage_totals(record["usage"])
                 if status == "completed" and usage_tokens is not None:
                     token_values.append(usage_tokens)
@@ -1093,7 +1200,7 @@ def _convert_run(
                     evaluated_at if completed_at is None else max(completed_at, evaluated_at)
                 )
                 answer = {
-                    "schema_version": "1.0",
+                    "schema_version": "2.0" if task_type == "ranking" else "1.0",
                     "run_id": run_id,
                     "question_id": question_id,
                     "question_sha256": record["question_sha256"],
@@ -1110,7 +1217,11 @@ def _convert_run(
                         )
                     },
                     "usage": record["usage"],
-                    "scoring": {**record["scoring"], "result_type": result_type},
+                    "scoring": (
+                        {**record["scoring"], "result_type": result_type}
+                        if task_type == "multiple_choice"
+                        else record["scoring"]
+                    ),
                     "error": record["error"],
                     "raw_archive_path": f"raw/{run_id}.jsonl.zst",
                 }
@@ -1127,13 +1238,24 @@ def _convert_run(
                         **artifact,
                     }
                 )
-                outcome_rows.append(
-                    {
-                        "question_id": question_id,
-                        "correct": result_type == "correct" if result_type is not None else None,
-                        "result_type": result_type,
-                    }
-                )
+                if task_type == "multiple_choice":
+                    outcome_rows.append(
+                        {
+                            "question_id": question_id,
+                            "correct": (
+                                result_type == "correct" if result_type is not None else None
+                            ),
+                            "result_type": result_type,
+                        }
+                    )
+                else:
+                    outcome_rows.append(
+                        {
+                            "question_id": question_id,
+                            "value": record["scoring"]["value"],
+                            "valid": record["scoring"]["valid"],
+                        }
+                    )
 
                 envelope = {
                     "schema_version": "1.0",
@@ -1195,14 +1317,34 @@ def _convert_run(
         "artifact_sha256": sha256_file(raw_path),
         "artifact_bytes": raw_path.stat().st_size,
     }
-    accuracy = correct / completed if completed else None
     total_tokens = sum(token_values) if completed and tokens_complete else None
     total_cost_usd = math.fsum(cost_values) if completed and cost_complete else None
     if started_at is None or completed_at is None:
         raise BuildError(f"{result_file}: no result records found")
     published_model["upstream_provider"] = _published_upstream_provider(observed_providers)
+    if task_type == "multiple_choice":
+        metrics = {
+            "scored": completed,
+            "correct": correct,
+            "accuracy": correct / completed if completed else None,
+            "format_failures": format_failures,
+            "result_counts": result_counts,
+            "total_tokens": total_tokens,
+            "total_cost_usd": total_cost_usd,
+        }
+    else:
+        metrics = {
+            "scored": completed,
+            "mean_spearman_rho": (math.fsum(spearman_values) / completed if completed else None),
+            "mean_pearson_r": math.fsum(pearson_values) / completed if completed else None,
+            "valid_outputs": valid_outputs,
+            "valid_output_rate": valid_outputs / completed if completed else None,
+            "format_failures": format_failures,
+            "total_tokens": total_tokens,
+            "total_cost_usd": total_cost_usd,
+        }
     run_record = {
-        "schema_version": "1.0",
+        "schema_version": "2.0" if task_type == "ranking" else "1.0",
         "run_id": run_id,
         "configuration_key": configuration_key,
         "question_set_sha256": question_set_sha256,
@@ -1219,15 +1361,7 @@ def _convert_run(
             "missing": question_set_size - record_count,
             "complete": record_count == question_set_size and api_errors == 0,
         },
-        "metrics": {
-            "scored": completed,
-            "correct": correct,
-            "accuracy": accuracy,
-            "format_failures": parse_failures,
-            "result_counts": result_counts,
-            "total_tokens": total_tokens,
-            "total_cost_usd": total_cost_usd,
-        },
+        "metrics": metrics,
         "answer_prefix": f"answers/{run_id}/",
         "outcome_index_path": f"outcomes/{run_id}.json.gz",
         "raw_archive": {
@@ -1242,6 +1376,8 @@ def _convert_run(
             )
         },
     }
+    if task_type == "ranking":
+        run_record["task_type"] = "ranking"
     return {
         "record": run_record,
         "answers": answer_descriptors,

@@ -16,6 +16,9 @@ export default {
       }, {
         name: "ClinVar",
         path: "/tasks/clinvar"
+      }, {
+        name: "satMutMPRA ranking",
+        path: "/tasks/satmut-mpra"
       }]
     },
     {name: "Questions", path: "/questions"}

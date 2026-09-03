@@ -10,7 +10,7 @@ from typing import Any
 import pytest
 from jsonschema import Draft202012Validator, FormatChecker
 
-from vepbench.builder import BuildError, canonical_json, read_jsonl
+from vepbench.builder import BuildError, build_file, canonical_json, read_jsonl
 from vepbench.evaluator import (
     OpenRouterTransport,
     ProviderError,
@@ -18,6 +18,7 @@ from vepbench.evaluator import (
     evaluate_file,
     score_completed_response,
     score_multiple_choice,
+    score_ranking,
     validate_result,
 )
 
@@ -26,6 +27,8 @@ QUESTIONS = ROOT / "tests/fixtures/synthetic-questions.jsonl"
 QUESTION_SCHEMA = ROOT / "schemas/question.schema.json"
 RESULT_SCHEMA = ROOT / "schemas/result.schema.json"
 FIXED_TIME = datetime(2026, 8, 28, 12, 0, tzinfo=UTC)
+RANKING_SOURCE = ROOT / "tests/fixtures/synthetic-ranking-source.jsonl"
+RANKING_TEMPLATE = ROOT / "templates/satmut_mpra.json"
 
 
 class FakeTransport:
@@ -132,6 +135,142 @@ def test_score_does_not_accept_answer_on_the_next_line(content: str) -> None:
 
     assert score.parsed_answer is None
     assert score.parse_error == "missing FINAL: <choice-id> line"
+
+
+def test_ranking_score_handles_perfect_reversed_tied_and_constant_vectors() -> None:
+    reference = {"V01": -2.0, "V02": -1.0, "V03": 0.0, "V04": 1.0, "V05": 2.0}
+
+    perfect = score_ranking('FINAL: {"V01":-2,"V02":-1,"V03":0,"V04":1,"V05":2}', reference)
+    reversed_score = score_ranking('FINAL: {"V01":2,"V02":1,"V03":0,"V04":-1,"V05":-2}', reference)
+    tied = score_ranking(
+        'FINAL: {"V01":-1,"V02":-1,"V03":0,"V04":1,"V05":1}',
+        {"V01": -2.0, "V02": -2.0, "V03": 0.0, "V04": 2.0, "V05": 2.0},
+    )
+    constant = score_ranking('FINAL: {"V01":0,"V02":0,"V03":0,"V04":0,"V05":0}', reference)
+
+    assert perfect.valid is True
+    assert perfect.spearman_rho == pytest.approx(1.0)
+    assert perfect.pearson_r == pytest.approx(1.0)
+    assert reversed_score.spearman_rho == pytest.approx(-1.0)
+    assert reversed_score.pearson_r == pytest.approx(-1.0)
+    assert tied.spearman_rho == pytest.approx(1.0)
+    assert constant.spearman_rho == 0.0
+    assert constant.pearson_r == 0.0
+
+
+@pytest.mark.parametrize(
+    ("content", "error"),
+    [
+        ('FINAL: {"V01":1}', "missing candidate IDs"),
+        ('FINAL: {"V01":1,"V02":2,"EXTRA":3}', "additional candidate IDs"),
+        ('FINAL: {"V01":1,"V01":2,"V02":3}', "duplicate candidate ID"),
+        ('FINAL: {"V01":"high","V02":2}', "must be a JSON number"),
+        ('FINAL: {"V01":NaN,"V02":2}', "non-finite JSON number"),
+        ("The values are 1 and 2.", "missing FINAL"),
+    ],
+)
+def test_ranking_score_strictly_rejects_invalid_outputs(content: str, error: str) -> None:
+    score = score_ranking(content, {"V01": -1.0, "V02": 1.0})
+
+    assert score.value == -1.0
+    assert score.spearman_rho == -1.0
+    assert score.pearson_r == -1.0
+    assert score.valid is False
+    assert score.parsed_answer is None
+    assert error in score.parse_error
+
+
+def test_ranking_score_uses_last_well_formed_json_object_line() -> None:
+    score = score_ranking(
+        'FINAL: {"V01":1,"V02":2}\nFINAL: not-json',
+        {"V01": -1.0, "V02": 1.0},
+    )
+
+    assert score.valid is True
+    assert score.spearman_rho == pytest.approx(1.0)
+
+
+def test_ranking_score_rejects_integer_too_large_for_float() -> None:
+    huge_integer = "1" + "0" * 400
+    score = score_ranking(
+        f'FINAL: {{"V01":{huge_integer},"V02":2}}',
+        {"V01": -1.0, "V02": 1.0},
+    )
+
+    assert score.value == -1.0
+    assert score.valid is False
+    assert score.parse_error == "prediction for 'V01' must be finite"
+
+
+def test_ranking_score_handles_extreme_finite_predictions() -> None:
+    score = score_ranking(
+        'FINAL: {"V01":-1e308,"V02":0,"V03":1e308}',
+        {"V01": -1.0, "V02": 0.0, "V03": 1.0},
+    )
+
+    assert score.valid is True
+    assert score.spearman_rho == pytest.approx(1.0)
+    assert score.pearson_r == pytest.approx(1.0)
+
+
+def test_ranking_score_rejects_reference_integer_too_large_for_float() -> None:
+    score = score_ranking(
+        'FINAL: {"V01":1,"V02":2}',
+        {"V01": 10**400, "V02": 1.0},
+    )
+
+    assert score.value == -1.0
+    assert score.valid is False
+    assert score.parse_error == "reference score for 'V01' must be finite"
+
+
+def test_completed_ranking_evaluation_uses_versioned_contract(tmp_path: Path) -> None:
+    questions = tmp_path / "ranking-questions.jsonl"
+    build_file(RANKING_SOURCE, RANKING_TEMPLATE, QUESTION_SCHEMA, questions)
+    prediction = dict(
+        zip(
+            ["V01", "V02", "V03", "V04", "V05"],
+            [-2, -1, 0, 1, 2],
+            strict=True,
+        )
+    )
+    raw = {
+        "id": "ranking-generation-test",
+        "model": "example/model",
+        "provider": "ExampleProvider",
+        "choices": [
+            {
+                "finish_reason": "stop",
+                "message": {
+                    "role": "assistant",
+                    "content": f"Reasoning.\nFINAL: {json.dumps(prediction)}",
+                },
+            }
+        ],
+        "usage": {"prompt_tokens": 100, "completion_tokens": 20, "total_tokens": 120},
+    }
+    output = tmp_path / "ranking-results.jsonl"
+
+    evaluate_file(
+        questions_path=questions,
+        question_schema_path=QUESTION_SCHEMA,
+        result_schema_path=RESULT_SCHEMA,
+        output=output,
+        run_id="ranking-run",
+        model_id="example/model",
+        api_key="test-secret",
+        transport=FakeTransport(raw),
+        now=lambda: FIXED_TIME,
+    )
+    result = _load_one(output)
+    _validate_result(result)
+
+    assert result["schema_version"] == "2.0"
+    assert result["question"]["task_type"] == "ranking"
+    assert result["scoring"]["metric"] == "rank_correlation"
+    assert result["scoring"]["spearman_rho"] == pytest.approx(1.0)
+    assert result["scoring"]["pearson_r"] == pytest.approx(1.0)
+    assert result["scoring"]["valid"] is True
 
 
 def test_completed_evaluation_is_valid_and_preserves_response(tmp_path: Path) -> None:
@@ -296,6 +435,51 @@ def test_api_error_is_valid_and_marks_run_incomplete(tmp_path: Path) -> None:
     assert result["scoring"]["correct"] is None
     assert result["scoring"]["result_type"] is None
     assert result["error"]["status_code"] == 503
+
+
+def test_result_schema_rejects_api_error_with_score_or_missing_error() -> None:
+    schema = json.loads(RESULT_SCHEMA.read_text(encoding="utf-8"))
+    validator = Draft202012Validator(schema, format_checker=FormatChecker())
+    question = _load_one(QUESTIONS)
+    invalid = {
+        "schema_version": "1.0",
+        "run_id": "invalid-api-error",
+        "question_id": question["question_id"],
+        "question_sha256": "0" * 64,
+        "question_set_sha256": "1" * 64,
+        "question_set_size": 1,
+        "completion_index": 0,
+        "evaluated_at": FIXED_TIME.isoformat(),
+        "question": question,
+        "model": {
+            "gateway": "openrouter",
+            "model_id": "example/model",
+            "upstream_provider": None,
+        },
+        "generation_parameters": {},
+        "response": {
+            "status": "api_error",
+            "content": None,
+            "reasoning": None,
+            "finish_reason": None,
+            "latency_seconds": 0.1,
+            "raw": None,
+        },
+        "scoring": {
+            "metric": "exact_match",
+            "parsed_answer": "A",
+            "value": 1,
+            "correct": True,
+            "parse_error": None,
+        },
+        "usage": {},
+        "error": None,
+    }
+
+    paths = {tuple(error.path) for error in validator.iter_errors(invalid)}
+
+    assert ("error",) in paths
+    assert ("scoring", "value") in paths
 
 
 def test_reasoning_summary_is_extracted(tmp_path: Path) -> None:

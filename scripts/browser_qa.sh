@@ -30,6 +30,7 @@ cp -a "$site_dir/." "$qa_root/"
 
 questions="$qa_root/questions.jsonl"
 clinvar_questions="$qa_root/clinvar-questions.jsonl"
+satmut_questions="$qa_root/satmut-mpra-questions.jsonl"
 publication="$qa_root/publication"
 data_base_url="http://127.0.0.1:$port/publication/versions/main"
 uv run --project "$project_root" --locked vepbench build --output "$questions"
@@ -37,10 +38,15 @@ uv run --project "$project_root" --locked vepbench build \
   --source "$project_root/data/sources/clinvar-july-2026.jsonl" \
   --template "$project_root/templates/clinvar.json" \
   --output "$clinvar_questions"
+uv run --project "$project_root" --locked vepbench build \
+  --source "$project_root/data/sources/satmut-mpra-cadd-v1.7.jsonl" \
+  --template "$project_root/templates/satmut_mpra.json" \
+  --output "$satmut_questions"
 uv run --project "$project_root" --locked python \
   "$project_root/scripts/prepare_browser_qa_fixture.py" \
   --questions "$questions" \
   --questions "$clinvar_questions" \
+  --questions "$satmut_questions" \
   --alternate-model \
   --output "$publication" \
   --site-root "$qa_root" \
@@ -86,8 +92,14 @@ common=(
   --dump-dom "http://127.0.0.1:$port/tasks/clinvar.html" \
   >"$output_dir/clinvar-task.dom.html"
 "$chrome" "${common[@]}" --window-size=1440,1600 \
+  --dump-dom "http://127.0.0.1:$port/tasks/satmut-mpra.html" \
+  >"$output_dir/satmut-task.dom.html"
+"$chrome" "${common[@]}" --window-size=1440,1600 \
   --dump-dom "http://127.0.0.1:$port/questions.html?question=vep-most-severe-v1%3A17%3A38786886%3AA%3AT&run=browser-qa" \
   >"$output_dir/question.dom.html"
+"$chrome" "${common[@]}" --window-size=1440,2400 \
+  --dump-dom "http://127.0.0.1:$port/questions.html?question=satmut-mpra-ranking-v1%3AF9&run=browser-qa" \
+  >"$output_dir/ranking-question.dom.html"
 "$chrome" "${common[@]}" --window-size=1440,1600 \
   --dump-dom "http://127.0.0.1:$port/questions.html?run=missing-run" \
   >"$output_dir/question-neutral.dom.html"
@@ -103,9 +115,10 @@ for check in \
   'leaderboard.dom.html|class="vepbench-score-cell"' \
   'leaderboard.dom.html|class="vepbench-score-bar" aria-hidden="true"' \
   'leaderboard.dom.html|>Task</label>' \
-  'leaderboard.dom.html|>All tasks</option>' \
+  'leaderboard.dom.html|>All classification tasks</option>' \
   'leaderboard.dom.html|>Consequence classification</option>' \
   'leaderboard.dom.html|>ClinVar</option>' \
+  'leaderboard.dom.html|>satMutMPRA ranking</option>' \
   'leaderboard.dom.html|Score by cost and token usage' \
   'leaderboard.dom.html|>Compare score against</label>' \
   'leaderboard.dom.html|>Total cost</option>' \
@@ -117,12 +130,14 @@ for check in \
   'task.dom.html|Task version' \
   'task.dom.html|questions match the current filters' \
   'clinvar-task.dom.html|>Q052<' \
+  'satmut-task.dom.html|>Q094<' \
+  'satmut-task.dom.html|published element panels' \
   'question.dom.html|>Questions<' \
   'question.dom.html|browser-qa' \
   'question.dom.html|>Result<' \
-  'question.dom.html|>Consequence</label>' \
+  'question.dom.html|>Consequence / element</label>' \
   'question.dom.html|>All consequences</option>' \
-  'question.dom.html|<th title="consequence"><span></span>Consequence</th><th title="outcome"><span></span>Result</th>' \
+  'question.dom.html|<th title="consequence"><span></span>Consequence / element</th><th title="outcome"><span></span>Result</th>' \
   'question.dom.html|>All results</option>' \
   'question.dom.html|>Correct</option>' \
   'question.dom.html|>Incorrect</option>' \
@@ -135,6 +150,12 @@ for check in \
   'question.dom.html|<td><span class="vepbench-outcome-badge vepbench-outcome-correct">Correct</span></td>' \
   'question.dom.html|<td><span class="vepbench-outcome-badge vepbench-outcome-incorrect">Incorrect</span></td>' \
   'question.dom.html|>Reasoning<' \
+  'ranking-question.dom.html|Reference panel: 50 measured effects' \
+  'ranking-question.dom.html|>Reference effects<' \
+  'ranking-question.dom.html|>Measured effect<' \
+  'ranking-question.dom.html|>Predicted effect<' \
+  'ranking-question.dom.html|Spearman ρ:' \
+  'ranking-question.dom.html|50 numeric predictions' \
   'question-neutral.dom.html|Unavailable model for run · missing-run' \
   'question-neutral.dom.html|<td><span>Not evaluated</span></td>' \
   "question.dom.html|href=\"http://127.0.0.1:$port/publication/versions/main/raw/browser-qa.jsonl.zst\""
@@ -211,7 +232,7 @@ for pattern in 'Evaluation run' 'Model prediction' '>Outcome<'; do
   fi
 done
 
-for file in leaderboard.dom.html tasks.dom.html task.dom.html clinvar-task.dom.html question.dom.html; do
+for file in leaderboard.dom.html tasks.dom.html task.dom.html clinvar-task.dom.html satmut-task.dom.html question.dom.html ranking-question.dom.html; do
   if grep -q 'observablehq--error' "$output_dir/$file"; then
     echo "rendered Observable error in $file" >&2
     status=1

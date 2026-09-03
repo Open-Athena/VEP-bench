@@ -23,10 +23,11 @@ const runsState = await fetchJson(artifactUrl(config.data_base_url, "runs.json")
 const aggregation = runsState.document.leaderboard;
 const taskName = (taskFamily) => ({
   clinvar: "ClinVar",
+  satmut_mpra: "satMutMPRA ranking",
   vep_most_severe_consequence: "Consequence classification"
 })[taskFamily] ?? taskFamily;
 const taskOptions = [
-  {task_family: null, label: "All tasks"},
+  {task_family: null, label: "All classification tasks"},
   ...orderTaskFamilies([
     ...new Set(
       (aggregation?.evaluation_profiles ?? []).map((profile) => profile.task_family)
@@ -71,6 +72,15 @@ const rows = leaderboardRowsForScope(
   aggregation,
   selectedTask.task_family
 );
+const selectedProfile = selectedTask.task_family === null
+  ? null
+  : aggregation?.evaluation_profiles?.find(
+      (profile) => profile.task_family === selectedTask.task_family
+    );
+const selectedPrimaryMetric = selectedProfile?.primary_metric ?? "exact_match";
+const formatScore = (value) => selectedPrimaryMetric === "spearman"
+  ? (value === null ? "—" : value.toFixed(3))
+  : formatPercent(value);
 ```
 
 <div style="display: flex; justify-content: flex-end; margin: 0.75rem 0;">
@@ -80,8 +90,10 @@ const rows = leaderboardRowsForScope(
 ```js
 if (!runsState.error && aggregation) {
   display(selectedTask.task_family === null
-    ? html`<p>For <strong>All tasks</strong>, score is the unweighted mean of exact-match accuracy across every published task. Each task contributes equally, and a model appears only after completing every task.</p>`
-    : html`<p>Showing exact-match accuracy for <strong>${selectedTask.label}</strong>.</p>`
+    ? html`<p>For <strong>All classification tasks</strong>, score is the unweighted mean of exact-match accuracy across published classification tasks. Ranking tasks keep separate leaderboards and are not combined with accuracy.</p>`
+    : selectedPrimaryMetric === "spearman"
+      ? html`<p>Showing mean within-element Spearman rho for <strong>${selectedTask.label}</strong>. Pearson correlation and valid-output rate remain separate diagnostics.</p>`
+      : html`<p>Showing exact-match accuracy for <strong>${selectedTask.label}</strong>.</p>`
   );
 }
 ```
@@ -89,7 +101,9 @@ if (!runsState.error && aggregation) {
 ```js
 const tableRows = rows.map((row) => ({
   model: row.model_cell.model,
-  score: row.accuracy,
+  score: row.score,
+  pearson: row.pearson,
+  valid_output_rate: row.valid_output_rate,
   release_date: row.release_date,
   tokens: row.tokens,
   cost: row.cost,
@@ -97,29 +111,50 @@ const tableRows = rows.map((row) => ({
 }));
 function scoreBar(value) {
   if (!Number.isFinite(value)) return "—";
-  const width = Math.max(0, Math.min(1, value)) * 100;
+  const normalized = selectedPrimaryMetric === "spearman" ? (value + 1) / 2 : value;
+  const width = Math.max(0, Math.min(1, normalized)) * 100;
   return html`<span class="vepbench-score-cell" style=${`--vepbench-score-width: ${width}%`}>
     <span class="vepbench-score-bar" aria-hidden="true"></span>
-    <span class="vepbench-score-value">${formatPercent(value)}</span>
+    <span class="vepbench-score-value">${formatScore(value)}</span>
   </span>`;
 }
 const leaderboardTable = Inputs.table(tableRows, {
-  columns: ["model", "score", "release_date", "tokens", "cost"],
+  columns: selectedPrimaryMetric === "spearman"
+    ? ["model", "score", "pearson", "valid_output_rate", "release_date", "tokens", "cost"]
+    : ["model", "score", "release_date", "tokens", "cost"],
   header: {
     model: "Model",
     score: "Score",
+    pearson: "Pearson r",
+    valid_output_rate: "Valid outputs",
     release_date: "Release date",
     tokens: "Tokens",
     cost: "Cost"
   },
   format: {
     score: scoreBar,
+    pearson: (value) => value === null ? "—" : value.toFixed(3),
+    valid_output_rate: formatPercent,
     release_date: formatDate,
     tokens: (value) => value === null ? "—" : formatInteger(value),
     cost: formatCost
   },
-  align: {score: "right", tokens: "right", cost: "right"},
-  width: {model: 240, score: 100, release_date: 110, tokens: 100, cost: 90},
+  align: {
+    score: "right",
+    pearson: "right",
+    valid_output_rate: "right",
+    tokens: "right",
+    cost: "right"
+  },
+  width: {
+    model: 240,
+    score: 100,
+    pearson: 100,
+    valid_output_rate: 105,
+    release_date: 110,
+    tokens: 100,
+    cost: 90
+  },
   rows: Math.max(2, tableRows.length),
   sort: "score",
   reverse: true,
@@ -133,8 +168,8 @@ display(html`<div class="card">${leaderboardTable}</div>`);
 
 ## Score by cost and token usage
 
-Each line connects evaluated configurations from the same model family. Use the selector to compare exact-match score with total run cost or total token usage.
-The task selector above controls both the table and this plot. For All tasks, cost and tokens are summed across the included task runs.
+Each line connects evaluated configurations from the same model family. Use the selector to compare the selected task's primary score with total run cost or total token usage.
+The task selector above controls both the table and this plot. For All classification tasks, cost and tokens are summed across included classification-task runs.
 
 ```js
 const selectedMetric = view(metricInput);
@@ -162,9 +197,9 @@ function scoreEfficiencyPlot(data, {width}) {
         : (value) => Intl.NumberFormat("en-US", {notation: "compact"}).format(value)
     },
     y: {
-      label: "Score",
+      label: selectedPrimaryMetric === "spearman" ? "Mean Spearman ρ" : "Score",
       grid: true,
-      tickFormat: formatPercent
+      tickFormat: formatScore
     },
     color: {legend: true, label: "Model family"},
     marks: [
@@ -184,7 +219,7 @@ function scoreEfficiencyPlot(data, {width}) {
         tip: true,
         title: (row) => [
           row.model,
-          `Score: ${formatPercent(row.score)}`,
+          `Score: ${formatScore(row.score)}`,
           `${metricLabel}: ${metric === "cost" ? formatCost(row.cost) : formatInteger(row.tokens)}`
         ].join("\n")
       })

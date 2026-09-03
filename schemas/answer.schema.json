@@ -4,9 +4,21 @@
   "title": "VEPBench normalized browser answer",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "run_id", "question_id", "question_sha256", "completion_index", "evaluated_at", "response", "usage", "scoring", "error", "raw_archive_path"],
+  "required": [
+    "schema_version",
+    "run_id",
+    "question_id",
+    "question_sha256",
+    "completion_index",
+    "evaluated_at",
+    "response",
+    "usage",
+    "scoring",
+    "error",
+    "raw_archive_path"
+  ],
   "properties": {
-    "schema_version": {"const": "1.0"},
+    "schema_version": {"enum": ["1.0", "2.0"]},
     "run_id": {"$ref": "#/$defs/id"},
     "question_id": {"$ref": "#/$defs/id"},
     "question_sha256": {"$ref": "#/$defs/sha256"},
@@ -26,6 +38,77 @@
     },
     "usage": {"type": "object"},
     "scoring": {
+      "oneOf": [
+        {"$ref": "#/$defs/exact_match_scoring"},
+        {"$ref": "#/$defs/ranking_scoring"}
+      ]
+    },
+    "error": {"type": ["object", "null"]},
+    "raw_archive_path": {
+      "type": "string",
+      "pattern": "^raw/[A-Za-z0-9][A-Za-z0-9._:-]*\\.jsonl\\.zst$"
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"schema_version": {"const": "1.0"}}},
+      "then": {"properties": {"scoring": {"$ref": "#/$defs/exact_match_scoring"}}},
+      "else": {"properties": {"scoring": {"$ref": "#/$defs/ranking_scoring"}}}
+    },
+    {
+      "if": {
+        "properties": {
+          "response": {
+            "properties": {"status": {"const": "api_error"}},
+            "required": ["status"]
+          }
+        }
+      },
+      "then": {
+        "properties": {"error": {"type": "object"}},
+        "allOf": [
+          {
+            "if": {"properties": {"schema_version": {"const": "1.0"}}},
+            "then": {
+              "properties": {
+                "scoring": {
+                  "properties": {
+                    "value": {"const": null},
+                    "correct": {"const": null},
+                    "parsed_answer": {"const": null},
+                    "parse_error": {"const": null},
+                    "result_type": {"const": null}
+                  }
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "scoring": {
+                  "properties": {
+                    "value": {"const": null},
+                    "spearman_rho": {"const": null},
+                    "pearson_r": {"const": null},
+                    "valid": {"const": null},
+                    "parsed_answer": {"const": null},
+                    "parse_error": {"const": null}
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+      "maxLength": 200
+    },
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "exact_match_scoring": {
       "type": "object",
       "additionalProperties": false,
       "required": ["metric", "parsed_answer", "value", "correct", "parse_error"],
@@ -38,11 +121,32 @@
         "result_type": {"enum": ["correct", "incorrect", "refusal", "token_limit", "format_error", null]}
       }
     },
-    "error": {"type": ["object", "null"]},
-    "raw_archive_path": {"type": "string", "pattern": "^raw/[A-Za-z0-9][A-Za-z0-9._:-]*\\.jsonl\\.zst$"}
-  },
-  "$defs": {
-    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$", "maxLength": 200},
-    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+    "ranking_scoring": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metric",
+        "parsed_answer",
+        "value",
+        "spearman_rho",
+        "pearson_r",
+        "valid",
+        "parse_error"
+      ],
+      "properties": {
+        "metric": {"const": "rank_correlation"},
+        "parsed_answer": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "object", "minProperties": 1, "additionalProperties": {"type": "number"}}
+          ]
+        },
+        "value": {"type": ["number", "null"], "minimum": -1, "maximum": 1},
+        "spearman_rho": {"type": ["number", "null"], "minimum": -1, "maximum": 1},
+        "pearson_r": {"type": ["number", "null"], "minimum": -1, "maximum": 1},
+        "valid": {"type": ["boolean", "null"]},
+        "parse_error": {"type": ["string", "null"]}
+      }
+    }
   }
 }

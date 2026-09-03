@@ -8,10 +8,11 @@ from pathlib import Path
 
 import pytest
 import zstandard
+from jsonschema import Draft202012Validator, FormatChecker
 
 import vepbench.publication as publication_module
-from vepbench.builder import BuildError, canonical_json, sha256_json
-from vepbench.evaluator import ProviderError, error_result
+from vepbench.builder import BuildError, build_file, canonical_json, sha256_json
+from vepbench.evaluator import ProviderError, error_result, evaluate_file
 from vepbench.publication import (
     build_version,
     promote_version,
@@ -23,7 +24,95 @@ ROOT = Path(__file__).resolve().parents[1]
 QUESTIONS = ROOT / "tests/fixtures/synthetic-questions.jsonl"
 RESULTS = ROOT / "tests/fixtures/results"
 RESULT_SCHEMA = ROOT / "schemas/result.schema.json"
+ANSWER_SCHEMA = ROOT / "schemas/answer.schema.json"
+RUN_SCHEMA = ROOT / "schemas/run.schema.json"
 SCHEMAS = ROOT / "schemas"
+RANKING_SOURCE = ROOT / "tests/fixtures/synthetic-ranking-source.jsonl"
+RANKING_TEMPLATE = ROOT / "templates/satmut_mpra.json"
+QUESTION_SCHEMA = ROOT / "schemas/question.schema.json"
+
+
+class RankingTransport:
+    def complete(self, request_body: dict, api_key: str) -> dict:
+        del request_body, api_key
+        return {
+            "id": "ranking-publication-generation",
+            "model": "example/ranking",
+            "provider": "ExampleProvider",
+            "choices": [
+                {
+                    "finish_reason": "stop",
+                    "message": {
+                        "role": "assistant",
+                        "content": ('FINAL: {"V01":-2,"V02":-1,"V03":0,"V04":1,"V05":2}'),
+                    },
+                }
+            ],
+            "usage": {"prompt_tokens": 100, "completion_tokens": 20, "total_tokens": 120},
+        }
+
+
+@pytest.mark.parametrize(
+    ("schema_version", "scoring"),
+    [
+        (
+            "1.0",
+            {
+                "metric": "exact_match",
+                "parsed_answer": "A",
+                "value": 1,
+                "correct": True,
+                "parse_error": None,
+            },
+        ),
+        (
+            "2.0",
+            {
+                "metric": "rank_correlation",
+                "parsed_answer": {"V01": 1.0},
+                "value": 1.0,
+                "spearman_rho": 1.0,
+                "pearson_r": 1.0,
+                "valid": True,
+                "parse_error": None,
+            },
+        ),
+    ],
+)
+def test_answer_schema_rejects_api_error_with_score_or_missing_error(
+    schema_version: str,
+    scoring: dict,
+) -> None:
+    schema = json.loads(ANSWER_SCHEMA.read_text(encoding="utf-8"))
+    validator = Draft202012Validator(schema, format_checker=FormatChecker())
+    answer = {
+        "schema_version": schema_version,
+        "run_id": "invalid-api-error",
+        "question_id": "question-1",
+        "question_sha256": "0" * 64,
+        "completion_index": 0,
+        "evaluated_at": "2026-09-02T00:00:00Z",
+        "response": {
+            "status": "api_error",
+            "content": None,
+            "reasoning": None,
+            "finish_reason": None,
+            "latency_seconds": 0.1,
+        },
+        "usage": {},
+        "scoring": scoring,
+        "error": None,
+        "raw_archive_path": "raw/invalid-api-error.jsonl.zst",
+    }
+    if schema_version == "1.0":
+        answer["scoring"]["result_type"] = "correct"
+
+    paths = {tuple(error.path) for error in validator.iter_errors(answer)}
+
+    assert ("error",) in paths
+    assert ("scoring", "value") in paths
+    if schema_version == "1.0":
+        assert ("scoring", "result_type") in paths
 
 
 def build_synthetic(output: Path, version_name: str = "candidate") -> dict:
@@ -35,6 +124,21 @@ def build_synthetic(output: Path, version_name: str = "candidate") -> dict:
         output=output,
         version_name=version_name,
     )
+
+
+def test_run_schema_rejects_v1_ranking_task_type(tmp_path: Path) -> None:
+    output = tmp_path / "publication"
+    build_synthetic(output)
+    run = json.loads((output / "versions/candidate/runs.json").read_text(encoding="utf-8"))["runs"][
+        0
+    ]
+    run["task_type"] = "ranking"
+
+    schema = json.loads(RUN_SCHEMA.read_text(encoding="utf-8"))
+    validator = Draft202012Validator(schema, format_checker=FormatChecker())
+    paths = {tuple(error.path) for error in validator.iter_errors(run)}
+
+    assert ("task_type",) in paths
 
 
 def write_second_task(
@@ -278,6 +382,64 @@ def test_publication_accepts_one_run_routed_across_upstream_providers(tmp_path: 
     assert run["coverage"]["complete"] is True
 
 
+def test_publication_aggregates_ranking_metrics_without_classification_accuracy(
+    tmp_path: Path,
+) -> None:
+    questions = tmp_path / "ranking-questions.jsonl"
+    build_file(RANKING_SOURCE, RANKING_TEMPLATE, QUESTION_SCHEMA, questions)
+    results = tmp_path / "ranking-results"
+    results.mkdir()
+    evaluate_file(
+        questions_path=questions,
+        question_schema_path=QUESTION_SCHEMA,
+        result_schema_path=RESULT_SCHEMA,
+        output=results / "ranking-run.jsonl",
+        run_id="ranking-run",
+        model_id="example/ranking",
+        api_key="offline",
+        generation_parameters={"max_tokens": 256},
+        transport=RankingTransport(),
+        now=lambda: datetime(2026, 9, 2, 12, 0, tzinfo=UTC),
+    )
+
+    output = tmp_path / "ranking-publication"
+    build_version(
+        questions_path=questions,
+        results_dir=results,
+        result_schema_path=RESULT_SCHEMA,
+        schemas_dir=SCHEMAS,
+        output=output,
+        version_name="ranking",
+    )
+    version = output / "versions/ranking"
+    document = json.loads((version / "runs.json").read_text(encoding="utf-8"))
+    run = document["runs"][0]
+
+    assert document["leaderboard"]["aggregation_method"] == ("classification_task_macro_average_v0")
+    assert document["leaderboard"]["evaluation_profiles"] == [
+        {
+            "evaluation_profile": "synthetic_ranking:satmut-mpra-ranking-v1@1.0",
+            "primary_metric": "spearman",
+            "task_family": "synthetic_ranking",
+            "task_type": "ranking",
+        }
+    ]
+    assert run["schema_version"] == "2.0"
+    assert run["task_type"] == "ranking"
+    assert "accuracy" not in run["metrics"]
+    assert run["metrics"]["mean_spearman_rho"] == pytest.approx(1.0)
+    assert run["metrics"]["mean_pearson_r"] == pytest.approx(1.0)
+    assert run["metrics"]["valid_output_rate"] == 1.0
+    outcome = json.loads(gzip.decompress((version / run["outcome_index_path"]).read_bytes()))
+    assert outcome["outcomes"] == [
+        {
+            "question_id": "satmut-mpra-ranking-v1:synthetic-ranking-001",
+            "valid": True,
+            "value": pytest.approx(1.0),
+        }
+    ]
+
+
 def test_publication_combines_task_question_sets_without_rewriting_run_identity(
     tmp_path: Path,
 ) -> None:
@@ -298,15 +460,19 @@ def test_publication_combines_task_question_sets_without_rewriting_run_identity(
     )
     assert manifest["question_set_size"] == 2
     assert runs_document["leaderboard"] == {
-        "aggregation_method": "task_macro_average_v0",
+        "aggregation_method": "classification_task_macro_average_v0",
         "evaluation_profiles": [
             {
                 "evaluation_profile": "synthetic_clinical:clinical-v1@1.0",
+                "primary_metric": "exact_match",
                 "task_family": "synthetic_clinical",
+                "task_type": "multiple_choice",
             },
             {
                 "evaluation_profile": "synthetic_effect:mc-effect-v1@1.0",
+                "primary_metric": "exact_match",
                 "task_family": "synthetic_effect",
+                "task_type": "multiple_choice",
             },
         ],
     }

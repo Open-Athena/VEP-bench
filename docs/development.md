@@ -42,6 +42,7 @@ Run the locked offline checks before opening a pull request:
 ```bash
 uv run --locked python scripts/validate_vep_consequence_artifacts.py
 uv run --locked python scripts/validate_clinvar_artifacts.py
+uv run --locked python scripts/validate_satmut_mpra_artifacts.py
 uv run --locked pytest --cov=vepbench --cov-report=term-missing:skip-covered
 uv run --locked ruff check .
 uv run --locked ruff format --check .
@@ -56,6 +57,12 @@ uv run --locked vepbench build \
   --output /tmp/clinvar-questions.jsonl
 cmp benchmark/clinvar-expected-manifest.json \
   /tmp/clinvar-questions.manifest.json
+uv run --locked vepbench build \
+  --source data/sources/satmut-mpra-cadd-v1.7.jsonl \
+  --template templates/satmut_mpra.json \
+  --output /tmp/satmut-mpra-questions.jsonl
+cmp benchmark/satmut-mpra-expected-manifest.json \
+  /tmp/satmut-mpra-questions.manifest.json
 uv run --locked vepbench site --output /tmp/vepbench-site
 ```
 

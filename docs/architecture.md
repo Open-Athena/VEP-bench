@@ -3,7 +3,7 @@
 VEPBench separates scientific benchmark tasks from a small shared execution and
 publication layer. A task defines what a model sees and what counts as the
 correct answer; the shared layer generates questions, calls one provider,
-scores exact matches, and produces a static explorer.
+scores deterministic outputs, and produces a static explorer.
 
 ## Artifact flow
 
@@ -36,7 +36,7 @@ The shared layer owns:
 
 - deterministic question generation and validation;
 - OpenRouter batch and bounded-parallel direct evaluation;
-- parsing the final `FINAL: <choice-id>` line and exact-match scoring;
+- strict final-answer parsing, exact-match or rank-correlation scoring;
 - resumable local results and immutable question fingerprints;
 - publication formats, validation, and the static results explorer.
 
@@ -104,17 +104,25 @@ that must remain out of model-visible prompts. The builder includes that object
 in the source-record fingerprint but does not copy it into generated questions;
 task-specific compact-source validators own its structure.
 
-JSON Schema cannot express every question invariant. The builder additionally
-checks that choice IDs are unique, that `answer_choice_id` identifies exactly
-one choice, and that rendered choices agree with the prompt.
+Question schema 1.0 describes multiple-choice tasks and schema 2.0 describes
+quantitative ranking tasks. JSON Schema cannot express every question
+invariant. The builder additionally checks unique choice or candidate IDs,
+valid answer references, finite reference scores, and exact agreement between
+the structured choices or candidate rows and the rendered prompt. Ranking
+candidates and their rendered VCF rows are sorted by `CHROM`, `POS`, `REF`, and
+`ALT`.
 
-The scorer reads only the last well-formed `FINAL: <choice-id>` line. A complete
-response is assigned one flat result type: `correct`, `incorrect`, `refusal`,
-`token_limit`, or `format_error`. Structured provider refusal evidence has
-precedence; otherwise a valid parsed answer determines correctness, an
-unparseable response finished for `length` is a token limit, and any remaining
-unparseable completion is a format error. An API failure is not a result type:
-it receives a null score and makes the run incomplete.
+For multiple choice, the scorer reads only the last well-formed
+`FINAL: <choice-id>` line. A complete response is assigned one flat result type:
+`correct`, `incorrect`, `refusal`, `token_limit`, or `format_error`. Structured
+provider refusal evidence has precedence; otherwise a valid parsed answer
+determines correctness, an unparseable response finished for `length` is a
+token limit, and any remaining unparseable completion is a format error. For
+ranking, the scorer reads the last well-formed
+`FINAL: {<candidate-id>: <number>, ...}` object and requires every candidate
+exactly once with finite numeric values. Invalid completed ranking output gets
+the documented floor correlations rather than a null API score. An API failure
+is not a result type: it receives null scoring and makes the run incomplete.
 
 Result snapshots retain the complete question, provider response, final
 content, nullable provider-exposed reasoning, usage, finish reason, non-secret
@@ -161,19 +169,22 @@ size, and evaluation profile of the single task question set that was actually
 evaluated. The publication's `runs.json` maps those profiles to task families
 and records the complete list required by the leaderboard.
 
-The provisional `task_macro_average_v0` overall score groups runs with identical
-gateway, model, model revision, and fully resolved generation
-parameters. A configuration is eligible only when it has one complete run for
-every published evaluation profile. Its overall score is the arithmetic mean
-of the task accuracies, so every task has equal weight regardless of question
-count. Displayed overall token usage and cost are sums across the included task
-runs. A future aggregation change must use a new method identifier rather than
-silently changing this rule.
+The provisional `classification_task_macro_average_v0` overall score groups
+runs with identical gateway, model, model revision, and fully resolved
+generation parameters. A configuration is eligible only when it has
+one complete run for every published classification profile. Its overall score
+is the arithmetic mean of classification-task accuracies, so every included
+task has equal weight regardless of question count. Quantitative ranking tasks
+remain visible as task-specific Spearman leaderboards and are not mixed with
+accuracy. Displayed overall token usage and cost sum only the included
+classification runs. A future aggregation change must use a new method
+identifier rather than silently changing this rule.
 
 The leaderboard task selector controls both its table and line chart. `All
-tasks` uses the macro-average score and summed cost and token usage described
-above; a specific task uses that task run's exact-match score, cost, and token
-usage. The score column retains the generic `Score` label because the selector
+classification tasks` uses the macro-average score and summed cost and token
+usage described above; a specific task uses that task run's exact-match score
+or mean within-element Spearman correlation, plus its cost and token usage. The
+score column retains the generic `Score` label because the selector
 provides its scope. The line chart connects configurations within each
 published model family and can compare the selected score against cost or total
 tokens. The page uses Observable's native inputs, table, and plot so both views
@@ -187,11 +198,11 @@ Displayed `Qnnn` labels are global ordinals in the explorer's canonical task
 order, not per-task row numbers; task pages label their filtered questions from
 that same combined ordering.
 Its compact `question-metadata.json` asset is deterministically derived from
-committed task sources and provenance manifests. Every task must supply a VEP
-consequence for each source record, normally as
-`source_metadata.vep_consequence`; legacy task manifests may provide an explicit
-override. This display-only metadata is never added to model-visible prompts and
-does not change question or historical result fingerprints.
+committed task sources and provenance manifests. Classification tasks normally
+supply `source_metadata.vep_consequence`; other tasks may supply an appropriate
+display label such as `source_metadata.model_visible_name`. This display-only
+metadata is never added to model-visible prompts and does not change question
+or historical result fingerprints.
 
 Only `versions/main/` in the public bucket is official. Named lowercase-slug
 versions are reviewable release candidates or disposable experiments. The

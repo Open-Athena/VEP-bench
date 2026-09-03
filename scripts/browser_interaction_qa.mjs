@@ -99,7 +99,7 @@ await waitFor(
     && [...document.querySelectorAll("option")].some(
       (option) => option.textContent.trim() === "ClinVar"
     )
-    && document.querySelector('.card[aria-label^="All tasks score versus"]') !== null`,
+    && document.querySelector('.card[aria-label^="All classification tasks score versus"]') !== null`,
   "two-model leaderboard"
 );
 const allTaskTable = await evaluate('document.querySelector("table tbody").innerText');

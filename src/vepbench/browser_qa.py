@@ -21,11 +21,14 @@ DEFAULT_PREDICTION = "C17"
 class OfflineBrowserTransport:
     """Return one deterministic, schema-compatible response without network access."""
 
-    def __init__(self, prediction: str) -> None:
+    def __init__(self, prediction: str | Mapping[str, float]) -> None:
         self.prediction = prediction
 
     def complete(self, request_body: Mapping[str, Any], api_key: str) -> dict[str, Any]:
         del request_body, api_key
+        final = (
+            self.prediction if isinstance(self.prediction, str) else canonical_json(self.prediction)
+        )
         return {
             "id": "browser-qa-generation",
             "model": "synthetic/browser-qa",
@@ -36,8 +39,7 @@ class OfflineBrowserTransport:
                     "message": {
                         "role": "assistant",
                         "content": (
-                            "Deterministic response generated for browser QA.\n"
-                            f"FINAL: {self.prediction}"
+                            f"Deterministic response generated for browser QA.\nFINAL: {final}"
                         ),
                         "reasoning": ("Synthetic provider-exposed reasoning for display testing."),
                     },
@@ -90,33 +92,52 @@ def prepare_fixture(
             model_ids.append("synthetic/browser-qa-alternate")
         for model_index, model_id in enumerate(model_ids):
             for task_index, (question_file, task_questions) in enumerate(question_sets):
-                primary_prediction = (
-                    prediction
-                    if any(
-                        question["question_id"] == selected_question_id
+                task_type = task_questions[0]["task_type"]
+                if any(question["task_type"] != task_type for question in task_questions):
+                    raise BuildError(f"browser QA question file mixes task types: {question_file}")
+                if task_type == "ranking":
+                    candidate_ids = [
+                        candidate["candidate_id"] for candidate in task_questions[0]["candidates"]
+                    ]
+                    task_prediction: str | Mapping[str, float] = {
+                        candidate_id: float(
+                            index if model_index == 0 else len(candidate_ids) - index
+                        )
+                        for index, candidate_id in enumerate(candidate_ids)
+                    }
+                    invalid_questions = [
+                        question["question_id"]
                         for question in task_questions
+                        if [candidate["candidate_id"] for candidate in question["candidates"]]
+                        != candidate_ids
+                    ]
+                else:
+                    primary_prediction = (
+                        prediction
+                        if any(
+                            question["question_id"] == selected_question_id
+                            for question in task_questions
+                        )
+                        else task_questions[0]["answer_choice_id"]
                     )
-                    else task_questions[0]["answer_choice_id"]
-                )
-                task_prediction = (
-                    primary_prediction
-                    if model_index == 0
-                    else next(
-                        choice["choice_id"]
-                        for choice in task_questions[0]["choices"]
-                        if choice["choice_id"] != primary_prediction
+                    task_prediction = (
+                        primary_prediction
+                        if model_index == 0
+                        else next(
+                            choice["choice_id"]
+                            for choice in task_questions[0]["choices"]
+                            if choice["choice_id"] != primary_prediction
+                        )
                     )
-                )
-                invalid_questions = [
-                    question["question_id"]
-                    for question in task_questions
-                    if task_prediction
-                    not in {choice["choice_id"] for choice in question["choices"]}
-                ]
+                    invalid_questions = [
+                        question["question_id"]
+                        for question in task_questions
+                        if task_prediction
+                        not in {choice["choice_id"] for choice in question["choices"]}
+                    ]
                 if invalid_questions:
                     raise BuildError(
-                        f"browser QA prediction {task_prediction!r} is not valid for "
-                        f"{invalid_questions[0]!r}"
+                        f"browser QA prediction is not valid for {invalid_questions[0]!r}"
                     )
                 run_prefix = "browser-qa" if model_index == 0 else "browser-qa-alternate"
                 run_id = run_prefix if task_index == 0 else f"{run_prefix}-task-{task_index + 1}"

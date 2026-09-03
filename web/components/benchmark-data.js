@@ -2,7 +2,8 @@ const SAFE_ID = /^[A-Za-z0-9][A-Za-z0-9._:-]*$/;
 const AUTO_ROUTED_PROVIDER = "OpenRouter auto-routing";
 const EXPLORER_TASK_ORDER = new Map([
   ["vep_most_severe_consequence", 0],
-  ["clinvar", 1]
+  ["clinvar", 1],
+  ["satmut_mpra", 2]
 ]);
 const RESULT_TYPE_LABELS = Object.freeze({
   correct: "Correct",
@@ -56,6 +57,15 @@ function nonnegativeNumber(value) {
   return typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : null;
 }
 
+function finiteNumber(value) {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function primaryScore(run) {
+  return finiteNumber(run.metrics.mean_spearman_rho)
+    ?? nonnegativeNumber(run.metrics.accuracy);
+}
+
 export function formatRunLabel(run) {
   const model = modelName(run?.model?.model_id ?? "unknown model", run?.generation_parameters);
   const provider = run?.model?.upstream_provider ?? "provider not reported";
@@ -88,14 +98,18 @@ function rowForRun(run) {
     release_date: run.model.release_date ?? null,
     tokens: nonnegativeNumber(run.metrics.total_tokens),
     cost: nonnegativeNumber(run.metrics.total_cost_usd),
+    score: primaryScore(run),
     accuracy: nonnegativeNumber(run.metrics.accuracy),
+    pearson: finiteNumber(run.metrics.mean_pearson_r),
+    valid_output_rate: nonnegativeNumber(run.metrics.valid_output_rate),
+    primary_metric: run.task_type === "ranking" ? "spearman" : "exact_match",
     format_failures: run.metrics.format_failures
   };
 }
 
 function sortLeaderboardRows(rows) {
   return rows.sort((a, b) =>
-    (b.accuracy ?? -1) - (a.accuracy ?? -1)
+    (b.score ?? -Infinity) - (a.score ?? -Infinity)
     || a.model_cell.model.localeCompare(b.model_cell.model)
     || a.model_cell.provider.localeCompare(b.model_cell.provider)
   );
@@ -133,8 +147,15 @@ function sumIfComplete(values) {
 }
 
 export function overallLeaderboardRows(runs, leaderboard) {
-  if (leaderboard?.aggregation_method !== "task_macro_average_v0") return [];
-  const profiles = leaderboard.evaluation_profiles;
+  const method = leaderboard?.aggregation_method;
+  if (!["task_macro_average_v0", "classification_task_macro_average_v0"].includes(method)) {
+    return [];
+  }
+  const allProfiles = leaderboard.evaluation_profiles;
+  if (!Array.isArray(allProfiles) || allProfiles.length === 0) return [];
+  const profiles = method === "classification_task_macro_average_v0"
+    ? allProfiles.filter((profile) => profile.task_type === "multiple_choice")
+    : allProfiles;
   if (!Array.isArray(profiles) || profiles.length === 0) return [];
   const profileKeys = new Set();
   for (const profile of profiles) {
@@ -180,6 +201,8 @@ export function overallLeaderboardRows(runs, leaderboard) {
     delete row.run;
     row.accuracy = taskAccuracies.reduce((total, accuracy) => total + accuracy, 0)
       / taskAccuracies.length;
+    row.score = row.accuracy;
+    row.primary_metric = "exact_match";
     row.tokens = sumIfComplete(
       taskRuns.map((run) => nonnegativeNumber(run.metrics.total_tokens))
     );
@@ -219,7 +242,41 @@ export function orderTaskFamilies(taskFamilies) {
 }
 
 export function modelSelectionRows(runs, leaderboard) {
-  if (leaderboard) return overallLeaderboardRows(runs, leaderboard);
+  if (leaderboard) {
+    const rows = overallLeaderboardRows(runs, leaderboard);
+    const currentRuns = latestCompleteRuns(runs);
+    const profileByEvaluation = new Map(
+      leaderboard.evaluation_profiles.map((profile) => [profile.evaluation_profile, profile])
+    );
+    const rowsByConfiguration = new Map(
+      rows.map((row) => [overallConfigurationKey(row.runs[0]), row])
+    );
+    for (const candidate of currentRuns) {
+      const profile = profileByEvaluation.get(candidate.evaluation_profile);
+      if (!profile) continue;
+      const key = overallConfigurationKey(candidate);
+      let row = rowsByConfiguration.get(key);
+      if (!row) {
+        row = rowForRun(candidate);
+        row.runs = [];
+        row.task_scores = [];
+        delete row.run;
+        rows.push(row);
+        rowsByConfiguration.set(key, row);
+      }
+      if (row.task_scores.some(
+        (task) => task.evaluation_profile === candidate.evaluation_profile
+      )) continue;
+      row.task_scores.push({
+        task_family: profile.task_family,
+        evaluation_profile: profile.evaluation_profile,
+        score: primaryScore(candidate),
+        run: candidate
+      });
+      row.runs.push(candidate);
+    }
+    return sortLeaderboardRows(rows);
+  }
   return leaderboardRows(runs).map((row) => ({...row, runs: [row.run]}));
 }
 

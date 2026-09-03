@@ -64,6 +64,18 @@ def test_canonical_json_rejects_non_finite_numbers() -> None:
         canonical_json({"temperature": math.nan})
 
 
+def test_ranking_source_rejects_integer_too_large_for_float() -> None:
+    source = json.loads(
+        (ROOT / "tests/fixtures/synthetic-ranking-source.jsonl").read_text(encoding="utf-8")
+    )
+    source["candidates"][0]["reference_score"] = 10**400
+    template = load_template(ROOT / "templates/satmut_mpra.json")
+    schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
+
+    with pytest.raises(BuildError, match="reference_score must be finite"):
+        build_questions([source], template, schema)
+
+
 def test_production_questions_match_expected_manifest(tmp_path: Path) -> None:
     rebuilt = tmp_path / "questions.jsonl"
     build_file(PRODUCTION_SOURCE, PRODUCTION_TEMPLATE, SCHEMA, rebuilt)
