@@ -112,6 +112,10 @@ test("new comparison models have human-readable labels", () => {
     /^Claude Fable 5\.1 \(medium\)/
   );
   assert.match(
+    formatRunLabel(run({modelId: "anthropic/claude-opus-5"})),
+    /^Claude Opus 5 \(medium\)/
+  );
+  assert.match(
     formatRunLabel(run({modelId: "deepseek/deepseek-v4-flash-0731"})),
     /^DeepSeek V4 Flash 0731 \(medium\)/
   );

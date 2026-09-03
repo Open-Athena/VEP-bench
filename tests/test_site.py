@@ -47,6 +47,12 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     assert '{task_family: null, label: "All tasks"}' in leaderboard_source
     assert "value: taskOptions[0]" in leaderboard_source
     assert 'columns: ["model", "score", "release_date", "tokens", "cost"]' in (leaderboard_source)
+    assert "Unscored model attempts" in leaderboard_source
+    assert 'status: "Content filtered"' in leaderboard_source
+    assert "Claude Fable 5.1 (medium)" in leaderboard_source
+    assert "Claude Opus 5 (medium)" in leaderboard_source
+    assert "8/8 panels; zero output tokens; not ranked" in leaderboard_source
+    assert "5/8 panels; run stopped and not ranked" in leaderboard_source
     assert 'y: {\n      label: "Score"' in leaderboard_source
     assert "displayScore," in leaderboard_source
     assert "score: displayScore(row.score)" in leaderboard_source

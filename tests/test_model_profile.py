@@ -56,6 +56,16 @@ def test_fable_profile_is_valid_and_omits_unsupported_parameters() -> None:
     assert "seed" not in profile.generation_parameters
 
 
+def test_opus_profile_is_valid_and_omits_route_specific_parameters() -> None:
+    profile = load_model_profile(ROOT / "configs/models/anthropic-claude-opus-5-medium.yaml")
+
+    assert profile.label == "claude-opus-5-medium"
+    assert profile.model_id == "anthropic/claude-opus-5"
+    assert profile.generation_parameters == {"reasoning": {"effort": "medium", "exclude": False}}
+    assert "temperature" not in profile.generation_parameters
+    assert "seed" not in profile.generation_parameters
+
+
 def test_deepseek_profile_requests_low_reasoning() -> None:
     profile = load_model_profile(ROOT / "configs/models/deepseek-v4-flash-0731-low.yaml")
 

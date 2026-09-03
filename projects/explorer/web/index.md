@@ -143,6 +143,51 @@ const leaderboardTable = Inputs.table(tableRows, {
 display(html`<div class="card">${leaderboardTable}</div>`);
 ```
 
+## Unscored model attempts
+
+Provider safeguards can prevent an otherwise valid model configuration from
+producing enough answers for a meaningful benchmark score. These attempts are
+reported separately and are not included in the leaderboard.
+
+```js
+const unscoredAttempts = [
+  {
+    task_family: "satmut_mpra",
+    model: "Claude Fable 5.1 (medium)",
+    status: "Content filtered",
+    evidence: "8/8 panels; zero output tokens; not ranked (Anthropic/OpenRouter Batch, 2026-09-03)"
+  },
+  {
+    task_family: "satmut_mpra",
+    model: "Claude Opus 5 (medium)",
+    status: "Content filtered",
+    evidence: "5/8 panels; run stopped and not ranked (Anthropic/OpenRouter Batch, 2026-09-03)"
+  }
+];
+const visibleUnscoredAttempts = unscoredAttempts.filter((attempt) =>
+  selectedTaskFamily === null || attempt.task_family === selectedTaskFamily
+);
+const unscoredAttemptsTable = Inputs.table(visibleUnscoredAttempts, {
+  columns: ["model", "status", "evidence"],
+  header: {
+    model: "Model",
+    status: "Status",
+    evidence: "Observed evidence"
+  },
+  width: {
+    model: 220,
+    status: 150,
+    evidence: 560
+  },
+  rows: Math.max(2, visibleUnscoredAttempts.length),
+  select: false
+});
+```
+
+```js
+display(html`<div class="card">${unscoredAttemptsTable}</div>`);
+```
+
 ## Score by cost and token usage
 
 Each line connects evaluated configurations from the same model family. Use the selector to compare the selected task's score with total run cost or total token usage.

@@ -1,0 +1,10 @@
+# Medium-effort Claude Opus 5 comparison. The canonical base model ID is used
+# because OpenRouter's Batch API selects the discounted batch route.
+# Temperature and seed are omitted because not every route advertises them.
+schema_version: "1.0"
+label: claude-opus-5-medium
+model: anthropic/claude-opus-5
+generation:
+  reasoning:
+    effort: medium
+    exclude: false

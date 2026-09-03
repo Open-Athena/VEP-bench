@@ -169,12 +169,23 @@ Local results are written under `.vepbench/results/` unless an output path is
 provided. They preserve provider-exposed reasoning when present, but do not
 claim access to a model's private chain of thought.
 
-## Fable profile
+## Anthropic profiles
 
 The Claude Fable 5.1 medium profile requests medium adaptive reasoning and
 omits unsupported temperature and seed parameters. Use its canonical base
 model ID with the default OpenRouter Batch API path; OpenRouter selects the
 discounted batch route during submission.
+
+The Claude Opus 5 medium profile likewise requests medium adaptive reasoning
+without route-specific temperature or seed parameters. Its canonical base
+model ID supports the task's full completion ceiling and selects the discounted
+batch route during submission.
+
+On 2026-09-03, the Anthropic route selected by OpenRouter's Batch API returned
+`content_filter` with zero output tokens for all eight sampled Fable panels and
+five of eight sampled Opus panels. Those attempts are documented by the static
+explorer as provider-safeguard incompatibilities and are not published as
+numeric leaderboard runs.
 
 The DeepSeek V4 Flash 0731 low profile requests low provider-exposed reasoning
 and a deterministic seed. Its direct and batch prices should be checked before
