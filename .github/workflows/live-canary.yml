@@ -33,7 +33,7 @@ jobs:
       - name: Check deployed explorer
         run: >-
           bash scripts/browser_live_canary.sh
-          https://openathena.ai/VEPBench
+          https://openathena.ai/VEP-bench
           browser-live-canary
 
       - name: Upload browser canary evidence

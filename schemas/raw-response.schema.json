@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://open-athena.github.io/VEPBench/schemas/raw-response.schema.json",
-  "title": "VEPBench raw provider response envelope",
+  "title": "VEP-bench raw provider response envelope",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema_version", "run_id", "question_id", "question_sha256", "completion_index", "evaluated_at", "request", "response", "error"],

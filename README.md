@@ -1,15 +1,15 @@
-# VEPBench
+# VEP-bench
 
-VEPBench is a public benchmark for measuring the native genetic variant effect
+VEP-bench is a public benchmark for measuring the native genetic variant effect
 prediction capabilities of language models. Models answer without internet
 access or tools, and every response can be inspected in the public results
 explorer.
 
-[Explore the leaderboard and responses](https://openathena.ai/VEPBench/)
+[Explore the leaderboard and responses](https://openathena.ai/VEP-bench/)
 
-## What VEPBench measures
+## What VEP-bench measures
 
-VEPBench uses deterministic, versioned question sets built from biological
+VEP-bench uses deterministic, versioned question sets built from biological
 reference data. Models receive only the model-visible prompt; answer keys stay
 local and scoring is deterministic.
 
@@ -22,7 +22,7 @@ The benchmark is intentionally transparent:
 - evaluations use one OpenRouter integration; and
 - results are published to a static explorer with no database or backend.
 
-VEPBench measures current model capability. Temporal task cohorts can reduce
+VEP-bench measures current model capability. Temporal task cohorts can reduce
 direct source leakage but do not guarantee absence from training data.
 
 ## Benchmark tasks
@@ -31,7 +31,7 @@ direct source leakage but do not guarantee absence from training data.
 | --- | --- | --- | ---: |
 | [Ensembl VEP most-severe consequence](docs/tasks/vep-most-severe-consequence.md) | A centered GRCh38 sequence window and SNV alleles | Ensembl VEP consequence class | 51 |
 | [ClinVar](docs/tasks/clinvar.md) | A centered GRCh38 sequence window and SNV alleles | ClinVar Benign or Pathogenic | 42 |
-| [satMutMPRA regulatory-effect ranking](docs/tasks/satmut-mpra.md) | Assay context, a full GRCh38 regulatory-element sequence, and a 50-variant panel | Signed reporter-activity effects | 16 |
+| [satMutMPRA regulatory-effect ranking](docs/tasks/satmut-mpra.md) | Assay context, a full assayed regulatory-element sequence, and a 50-variant panel | Signed reporter-activity effects | 16 |
 
 Each task has its own versioned sources, prompt, methodology, limitations, and
 results. Task details live under [`docs/tasks/`](docs/tasks/README.md) so new
@@ -39,7 +39,7 @@ tasks can be added without making this README task-specific.
 
 ## Results
 
-The [explorer](https://openathena.ai/VEPBench/) provides a provisional overall
+The [explorer](https://openathena.ai/VEP-bench/) provides a provisional overall
 score that weights each classification task equally, plus task-level results
 and question-level prompts, reference answers, model responses, available
 reasoning, and deterministic scores. Quantitative ranking tasks have separate
@@ -58,4 +58,4 @@ limitations.
 
 ## License
 
-VEPBench is available under the [Apache License 2.0](LICENSE).
+VEP-bench is available under the [Apache License 2.0](LICENSE).

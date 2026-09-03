@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://open-athena.github.io/VEPBench/schemas/result.schema.json",
-  "title": "VEPBench evaluation result",
+  "title": "VEP-bench evaluation result",
   "description": "One resumable local model completion before publication.",
   "type": "object",
   "additionalProperties": false,
@@ -61,7 +61,7 @@
       ]
     },
     "usage": {
-      "description": "Gateway usage plus explicit VEPBench normalization provenance when aggregate batch cost is allocated across results.",
+      "description": "Gateway usage plus explicit VEP-bench normalization provenance when aggregate batch cost is allocated across results.",
       "type": "object"
     },
     "error": {"type": ["object", "null"]}

@@ -8,7 +8,7 @@ reference sequence and variant alleles.
 - **Prompt version:** 1.2
 - **Development set:** 51 public chromosome 17 SNVs
 - **Scoring:** multiple choice, deterministic exact match
-- **Explorer:** [Consequence classification](https://openathena.ai/VEPBench/tasks/consequence-classification.html)
+- **Explorer:** [Consequence classification](https://openathena.ai/VEP-bench/tasks/consequence-classification.html)
 
 ## Model-visible input
 
@@ -157,7 +157,7 @@ should not be compared directly with future prompt 1.2 runs.
 | High | 44 / 190 | 23.2% |
 
 Inspect the individual questions, responses, available provider-exposed
-reasoning, and scores in the [public explorer](https://openathena.ai/VEPBench/).
+reasoning, and scores in the [public explorer](https://openathena.ai/VEP-bench/).
 
 ## Rebuilding the source
 

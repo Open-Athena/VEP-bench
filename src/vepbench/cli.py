@@ -1,4 +1,4 @@
-"""VEPBench command-line interface."""
+"""VEP-bench command-line interface."""
 
 import argparse
 import json
@@ -216,7 +216,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     bucket_plan.add_argument("--root", type=Path, required=True)
     bucket_plan.add_argument("--version", required=True)
-    bucket_plan.add_argument("--bucket", default="open-athena/vepbench")
+    bucket_plan.add_argument("--bucket", default="open-athena/VEP-bench")
     bucket_plan.add_argument("--plan", type=Path, required=True)
     bucket_plan.add_argument(
         "--promote-main",

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://open-athena.github.io/VEPBench/schemas/manifest.schema.json",
-  "title": "VEPBench published version manifest",
+  "title": "VEP-bench published version manifest",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema_version", "version_name", "question_set_sha256", "question_set_size", "schemas", "artifacts"],

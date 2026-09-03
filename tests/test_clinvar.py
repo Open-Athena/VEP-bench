@@ -411,7 +411,7 @@ def test_processed_cache_round_trips_complete_presampling_state(tmp_path: Path) 
         vep_source={"dataset": "synthetic VEP"},
         reference={"dataset": "synthetic reference"},
         reference_validation=loaded_validation,
-        processed_cache={"bucket": "open-athena/vepbench", "prefix": prefix},
+        processed_cache={"bucket": "open-athena/VEP-bench", "prefix": prefix},
     )
     assert len(prepared.records) == 2
     assert prepared.manifest["processed_cache"]["prefix"] == prefix
@@ -460,24 +460,24 @@ def test_processed_cache_is_immutable_and_publishes_manifest_last(tmp_path: Path
                 path.write_bytes(self.files[remote])
 
     api = FakeApi()
-    assert remote_cache_state(api, bucket_id="open-athena/vepbench", prefix=prefix, token="x") == (
+    assert remote_cache_state(api, bucket_id="open-athena/VEP-bench", prefix=prefix, token="x") == (
         "absent"
     )
     publish_processed_cache(
         api,
-        bucket_id="open-athena/vepbench",
+        bucket_id="open-athena/VEP-bench",
         prefix=prefix,
         cache_dir=cache_dir,
         token="x",
     )
     assert api.events[-1] == f"{prefix}/manifest.json"
-    assert remote_cache_state(api, bucket_id="open-athena/vepbench", prefix=prefix, token="x") == (
+    assert remote_cache_state(api, bucket_id="open-athena/VEP-bench", prefix=prefix, token="x") == (
         "complete"
     )
     with pytest.raises(ClinVarPreparationError, match="refusing to overwrite"):
         publish_processed_cache(
             api,
-            bucket_id="open-athena/vepbench",
+            bucket_id="open-athena/VEP-bench",
             prefix=prefix,
             cache_dir=cache_dir,
             token="x",
@@ -485,7 +485,7 @@ def test_processed_cache_is_immutable_and_publishes_manifest_last(tmp_path: Path
 
     downloaded = download_processed_cache(
         api,
-        bucket_id="open-athena/vepbench",
+        bucket_id="open-athena/VEP-bench",
         prefix=prefix,
         destination=tmp_path / "downloaded",
         token="x",

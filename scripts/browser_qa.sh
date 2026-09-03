@@ -122,7 +122,7 @@ for check in \
   'leaderboard.dom.html|Score by cost and token usage' \
   'leaderboard.dom.html|>Compare score against</label>' \
   'leaderboard.dom.html|>Total cost</option>' \
-  'leaderboard.dom.html|https://github.com/Open-Athena/VEPBench' \
+  'leaderboard.dom.html|https://github.com/Open-Athena/VEP-bench' \
   'leaderboard.dom.html|View source' \
   'tasks.dom.html|Browse benchmark tasks' \
   'tasks.dom.html|Open task' \
@@ -220,7 +220,7 @@ if grep -q '>Rank<' "$output_dir/leaderboard.dom.html"; then
   status=1
 fi
 
-if grep -q 'Model performance across all VEPBench tasks' "$output_dir/leaderboard.dom.html"; then
+if grep -q 'Model performance across all VEP-bench tasks' "$output_dir/leaderboard.dom.html"; then
   echo "unexpected leaderboard explainer in leaderboard.dom.html" >&2
   status=1
 fi

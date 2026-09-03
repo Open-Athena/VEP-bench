@@ -1,6 +1,6 @@
 # Architecture
 
-VEPBench separates scientific benchmark tasks from a small shared execution and
+VEP-bench separates scientific benchmark tasks from a small shared execution and
 publication layer. A task defines what a model sees and what counts as the
 correct answer; the shared layer generates questions, calls one provider,
 scores deterministic outputs, and produces a static explorer.
@@ -94,6 +94,9 @@ The public on-disk contracts are:
 - [Normalized browser answers](../schemas/answer.schema.json)
 - [Raw response envelopes](../schemas/raw-response.schema.json)
 - [Published version manifests](../schemas/manifest.schema.json)
+
+The schema `$id` values retain their original `VEPBench` URLs as stable public
+identifiers; the product rename does not change existing contract identities.
 
 Generated questions are sorted by `question_id` and written as UTF-8 JSONL with
 LF line endings. The complete file has a lowercase SHA-256 fingerprint; each

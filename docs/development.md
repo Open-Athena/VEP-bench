@@ -2,7 +2,7 @@
 
 ## Setup
 
-VEPBench uses Python 3.14, [`uv`](https://docs.astral.sh/uv/) for Python
+VEP-bench uses Python 3.14, [`uv`](https://docs.astral.sh/uv/) for Python
 dependencies, and npm for the Observable Framework explorer.
 
 ```bash

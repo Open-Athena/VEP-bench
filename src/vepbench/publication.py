@@ -46,14 +46,14 @@ SCHEMA_FILES = (
 ZSTD_LEVEL = 3
 GZIP_LEVEL = 9
 AUTO_ROUTED_PROVIDER = "OpenRouter auto-routing"
-BUCKET_README = """# VEPBench published data
+BUCKET_README = """# VEP-bench published data
 
-This public bucket is the canonical store for generated VEPBench questions and
+This public bucket is the canonical store for generated VEP-bench questions and
 evaluation artifacts. `versions/main/manifest.json` is the official readiness
 marker. Other named versions are experimental and may be removed without notice.
 
 Schemas are shared from `schemas/`. See the source repository for generation,
-validation, and publication code: https://github.com/Open-Athena/VEPBench
+validation, and publication code: https://github.com/Open-Athena/VEP-bench
 """
 
 

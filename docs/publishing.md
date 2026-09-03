@@ -62,7 +62,7 @@ Review the JSONL plan, then apply it with an exact destination confirmation:
 uv run --locked vepbench bucket-apply \
   --plan /tmp/prompt-redesign.plan.jsonl \
   --confirm-destination \
-    hf://buckets/open-athena/vepbench/versions/prompt-redesign
+    hf://buckets/open-athena/VEP-bench/versions/prompt-redesign
 ```
 
 The plan records the expected action, digest, and size for each file. No
