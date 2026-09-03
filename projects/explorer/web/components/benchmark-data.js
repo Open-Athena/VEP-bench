@@ -59,6 +59,11 @@ function finiteNumber(value) {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
+export function displayScore(value) {
+  const score = finiteNumber(value);
+  return score === null ? null : Math.max(0, Math.min(1, score));
+}
+
 function primaryScore(run) {
   return finiteNumber(run.metrics.mean_spearman_rho)
     ?? nonnegativeNumber(run.metrics.accuracy);

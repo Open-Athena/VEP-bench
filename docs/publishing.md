@@ -148,7 +148,10 @@ uv run --no-sync vepbench-site build \
 The explorer is a read-only static site. It loads `versions/main/runs.json`
 first, including the leaderboard's model release date, total tokens, and total
 cost. The score-efficiency chart switches between cost and tokens and draws one
-line per model family. The explorer fetches the question index and a compact
+line per model family. Leaderboard score bars and chart values are presented as
+percentages; published score values remain in their canonical representation,
+and negative correlations are displayed as 0%. The explorer fetches the
+question index and a compact
 outcome index for the selected run when a user opens the question view on its
 task page.
 This supports valid-output and format-failure filters while full answer content
