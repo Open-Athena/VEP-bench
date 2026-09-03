@@ -14,8 +14,7 @@ export default {
         name: "satMutMPRA",
         path: "/tasks/satmut-mpra"
       }]
-    },
-    {name: "Questions", path: "/questions"}
+    }
   ],
   head: `
     <meta name="description" content="A public benchmark for native genetic variant effect prediction by language models.">

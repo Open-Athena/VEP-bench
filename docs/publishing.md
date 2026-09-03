@@ -133,7 +133,8 @@ The explorer is a read-only static site. It loads `versions/main/runs.json`
 first, including the leaderboard's model release date, total tokens, and total
 cost. The score-efficiency chart switches between cost and tokens and draws one
 line per model family. The explorer fetches the question index and a compact
-outcome index for the selected run when a user opens the question explorer.
+outcome index for the selected run when a user opens the question view on its
+task page.
 This supports valid-output and format-failure filters while full answer content
 is loaded one compressed object at a time. The question pane renders the exact
 stored model prompt; it does not display a measured-versus-predicted effect

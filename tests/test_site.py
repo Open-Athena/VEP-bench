@@ -27,17 +27,27 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     assert len(metadata["by_task_family"]["satmut_mpra"]) == 16
     assert metadata["by_task_family"]["satmut_mpra"]["GP1BA"] == {"element": "GP1BB promoter"}
     assert (output / "index.md").is_file()
-    assert (output / "questions.md").is_file()
+    assert not (output / "questions.md").exists()
     assert (output / "tasks/satmut-mpra.md").is_file()
     assert not (output / "tasks/consequence-classification.md").exists()
     assert not (output / "tasks/clinvar.md").exists()
     assert not (output / "data/explorer.json").exists()
     assert not (output / "data/questions.jsonl").exists()
     assert not (output / "data/results").exists()
-    question_source = (output / "questions.md").read_text(encoding="utf-8")
-    assert "const controls = view(controlsInput);" in question_source
-    assert "const selected = view(questionTable);" in question_source
-    assert "Generators.input" not in question_source
+    leaderboard_source = (output / "index.md").read_text(encoding="utf-8")
+    assert 'label: "Task"' in leaderboard_source
+    assert '{task_family: null, label: "All tasks"}' in leaderboard_source
+    assert 'value: taskOptions[0]' in leaderboard_source
+    assert 'columns: ["model", "score", "release_date", "tokens", "cost"]' in (
+        leaderboard_source
+    )
+    assert 'y: {\n      label: "Score"' in leaderboard_source
+    assert "Pearson r" not in leaderboard_source
+    assert "Valid outputs" not in leaderboard_source
+    task_source = (output / "tasks/satmut-mpra.md").read_text(encoding="utf-8")
+    assert "const controls = view(controlsInput);" in task_source
+    assert "const selected = view(questionTable);" in task_source
+    assert "Generators.input" not in task_source
     component_source = (output / "components/vepbench.js").read_text(encoding="utf-8")
     assert 'element("h2", null, "Prompt given to model")' in component_source
     assert "markdownNode(question.prompt)" in component_source

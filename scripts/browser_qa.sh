@@ -77,18 +77,17 @@ common=(
   --dump-dom "http://127.0.0.1:$port/tasks/satmut-mpra.html" \
   >"$output_dir/task.dom.html"
 "$chrome" "${common[@]}" --window-size=1440,2400 \
-  --dump-dom "http://127.0.0.1:$port/questions.html?question=satmut-mpra-ranking-v1%3AF9&run=browser-qa" \
+  --dump-dom "http://127.0.0.1:$port/tasks/satmut-mpra.html?question=satmut-mpra-ranking-v1%3AF9&run=browser-qa" \
   >"$output_dir/question.dom.html"
 "$chrome" "${common[@]}" --window-size=1440,1600 \
-  --dump-dom "http://127.0.0.1:$port/questions.html?run=missing-run" \
+  --dump-dom "http://127.0.0.1:$port/tasks/satmut-mpra.html?run=missing-run" \
   >"$output_dir/question-neutral.dom.html"
 
 status=0
 for check in \
   'leaderboard.dom.html|>Leaderboard<' \
   'leaderboard.dom.html|>Model<' \
-  'leaderboard.dom.html|>Pearson r<' \
-  'leaderboard.dom.html|>Valid outputs<' \
+  'leaderboard.dom.html|>Task</label>' \
   'leaderboard.dom.html|class="vepbench-score-cell"' \
   'leaderboard.dom.html|Score by cost and token usage' \
   'leaderboard.dom.html|>Compare score against</label>' \
@@ -120,7 +119,7 @@ do
   fi
 done
 
-for pattern in 'Reference effects' 'Measured effect' 'Predicted effect' '>Task</label>' \
+for pattern in 'Reference effects' 'Measured effect' 'Predicted effect' \
   'Consequence classification' 'ClinVar' 'satMutMPRA ranking'; do
   if grep -q "$pattern" "$output_dir/question.dom.html" \
     || grep -q "$pattern" "$output_dir/leaderboard.dom.html" \
@@ -132,11 +131,11 @@ done
 
 header_order=$(
   { grep -o '<th title="[^"]*"><span>[^<]*</span>[^<]*</th>' "$output_dir/leaderboard.dom.html" || true; } \
-    | head -7 \
+    | head -5 \
     | sed -E 's/<span>[^<]*<\/span>//; s/<[^>]+>//g' \
     | paste -sd '|' -
 )
-if [[ "$header_order" != 'Model|Score|Pearson r|Valid outputs|Release date|Tokens|Cost' ]]; then
+if [[ "$header_order" != 'Model|Score|Release date|Tokens|Cost' ]]; then
   echo "unexpected leaderboard column order: $header_order" >&2
   status=1
 fi
@@ -174,7 +173,7 @@ browser_pid=
   "http://127.0.0.1:$port/index.html"
 "$chrome" "${common[@]}" --window-size=1440,1600 \
   --screenshot="$output_dir/question-desktop.png" \
-  "http://127.0.0.1:$port/questions.html?question=satmut-mpra-ranking-v1%3AF9&run=browser-qa"
+  "http://127.0.0.1:$port/tasks/satmut-mpra.html?question=satmut-mpra-ranking-v1%3AF9&run=browser-qa"
 "$chrome" "${common[@]}" --window-size=390,844 \
   --screenshot="$output_dir/task-mobile.png" \
   "http://127.0.0.1:$port/tasks/satmut-mpra.html"
