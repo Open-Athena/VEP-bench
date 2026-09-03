@@ -23,6 +23,10 @@ These instructions apply to the entire VEP-bench repository.
 - Treat the published questions and answers as a public development set. Do not
   add contamination defenses or hidden-test infrastructure without an explicit
   project decision.
+- Give models only the information needed to define the prediction target and
+  relevant experimental conditions. Prefer causally relevant molecular context
+  over names, identifiers, coordinates, disease labels, or annotations that
+  mainly enable recognition or recall; retain omitted fields as provenance.
 
 ## Python tooling
 
