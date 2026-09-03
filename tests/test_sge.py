@@ -1,3 +1,4 @@
+import hashlib
 import json
 import re
 from collections import Counter
@@ -36,6 +37,10 @@ SCHEMA = ROOT / "src/vepbench/schemas/question.schema.json"
 PRODUCTION_SOURCE = ROOT / "data/sources/sge-mavedb-2026-09-03.jsonl"
 PRODUCTION_MANIFEST = ROOT / "data/sources/sge-mavedb-2026-09-03.manifest.json"
 EXPECTED_QUESTION_MANIFEST = ROOT / "benchmark/sge-expected-manifest.json"
+IMPLEMENTATION_PATHS = (
+    "tasks/sge/src/vepbench_sge/task.py",
+    "tasks/sge/src/vepbench_sge/prepare.py",
+)
 
 
 def _variant(
@@ -87,6 +92,15 @@ def test_configuration_covers_exact_provisional_gene_and_source_sets() -> None:
         re.search(r"\bexons?\s+\d", spec.assay_context, flags=re.IGNORECASE) is None
         for spec in GENE_SPECS
     )
+
+
+def test_cache_implementation_digest_matches_source_bytes() -> None:
+    sha256sum_lines = "".join(
+        f"{hashlib.sha256((ROOT / path).read_bytes()).hexdigest()}  {path}\n"
+        for path in IMPLEMENTATION_PATHS
+    )
+    observed = hashlib.sha256(sha256sum_lines.encode()).hexdigest()
+    assert CONFIG.values["cache"]["implementation_sha256"] == observed
 
 
 def test_catalog_audit_records_selected_and_policy_excluded_score_sets() -> None:
@@ -348,7 +362,7 @@ def test_committed_sge_artifacts_and_question_set_are_complete() -> None:
     assert manifest["cache"]["manifest"]["files"]["eligible-variants.jsonl.gz"]["records"] == 55_924
     assert manifest["cache"]["cache_key"] == _cache_key(_cache_configuration())
     assert manifest["cache"]["prefix"] == (
-        "data_prep/sge/v1/f3f47401954f8c496db1518730189f1e634d812372538fec3cc40bb38d766ace"
+        "data_prep/sge/v1/486bba1f299b8a253118efdefb772ed80f7defac399ad0b60d77f28639b55105"
     )
     assert len(manifest["catalog_audit"]["records"]) == 98
     assert len(manifest["catalog_audit"]["selected_score_sets"]) == 15

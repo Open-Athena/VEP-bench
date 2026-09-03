@@ -74,7 +74,8 @@ cache:
     - eligible-variants.jsonl.gz
     - genes.json
   # sha256sum task.py prepare.py | sha256sum, using repository-relative paths.
-  implementation_sha256: 42c13c48a6feef0ce2706d8e3ef7b3f633b25482de2f20a85f937bb8b2b6d63f
+  # tests/test_sge.py recalculates this digest so code-only edits cannot stale the cache key.
+  implementation_sha256: c78666980350a12f3349c92d82a1ec0fad3a8d7adbb09b0a1dfe8ecf7ff34d83
 
 # score_direction multiplies the primary MaveDB score to make larger values mean
 # greater functional damage. Model-visible contexts intentionally omit accessions,
