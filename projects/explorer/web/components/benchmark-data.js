@@ -43,6 +43,7 @@ function modelName(modelId, generationParameters) {
   const name = modelId.split("/").at(-1) ?? modelId;
   const displayName = {
     "claude-fable-5.1": "Claude Fable 5.1",
+    "claude-opus-5": "Claude Opus 5",
     "deepseek-v4-flash-0731": "DeepSeek V4 Flash 0731",
     "gpt-5.6-luna": "GPT 5.6 Luna",
     "gpt-5.6-sol": "GPT 5.6 Sol"

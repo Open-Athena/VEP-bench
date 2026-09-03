@@ -91,6 +91,12 @@ for check in \
   'leaderboard.dom.html|>Model<' \
   'leaderboard.dom.html|>Task</label>' \
   'leaderboard.dom.html|class="vepbench-score-cell"' \
+  'leaderboard.dom.html|>Unscored model attempts<' \
+  'leaderboard.dom.html|Claude Fable 5.1 (medium)' \
+  'leaderboard.dom.html|Claude Opus 5 (medium)' \
+  'leaderboard.dom.html|>Content filtered<' \
+  'leaderboard.dom.html|8/8 panels; zero output tokens; not ranked' \
+  'leaderboard.dom.html|5/8 panels; run stopped and not ranked' \
   'leaderboard.dom.html|Score by cost and token usage' \
   'leaderboard.dom.html|>Compare score against</label>' \
   'leaderboard.dom.html|https://github.com/Open-Athena/VEP-bench' \
