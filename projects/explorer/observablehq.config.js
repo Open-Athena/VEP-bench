@@ -3,9 +3,9 @@ export default {
   root: "web",
   output: process.env.VEPBENCH_OBSERVABLE_OUTPUT ?? "dist",
   preserveExtension: true,
-  home: "Leaderboard",
+  home: "VEP-bench",
   theme: ["air", "near-midnight", "alt", "wide"],
-  header: '<a href="./" style="font-weight: 700">VEP-bench</a><a href="https://github.com/Open-Athena/VEP-bench" target="_blank" rel="noreferrer" style="margin-left: auto">View source <span aria-hidden="true">↗</span></a>',
+  header: '<a href="https://github.com/Open-Athena/VEP-bench" target="_blank" rel="noreferrer" style="margin-left: auto">View source <span aria-hidden="true">↗</span></a>',
   pages: [
     {
       name: "Tasks",
