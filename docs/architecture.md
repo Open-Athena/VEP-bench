@@ -191,10 +191,11 @@ mean within-element Spearman correlation, with Pearson correlation and valid
 output rate as diagnostics. The score-efficiency chart compares that score to
 cost or total tokens and works with one or more complete model runs.
 
-The question explorer selects complete model configurations and resolves the
-satMutMPRA run after a question is selected. It renders the exact stored prompt
-given to the model alongside the complete response and does not expose the
-measured reference effects in a comparison table.
+The question explorer lives on the satMutMPRA task page. It selects complete
+model configurations and resolves the satMutMPRA run after a question is
+selected. It renders the exact stored prompt given to the model alongside the
+complete response and does not expose the measured reference effects in a
+comparison table.
 Its compact `question-metadata.json` asset is deterministically derived from
 committed task sources and provenance manifests. satMutMPRA supplies its
 element label as `source_metadata.display_name`. This display-only

@@ -34,12 +34,6 @@ export function formatCost(value) {
   });
 }
 
-export function questionUrl(questionId, runId = null, path = "./questions.html") {
-  const parameters = new URLSearchParams({question: questionId});
-  if (runId) parameters.set("run", runId);
-  return `${path}?${parameters}`;
-}
-
 function choiceText(question, choiceId) {
   return question.choices.find((choice) => choice.choice_id === choiceId)?.text ?? "—";
 }

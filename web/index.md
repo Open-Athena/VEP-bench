@@ -12,7 +12,8 @@ import {
 import {
   artifactUrl,
   fetchJson,
-  leaderboardRowsForScope
+  leaderboardRowsForScope,
+  orderTaskFamilies
 } from "./components/benchmark-data.js";
 
 const config = await FileAttachment("data/config.json").json();
@@ -20,7 +21,26 @@ const runsState = await fetchJson(artifactUrl(config.data_base_url, "runs.json")
   .then((document) => ({document, error: null}))
   .catch((error) => ({document: {runs: []}, error}));
 const aggregation = runsState.document.leaderboard;
-const taskFamily = "satmut_mpra";
+const taskName = (taskFamily) => ({
+  satmut_mpra: "satMutMPRA"
+})[taskFamily] ?? taskFamily;
+const publishedTaskFamilies = orderTaskFamilies([
+  ...new Set(
+    (aggregation?.evaluation_profiles ?? []).map((profile) => profile.task_family)
+  )
+]);
+const taskOptions = [
+  {task_family: null, label: "All tasks"},
+  ...(
+    publishedTaskFamilies.length ? publishedTaskFamilies : ["satmut_mpra"]
+  ).map((taskFamily) => ({task_family: taskFamily, label: taskName(taskFamily)}))
+];
+const taskInput = Inputs.select(taskOptions, {
+  label: "Task",
+  value: taskOptions[0],
+  format: (option) => option.label
+});
+taskInput.style.maxWidth = "22rem";
 const metricOptions = [
   {key: "cost", label: "Total cost", axis_label: "Total cost (USD)"},
   {key: "tokens", label: "Total tokens", axis_label: "Total tokens"}
@@ -36,12 +56,23 @@ metricInput.style.maxWidth = "22rem";
 # Leaderboard
 
 ```js
+const selectedTask = view(taskInput);
+const selectedTaskFamily = selectedTask.task_family ?? (
+  publishedTaskFamilies.length === 1 ? publishedTaskFamilies[0] : null
+);
+```
+
+<div style="display: flex; justify-content: flex-end; margin: 0.75rem 0;">
+  ${taskInput}
+</div>
+
+```js
 if (runsState.error) {
   display(html`<div class="note" label="Published data unavailable">The official benchmark data could not be loaded from <code>versions/main</code>.</div>`);
-} else if (!aggregation?.evaluation_profiles?.some(
-  (profile) => profile.task_family === taskFamily
+} else if (selectedTask.task_family !== null && !aggregation?.evaluation_profiles?.some(
+  (profile) => profile.task_family === selectedTask.task_family
 )) {
-  display(html`<div class="note" label="satMutMPRA unavailable">The current official version does not contain a satMutMPRA evaluation profile.</div>`);
+  display(html`<div class="note" label="Task unavailable">The current official version does not contain the selected task's evaluation profile.</div>`);
 }
 ```
 
@@ -49,19 +80,23 @@ if (runsState.error) {
 const rows = leaderboardRowsForScope(
   runsState.document.runs,
   aggregation,
-  taskFamily
+  selectedTaskFamily
 );
-const formatScore = (value) => value === null ? "—" : value.toFixed(3);
+const selectedProfile = aggregation?.evaluation_profiles?.find(
+  (profile) => profile.task_family === selectedTaskFamily
+);
+const selectedPrimaryMetric = selectedProfile?.primary_metric ?? "exact_match";
+const formatScore = (value) => selectedPrimaryMetric === "spearman"
+  ? (value === null ? "—" : value.toFixed(3))
+  : formatPercent(value);
 ```
 
-Showing mean within-element Spearman rho for **satMutMPRA**. Pearson correlation and valid-output rate are separate diagnostics.
+Showing the primary score for **${selectedTask.label}**.
 
 ```js
 const tableRows = rows.map((row) => ({
   model: row.model_cell.model,
   score: row.score,
-  pearson: row.pearson,
-  valid_output_rate: row.valid_output_rate,
   release_date: row.release_date,
   tokens: row.tokens,
   cost: row.cost,
@@ -69,7 +104,7 @@ const tableRows = rows.map((row) => ({
 }));
 function scoreBar(value) {
   if (!Number.isFinite(value)) return "—";
-  const normalized = (value + 1) / 2;
+  const normalized = selectedPrimaryMetric === "spearman" ? (value + 1) / 2 : value;
   const width = Math.max(0, Math.min(1, normalized)) * 100;
   return html`<span class="vepbench-score-cell" style=${`--vepbench-score-width: ${width}%`}>
     <span class="vepbench-score-bar" aria-hidden="true"></span>
@@ -77,36 +112,28 @@ function scoreBar(value) {
   </span>`;
 }
 const leaderboardTable = Inputs.table(tableRows, {
-  columns: ["model", "score", "pearson", "valid_output_rate", "release_date", "tokens", "cost"],
+  columns: ["model", "score", "release_date", "tokens", "cost"],
   header: {
     model: "Model",
     score: "Score",
-    pearson: "Pearson r",
-    valid_output_rate: "Valid outputs",
     release_date: "Release date",
     tokens: "Tokens",
     cost: "Cost"
   },
   format: {
     score: scoreBar,
-    pearson: (value) => value === null ? "—" : value.toFixed(3),
-    valid_output_rate: formatPercent,
     release_date: formatDate,
     tokens: (value) => value === null ? "—" : formatInteger(value),
     cost: formatCost
   },
   align: {
     score: "right",
-    pearson: "right",
-    valid_output_rate: "right",
     tokens: "right",
     cost: "right"
   },
   width: {
     model: 240,
     score: 100,
-    pearson: 100,
-    valid_output_rate: 105,
     release_date: 110,
     tokens: 100,
     cost: 90
@@ -124,7 +151,7 @@ display(html`<div class="card">${leaderboardTable}</div>`);
 
 ## Score by cost and token usage
 
-Each line connects evaluated configurations from the same model family. Use the selector to compare the satMutMPRA score with total run cost or total token usage.
+Each line connects evaluated configurations from the same model family. Use the selector to compare the selected task's score with total run cost or total token usage.
 
 ```js
 const selectedMetric = view(metricInput);
@@ -152,7 +179,7 @@ function scoreEfficiencyPlot(data, {width}) {
         : (value) => Intl.NumberFormat("en-US", {notation: "compact"}).format(value)
     },
     y: {
-      label: "Mean Spearman ρ",
+      label: "Score",
       grid: true,
       tickFormat: formatScore
     },
@@ -188,7 +215,7 @@ function scoreEfficiencyPlot(data, {width}) {
 </div>
 
 ```js
-display(html`<div class="card" aria-label=${`satMutMPRA score versus ${metricLabel}`}>
+display(html`<div class="card" aria-label=${`${selectedTask.label} score versus ${metricLabel}`}>
   ${resize((width) => scoreEfficiencyPlot(efficiencyRows, {width}))}
 </div>`);
 ```

@@ -80,13 +80,18 @@ await send("Runtime.enable");
 await navigate("/index.html");
 await waitFor(
   `document.querySelectorAll(".vepbench-score-cell").length === 2
-    && document.querySelector('.card[aria-label^="satMutMPRA score versus"]') !== null`,
-  "two-model satMutMPRA leaderboard"
+    && document.querySelector('.card[aria-label^="All tasks score versus"]') !== null`,
+  "two-model all-tasks leaderboard"
 );
 assert.equal(
   await evaluate('getComputedStyle(document.querySelector(\'th[title="score"]\')).textAlign'),
   "center",
   "score column header is not centered"
+);
+assert.equal(await chooseOptionContaining("satMutMPRA"), true);
+await waitFor(
+  `document.querySelector('.card[aria-label^="satMutMPRA score versus"]') !== null`,
+  "satMutMPRA task scope"
 );
 assert.equal(await chooseOptionContaining("Total tokens"), true);
 await waitFor(
@@ -96,7 +101,7 @@ await waitFor(
 
 const initialQuestionId = "satmut-mpra-ranking-v1:F9";
 await navigate(
-  `/questions.html?question=${encodeURIComponent(initialQuestionId)}&run=browser-qa`
+  `/tasks/satmut-mpra.html?question=${encodeURIComponent(initialQuestionId)}&run=browser-qa`
 );
 await waitFor(
   `document.querySelectorAll("table tbody tr").length > 2
