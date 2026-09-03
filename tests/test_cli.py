@@ -30,12 +30,24 @@ def test_fetch_command_reports_verified_cache(
     cached.write_text("{}\n", encoding="utf-8")
 
     def fake_fetch(**kwargs: object) -> FetchedQuestions:
-        assert kwargs == {"version": "main", "output": None, "cache_dir": tmp_path}
-        return FetchedQuestions(cached, "main", 1, "a" * 64, True)
+        assert kwargs == {"version": "candidate", "output": None, "cache_dir": tmp_path}
+        return FetchedQuestions(cached, "candidate", 1, "a" * 64, True)
 
     monkeypatch.setattr("vepbench.cli.fetch_questions", fake_fetch)
 
-    assert main(["questions", "fetch", "--cache-dir", str(tmp_path)]) == 0
+    assert (
+        main(
+            [
+                "questions",
+                "fetch",
+                "--version",
+                "candidate",
+                "--cache-dir",
+                str(tmp_path),
+            ]
+        )
+        == 0
+    )
     assert f"using cached 1 question(s) at {cached}" in capsys.readouterr().out
 
 

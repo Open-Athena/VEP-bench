@@ -22,8 +22,11 @@ uv run --no-sync vepbench questions fetch --version main
 
 The command downloads the version manifest and zstd archive, verifies the
 compressed and decompressed sizes and SHA-256 digests, validates the record
-count, and caches the JSONL under `.vepbench/questions/` with its content digest.
-Use a named version for an immutable historical release, or pass
+count and canonical LF-delimited JSONL bytes, and caches the artifact under
+`.vepbench/questions/` with its content digest. Downloads and decompression are
+streamed with hard limits of 128 MiB compressed and decompressed; a published
+descriptor outside those evaluator limits is rejected before its archive is
+fetched. Use a named version for an immutable historical release, or pass
 `--questions path/to/questions.jsonl` to `evaluate` for an explicit local file.
 
 Maintainers can generate questions from any strict YAML task descriptor:

@@ -29,12 +29,21 @@ from ..resources import QUESTION_SCHEMA, RESULT_SCHEMA
 app = App(
     name="vepbench",
     help="Evaluate language models on deterministic variant-effect questions.",
+    version_flags=(),
     exit_on_error=False,
     print_error=False,
     result_action="return_value",
 )
-questions_app = App(name="questions", help="Fetch or build benchmark question sets.")
-batch_app = App(name="batch", help="Manage asynchronous OpenRouter batch evaluations.")
+questions_app = App(
+    name="questions",
+    help="Fetch or build benchmark question sets.",
+    version_flags=(),
+)
+batch_app = App(
+    name="batch",
+    help="Manage asynchronous OpenRouter batch evaluations.",
+    version_flags=(),
+)
 app.command(questions_app)
 app.command(batch_app)
 

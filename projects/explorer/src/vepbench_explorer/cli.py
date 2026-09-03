@@ -21,11 +21,16 @@ from .site import build_question_metadata, build_site
 app = App(
     name="vepbench-site",
     help="Build and test the VEP-bench static explorer.",
+    version_flags=(),
     exit_on_error=False,
     print_error=False,
     result_action="return_value",
 )
-qa_app = App(name="qa", help="Prepare deterministic browser QA inputs.")
+qa_app = App(
+    name="qa",
+    help="Prepare deterministic browser QA inputs.",
+    version_flags=(),
+)
 app.command(qa_app)
 
 

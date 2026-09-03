@@ -18,6 +18,7 @@ from .task import validate_prepared_artifacts
 app = App(
     name="vepbench-satmut-mpra",
     help="Prepare and validate the satMutMPRA benchmark task.",
+    version_flags=(),
     exit_on_error=False,
     print_error=False,
     result_action="return_value",

@@ -18,12 +18,21 @@ from .publication import build_version, promote_version, validate_version
 app = App(
     name="vepbench-publish",
     help="Build, validate, and upload VEP-bench publication versions.",
+    version_flags=(),
     exit_on_error=False,
     print_error=False,
     result_action="return_value",
 )
-version_app = App(name="version", help="Build and validate local publication versions.")
-bucket_app = App(name="bucket", help="Plan and apply Hugging Face Bucket updates.")
+version_app = App(
+    name="version",
+    help="Build and validate local publication versions.",
+    version_flags=(),
+)
+bucket_app = App(
+    name="bucket",
+    help="Plan and apply Hugging Face Bucket updates.",
+    version_flags=(),
+)
 app.command(version_app)
 app.command(bucket_app)
 
