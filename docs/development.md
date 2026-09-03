@@ -27,6 +27,9 @@ uv sync --locked --package vepbench-task-satmut-mpra --group test
 # SGE source preparation and its offline tests
 uv sync --locked --package vepbench-task-sge --group test
 
+# OpenSplice SNV source preparation
+uv sync --locked --package vepbench-task-opensplice-snv --group test
+
 # Repository-wide Python quality tools
 uv sync --locked --all-packages --all-extras --group quality
 uv run --no-sync pre-commit install
@@ -43,6 +46,7 @@ PyPI. Do not add a parallel pip, Poetry, Pipenv, or Conda workflow. Commit both
 | `src/vepbench/` | Lightweight evaluator, CLI, configuration, artifact, question, and bundled-schema code |
 | `projects/explorer/` | Private static-site Python and Node project |
 | `projects/publishing/` | Private publication and bucket project |
+| `tasks/opensplice-snv/` | Private OpenSplice SNV preparation project and YAML configuration |
 | `tasks/satmut-mpra/` | Private satMutMPRA preparation project and YAML configuration |
 | `tasks/sge/` | Private SGE catalog, coordinate, consequence, and panel preparation project |
 | `data/sources/` | Compact deterministic task sources and provenance manifests |
@@ -69,6 +73,7 @@ uv run --no-sync pytest --cov=vepbench --cov-report=term-missing:skip-covered
 uv run --no-sync pre-commit run --all-files
 uv run --no-sync mypy
 uv run --no-sync vepbench-satmut-mpra validate
+uv run --no-sync vepbench-opensplice-snv validate
 uv run --no-sync vepbench questions build \
   --task configs/tasks/satmut-mpra/task.yaml \
   --output /tmp/satmut-mpra-questions.jsonl
@@ -80,6 +85,11 @@ uv run --no-sync vepbench questions build \
   --output /tmp/sge-questions.jsonl
 cmp benchmark/sge-expected-manifest.json \
   /tmp/sge-questions.manifest.json
+uv run --no-sync vepbench questions build \
+  --task configs/tasks/opensplice-snv/task.yaml \
+  --output /tmp/opensplice-snv-questions.jsonl
+cmp benchmark/opensplice-snv-expected-manifest.json \
+  /tmp/opensplice-snv-questions.manifest.json
 npm test --prefix projects/explorer
 uv run --no-sync vepbench-site build \
   --config projects/explorer/config/site.yaml \
@@ -120,7 +130,7 @@ published questions there under a content-digest filename. Generated question
 JSONL and production result JSONL are ignored and are not tracked in Git. The
 public bucket is their canonical published home; Git keeps generation code,
 compact sources, schemas, tests, and the small
-task-specific expected-manifest fingerprints under `benchmark/`.
+task-specific expected question-manifest fingerprints under `benchmark/`.
 
 The full SGE source build must use the checked-in SkyPilot entry point because
 its pinned chromosome consequence objects exceed the shared VM's memory and

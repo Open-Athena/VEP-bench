@@ -8,6 +8,21 @@ VEP-bench publishes transparent development tasks with exact model prompts, comp
 
 <div class="card">
 
+## OpenSplice SNV
+
+Predict signed changes in exon inclusion for quantile-balanced SNV panels in
+complete source-derived three-exon minigene cassettes.
+
+- 20 exon-level questions from 20 distinct genes, with 50 SNVs each
+- Complete cassette sequence, exact segment intervals, and HEK293T assay context
+- Mean within-exon Spearman correlation, with Pearson and output-validity diagnostics
+
+[Open task →](./tasks/opensplice-snv.html)
+
+</div>
+
+<div class="card">
+
 ## satMutMPRA
 
 Predict signed reporter-activity effects for panels sampled across the measured effect distribution of 16 regulatory elements.

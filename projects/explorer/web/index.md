@@ -24,6 +24,7 @@ const runsState = await fetchJson(artifactUrl(config.data_base_url, "runs.json")
   .catch((error) => ({document: {runs: []}, error}));
 const aggregation = runsState.document.leaderboard;
 const taskLabels = {
+  opensplice_snv: "OpenSplice SNV",
   satmut_mpra: "satMutMPRA",
   sge: "Saturation genome editing"
 };
@@ -38,7 +39,9 @@ const taskOptions = [
     ? [null]
     : []),
   ...(
-    publishedTaskFamilies.length ? publishedTaskFamilies : ["satmut_mpra", "sge"]
+    publishedTaskFamilies.length
+      ? publishedTaskFamilies
+      : ["opensplice_snv", "satmut_mpra", "sge"]
   )
 ];
 const taskInput = Inputs.select(taskOptions, {

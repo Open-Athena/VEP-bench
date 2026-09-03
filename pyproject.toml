@@ -38,6 +38,7 @@ default-groups = []
 members = [
     "projects/explorer",
     "projects/publishing",
+    "tasks/opensplice-snv",
     "tasks/satmut-mpra",
     "tasks/sge",
 ]
@@ -46,6 +47,7 @@ members = [
 vepbench = { workspace = true }
 vepbench-explorer = { workspace = true }
 vepbench-publishing = { workspace = true }
+vepbench-task-opensplice-snv = { workspace = true }
 vepbench-task-satmut-mpra = { workspace = true }
 vepbench-task-sge = { workspace = true }
 
@@ -70,6 +72,7 @@ files = [
     "src/vepbench",
     "projects/explorer/src",
     "projects/publishing/src",
+    "tasks/opensplice-snv/src",
     "tasks/satmut-mpra/src",
     "tasks/sge/src",
 ]

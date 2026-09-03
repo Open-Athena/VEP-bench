@@ -257,11 +257,19 @@ test("task ordering keeps benchmark ranking tasks before unknown families", () =
     orderTaskFamilies([
       "sge",
       "satmut_mpra",
+      "opensplice_snv",
       "synthetic_alpha",
       "future_task",
       "synthetic_beta"
     ]),
-    ["satmut_mpra", "sge", "future_task", "synthetic_alpha", "synthetic_beta"]
+    [
+      "opensplice_snv",
+      "satmut_mpra",
+      "sge",
+      "future_task",
+      "synthetic_alpha",
+      "synthetic_beta"
+    ]
   );
 });
 

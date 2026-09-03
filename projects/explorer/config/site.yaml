@@ -4,5 +4,6 @@ data_base_url: https://huggingface.co/buckets/open-athena/VEP-bench/resolve/vers
 assets_dir: ../web
 observable_config: ../observablehq.config.js
 question_metadata_sources:
+  - ../../../data/sources/opensplice-snv-figshare-v5.jsonl
   - ../../../data/sources/satmut-mpra-cadd-v1.7.jsonl
   - ../../../data/sources/sge-mavedb-2026-09-03.jsonl

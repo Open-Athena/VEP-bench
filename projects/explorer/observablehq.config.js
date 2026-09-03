@@ -10,13 +10,20 @@ export default {
     {
       name: "Tasks",
       path: "/tasks",
-      pages: [{
-        name: "satMutMPRA",
-        path: "/tasks/satmut-mpra"
-      }, {
-        name: "Saturation genome editing",
-        path: "/tasks/sge"
-      }]
+      pages: [
+        {
+          name: "OpenSplice SNV",
+          path: "/tasks/opensplice-snv"
+        },
+        {
+          name: "satMutMPRA",
+          path: "/tasks/satmut-mpra"
+        },
+        {
+          name: "Saturation genome editing",
+          path: "/tasks/sge"
+        }
+      ]
     }
   ],
   head: `
