@@ -54,7 +54,7 @@ REFERENCE_URL = (
 )
 OUTPUT = ROOT / "data/sources/clinvar-july-2026.jsonl"
 MANIFEST_OUTPUT = ROOT / "data/sources/clinvar-july-2026.manifest.json"
-CACHE_BUCKET = "open-athena/vepbench"
+CACHE_BUCKET = "open-athena/VEP-bench"
 CACHE_RELEASE_MONTH = "2026-08"
 PRE_SAMPLING_IMPLEMENTATION_SHA256 = (
     "756ae3bdb0f1ffc8b2aad6383b025a8a3ce2f018f584b82596d0535239a06cc6"
@@ -62,7 +62,7 @@ PRE_SAMPLING_IMPLEMENTATION_SHA256 = (
 
 
 def _download(url: str, output: Path) -> tuple[int, str]:
-    request = urllib.request.Request(url, headers={"User-Agent": "VEPBench/0.1"})
+    request = urllib.request.Request(url, headers={"User-Agent": "VEP-bench/0.1"})
     digest = hashlib.sha256()
     size = 0
     with urllib.request.urlopen(request) as response, output.open("wb") as destination:

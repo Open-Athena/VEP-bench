@@ -2,7 +2,7 @@
 
 The root [README](../README.md) is an introduction for benchmark users. This
 directory contains the implementation and maintenance documentation for people
-working on VEPBench.
+working on VEP-bench.
 
 ## Guides
 

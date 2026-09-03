@@ -156,7 +156,7 @@ contains all 4,332 eligible rows and element metadata, not the redistributable
 upstream VCF or MaveDB payloads. It is content-addressed under:
 
 ```text
-hf://buckets/open-athena/vepbench/data_prep/satmut-mpra/v1/<cache-key>/
+hf://buckets/open-athena/VEP-bench/data_prep/satmut-mpra/v1/<cache-key>/
 ```
 
 Data files are uploaded first and the digest-bearing `manifest.json` completion

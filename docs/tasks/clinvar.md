@@ -124,8 +124,8 @@ The command requires `HF_TOKEN` and cloud credentials available to SkyPilot. On
 a cache miss it downloads and streams the VCV XML on the worker, performs
 block-cached sparse queries against pinned Parquet shards, and validates every
 reference window. It then uploads
-the processed pre-sampling state to the existing `open-athena/vepbench` Hugging
-Face Storage Bucket under:
+the processed pre-sampling state to the `open-athena/VEP-bench` Hugging Face
+Storage Bucket under:
 
 ```text
 data_prep/clinvar/v1/2026-08/<preparation-configuration-sha256>/

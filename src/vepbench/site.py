@@ -8,7 +8,9 @@ from typing import Any
 
 from .builder import BuildError, canonical_json, read_jsonl
 
-OFFICIAL_DATA_BASE_URL = "https://huggingface.co/buckets/open-athena/vepbench/resolve/versions/main"
+OFFICIAL_DATA_BASE_URL = (
+    "https://huggingface.co/buckets/open-athena/VEP-bench/resolve/versions/main"
+)
 
 
 def build_question_metadata(

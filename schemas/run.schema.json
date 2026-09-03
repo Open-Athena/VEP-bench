@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://open-athena.github.io/VEPBench/schemas/run.schema.json",
-  "title": "VEPBench published run",
+  "title": "VEP-bench published run",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema_version", "run_id", "configuration_key", "question_set_sha256", "question_set_size", "model", "generation_parameters", "evaluation_profile", "started_at", "completed_at", "coverage", "metrics", "answer_prefix", "raw_archive"],

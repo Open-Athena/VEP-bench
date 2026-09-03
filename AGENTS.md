@@ -1,6 +1,6 @@
 # Repository instructions
 
-These instructions apply to the entire VEPBench repository.
+These instructions apply to the entire VEP-bench repository.
 
 ## Documentation
 

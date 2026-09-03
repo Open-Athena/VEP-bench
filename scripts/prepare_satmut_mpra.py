@@ -48,7 +48,7 @@ REFERENCE_URL = (
 OUTPUT = ROOT / "data/sources/satmut-mpra-cadd-v1.7.jsonl"
 MANIFEST_OUTPUT = ROOT / "data/sources/satmut-mpra-cadd-v1.7.manifest.json"
 PINNED_INPUTS_PATH = ROOT / "configs/sources/satmut-mpra-v1.json"
-CACHE_BUCKET = "open-athena/vepbench"
+CACHE_BUCKET = "open-athena/VEP-bench"
 CACHE_ROOT = "data_prep/satmut-mpra/v1"
 LEGACY_PREPARATION_IMPLEMENTATION_SHA256 = (
     "08b759f9fce8b0826fac1b827d04cd5c201f9ef704745ab3f0f07c2fa435f3ff"
@@ -80,7 +80,7 @@ RETRIEVAL_DATE = PINNED_INPUTS["retrieval_date"]
 
 
 def _download(url: str) -> bytes:
-    request = urllib.request.Request(url, headers={"User-Agent": "VEPBench/0.1"})
+    request = urllib.request.Request(url, headers={"User-Agent": "VEP-bench/0.1"})
     with urllib.request.urlopen(request, timeout=900) as response:
         return response.read()
 
@@ -105,7 +105,7 @@ def _verify_reference_metadata(token: str | None, expected: dict[str, Any]) -> N
         REFERENCE_URL,
         token=token,
         timeout=30,
-        user_agent="VEPBench/0.1",
+        user_agent="VEP-bench/0.1",
         retry_on_errors=True,
     )
     observed = {"bytes": metadata.size, "sha256": metadata.etag}

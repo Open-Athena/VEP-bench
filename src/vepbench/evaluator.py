@@ -62,7 +62,7 @@ class OpenRouterTransport:
             headers={
                 "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",
-                "User-Agent": "VEPBench/0.1",
+                "User-Agent": "VEP-bench/0.1",
                 "X-OpenRouter-Metadata": "enabled",
             },
             method="POST",

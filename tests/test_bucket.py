@@ -29,7 +29,7 @@ def test_main_plan_requires_explicit_promotion_flag(tmp_path: Path) -> None:
         create_bucket_plan(
             root=tmp_path,
             version_name="main",
-            bucket_id="open-athena/vepbench",
+            bucket_id="open-athena/VEP-bench",
             plan_path=tmp_path / "plan.jsonl",
             token="not-used",
         )
@@ -70,7 +70,7 @@ def test_plan_records_shared_root_mutations(
     summary = create_bucket_plan(
         root=root,
         version_name="candidate",
-        bucket_id="open-athena/vepbench",
+        bucket_id="open-athena/VEP-bench",
         plan_path=plan_path,
         token="synthetic-token",
     )
@@ -90,7 +90,7 @@ def test_apply_requires_exact_destination_confirmation(tmp_path: Path) -> None:
             {
                 "type": "header",
                 "source": str(source),
-                "dest": "hf://buckets/open-athena/vepbench/versions/candidate",
+                "dest": "hf://buckets/open-athena/VEP-bench/versions/candidate",
                 "timestamp": "2026-08-31T00:00:00Z",
             }
         )
@@ -101,7 +101,7 @@ def test_apply_requires_exact_destination_confirmation(tmp_path: Path) -> None:
     with pytest.raises(BuildError, match="exactly match"):
         apply_bucket_plan(
             plan_path=plan,
-            confirm_destination="hf://buckets/open-athena/vepbench/versions/main",
+            confirm_destination="hf://buckets/open-athena/VEP-bench/versions/main",
             token="not-used",
         )
 
@@ -111,7 +111,7 @@ def test_apply_removes_marker_and_uploads_new_manifest_last(
 ) -> None:
     root = publication(tmp_path, version="main")
     source = (root / "versions/main").resolve()
-    destination = "hf://buckets/open-athena/vepbench/versions/main"
+    destination = "hf://buckets/open-athena/VEP-bench/versions/main"
     content_files = [
         path for path in source.rglob("*") if path.is_file() and path.name != "manifest.json"
     ]
@@ -202,7 +202,7 @@ def test_named_apply_rejects_shared_schema_divergence_before_mutation(
 ) -> None:
     root = publication(tmp_path)
     source = (root / "versions/candidate").resolve()
-    destination = "hf://buckets/open-athena/vepbench/versions/candidate"
+    destination = "hf://buckets/open-athena/VEP-bench/versions/candidate"
     content_files = [
         path for path in source.rglob("*") if path.is_file() and path.name != "manifest.json"
     ]
@@ -274,7 +274,7 @@ def test_named_apply_rejects_shared_schema_divergence_before_mutation(
 
 def test_apply_rejects_unsafe_operation_path(tmp_path: Path) -> None:
     root = publication(tmp_path)
-    destination = "hf://buckets/open-athena/vepbench/versions/candidate"
+    destination = "hf://buckets/open-athena/VEP-bench/versions/candidate"
     plan = tmp_path / "plan.jsonl"
     plan.write_text(
         "\n".join(

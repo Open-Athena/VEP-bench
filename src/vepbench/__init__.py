@@ -1,4 +1,4 @@
-"""VEPBench benchmark tooling."""
+"""VEP-bench benchmark tooling."""
 
 from importlib.metadata import version
 
