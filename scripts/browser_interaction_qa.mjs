@@ -88,9 +88,14 @@ assert.equal(
   "center",
   "score column header is not centered"
 );
+assert.equal(await chooseOptionContaining("satMutMPRA"), true);
+await waitFor(
+  `document.querySelector('.card[aria-label^="satMutMPRA score versus"]') !== null`,
+  "satMutMPRA task scope"
+);
 assert.equal(await chooseOptionContaining("Total tokens"), true);
 await waitFor(
-  `document.querySelector('.card[aria-label="All tasks score versus Total tokens"]') !== null`,
+  `document.querySelector('.card[aria-label="satMutMPRA score versus Total tokens"]') !== null`,
   "token plot"
 );
 
