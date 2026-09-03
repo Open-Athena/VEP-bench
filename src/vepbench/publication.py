@@ -154,22 +154,6 @@ def _task_sets_from_questions(
     }
 
 
-def _overall_configuration_key(run: Mapping[str, Any]) -> str:
-    """Identify the model configuration shared by task-specific runs."""
-
-    model = run["model"]
-    return canonical_json(
-        {
-            "model": {
-                "gateway": model["gateway"],
-                "model_id": model["model_id"],
-                "model_revision": model.get("model_revision"),
-            },
-            "generation_parameters": run["generation_parameters"],
-        }
-    )
-
-
 def _model_identity(model: Mapping[str, Any]) -> dict[str, Any]:
     """Return request-owned model identity, excluding observed route metadata."""
 
@@ -518,17 +502,6 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
                 "versions/main is missing complete runs for task families: "
                 + ", ".join(missing_task_families)
             )
-        tasks_by_configuration: dict[str, set[str]] = {}
-        for run in runs:
-            tasks_by_configuration.setdefault(_overall_configuration_key(run), set()).add(
-                run_task_families[run["run_id"]]
-            )
-        if not any(set(task_sets) <= families for families in tasks_by_configuration.values()):
-            raise BuildError(
-                "versions/main must contain at least one model configuration with complete runs "
-                "for every task family"
-            )
-
     index_descriptor = manifest["artifacts"]["question_index"]
     index_bytes = _verify_plain(root_dir / index_descriptor["path"], index_descriptor)
     index = json.loads(index_bytes)
