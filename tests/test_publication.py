@@ -528,7 +528,7 @@ def test_main_rejects_multi_task_version_missing_one_task_run(tmp_path: Path) ->
         )
 
 
-def test_main_requires_one_configuration_across_every_task(tmp_path: Path) -> None:
+def test_main_accepts_task_coverage_across_model_configurations(tmp_path: Path) -> None:
     second_questions, second_results, _, _ = write_second_task(tmp_path, temperature=0.5)
     candidate = tmp_path / "candidate"
     build_version(
@@ -540,12 +540,15 @@ def test_main_requires_one_configuration_across_every_task(tmp_path: Path) -> No
         version_name="candidate",
     )
 
-    with pytest.raises(BuildError, match=r"one model configuration.*every task family"):
-        promote_version(
-            source_root=candidate,
-            source_version="candidate",
-            output=tmp_path / "main",
-        )
+    main = tmp_path / "main"
+    manifest = promote_version(
+        source_root=candidate,
+        source_version="candidate",
+        output=main,
+    )
+
+    assert manifest["question_set_size"] == 2
+    validate_version(main, version_name="main")
 
 
 def test_validate_version_accepts_legacy_raw_archive_without_usage(tmp_path: Path) -> None:

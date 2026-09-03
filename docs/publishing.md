@@ -151,5 +151,7 @@ provisional overall score is an equal-weight mean of classification-task
 exact-match accuracies and is shown only for configurations with complete
 coverage of every classification profile. Ranking tasks have task-specific
 leaderboards using mean Spearman correlation; Pearson correlation and valid
-output rate are also published. Overall cost and token counts sum only the
-classification runs included in the overall score.
+output rate are also published. Each task must have at least one complete run,
+but the official version does not require one model configuration to cover
+every task. Overall cost and token counts sum only the classification runs
+included in the overall score.

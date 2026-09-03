@@ -156,8 +156,10 @@ OpenRouter may route one unpinned run across providers. A run with more than one
 observed provider is labeled `OpenRouter auto-routing`; every per-response
 provider remains preserved in local results and raw archives. The official
 version accepts only complete runs without API errors and at most one run for
-each configuration key. Publication processes result and raw-response data as
-streams so memory use does not grow with the total amount of model reasoning.
+each configuration key. Every published task family must have at least one
+complete run, but those runs may belong to different model configurations.
+Publication processes result and raw-response data as streams so memory use
+does not grow with the total amount of model reasoning.
 Legacy result records without `result_type` remain publishable because the
 publisher derives the same classification from their score, finish reason, and
 retained structured provider response.
