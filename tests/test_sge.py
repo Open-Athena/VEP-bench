@@ -183,6 +183,7 @@ def test_panel_selection_is_deterministic_balanced_and_quantile_covered() -> Non
         [_variant("TEST", index + 1, float(index), "missense_variant") for index in range(30)]
         + [_variant("TEST", index + 51, float(index + 30), "splicing") for index in range(30)]
     )
+
     def genome(chrom: str, start: int, end: int) -> str:
         return "A" * (end - start)
 
@@ -227,9 +228,7 @@ def test_panel_selection_relaxes_balance_and_handles_reverse_orientation() -> No
 
 def test_source_record_builds_schema_valid_nonleaking_ranking_question() -> None:
     spec = GENE_SPECS[0]
-    transcript = Transcript(
-        spec.transcript, spec.gene, spec.expected_chrom, "+", (Exon(101, 200),)
-    )
+    transcript = Transcript(spec.transcript, spec.gene, spec.expected_chrom, "+", (Exon(101, 200),))
     variants = tuple(
         [
             _variant(
@@ -346,9 +345,7 @@ def test_committed_sge_artifacts_and_question_set_are_complete() -> None:
         "records": 15,
         "sha256": "8f16fe63e5ee930e7878dbc31c9ca9907c0df6a9426a38862ae9b09c48be4e1b",
     }
-    assert manifest["cache"]["manifest"]["files"]["eligible-variants.jsonl.gz"][
-        "records"
-    ] == 55_924
+    assert manifest["cache"]["manifest"]["files"]["eligible-variants.jsonl.gz"]["records"] == 55_924
     assert manifest["cache"]["cache_key"] == _cache_key(_cache_configuration())
     assert manifest["cache"]["prefix"] == (
         "data_prep/sge/v1/f3f47401954f8c496db1518730189f1e634d812372538fec3cc40bb38d766ace"
@@ -356,9 +353,7 @@ def test_committed_sge_artifacts_and_question_set_are_complete() -> None:
     assert len(manifest["catalog_audit"]["records"]) == 98
     assert len(manifest["catalog_audit"]["selected_score_sets"]) == 15
     card11_records = [
-        record
-        for record in manifest["catalog_audit"]["records"]
-        if "CARD11" in record["genes"]
+        record for record in manifest["catalog_audit"]["records"] if "CARD11" in record["genes"]
     ]
     assert len(card11_records) == 4
     assert all(
@@ -423,6 +418,4 @@ def test_committed_sge_artifacts_and_question_set_are_complete() -> None:
                 "quantile_bin",
             )
         )
-        assert all(
-            candidate["genomic_key"] not in question["prompt"] for candidate in selected
-        )
+        assert all(candidate["genomic_key"] not in question["prompt"] for candidate in selected)

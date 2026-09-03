@@ -115,8 +115,7 @@ def _verify_payload(label: str, payload: bytes, expected: dict[str, Any]) -> Non
     expected_identity = {key: expected[key] for key in observed}
     if observed != expected_identity:
         raise SGEPreparationError(
-            f"{label}: payload identity mismatch; "
-            f"expected={expected_identity}, observed={observed}"
+            f"{label}: payload identity mismatch; expected={expected_identity}, observed={observed}"
         )
 
 
@@ -269,9 +268,7 @@ def _load_cache(
         ):
             raise SGEPreparationError(f"processed cache file is corrupt: {filename}")
     try:
-        genes_document = json.loads(
-            (destination / CACHE_DATA_FILES[1]).read_text(encoding="utf-8")
-        )
+        genes_document = json.loads((destination / CACHE_DATA_FILES[1]).read_text(encoding="utf-8"))
         with gzip.open(destination / CACHE_DATA_FILES[0], mode="rt", encoding="utf-8") as source:
             rows = [json.loads(line) for line in source]
     except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
@@ -485,10 +482,7 @@ def _join_consequences(
     result = {}
     for chrom, keys in sorted(by_chrom.items()):
         wanted = pl.DataFrame(
-            [
-                {"chrom": key[0], "pos": key[1], "ref": key[2], "alt": key[3]}
-                for key in sorted(keys)
-            ]
+            [{"chrom": key[0], "pos": key[1], "ref": key[2], "alt": key[3]} for key in sorted(keys)]
         )
         joined = (
             pl.scan_parquet(paths[chrom])
@@ -572,9 +566,7 @@ def _build_processed_cache_inputs(
         variants, report = parse_score_csv(scores_by_gene[spec.gene], spec, mapper=mapper)
         mapped_by_gene[spec.gene] = variants
         population[spec.gene] = {"source_validation": report}
-        source_provenance["mavedb"][spec.mavedb_urn]["source_columns"] = report[
-            "source_columns"
-        ]
+        source_provenance["mavedb"][spec.mavedb_urn]["source_columns"] = report["source_columns"]
         if spec.coordinate_mode == "target_coding_hgvs":
             target_sequence = metadata_by_gene[spec.gene]["target"]["sequence"]
             observed = transcript_coding_sequence(transcripts[spec.gene], genome)
@@ -591,9 +583,7 @@ def _build_processed_cache_inputs(
     annotation_path = temporary / "Homo_sapiens.GRCh38.107.chr.gtf.gz"
     _download_file(ANNOTATION["url"], annotation_path)
     _verify_file("Ensembl GTF", annotation_path, CONFIG.pins["annotation"])
-    exon_index = parse_gtf_exon_file(
-        annotation_path, {spec.expected_chrom for spec in GENE_SPECS}
-    )
+    exon_index = parse_gtf_exon_file(annotation_path, {spec.expected_chrom for spec in GENE_SPECS})
     source_provenance["annotation"] = {
         "release": ANNOTATION["release"],
         **_payload_record(ANNOTATION["url"], CONFIG.pins["annotation"]),

@@ -278,8 +278,10 @@ def validate_mavedb_metadata(payload: bytes, spec: GeneSpec) -> dict[str, Any]:
     keywords: dict[str, str] = {}
     for item in experiment.get("keywords") or []:
         keyword = item.get("keyword") if isinstance(item, dict) else None
-        if isinstance(keyword, dict) and isinstance(keyword.get("key"), str) and isinstance(
-            keyword.get("label"), str
+        if (
+            isinstance(keyword, dict)
+            and isinstance(keyword.get("key"), str)
+            and isinstance(keyword.get("label"), str)
         ):
             keywords[keyword["key"]] = keyword["label"]
     if keywords.get("Phenotypic Assay Mechanism") != "Loss of function":
@@ -940,7 +942,7 @@ def _nc_contig_to_chrom(contig: Any) -> str | None:
 def _finite_float(value: Any) -> float | None:
     try:
         number = float(value)
-    except (TypeError, ValueError, OverflowError):
+    except TypeError, ValueError, OverflowError:
         return None
     return number if math.isfinite(number) else None
 
@@ -1044,8 +1046,10 @@ def _validate_source_record(record: Mapping[str, Any]) -> None:
     exon_selection = metadata.get("exon_selection")
     selected = metadata.get("selected_candidates")
     transcript = metadata.get("transcript")
-    if not isinstance(exon_selection, dict) or not isinstance(selected, list) or not isinstance(
-        transcript, dict
+    if (
+        not isinstance(exon_selection, dict)
+        or not isinstance(selected, list)
+        or not isinstance(transcript, dict)
     ):
         raise SGEPreparationError(f"{label}: missing private provenance")
     exon = exon_selection.get("selected_exon")
