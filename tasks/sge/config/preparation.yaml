@@ -1,0 +1,307 @@
+# Scientific inputs and reviewed curation decisions for the SGE ranking task.
+schema_version: "1.0"
+task_family: sge
+reference_contig: element
+source_dataset: MaveDB-SGE-GRCh38
+source_pins: source-pins.yaml
+output: ../../../data/sources/sge-mavedb-2026-09-03.jsonl
+manifest_output: ../../../data/sources/sge-mavedb-2026-09-03.manifest.json
+
+sampling:
+  panel_size: 50
+  preferred_per_class: 25
+  quantile_bins: 5
+  seed: "2026090300"
+  algorithm: sha256_class_rank_quantile_v1
+
+sequence:
+  flank_bases: 100
+  display_orientation: transcript_5_to_3
+  line_width: 80
+
+eligibility:
+  exon_proximal_distance: 30
+  excluded_consequences:
+    - transcript_ablation
+    - splice_acceptor_variant
+    - splice_donor_variant
+    - stop_gained
+    - frameshift_variant
+    - stop_lost
+    - start_lost
+    - transcript_amplification
+    - feature_elongation
+    - feature_truncation
+  splicing_consequences:
+    - splice_donor_5th_base_variant
+    - splice_region_variant
+    - splice_donor_region_variant
+    - splice_polypyrimidine_tract_variant
+    - exon_proximal
+  retained_groups:
+    - missense_variant
+    - splicing
+
+upstream:
+  mavedb:
+    api_base: https://api.mavedb.org/api/v1
+    catalog_query:
+      published: true
+      text: saturation genome editing
+      offset: 0
+      limit: 100
+  cdot:
+    api_base: https://cdotlib.org/transcript
+    data_version: "0.2.34"
+  reference:
+    dataset: marin-dna/human-genome
+    revision: 11b9433582981bb929af333bc6422f10a8fd71b4
+    filename: Homo_sapiens.GRCh38.dna_sm.primary_assembly.fa
+    assembly: GRCh38
+  annotation:
+    url: https://ftp.ensembl.org/pub/release-107/gtf/homo_sapiens/Homo_sapiens.GRCh38.107.chr.gtf.gz
+    release: 107
+  consequences:
+    dataset: songlab/hg38-variant-consequences
+    revision: eb3022cc6797b9369cca16af72ff3c4197df343a
+    vep_version: "109.1"
+    vep_flags: --most_severe --distance 1000
+
+cache:
+  bucket: open-athena/VEP-bench
+  root: data_prep/sge/v1
+  data_files:
+    - eligible-variants.jsonl.gz
+    - genes.json
+  # sha256sum task.py prepare.py | sha256sum, using repository-relative paths.
+  implementation_sha256: 42c13c48a6feef0ce2706d8e3ef7b3f633b25482de2f20a85f937bb8b2b6d63f
+
+# score_direction multiplies the primary MaveDB score to make larger values mean
+# greater functional damage. Model-visible contexts intentionally omit accessions,
+# publications, genomic coordinates, disease labels, and author classifications.
+genes:
+  - gene: BAP1
+    mavedb_urn: urn:mavedb:00000662-0-1
+    expected_target_name: BAP1
+    transcript: ENST00000460680.6
+    transcript_policy: declared
+    coordinate_mode: hgvs_transcript
+    expected_chrom: "3"
+    score_direction: -1
+    score_direction_evidence: Depleting loss-of-function controls have lower primary scores.
+    qc: {field: null, pass_values: [], fail_values: []}
+    assay_context: |-
+      **Gene:** BAP1
+      - Editing design: CRISPR-Cas9 homology-directed saturation editing at the endogenous BAP1 locus, including coding sequence and local splice-region sequence.
+      - Cellular system: near-haploid, LIG4-deficient, Cas9-expressing HAP1 cells.
+      - Measurement: edited-allele abundance was followed across days 4, 7, 10, 14, and 21 by direct sequencing. Reduced BAP1 function impairs cell growth, so damaging alleles progressively deplete.
+  - gene: BARD1
+    mavedb_urn: urn:mavedb:00001250-a-2
+    expected_target_name: BARD1
+    transcript: NM_000465.4
+    transcript_policy: declared
+    coordinate_mode: hgvs_transcript
+    expected_chrom: "2"
+    score_direction: -1
+    score_direction_evidence: The source methods state that loss-of-function variants have progressively more negative scores.
+    qc: {field: null, pass_values: [], fail_values: []}
+    assay_context: |-
+      **Gene:** BARD1
+      - Editing design: CRISPR-Cas9 homology-directed saturation editing at the endogenous BARD1 locus, covering coding and local splice-region sequence.
+      - Cellular system: near-haploid HAP1 cells in a BARD1-dependent survival assay.
+      - Measurement: variant abundance was measured across sampled time points and replicates and fitted by negative-binomial regression. Reduced BARD1 function lowers proliferation or survival, causing damaging alleles to deplete.
+  - gene: BRCA1
+    mavedb_urn: urn:mavedb:00000097-0-2
+    expected_target_name: BRCA1
+    transcript: NM_007294.3
+    transcript_policy: declared
+    coordinate_mode: hgvs_transcript
+    expected_chrom: "17"
+    score_direction: -1
+    score_direction_evidence: Non-functional controls occupy the lower primary-score range.
+    qc: {field: null, pass_values: [], fail_values: []}
+    assay_context: |-
+      **Gene:** BRCA1
+      - Editing design: CRISPR-Cas9 homology-directed saturation editing at endogenous BRCA1 exons and their local splice-region sequence.
+      - Cellular system: near-haploid, LIG4-knockout HAP1 cells, in which BRCA1 is required for survival.
+      - Measurement: edited-allele abundance was compared between days 5 and 11 by direct sequencing. Reduced BRCA1 function impairs survival, causing damaging alleles to deplete.
+  - gene: BRCA2
+    mavedb_urn: urn:mavedb:00001279-a-1
+    expected_target_name: BRCA2
+    transcript: NM_000059.4
+    transcript_policy: declared
+    coordinate_mode: hgvs_transcript
+    expected_chrom: "13"
+    score_direction: -1
+    score_direction_evidence: Functionally abnormal controls have lower primary functional scores.
+    qc: {field: null, pass_values: [], fail_values: []}
+    assay_context: |-
+      **Gene:** BRCA2
+      - Editing design: CRISPR-Cas9 homology-directed saturation editing of endogenous BRCA2 coding exons and adjacent splice-region sequence.
+      - Cellular system: near-haploid, LIG4-knockout HAP1 cells, in which BRCA2 is required for viability.
+      - Measurement: edited-allele abundance was compared between the initial sample and day 14, with an intermediate day-5 sample used for positional adjustment. Reduced BRCA2 function causes damaging alleles to deplete.
+  - gene: CTCF
+    mavedb_urn: urn:mavedb:00001262-a-3
+    expected_target_name: CTCF
+    transcript: NM_006565.4
+    transcript_policy: declared
+    coordinate_mode: hgvs_transcript
+    expected_chrom: "16"
+    score_direction: -1
+    score_direction_evidence: The source methods state that loss-of-function variants have progressively more negative scores.
+    qc: {field: null, pass_values: [], fail_values: []}
+    assay_context: |-
+      **Gene:** CTCF
+      - Editing design: CRISPR-Cas9 homology-directed saturation editing at the endogenous CTCF locus, covering coding and local splice-region sequence.
+      - Cellular system: near-haploid HAP1 cells in a CTCF-dependent proliferation assay.
+      - Measurement: variant abundance was measured across sampled time points and replicates and fitted by negative-binomial regression. Reduced CTCF function lowers proliferation, causing damaging alleles to deplete.
+  - gene: DDX3X
+    mavedb_urn: urn:mavedb:00001228-a-1
+    expected_target_name: NC_000023.11
+    transcript: NM_001356.5
+    transcript_policy: mane_select_fallback
+    coordinate_mode: hgvs_genomic
+    expected_chrom: X
+    score_direction: -1
+    score_direction_evidence: Depleting loss-of-function controls have lower day-15 log-fold-change scores.
+    qc: {field: null, pass_values: [], fail_values: []}
+    assay_context: |-
+      **Gene:** DDX3X
+      - Editing design: CRISPR-Cas9 homology-directed saturation editing across the endogenous DDX3X locus, including coding and local splice-region sequence.
+      - Cellular system: near-haploid HAP1 cells selected with puromycin for two days after editing.
+      - Measurement: edited-allele abundance was sequenced on days 4, 7, 11, 15, and 21; the primary score is the day-15 log fold change. Reduced DDX3X function impairs growth, causing damaging alleles to deplete.
+  - gene: PALB2
+    mavedb_urn: urn:mavedb:00001259-a-2
+    expected_target_name: PALB2
+    transcript: NM_024675.4
+    transcript_policy: declared
+    coordinate_mode: hgvs_transcript
+    expected_chrom: "16"
+    score_direction: -1
+    score_direction_evidence: The source methods state that loss-of-function variants have progressively more negative scores.
+    qc: {field: null, pass_values: [], fail_values: []}
+    assay_context: |-
+      **Gene:** PALB2
+      - Editing design: CRISPR-Cas9 homology-directed saturation editing at the endogenous PALB2 locus, covering coding and local splice-region sequence.
+      - Cellular system: near-haploid HAP1 cells in a PALB2-dependent survival assay.
+      - Measurement: variant abundance was measured across sampled time points and replicates and fitted by negative-binomial regression. Reduced PALB2 function lowers proliferation or survival, causing damaging alleles to deplete.
+  - gene: RAD51C
+    mavedb_urn: urn:mavedb:00000673-0-1
+    expected_target_name: RAD51C
+    transcript: ENST00000337432.9
+    transcript_policy: declared
+    coordinate_mode: hgvs_transcript
+    expected_chrom: "17"
+    score_direction: -1
+    score_direction_evidence: Fast- and slow-depleted loss-of-function controls have lower primary scores than unchanged controls.
+    qc: {field: null, pass_values: [], fail_values: []}
+    assay_context: |-
+      **Gene:** RAD51C
+      - Editing design: CRISPR-Cas9 homology-directed saturation editing at the endogenous RAD51C locus, including coding and local splice-region sequence.
+      - Cellular system: near-haploid, LIG4-deficient, Cas9-expressing HAP1 cells.
+      - Measurement: edited-allele abundance was followed over multiple time points by direct sequencing and modelled as depletion kinetics. Reduced RAD51C function impairs growth, causing damaging alleles to deplete.
+  - gene: RAD51D
+    mavedb_urn: urn:mavedb:00001260-a-2
+    expected_target_name: RAD51D
+    transcript: NM_002878.4
+    transcript_policy: declared
+    coordinate_mode: hgvs_transcript
+    expected_chrom: "17"
+    score_direction: -1
+    score_direction_evidence: The source methods state that loss-of-function variants have progressively more negative scores.
+    qc: {field: null, pass_values: [], fail_values: []}
+    assay_context: |-
+      **Gene:** RAD51D
+      - Editing design: CRISPR-Cas9 homology-directed saturation editing at the endogenous RAD51D locus, covering coding and local splice-region sequence.
+      - Cellular system: near-haploid HAP1 cells in a RAD51D-dependent cellular-phenotype assay.
+      - Measurement: edited-allele abundance was measured across sampled time points and replicates and fitted by negative-binomial regression. Reduced RAD51D function causes a growth or morphology defect and depletion of damaging alleles.
+  - gene: SBDS
+    mavedb_urn: urn:mavedb:00001284-a-1
+    expected_target_name: SBDS
+    transcript: ENST00000246868.7
+    transcript_policy: declared
+    coordinate_mode: hgvs_transcript
+    expected_chrom: "7"
+    score_direction: -1
+    score_direction_evidence: The source methods state that loss-of-function variants have progressively more negative scores.
+    qc: {field: variant_qc_flag, pass_values: [PASS], fail_values: [FAIL]}
+    assay_context: |-
+      **Gene:** SBDS
+      - Editing design: CRISPR-Cas9 homology-directed saturation editing across all endogenous SBDS exons and local splice-region sequence.
+      - Cellular system: near-haploid HAP1 cells in an SBDS-dependent proliferation assay.
+      - Measurement: variant abundance was measured across sampled time points and replicates and fitted by negative-binomial regression. Reduced SBDS function lowers proliferation, causing damaging alleles to deplete.
+  - gene: SFPQ
+    mavedb_urn: urn:mavedb:00001265-a-2
+    expected_target_name: SFPQ
+    transcript: NM_005066.3
+    transcript_policy: declared
+    coordinate_mode: hgvs_transcript
+    expected_chrom: "1"
+    score_direction: -1
+    score_direction_evidence: The source methods state that loss-of-function variants have progressively more negative scores.
+    qc: {field: null, pass_values: [], fail_values: []}
+    assay_context: |-
+      **Gene:** SFPQ
+      - Editing design: CRISPR-Cas9 homology-directed saturation editing at the endogenous SFPQ locus, covering coding and local splice-region sequence.
+      - Cellular system: near-haploid HAP1 cells in an SFPQ-dependent proliferation assay.
+      - Measurement: variant abundance was measured across sampled time points and replicates and fitted by negative-binomial regression. Reduced SFPQ function lowers proliferation, causing damaging alleles to deplete.
+  - gene: TINF2
+    mavedb_urn: urn:mavedb:00001286-a-1
+    expected_target_name: Exons 4, 5 and 6
+    transcript: NM_001099274.3
+    transcript_policy: mane_select_fallback
+    coordinate_mode: target_coding_hgvs
+    expected_chrom: "14"
+    score_direction: -1
+    score_direction_evidence: The source states that loss-of-function alleles are depleted, so more negative primary scores indicate greater damage.
+    qc: {field: null, pass_values: [], fail_values: []}
+    assay_context: |-
+      **Gene:** TINF2
+      - Editing design: CRISPR-Cas9 homology-directed saturation editing of a contiguous set of endogenous TINF2 coding exons and local splice-region sequence.
+      - Cellular system: near-haploid HAP1 cells in a TINF2-dependent growth assay.
+      - Measurement: edited-allele abundance was followed across sampled time points by direct sequencing. Reduced TINF2 function impairs growth, causing damaging alleles to deplete.
+  - gene: TP53
+    mavedb_urn: urn:mavedb:00001277-a-1
+    expected_target_name: TP53
+    transcript: NM_000546.6
+    transcript_policy: declared
+    coordinate_mode: hgvs_transcript
+    expected_chrom: "17"
+    score_direction: 1
+    score_direction_evidence: Loss-of-function controls enrich under Nutlin-3a and occupy the higher primary-score range.
+    qc: {field: null, pass_values: [], fail_values: []}
+    assay_context: |-
+      **Gene:** TP53
+      - Editing design: CRISPR-Cas9 homology-directed saturation editing of endogenous TP53 DNA-binding-region exons and local splice-region sequence.
+      - Cellular system: HCT116 LSL/Δ cells; Cre activated the edited TP53 alleles after antibiotic selection.
+      - Measurement: edited cells were exposed for eight days to 10 µM Nutlin-3a or the DMSO control, then variant abundance was sequenced. Reduced TP53 function permits relative survival under Nutlin-3a, causing damaging alleles to enrich.
+  - gene: VHL
+    mavedb_urn: urn:mavedb:00000675-a-1
+    expected_target_name: VHL
+    transcript: ENST00000256474.3
+    transcript_policy: declared
+    coordinate_mode: hgvs_transcript
+    expected_chrom: "3"
+    score_direction: -1
+    score_direction_evidence: Loss-of-function controls have lower day-20 versus day-6 function scores.
+    qc: {field: null, pass_values: [], fail_values: []}
+    assay_context: |-
+      **Gene:** VHL
+      - Editing design: CRISPR-Cas9 homology-directed saturation editing across the endogenous VHL coding exons and one local intronic region.
+      - Cellular system: near-haploid HAP1 cells cultured with 2.5 µM 10-deacetyl-baccatin-III to maintain haploidy.
+      - Measurement: edited-allele abundance in genomic DNA was compared between days 6 and 20 and averaged across two transfections. Reduced VHL function impairs growth in this condition, causing damaging alleles to deplete.
+  - gene: XRCC2
+    mavedb_urn: urn:mavedb:00001264-a-2
+    expected_target_name: XRCC2
+    transcript: NM_005431.2
+    transcript_policy: declared
+    coordinate_mode: hgvs_transcript
+    expected_chrom: "7"
+    score_direction: -1
+    score_direction_evidence: The source methods state that loss-of-function variants have progressively more negative scores.
+    qc: {field: null, pass_values: [], fail_values: []}
+    assay_context: |-
+      **Gene:** XRCC2
+      - Editing design: CRISPR-Cas9 homology-directed saturation editing at the endogenous XRCC2 locus, covering coding and local splice-region sequence.
+      - Cellular system: near-haploid HAP1 cells in an XRCC2-dependent survival assay.
+      - Measurement: variant abundance was measured across sampled time points and replicates and fitted by negative-binomial regression. Reduced XRCC2 function lowers proliferation or survival, causing damaging alleles to deplete.

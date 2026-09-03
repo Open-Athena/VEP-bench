@@ -25,13 +25,14 @@ The benchmark is intentionally transparent:
 VEP-bench measures current model capability. Temporal task cohorts can reduce
 direct source leakage but do not guarantee absence from training data.
 
-## Benchmark task
+## Benchmark tasks
 
 | Task | Model input | Target | Questions |
 | --- | --- | --- | ---: |
 | [satMutMPRA](docs/tasks/satmut-mpra.md) | Physical reporter context, the complete mutagenized insert, and a 50-variant panel | Signed reporter-activity effects | 16 |
+| [Saturation genome editing](docs/tasks/sge.md) | Gene and endogenous assay context, one exon with 100 bp flanks, and a 50-SNV panel | Continuous functional damage | 15 |
 
-The task has versioned sources, a prompt, methodology, limitations, and results.
+Each task has versioned sources, a prompt, methodology, limitations, and results.
 
 ## Evaluate a model
 
@@ -51,8 +52,8 @@ batch collection, and local question files.
 
 ## Results
 
-The [explorer](https://openathena.ai/VEP-bench/) provides the satMutMPRA
-leaderboard and lets readers inspect the exact prompt given to a model, its
+The [explorer](https://openathena.ai/VEP-bench/) provides task-specific
+leaderboards and lets readers inspect the exact prompt given to a model, its
 complete response, available reasoning, and deterministic score. Interpret the
 score alongside the task's methodology and limitations.
 

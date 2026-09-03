@@ -45,6 +45,17 @@ uv run --no-sync vepbench-publish version build \
   --output /tmp/vepbench-publication
 ```
 
+SGE is published as its own independently pinned ranking run:
+
+```bash
+uv run --no-sync vepbench-publish version build \
+  --config projects/publishing/config/publishing.yaml \
+  --version sge-prompt-v1 \
+  --questions .vepbench/questions/sge.jsonl \
+  --results-dir .vepbench/publication-results/sge \
+  --output /tmp/vepbench-publication
+```
+
 The question file must contain exactly one task family. Result files retain
 the digest and size of that question set. Curate the staging directory so it
 contains only the intended full result files, not batch chunks or
@@ -159,7 +170,8 @@ is loaded one compressed object at a time. The question pane renders the exact
 stored model prompt; it does not display a measured-versus-predicted effect
 table. Complete raw archives remain downloadable without requiring a backend.
 
-`runs.json` names the satMutMPRA evaluation profile and its Spearman primary
-metric. Pearson correlation and valid-output rate are also published. A single
-complete model run is sufficient for a working leaderboard; additional model
-configurations add rows without changing the publication contract.
+`runs.json` names each task's evaluation profile and primary metric. Both
+satMutMPRA and SGE use mean within-question Spearman; Pearson correlation and
+valid-output rate are also published. A single complete model run is sufficient
+for a working task leaderboard; additional model configurations add rows
+without changing the publication contract.

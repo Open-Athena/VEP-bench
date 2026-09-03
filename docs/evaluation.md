@@ -35,6 +35,9 @@ Maintainers can generate questions from any strict YAML task descriptor:
 uv run --no-sync vepbench questions build \
   --task configs/tasks/satmut-mpra/task.yaml \
   --output .vepbench/questions/satmut-mpra.jsonl
+uv run --no-sync vepbench questions build \
+  --task configs/tasks/sge/task.yaml \
+  --output .vepbench/questions/sge.jsonl
 ```
 
 The descriptor selects the question type, prepared source, prompt, and
@@ -48,7 +51,7 @@ on that task, such as the completion-token ceiling. A model profile contains
 only model- or provider-specific settings. Question paths, result paths, run
 IDs, and secrets remain run-specific.
 
-The satMutMPRA task profile uses a 128,000-token completion ceiling. This fits
+The satMutMPRA and SGE task profiles use a 128,000-token completion ceiling. This fits
 the supported output limit of every benchmarked model while leaving substantial
 headroom for reasoning and the required final answer.
 
@@ -159,6 +162,10 @@ and is counted as a format failure. Zero represents no usable ranking signal;
 it avoids treating malformed output as equivalent to a valid, perfectly
 reversed ranking. A constant valid vector also receives correlation zero but
 remains distinguishable through its valid-output status.
+
+For both ranking tasks, Spearman and Pearson are computed independently for
+each question and then arithmetically averaged. SGE therefore weights every
+included gene equally and never pools differently scaled raw assay scores.
 
 That taxonomy does not include provider or transport failures. For either task
 type, an API failure has null scoring, makes the run incomplete,

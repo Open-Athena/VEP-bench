@@ -5,3 +5,4 @@ assets_dir: ../web
 observable_config: ../observablehq.config.js
 question_metadata_sources:
   - ../../../data/sources/satmut-mpra-cadd-v1.7.jsonl
+  - ../../../data/sources/sge-mavedb-2026-09-03.jsonl

@@ -13,6 +13,9 @@ export default {
       pages: [{
         name: "satMutMPRA",
         path: "/tasks/satmut-mpra"
+      }, {
+        name: "Saturation genome editing",
+        path: "/tasks/sge"
       }]
     }
   ],

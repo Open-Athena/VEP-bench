@@ -10,6 +10,7 @@ task-specific manual.
 | Task | Family | Status |
 | --- | --- | --- |
 | [satMutMPRA](satmut-mpra.md) | `satmut_mpra` | Public development set |
+| [Saturation genome editing](sge.md) | `sge` | Public development set |
 
 ## Documentation convention
 

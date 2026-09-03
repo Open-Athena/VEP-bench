@@ -196,21 +196,21 @@ response with a parse error. The narrower five-way taxonomy is reported in
 `metrics.result_counts`, where only `format_error` excludes refusals and token
 limits.
 
-The current official version contains only satMutMPRA. Its leaderboard uses
-mean within-element Spearman correlation, with Pearson correlation and valid
-output rate as diagnostics. The score-efficiency chart compares that score to
-cost or total tokens and works with one or more complete model runs.
+Ranking task leaderboards use the task's mean within-question Spearman
+correlation, with Pearson correlation and valid-output rate as diagnostics.
+The score-efficiency chart compares the primary score to cost or total tokens
+and works with one or more complete model runs.
 
-The question explorer lives on the satMutMPRA task page. It selects complete
-model configurations and resolves the satMutMPRA run after a question is
-selected. It renders the exact stored prompt given to the model alongside the
-complete response and does not expose the measured reference effects in a
-comparison table.
+The question explorer has one page per task. It selects complete model
+configurations, resolves the matching task run after a question is selected,
+and renders the exact stored prompt alongside the complete response without
+exposing measured reference effects in a comparison table.
 Its compact `question-metadata.json` asset is deterministically derived from
 committed task sources and provenance manifests. satMutMPRA supplies its
 element label as `source_metadata.display_name`. This display-only
 metadata is never added to model-visible prompts and does not change question
-or historical result fingerprints.
+or historical result fingerprints. SGE uses the same display field for its
+gene label.
 
 Only `versions/main/` in the public bucket is official. Named lowercase-slug
 versions are reviewable release candidates or disposable experiments. The

@@ -1,0 +1,10 @@
+# Human-maintained descriptor for deterministic question construction and evaluation.
+schema_version: "1.0"
+task_family: sge
+question:
+  type: ranking
+  source: ../../../data/sources/sge-mavedb-2026-09-03.jsonl
+  prompt: prompt.yaml
+evaluation:
+  generation:
+    max_tokens: 128000

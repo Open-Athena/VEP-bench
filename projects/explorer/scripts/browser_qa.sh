@@ -30,13 +30,18 @@ mkdir -p "$output_dir"
 cp -a "$site_dir/." "$qa_root/"
 
 questions="$qa_root/satmut-mpra-questions.jsonl"
+sge_questions="$qa_root/sge-questions.jsonl"
 publication="$qa_root/publication"
 data_base_url="http://127.0.0.1:$port/publication/versions/main"
 uv run --project "$project_root" --no-sync vepbench questions build \
   --task "$repo_root/configs/tasks/satmut-mpra/task.yaml" \
   --output "$questions"
+uv run --project "$project_root" --no-sync vepbench questions build \
+  --task "$repo_root/configs/tasks/sge/task.yaml" \
+  --output "$sge_questions"
 uv run --project "$project_root" --no-sync vepbench-site qa fixture \
   --questions "$questions" \
+  --questions "$sge_questions" \
   --alternate-model \
   --output "$publication" \
   --site-root "$qa_root" \
@@ -78,9 +83,15 @@ common=(
 "$chrome" "${common[@]}" --window-size=1440,1600 \
   --dump-dom "http://127.0.0.1:$port/tasks/satmut-mpra.html" \
   >"$output_dir/task.dom.html"
+"$chrome" "${common[@]}" --window-size=1440,1600 \
+  --dump-dom "http://127.0.0.1:$port/tasks/sge.html" \
+  >"$output_dir/sge-task.dom.html"
 "$chrome" "${common[@]}" --window-size=1440,2400 \
   --dump-dom "http://127.0.0.1:$port/tasks/satmut-mpra.html?question=satmut-mpra-ranking-v1%3AF9&run=browser-qa" \
   >"$output_dir/question.dom.html"
+"$chrome" "${common[@]}" --window-size=1440,2400 \
+  --dump-dom "http://127.0.0.1:$port/tasks/sge.html?question=sge-ranking-v1%3ABAP1&run=browser-qa-task-2" \
+  >"$output_dir/sge-question.dom.html"
 "$chrome" "${common[@]}" --window-size=1440,1600 \
   --dump-dom "http://127.0.0.1:$port/tasks/satmut-mpra.html?run=missing-run" \
   >"$output_dir/question-neutral.dom.html"
@@ -101,10 +112,18 @@ for check in \
   'leaderboard.dom.html|>Compare score against</label>' \
   'leaderboard.dom.html|https://github.com/Open-Athena/VEP-bench' \
   'tasks.dom.html|>satMutMPRA<' \
+  'tasks.dom.html|>Saturation genome editing<' \
   'tasks.dom.html|Open task' \
   'task.dom.html|>satMutMPRA</a></h1>' \
   'task.dom.html|>Task version<' \
   'task.dom.html|published element panels' \
+  'sge-task.dom.html|>Saturation genome editing</a></h1>' \
+  'sge-task.dom.html|published gene panels' \
+  'sge-question.dom.html|>Prompt given to model<' \
+  'sge-question.dom.html|<strong>Gene:</strong> BAP1' \
+  'sge-question.dom.html|Local DNA sequence context' \
+  'sge-question.dom.html|#CHROM' \
+  'sge-question.dom.html|Reference panel: 50 candidate variants' \
   'question.dom.html|>Prompt given to model<' \
   'question.dom.html|Complete mutagenized insert (reporter-construct orientation)' \
   'question.dom.html|Sequence lines contain 80 bases except the final line.' \
@@ -117,7 +136,8 @@ for check in \
   'question.dom.html|>Valid prediction</option>' \
   'question.dom.html|>Format failure</option>' \
   'question-neutral.dom.html|Unavailable model for run · missing-run' \
-  "question.dom.html|href=\"http://127.0.0.1:$port/publication/versions/main/raw/browser-qa.jsonl.zst\""
+  "question.dom.html|href=\"http://127.0.0.1:$port/publication/versions/main/raw/browser-qa.jsonl.zst\"" \
+  "sge-question.dom.html|href=\"http://127.0.0.1:$port/publication/versions/main/raw/browser-qa-task-2.jsonl.zst\""
 do
   file=${check%%|*}
   pattern=${check#*|}
@@ -148,7 +168,8 @@ if [[ "$header_order" != 'Model|Score|Release date|Tokens|Cost' ]]; then
   status=1
 fi
 
-for file in leaderboard.dom.html tasks.dom.html task.dom.html question.dom.html; do
+for file in leaderboard.dom.html tasks.dom.html task.dom.html sge-task.dom.html \
+  question.dom.html sge-question.dom.html; do
   if grep -q 'observablehq--error' "$output_dir/$file"; then
     echo "rendered Observable error in $file" >&2
     status=1
@@ -182,6 +203,9 @@ browser_pid=
 "$chrome" "${common[@]}" --window-size=1440,1600 \
   --screenshot="$output_dir/question-desktop.png" \
   "http://127.0.0.1:$port/tasks/satmut-mpra.html?question=satmut-mpra-ranking-v1%3AF9&run=browser-qa"
+"$chrome" "${common[@]}" --window-size=1440,1600 \
+  --screenshot="$output_dir/sge-question-desktop.png" \
+  "http://127.0.0.1:$port/tasks/sge.html?question=sge-ranking-v1%3ABAP1&run=browser-qa-task-2"
 "$chrome" "${common[@]}" --window-size=390,844 \
   --screenshot="$output_dir/task-mobile.png" \
   "http://127.0.0.1:$port/tasks/satmut-mpra.html"

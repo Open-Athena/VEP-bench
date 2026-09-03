@@ -14,7 +14,8 @@ import {
   displayScore,
   fetchJson,
   leaderboardRowsForScope,
-  orderTaskFamilies
+  orderTaskFamilies,
+  supportsOverallLeaderboard
 } from "./components/benchmark-data.js";
 
 const config = await FileAttachment("data/config.json").json();
@@ -22,24 +23,28 @@ const runsState = await fetchJson(artifactUrl(config.data_base_url, "runs.json")
   .then((document) => ({document, error: null}))
   .catch((error) => ({document: {runs: []}, error}));
 const aggregation = runsState.document.leaderboard;
-const taskName = (taskFamily) => ({
-  satmut_mpra: "satMutMPRA"
-})[taskFamily] ?? taskFamily;
+const taskLabels = {
+  satmut_mpra: "satMutMPRA",
+  sge: "Saturation genome editing"
+};
+const taskName = (taskFamily) => taskLabels[taskFamily] ?? taskFamily;
 const publishedTaskFamilies = orderTaskFamilies([
   ...new Set(
     (aggregation?.evaluation_profiles ?? []).map((profile) => profile.task_family)
   )
 ]);
 const taskOptions = [
-  {task_family: null, label: "All tasks"},
+  ...(supportsOverallLeaderboard(aggregation)
+    ? [null]
+    : []),
   ...(
-    publishedTaskFamilies.length ? publishedTaskFamilies : ["satmut_mpra"]
-  ).map((taskFamily) => ({task_family: taskFamily, label: taskName(taskFamily)}))
+    publishedTaskFamilies.length ? publishedTaskFamilies : ["satmut_mpra", "sge"]
+  )
 ];
 const taskInput = Inputs.select(taskOptions, {
   label: "Task",
   value: taskOptions[0],
-  format: (option) => option.label
+  format: (taskFamily) => taskFamily === null ? "All tasks" : taskName(taskFamily)
 });
 taskInput.style.maxWidth = "22rem";
 const metricOptions = [
@@ -63,10 +68,13 @@ every response and deterministic score can be inspected.
 ## Leaderboard
 
 ```js
-const selectedTask = view(taskInput);
-const selectedTaskFamily = selectedTask.task_family ?? (
-  publishedTaskFamilies.length === 1 ? publishedTaskFamilies[0] : null
-);
+const selectedTaskFamily = view(taskInput);
+```
+
+```js
+const selectedTaskLabel = selectedTaskFamily === null
+  ? "All tasks"
+  : taskName(selectedTaskFamily);
 ```
 
 <div style="display: flex; justify-content: flex-end; margin: 0.75rem 0;">
@@ -76,8 +84,8 @@ const selectedTaskFamily = selectedTask.task_family ?? (
 ```js
 if (runsState.error) {
   display(html`<div class="note" label="Published data unavailable">The official benchmark data could not be loaded from <code>versions/main</code>.</div>`);
-} else if (selectedTask.task_family !== null && !aggregation?.evaluation_profiles?.some(
-  (profile) => profile.task_family === selectedTask.task_family
+} else if (selectedTaskFamily !== null && !aggregation?.evaluation_profiles?.some(
+  (profile) => profile.task_family === selectedTaskFamily
 )) {
   display(html`<div class="note" label="Task unavailable">The current official version does not contain the selected task's evaluation profile.</div>`);
 }
@@ -92,7 +100,7 @@ const rows = leaderboardRowsForScope(
 const formatScore = (value) => formatPercent(displayScore(value));
 ```
 
-Showing the primary score for **${selectedTask.label}**.
+Showing the primary score for **${selectedTaskLabel}**.
 
 ```js
 const tableRows = rows.map((row) => ({
@@ -260,7 +268,7 @@ function scoreEfficiencyPlot(data, {width}) {
 </div>
 
 ```js
-display(html`<div class="card" aria-label=${`${selectedTask.label} score versus ${metricLabel}`}>
+display(html`<div class="card" aria-label=${`${selectedTaskLabel} score versus ${metricLabel}`}>
   ${resize((width) => scoreEfficiencyPlot(efficiencyRows, {width}))}
 </div>`);
 ```

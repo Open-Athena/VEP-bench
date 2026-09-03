@@ -1,0 +1,35 @@
+template_id: sge-ranking-v1
+template_version: "1.0"
+task_type: ranking
+prompt: |-
+  Predict the continuous functional-damage score of every candidate single-nucleotide variant in this saturation genome editing panel.
+
+  **Assay context:**
+  {assay_context}
+
+  **Local DNA sequence context:**
+
+  Sequence lines contain 80 bases except the final line.
+
+  ```fasta
+  >element
+  {reference_sequence}
+  ```
+
+  {reporter_context}
+
+  **Candidate variants:**
+
+  Positions, reference alleles, and alternate alleles use the displayed sequence orientation.
+
+  ```vcf
+  ##fileformat=VCFv4.3
+  #CHROM	POS	ID	REF	ALT
+  {candidate_table}
+  ```
+
+  For each candidate ID, predict one finite continuous damage score. Larger values must mean greater loss of function or functional damage, while smaller values mean more retained function. Numerical distances should reflect predicted differences in damage magnitude within this gene and assay, although exact calibration is not required and scores should not be calibrated across genes.
+
+  You may explain your reasoning. Your final line must contain only `FINAL: ` followed by one strict JSON object with every candidate ID exactly once and no additional keys. Values must be finite JSON numbers.
+
+  Example form: `FINAL: {{"V01": -0.42, "V02": 0.08}}`

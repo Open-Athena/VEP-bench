@@ -80,8 +80,8 @@ await send("Runtime.enable");
 await navigate("/index.html");
 await waitFor(
   `document.querySelectorAll(".vepbench-score-cell").length === 2
-    && document.querySelector('.card[aria-label^="All tasks score versus"]') !== null`,
-  "two-model all-tasks leaderboard"
+    && document.querySelector('.card[aria-label^="satMutMPRA score versus"]') !== null`,
+  "two-model default task leaderboard"
 );
 assert.equal(
   await evaluate('getComputedStyle(document.querySelector(\'th[title="score"]\')).textAlign'),
@@ -97,6 +97,11 @@ assert.equal(await chooseOptionContaining("Total tokens"), true);
 await waitFor(
   `document.querySelector('.card[aria-label="satMutMPRA score versus Total tokens"]') !== null`,
   "token plot"
+);
+assert.equal(await chooseOptionContaining("Saturation genome editing"), true);
+await waitFor(
+  `document.querySelector('.card[aria-label^="Saturation genome editing score versus"]') !== null`,
+  "SGE task scope"
 );
 
 const initialQuestionId = "satmut-mpra-ranking-v1:F9";

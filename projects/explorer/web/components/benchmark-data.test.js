@@ -21,7 +21,8 @@ import {
   outcomeIndexPath,
   resultTypeForAnswer,
   resultTypeLabel,
-  runForTask
+  runForTask,
+  supportsOverallLeaderboard
 } from "./benchmark-data.js";
 
 test("display scores use a fixed zero-to-one percentage domain", () => {
@@ -185,6 +186,24 @@ test("overall leaderboard rejects unknown aggregation metadata", () => {
   }), []);
 });
 
+test("overall leaderboard scope is hidden when classification aggregation has only ranking tasks", () => {
+  assert.equal(supportsOverallLeaderboard({
+    aggregation_method: "classification_task_macro_average_v0",
+    evaluation_profiles: [
+      {task_family: "satmut_mpra", task_type: "ranking"},
+      {task_family: "sge", task_type: "ranking"}
+    ]
+  }), false);
+  assert.equal(supportsOverallLeaderboard({
+    aggregation_method: "classification_task_macro_average_v0",
+    evaluation_profiles: [{task_family: "synthetic", task_type: "multiple_choice"}]
+  }), true);
+  assert.equal(supportsOverallLeaderboard({
+    aggregation_method: "task_macro_average_v0",
+    evaluation_profiles: [{task_family: "synthetic", task_type: "multiple_choice"}]
+  }), true);
+});
+
 test("leaderboard scope switches score, tokens, and cost to one task", () => {
   const leaderboard = {
     aggregation_method: "task_macro_average_v0",
@@ -233,15 +252,16 @@ test("leaderboard scope switches score, tokens, and cost to one task", () => {
   assert.deepEqual(leaderboardRowsForScope(runs, leaderboard, "unknown"), []);
 });
 
-test("task ordering keeps satMutMPRA first", () => {
+test("task ordering keeps benchmark ranking tasks before unknown families", () => {
   assert.deepEqual(
     orderTaskFamilies([
+      "sge",
       "satmut_mpra",
       "synthetic_alpha",
       "future_task",
       "synthetic_beta"
     ]),
-    ["satmut_mpra", "future_task", "synthetic_alpha", "synthetic_beta"]
+    ["satmut_mpra", "sge", "future_task", "synthetic_alpha", "synthetic_beta"]
   );
 });
 
