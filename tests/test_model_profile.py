@@ -2,8 +2,8 @@ from pathlib import Path
 
 import pytest
 
-from vepbench.builder import BuildError
-from vepbench.model_profile import load_model_profile
+from vepbench.config.model import load_model_profile
+from vepbench.errors import BuildError
 
 ROOT = Path(__file__).resolve().parents[1]
 

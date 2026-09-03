@@ -45,9 +45,11 @@ FINAL: {"V01": -0.42, "V02": 0.08, ...}
 ```
 
 All 50 IDs must appear exactly once with no additional keys. The versioned
-prompt is [`templates/satmut_mpra.json`](../../templates/satmut_mpra.json), and
-the task completion ceiling is in
-[`configs/tasks/satmut-mpra.yaml`](../../configs/tasks/satmut-mpra.yaml).
+prompt is
+[`configs/tasks/satmut-mpra/prompt.yaml`](../../configs/tasks/satmut-mpra/prompt.yaml),
+and the prepared source, prompt, question type, and task completion ceiling are
+selected by
+[`configs/tasks/satmut-mpra/task.yaml`](../../configs/tasks/satmut-mpra/task.yaml).
 
 ## Canonical sources and crosswalk
 
@@ -107,7 +109,8 @@ assembly from
 [`marin-dna/human-genome`](https://huggingface.co/datasets/marin-dna/human-genome)
 at revision `11b9433582981bb929af333bc6422f10a8fd71b4`. GRCh38 is used only for
 validation and genomic provenance, not as the display-orientation policy.
-`configs/sources/satmut-mpra-v1.json` pins every
+[`tasks/satmut-mpra/config/source-pins.yaml`](../../tasks/satmut-mpra/config/source-pins.yaml)
+pins every
 CADD file, the CADD checksum manifest, the reference file size and LFS SHA-256,
 and both MaveDB payloads for every score set. Preparation verifies the
 reference's Hub commit, linked digest, and size with a metadata request and
@@ -181,6 +184,13 @@ payload is requested. The cache is separate from official `versions/`
 publication artifacts, so a later panel size or sampling policy can reuse the
 validated eligible pool.
 
+Human-maintained element specifications, sampling parameters, upstream
+locations and revisions, validation counts, reporter sequences, and reviewed
+discrepancies live in the strictly validated
+[`preparation.yaml`](../../tasks/satmut-mpra/config/preparation.yaml). Cache
+identity is computed from canonical semantic configuration values, so YAML
+comments and formatting do not change it.
+
 To prepare on a SkyPilot worker, upload the cache, copy back the compact
 artifacts, validate them, and build questions:
 
@@ -192,11 +202,11 @@ For the small canonical source, preparation can also run locally. It uploads
 the cache by default; use `--skip-cache-upload` for a read-only dry run:
 
 ```bash
-uv run --locked --group prepare python scripts/prepare_satmut_mpra.py
-uv run --locked python scripts/validate_satmut_mpra_artifacts.py
-uv run --locked vepbench build \
-  --source data/sources/satmut-mpra-cadd-v1.7.jsonl \
-  --template templates/satmut_mpra.json \
+uv sync --locked --package vepbench-task-satmut-mpra
+uv run --no-sync vepbench-satmut-mpra prepare
+uv run --no-sync vepbench-satmut-mpra validate
+uv run --no-sync vepbench questions build \
+  --task configs/tasks/satmut-mpra/task.yaml \
   --output /tmp/satmut-mpra-questions.jsonl
 cmp benchmark/satmut-mpra-expected-manifest.json \
   /tmp/satmut-mpra-questions.manifest.json

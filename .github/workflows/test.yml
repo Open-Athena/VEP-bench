@@ -1,0 +1,192 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    name: Route changes
+    runs-on: ubuntu-24.04
+    outputs:
+      evaluator: ${{ steps.paths.outputs.evaluator }}
+      publishing: ${{ steps.paths.outputs.publishing }}
+      task: ${{ steps.paths.outputs.task }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - name: Select test suites
+        id: paths
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          evaluator=false
+          publishing=false
+          task=false
+          if [[ "$EVENT_NAME" == "workflow_dispatch" || -z "$BASE_SHA" || "$BASE_SHA" =~ ^0+$ ]]; then
+            changed=__all__
+          else
+            changed=$(git diff --name-only "$BASE_SHA" HEAD)
+          fi
+          while IFS= read -r path; do
+            case "$path" in
+              __all__|.github/workflows/test.yml|.python-version|pyproject.toml|uv.lock|src/vepbench/*)
+                evaluator=true
+                publishing=true
+                task=true
+                ;;
+              configs/models/*)
+                evaluator=true
+                publishing=true
+                ;;
+              projects/publishing/*|tests/test_bucket.py|tests/test_publication.py)
+                publishing=true
+                ;;
+              configs/tasks/*)
+                evaluator=true
+                task=true
+                ;;
+              data/sources/*|tasks/satmut-mpra/*|sky/prepare_satmut_mpra.yaml|scripts/run_prepare_satmut_mpra_sky.sh|scripts/validate_satmut_mpra_artifacts.py|tests/test_satmut_cache.py|tests/test_satmut_mpra.py)
+                task=true
+                ;;
+              tests/test_batch.py|tests/test_builder.py|tests/test_cli.py|tests/test_evaluator.py|tests/test_model_profile.py|tests/test_question_fetch.py|tests/test_task_profile.py)
+                evaluator=true
+                ;;
+            esac
+          done <<< "$changed"
+          {
+            echo "evaluator=$evaluator"
+            echo "publishing=$publishing"
+            echo "task=$task"
+          } >> "$GITHUB_OUTPUT"
+
+  evaluator:
+    name: Evaluator (minimal install)
+    if: needs.changes.outputs.evaluator == 'true'
+    needs: changes
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: "0.12.5"
+          enable-cache: true
+
+      - name: Install evaluator and test dependencies
+        run: uv sync --locked --package vepbench --group test
+
+      - name: Verify workspace-only dependencies are absent
+        run: |
+          uv run --no-sync python - <<'PY'
+          import importlib.util
+
+          for name in ("fsspec", "huggingface_hub", "pyfaidx", "zstandard"):
+              assert importlib.util.find_spec(name) is None, name
+          PY
+          uv run --no-sync vepbench --help
+
+      - name: Run evaluator tests with coverage
+        run: >-
+          uv run --no-sync pytest
+          tests/test_batch.py
+          tests/test_builder.py
+          tests/test_cli.py
+          tests/test_evaluator.py
+          tests/test_model_profile.py
+          tests/test_question_fetch.py
+          tests/test_task_profile.py
+          --cov=vepbench
+          --cov-fail-under=72
+          --cov-report=term-missing:skip-covered
+
+  publishing:
+    name: Publishing
+    if: needs.changes.outputs.publishing == 'true'
+    needs: changes
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: "0.12.5"
+          enable-cache: true
+
+      - name: Install publishing tests
+        run: >-
+          uv sync --locked --package vepbench-publishing
+          --extra bucket --group test
+
+      - name: Run publishing tests
+        run: uv run --no-sync pytest tests/test_publication.py tests/test_bucket.py
+
+  task:
+    name: satMutMPRA task
+    if: needs.changes.outputs.task == 'true'
+    needs: changes
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: "0.12.5"
+          enable-cache: true
+
+      - name: Install task tests
+        run: uv sync --locked --package vepbench-task-satmut-mpra --group test
+
+      - name: Run task tests
+        run: uv run --no-sync pytest tests/test_satmut_mpra.py tests/test_satmut_cache.py
+
+      - name: Verify generated benchmark artifacts
+        run: |
+          uv run --no-sync vepbench-satmut-mpra validate
+          uv run --no-sync vepbench questions build \
+            --task configs/tasks/satmut-mpra/task.yaml \
+            --output /tmp/satmut-mpra-questions.jsonl
+          cmp \
+            benchmark/satmut-mpra-expected-manifest.json \
+            /tmp/satmut-mpra-questions.manifest.json
+
+  test:
+    name: Test
+    if: always()
+    needs: [changes, evaluator, publishing, task]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require selected suites to pass
+        env:
+          EVALUATOR_RESULT: ${{ needs.evaluator.result }}
+          PUBLISHING_RESULT: ${{ needs.publishing.result }}
+          ROUTE_RESULT: ${{ needs.changes.result }}
+          TASK_RESULT: ${{ needs.task.result }}
+        run: |
+          for result in "$ROUTE_RESULT" "$EVALUATOR_RESULT" "$PUBLISHING_RESULT" "$TASK_RESULT"; do
+            if [[ "$result" != "success" && "$result" != "skipped" ]]; then
+              exit 1
+            fi
+          done

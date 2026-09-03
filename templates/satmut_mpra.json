@@ -1,6 +1,0 @@
-{
-  "template_id": "satmut-mpra-ranking-v1",
-  "template_version": "1.1",
-  "task_type": "ranking",
-  "prompt": "Predict the signed regulatory-activity effect of every candidate variant in this saturation-mutagenesis MPRA panel.\n\n**Assay context:**\n{assay_context}\n\n**Complete mutagenized insert (reporter-construct orientation):**\n\nSequence lines contain 80 bases except the final line.\n\n```fasta\n>element\n{reference_sequence}\n```\n\n{reporter_context}\n\n**Candidate variants:**\n\n```vcf\n##fileformat=VCFv4.3\n#CHROM\tPOS\tID\tREF\tALT\n{candidate_table}\n```\n\nFor each candidate ID, predict one finite signed log2 reporter-activity effect. Positive values mean increased activity, negative values mean decreased activity, and zero means no predicted activity change. Numerical distances should reflect predicted differences in effect magnitude, although exact calibration is not required.\n\nYou may explain your reasoning. Your final line must contain only `FINAL: ` followed by one strict JSON object with every candidate ID exactly once and no additional keys. Values must be finite JSON numbers.\n\nExample form: `FINAL: {{\"V01\": -0.42, \"V02\": 0.08}}`"
-}

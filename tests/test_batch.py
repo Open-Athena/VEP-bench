@@ -7,19 +7,20 @@ from typing import Any
 
 import pytest
 
-from vepbench.batch import (
+from vepbench.artifacts import canonical_json, read_jsonl
+from vepbench.errors import BuildError
+from vepbench.evaluation.batch import (
     _allocate_batch_usage,
     collect_batch_file,
     merge_batch_result_files,
     refresh_batch_state,
     submit_batch_file,
 )
-from vepbench.builder import BuildError, canonical_json, read_jsonl
-from vepbench.evaluator import validate_batch_usage_allocations
+from vepbench.evaluation.core import validate_batch_usage_allocations
 
 ROOT = Path(__file__).resolve().parents[1]
 QUESTIONS = ROOT / "tests/fixtures/synthetic-questions.jsonl"
-QUESTION_SCHEMA = ROOT / "schemas/question.schema.json"
+QUESTION_SCHEMA = ROOT / "src/vepbench/schemas/question.schema.json"
 
 
 class FakeBatchTransport:
@@ -304,7 +305,7 @@ def test_submit_and_collect_batch_chunk_retains_full_question_set_identity(
         state_path=state_path,
         questions_path=questions,
         question_schema_path=QUESTION_SCHEMA,
-        result_schema_path=ROOT / "schemas/result.schema.json",
+        result_schema_path=ROOT / "src/vepbench/schemas/result.schema.json",
         api_key="test-secret",
         transport=transport,
     )
@@ -341,7 +342,7 @@ def test_collect_rejects_reordered_persisted_custom_ids(tmp_path: Path) -> None:
             state_path=state_path,
             questions_path=questions,
             question_schema_path=QUESTION_SCHEMA,
-            result_schema_path=ROOT / "schemas/result.schema.json",
+            result_schema_path=ROOT / "src/vepbench/schemas/result.schema.json",
             api_key="test-secret",
             transport=transport,
         )
@@ -372,7 +373,7 @@ def test_collect_retains_legacy_question_id_custom_id_fallback(tmp_path: Path) -
         state_path=state_path,
         questions_path=QUESTIONS,
         question_schema_path=QUESTION_SCHEMA,
-        result_schema_path=ROOT / "schemas/result.schema.json",
+        result_schema_path=ROOT / "src/vepbench/schemas/result.schema.json",
         api_key="test-secret",
         transport=transport,
     )
@@ -405,7 +406,7 @@ def test_merge_batch_chunks_writes_one_ordered_full_run(tmp_path: Path) -> None:
             state_path=state_path,
             questions_path=questions,
             question_schema_path=QUESTION_SCHEMA,
-            result_schema_path=ROOT / "schemas/result.schema.json",
+            result_schema_path=ROOT / "src/vepbench/schemas/result.schema.json",
             api_key="test-secret",
             transport=transport,
         )
@@ -416,7 +417,7 @@ def test_merge_batch_chunks_writes_one_ordered_full_run(tmp_path: Path) -> None:
         result_paths=chunk_outputs,
         questions_path=questions,
         question_schema_path=QUESTION_SCHEMA,
-        result_schema_path=ROOT / "schemas/result.schema.json",
+        result_schema_path=ROOT / "src/vepbench/schemas/result.schema.json",
         output=merged_output,
     )
 
@@ -444,7 +445,7 @@ def test_merge_batch_chunks_writes_one_ordered_full_run(tmp_path: Path) -> None:
             result_paths=[cost_tampered_path, chunk_outputs[1]],
             questions_path=questions,
             question_schema_path=QUESTION_SCHEMA,
-            result_schema_path=ROOT / "schemas/result.schema.json",
+            result_schema_path=ROOT / "src/vepbench/schemas/result.schema.json",
             output=tmp_path / "cost-tampered-merged.jsonl",
         )
 
@@ -461,7 +462,7 @@ def test_merge_batch_chunks_writes_one_ordered_full_run(tmp_path: Path) -> None:
             result_paths=[provenance_tampered_path, chunk_outputs[1]],
             questions_path=questions,
             question_schema_path=QUESTION_SCHEMA,
-            result_schema_path=ROOT / "schemas/result.schema.json",
+            result_schema_path=ROOT / "src/vepbench/schemas/result.schema.json",
             output=tmp_path / "provenance-tampered-merged.jsonl",
         )
 
@@ -487,7 +488,7 @@ def test_collect_batch_writes_sorted_schema_valid_results(tmp_path: Path) -> Non
         state_path=state_path,
         questions_path=QUESTIONS,
         question_schema_path=QUESTION_SCHEMA,
-        result_schema_path=ROOT / "schemas/result.schema.json",
+        result_schema_path=ROOT / "src/vepbench/schemas/result.schema.json",
         api_key="test-secret",
         transport=transport,
         now=datetime(2026, 8, 29, 13, 0, tzinfo=UTC),
@@ -532,7 +533,7 @@ def test_collect_batch_records_malformed_success_as_api_error(tmp_path: Path) ->
         state_path=state_path,
         questions_path=questions,
         question_schema_path=QUESTION_SCHEMA,
-        result_schema_path=ROOT / "schemas/result.schema.json",
+        result_schema_path=ROOT / "src/vepbench/schemas/result.schema.json",
         api_key="test-secret",
         transport=transport,
         now=datetime(2026, 8, 29, 13, 0, tzinfo=UTC),
@@ -574,7 +575,7 @@ def test_collect_batch_records_cost_when_every_request_failed(tmp_path: Path) ->
         state_path=state_path,
         questions_path=QUESTIONS,
         question_schema_path=QUESTION_SCHEMA,
-        result_schema_path=ROOT / "schemas/result.schema.json",
+        result_schema_path=ROOT / "src/vepbench/schemas/result.schema.json",
         api_key="test-secret",
         transport=transport,
     )

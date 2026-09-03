@@ -1,12 +1,10 @@
-import importlib.util
 import json
 from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-
-from vepbench.builder import canonical_json
-from vepbench.satmut_mpra import (
+from vepbench_satmut_mpra import prepare as preparation
+from vepbench_satmut_mpra.task import (
     ELEMENT_SPECS,
     ElementMetadata,
     PreparedElement,
@@ -14,14 +12,10 @@ from vepbench.satmut_mpra import (
     Variant,
 )
 
+from vepbench.artifacts import canonical_json
+
 ROOT = Path(__file__).resolve().parents[1]
 PRODUCTION_MANIFEST = ROOT / "data/sources/satmut-mpra-cadd-v1.7.manifest.json"
-SPEC = importlib.util.spec_from_file_location(
-    "prepare_satmut_mpra", ROOT / "scripts/prepare_satmut_mpra.py"
-)
-assert SPEC is not None and SPEC.loader is not None
-preparation = importlib.util.module_from_spec(SPEC)
-SPEC.loader.exec_module(preparation)
 LEGACY_PREPARATION_IMPLEMENTATION_SHA256 = preparation.LEGACY_PREPARATION_IMPLEMENTATION_SHA256
 _cache_configuration = preparation._cache_configuration
 _cache_key = preparation._cache_key

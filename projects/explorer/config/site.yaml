@@ -1,0 +1,7 @@
+# Human-maintained inputs for the static explorer build.
+schema_version: "1.0"
+data_base_url: https://huggingface.co/buckets/open-athena/VEP-bench/resolve/versions/main
+assets_dir: ../web
+observable_config: ../observablehq.config.js
+question_metadata_sources:
+  - ../../../data/sources/satmut-mpra-cadd-v1.7.jsonl

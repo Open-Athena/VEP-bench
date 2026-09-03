@@ -1,0 +1,88 @@
+name: Quality
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    name: Route changes
+    runs-on: ubuntu-24.04
+    outputs:
+      quality: ${{ steps.paths.outputs.quality }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - name: Select quality checks
+        id: paths
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          quality=false
+          if [[ "$EVENT_NAME" == "workflow_dispatch" || -z "$BASE_SHA" || "$BASE_SHA" =~ ^0+$ ]]; then
+            quality=true
+          else
+            while IFS= read -r path; do
+              case "$path" in
+                *.json|*.jsonl|*.mjs|*.py|*.sh|*.toml|*.yaml|*.yml|.python-version)
+                  quality=true
+                  ;;
+              esac
+            done < <(git diff --name-only "$BASE_SHA" HEAD)
+          fi
+          echo "quality=$quality" >> "$GITHUB_OUTPUT"
+
+  checks:
+    name: Checks
+    if: needs.changes.outputs.quality == 'true'
+    needs: changes
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: "0.12.5"
+          enable-cache: true
+
+      - name: Install quality tools
+        run: uv sync --locked --all-packages --all-extras --group quality
+
+      - name: Run pre-commit checks
+        run: uv run --no-sync pre-commit run --all-files
+
+      - name: Type-check workspace
+        run: uv run --no-sync mypy
+
+  quality:
+    name: Quality
+    if: always()
+    needs: [changes, checks]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require selected checks to pass
+        env:
+          CHECKS_RESULT: ${{ needs.checks.result }}
+          ROUTE_RESULT: ${{ needs.changes.result }}
+        run: |
+          for result in "$ROUTE_RESULT" "$CHECKS_RESULT"; do
+            if [[ "$result" != "success" && "$result" != "skipped" ]]; then
+              exit 1
+            fi
+          done

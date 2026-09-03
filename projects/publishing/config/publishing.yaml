@@ -1,0 +1,4 @@
+# Human-maintained defaults for private publication operations.
+schema_version: "1.0"
+bucket: open-athena/VEP-bench
+model_catalog: ../../../configs/models/catalog.yaml

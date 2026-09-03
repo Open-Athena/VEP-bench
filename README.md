@@ -33,6 +33,22 @@ direct source leakage but do not guarantee absence from training data.
 
 The task has versioned sources, a prompt, methodology, limitations, and results.
 
+## Evaluate a model
+
+The default environment contains only the evaluator. It fetches and verifies
+published questions on demand; website, publication, and task-preparation
+dependencies are separate private workspace projects.
+
+```bash
+uv sync --locked
+export OPENROUTER_API_KEY=...
+uv run --no-sync vepbench evaluate --model provider/model-id
+```
+
+Evaluation is an explicit, potentially paid local action. See the
+[evaluation guide](docs/evaluation.md) for versioned profiles, direct runs,
+batch collection, and local question files.
+
 ## Results
 
 The [explorer](https://openathena.ai/VEP-bench/) provides the satMutMPRA

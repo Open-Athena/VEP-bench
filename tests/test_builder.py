@@ -6,22 +6,21 @@ from pathlib import Path
 import pytest
 from jsonschema import Draft202012Validator
 
-from vepbench.builder import (
-    BuildError,
+from vepbench.artifacts import canonical_json, read_jsonl
+from vepbench.errors import BuildError
+from vepbench.questions.builder import (
     build_file,
     build_questions,
-    canonical_json,
     load_template,
-    read_jsonl,
-    validate_question,
 )
+from vepbench.questions.validation import validate_question
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "tests/fixtures/synthetic-source.jsonl"
 TEMPLATE = ROOT / "tests/fixtures/synthetic-template.json"
 PRODUCTION_SOURCE = ROOT / "data/sources/satmut-mpra-cadd-v1.7.jsonl"
-PRODUCTION_TEMPLATE = ROOT / "templates/satmut_mpra.json"
-SCHEMA = ROOT / "schemas/question.schema.json"
+PRODUCTION_TEMPLATE = ROOT / "configs/tasks/satmut-mpra/prompt.yaml"
+SCHEMA = ROOT / "src/vepbench/schemas/question.schema.json"
 
 
 @pytest.fixture
@@ -69,7 +68,7 @@ def test_ranking_source_rejects_integer_too_large_for_float() -> None:
         (ROOT / "tests/fixtures/synthetic-ranking-source.jsonl").read_text(encoding="utf-8")
     )
     source["candidates"][0]["reference_score"] = 10**400
-    template = load_template(ROOT / "templates/satmut_mpra.json")
+    template = load_template(ROOT / "configs/tasks/satmut-mpra/prompt.yaml")
     schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
 
     with pytest.raises(BuildError, match="reference_score must be finite"):

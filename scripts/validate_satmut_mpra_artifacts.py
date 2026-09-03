@@ -1,21 +1,11 @@
-"""Validate committed satMutMPRA source artifacts without network access."""
+"""Compatibility wrapper for the satMutMPRA workspace command."""
 
-from pathlib import Path
-
-from vepbench.satmut_mpra import validate_prepared_artifacts
-
-ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "data/sources/satmut-mpra-cadd-v1.7.jsonl"
-MANIFEST = ROOT / "data/sources/satmut-mpra-cadd-v1.7.manifest.json"
+from vepbench_satmut_mpra.cli import main as task_main
 
 
-def main() -> None:
-    manifest = validate_prepared_artifacts(SOURCE, MANIFEST)
-    print(
-        f"validated {manifest['output']['records']} satMutMPRA source records "
-        f"(sha256 {manifest['output']['sha256']})"
-    )
+def main() -> int:
+    return task_main(["validate"])
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

@@ -1,0 +1,224 @@
+# Scientific inputs and reviewed validation expectations for satMutMPRA preparation.
+schema_version: "1.0"
+task_family: satmut_mpra
+reference_contig: element
+source_dataset: CADD-v1.7-RegSeq
+source_pins: source-pins.yaml
+output: ../../../data/sources/satmut-mpra-cadd-v1.7.jsonl
+manifest_output: ../../../data/sources/satmut-mpra-cadd-v1.7.manifest.json
+
+element_defaults:
+  transfection_hours: 24
+  reporter_vector: pGL4.11c
+  reporter_vector_accession: MK484104.1
+
+sampling:
+  panel_size: 50
+  quantile_bins: 10
+  samples_per_bin: 5
+  seed: "2026090200"
+  algorithm: sha256_rank_quantile_v1
+
+sequence_policy:
+  model_visible: MaveDB target sequence in reporter-construct orientation
+  target_mismatch_treatment: retain_reporter_construct_base_in_model_visible_reference
+  reporter_contexts:
+    minimal_promoter: CACTAGAGGGTATATAATGGAAGCTCGACTTCCAGCTTGGCAATCCGGTACTGT
+    pgl4z_downstream: CTTAAGCTTAGATCATCAAGATCGATCTGGATCCATGGGTGTTCCTGAAGGGGGGCTATAAAAGGGGGTGGGGGCGCGTTCGTCCTCACTCTCTTCCGAATTCGCGGCCAGCTTGGCAATCCGGTACTGTTGGTAAAGCCACC
+
+validation:
+  expected_filter_counts:
+    SIGN: 4332
+    MIN: 17685
+    QUAL: 1499
+  known_reference_mismatches:
+    - ["7", 156791603, CA, C]
+  known_target_sequence_mismatches:
+    - ["7", 156791604, A, T]
+
+upstream:
+  cadd_release: v1.7
+  cadd_validation_set: RegSeq
+  cadd_base_url: https://kircherlab.bihealth.org/download/CADD-development/v1.7/validation/regseq
+  mavedb_api_label: MaveDB REST API v1
+  mavedb_api_base: https://api.mavedb.org/api/v1/score-sets
+  reference:
+    dataset: marin-dna/human-genome
+    revision: 11b9433582981bb929af333bc6422f10a8fd71b4
+    filename: Homo_sapiens.GRCh38.dna_sm.primary_assembly.fa
+    assembly: GRCh38
+  expected_cadd_md5:
+    SatMut.all.F9.vcf.gz: fb70753825d20d5ee61f1e5b40d7389e
+    SatMut.all.GP1BA.vcf.gz: d7a9d0348c94880970ddebaedc4d51b5
+    SatMut.all.HBB.vcf.gz: 2a58aaddbfbe279a23f8c1dd4cd496eb
+    SatMut.all.HBG1.vcf.gz: 906150f39bff154a873cc0adf4783551
+    SatMut.all.HNF4A.vcf.gz: 02fecf3021e8c20c44a111453bf0a777
+    SatMut.all.IRF4.vcf.gz: 703fe90b319f20e923ff045e8e9c578a
+    SatMut.all.IRF6.vcf.gz: f2a14a386cabbe047169b9f8fad21312
+    SatMut.all.LDLR.vcf.gz: 0e1133e28f070182080b440b9ad4a20c
+    SatMut.all.MSMB.vcf.gz: f041a4a532533986dc97ebad525465a4
+    SatMut.all.MYCrs6983267.vcf.gz: 1ec96765f2f9ce58b53a8b18ffb4217c
+    SatMut.all.PKLR.vcf.gz: cfca28c9992ac6ef4b57853c0b737e2d
+    SatMut.all.SORT1.vcf.gz: 9749f32730210516167a3d756f0984ad
+    SatMut.all.TCF7L2.vcf.gz: 07d641f75dcfdedde2fa6ab0d5a34b57
+    SatMut.all.TERT.vcf.gz: 5a0011f2c9800f50072649932a667117
+    SatMut.all.ZFAND3.vcf.gz: 32b0be2745782293bb90f49d880945f8
+    SatMut.all.ZRSh13.vcf.gz: 014b48c5fa39754001e34cc660988935
+
+cache:
+  bucket: open-athena/VEP-bench
+  root: data_prep/satmut-mpra/v1
+  data_files:
+    - eligible-variants.jsonl.gz
+    - elements.json
+  legacy_implementation_sha256: 08b759f9fce8b0826fac1b827d04cd5c201f9ef704745ab3f0f07c2fa435f3ff
+  implementation_sha256: 66cd049858dc9bc5d9bb516a0ae3c8bb293254c55b9ecc64dfbfd4dff6795afe
+
+elements:
+  - cadd_label: F9
+    mavedb_urn: urn:mavedb:00000015-a-1
+    model_name: F9 promoter
+    source_study_label: F9 promoter
+    element_class: promoter
+    cell_line: HepG2
+    experimental_context: No additional treatment was applied.
+  - cadd_label: GP1BA
+    mavedb_urn: urn:mavedb:00000017-a-1
+    model_name: GP1BB promoter
+    source_study_label: GP1BB promoter
+    element_class: promoter
+    cell_line: HEL 92.1.7
+    experimental_context: No additional treatment was applied.
+  - cadd_label: HBB
+    mavedb_urn: urn:mavedb:00000018-a-1
+    model_name: HBB promoter
+    source_study_label: HBB promoter
+    element_class: promoter
+    cell_line: HEL 92.1.7
+    experimental_context: No additional treatment was applied.
+  - cadd_label: HBG1
+    mavedb_urn: urn:mavedb:00000019-a-1
+    model_name: HBG1 promoter
+    source_study_label: HBG1 promoter
+    element_class: promoter
+    cell_line: HEL 92.1.7
+    experimental_context: No additional treatment was applied.
+  - cadd_label: HNF4A
+    mavedb_urn: urn:mavedb:00000020-a-1
+    model_name: HNF4A promoter
+    source_study_label: HNF4A promoter
+    element_class: promoter
+    cell_line: HEK293T
+    experimental_context: No additional treatment was applied.
+  - cadd_label: IRF4
+    mavedb_urn: urn:mavedb:00000021-a-1
+    model_name: IRF4 enhancer
+    source_study_label: IRF4 enhancer
+    element_class: enhancer
+    cell_line: SK-MEL-28
+    experimental_context: No additional treatment was applied.
+    reporter_vector: pGL4.23d
+    reporter_vector_accession: MK484106.1
+    reporter_context_label: Minimal-promoter sequence
+    reporter_context_sequence: minimal_promoter
+  - cadd_label: IRF6
+    mavedb_urn: urn:mavedb:00000022-a-1
+    model_name: IRF6 enhancer
+    source_study_label: IRF6 enhancer
+    element_class: enhancer
+    cell_line: HaCaT
+    experimental_context: No additional treatment was applied.
+    reporter_vector: pGL4.23c
+    reporter_vector_accession: MK484105.1
+    reporter_context_label: Minimal-promoter sequence
+    reporter_context_sequence: minimal_promoter
+  - cadd_label: LDLR
+    mavedb_urn: urn:mavedb:00000023-a-2
+    model_name: LDLR promoter
+    source_study_label: LDLR promoter, replicate 2
+    element_class: promoter
+    cell_line: HepG2
+    experimental_context: No additional treatment was applied.
+    reporter_vector: pGL4.11b
+    reporter_vector_accession: MK484103.1
+  - cadd_label: MSMB
+    mavedb_urn: urn:mavedb:00000024-a-1
+    model_name: MSMB promoter
+    source_study_label: MSMB promoter
+    element_class: promoter
+    cell_line: HEK293T
+    experimental_context: No additional treatment was applied.
+  - cadd_label: MYCrs6983267
+    mavedb_urn: urn:mavedb:00000025-a-1
+    model_name: MYC enhancer
+    source_study_label: MYC enhancer (rs6983267)
+    element_class: enhancer
+    cell_line: HEK293T
+    experimental_context: 20 nM LiCl was added 24 hours after transfection.
+    mavedb_target_name: MYC enhancer (rs6983267)
+    transfection_hours: 32
+    reporter_vector: pGL4.23c
+    reporter_vector_accession: MK484105.1
+    reporter_context_label: Minimal-promoter sequence
+    reporter_context_sequence: minimal_promoter
+  - cadd_label: PKLR
+    mavedb_urn: urn:mavedb:00000027-b-1
+    model_name: PKLR promoter
+    source_study_label: PKLR promoter, 48h
+    element_class: promoter
+    cell_line: K562
+    experimental_context: No additional treatment was applied.
+    transfection_hours: 48
+  - cadd_label: SORT1
+    mavedb_urn: urn:mavedb:00000029-a-1
+    model_name: SORT1 enhancer
+    source_study_label: SORT1 enhancer, replicate 1
+    element_class: enhancer
+    cell_line: HepG2
+    experimental_context: No additional treatment was applied.
+    reporter_vector: pGL4.23c
+    reporter_vector_accession: MK484105.1
+    reporter_context_label: Minimal-promoter sequence
+    reporter_context_sequence: minimal_promoter
+  - cadd_label: TCF7L2
+    mavedb_urn: urn:mavedb:00000030-a-1
+    model_name: TCF7L2 enhancer
+    source_study_label: TCF7L2 enhancer
+    element_class: enhancer
+    cell_line: MIN6
+    experimental_context: No additional treatment was applied.
+    reporter_vector: pGL4.23d
+    reporter_vector_accession: MK484106.1
+    reporter_context_label: Minimal-promoter sequence
+    reporter_context_sequence: minimal_promoter
+  - cadd_label: TERT
+    mavedb_urn: urn:mavedb:00000031-a-1
+    model_name: TERT promoter
+    source_study_label: TERT promoter, HEK
+    element_class: promoter
+    cell_line: HEK293T
+    experimental_context: No additional treatment or siRNA was applied.
+    reporter_vector: pGL4.11b
+    reporter_vector_accession: MK484103.1
+  - cadd_label: ZFAND3
+    mavedb_urn: urn:mavedb:00000033-a-1
+    model_name: ZFAND3 enhancer
+    source_study_label: ZFAND3 enhancer
+    element_class: enhancer
+    cell_line: MIN6
+    experimental_context: No additional treatment was applied.
+    reporter_vector: pGL4.23c
+    reporter_vector_accession: MK484105.1
+    reporter_context_label: Minimal-promoter sequence
+    reporter_context_sequence: minimal_promoter
+  - cadd_label: ZRSh13
+    mavedb_urn: urn:mavedb:00000034-a-1
+    model_name: ZRS enhancer
+    source_study_label: ZRS enhancer, Hoxd13
+    element_class: enhancer
+    cell_line: NIH3T3
+    experimental_context: Cells were co-transfected with Hoxd13.
+    reporter_vector: pGL4Zc
+    reporter_vector_accession: MK484108.1
+    reporter_context_label: Fixed sequence between the mutagenized insert and luciferase coding region
+    reporter_context_sequence: pgl4z_downstream

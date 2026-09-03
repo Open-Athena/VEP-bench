@@ -5,31 +5,151 @@ import json
 from copy import deepcopy
 from datetime import UTC, datetime
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
+import vepbench_publishing.publication as publication_module
 import zstandard
 from jsonschema import Draft202012Validator, FormatChecker
-
-import vepbench.publication as publication_module
-from vepbench.builder import BuildError, build_file, canonical_json, sha256_json
-from vepbench.evaluator import ProviderError, error_result, evaluate_file
-from vepbench.publication import (
+from vepbench_publishing.cli import main as publishing_main
+from vepbench_publishing.config import load_publishing_config
+from vepbench_publishing.publication import (
     build_version,
     promote_version,
     validate_version,
     validate_version_name,
 )
 
+from vepbench.artifacts import canonical_json, sha256_json
+from vepbench.errors import BuildError
+from vepbench.evaluation.core import ProviderError, error_result, evaluate_file
+from vepbench.questions.builder import build_file
+
 ROOT = Path(__file__).resolve().parents[1]
 QUESTIONS = ROOT / "tests/fixtures/synthetic-questions.jsonl"
 RESULTS = ROOT / "tests/fixtures/results"
-RESULT_SCHEMA = ROOT / "schemas/result.schema.json"
-ANSWER_SCHEMA = ROOT / "schemas/answer.schema.json"
-RUN_SCHEMA = ROOT / "schemas/run.schema.json"
-SCHEMAS = ROOT / "schemas"
+RESULT_SCHEMA = ROOT / "src/vepbench/schemas/result.schema.json"
+ANSWER_SCHEMA = ROOT / "src/vepbench/schemas/answer.schema.json"
+RUN_SCHEMA = ROOT / "src/vepbench/schemas/run.schema.json"
+SCHEMAS = ROOT / "src/vepbench/schemas"
 RANKING_SOURCE = ROOT / "tests/fixtures/synthetic-ranking-source.jsonl"
-RANKING_TEMPLATE = ROOT / "templates/satmut_mpra.json"
-QUESTION_SCHEMA = ROOT / "schemas/question.schema.json"
+RANKING_TEMPLATE = ROOT / "configs/tasks/satmut-mpra/prompt.yaml"
+QUESTION_SCHEMA = ROOT / "src/vepbench/schemas/question.schema.json"
+
+
+def test_version_build_cli_preserves_version_option(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    captured: dict[str, object] = {}
+
+    def fake_build_version(**kwargs: object) -> dict:
+        captured.update(kwargs)
+        return {"question_set_size": 1, "artifacts": {"runs": {"records": 1}}}
+
+    monkeypatch.setattr(
+        "vepbench_publishing.cli.load_publishing_config",
+        lambda path: SimpleNamespace(model_catalog=tmp_path / "models.yaml"),
+    )
+    monkeypatch.setattr("vepbench_publishing.cli.build_version", fake_build_version)
+
+    assert (
+        publishing_main(
+            [
+                "version",
+                "build",
+                "--version",
+                "candidate",
+                "--questions",
+                str(tmp_path / "questions.jsonl"),
+                "--results-dir",
+                str(tmp_path / "results"),
+                "--config",
+                str(tmp_path / "publishing.yaml"),
+                "--output",
+                str(tmp_path / "output"),
+            ]
+        )
+        == 0
+    )
+    assert captured["version_name"] == "candidate"
+
+
+def test_version_validate_cli_preserves_version_option(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    captured: dict[str, object] = {}
+
+    def fake_validate_version(root: Path, *, version_name: str) -> dict:
+        captured.update(root=root, version_name=version_name)
+        return {"question_set_size": 1, "artifacts": {"runs": {"records": 1}}}
+
+    monkeypatch.setattr("vepbench_publishing.cli.validate_version", fake_validate_version)
+
+    assert (
+        publishing_main(
+            [
+                "version",
+                "validate",
+                "--version",
+                "candidate",
+                "--root",
+                str(tmp_path),
+            ]
+        )
+        == 0
+    )
+    assert captured == {"root": tmp_path, "version_name": "candidate"}
+
+
+def test_bucket_plan_cli_preserves_version_option(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import vepbench_publishing.bucket as bucket_module
+
+    captured: dict[str, object] = {}
+
+    def fake_create_bucket_plan(**kwargs: object) -> SimpleNamespace:
+        captured.update(kwargs)
+        return SimpleNamespace(
+            destination="hf://buckets/example/bucket/versions/candidate",
+            uploads=1,
+            deletes=0,
+            skips=0,
+            total_size=10,
+        )
+
+    monkeypatch.setattr(
+        "vepbench_publishing.cli.load_publishing_config",
+        lambda path: SimpleNamespace(bucket="example/bucket"),
+    )
+    monkeypatch.setattr(bucket_module, "create_bucket_plan", fake_create_bucket_plan)
+    monkeypatch.setattr(bucket_module, "require_hf_token", lambda: "test-token")
+
+    assert (
+        publishing_main(
+            [
+                "bucket",
+                "plan",
+                "--root",
+                str(tmp_path / "publication"),
+                "--version",
+                "candidate",
+                "--plan",
+                str(tmp_path / "plan.yaml"),
+                "--config",
+                str(tmp_path / "publishing.yaml"),
+            ]
+        )
+        == 0
+    )
+    assert captured["version_name"] == "candidate"
+
+
+def test_publishing_config_resolves_human_maintained_defaults() -> None:
+    config = load_publishing_config(ROOT / "projects/publishing/config/publishing.yaml")
+
+    assert config.bucket == "open-athena/VEP-bench"
+    assert config.model_catalog == ROOT / "configs/models/catalog.yaml"
 
 
 class RankingTransport:

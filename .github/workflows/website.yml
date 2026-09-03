@@ -1,0 +1,153 @@
+name: Website
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: website-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    name: Route changes
+    runs-on: ubuntu-24.04
+    outputs:
+      website: ${{ steps.paths.outputs.website }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - name: Select website checks
+        id: paths
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          website=false
+          if [[ "$EVENT_NAME" == "workflow_dispatch" || -z "$BASE_SHA" || "$BASE_SHA" =~ ^0+$ ]]; then
+            website=true
+          else
+            while IFS= read -r path; do
+              case "$path" in
+                .github/workflows/website.yml|.python-version|pyproject.toml|uv.lock|src/vepbench/*|projects/explorer/*|projects/publishing/*|configs/tasks/*|data/sources/*|tests/test_browser_qa_fixture.py|tests/test_site.py)
+                  website=true
+                  ;;
+              esac
+            done < <(git diff --name-only "$BASE_SHA" HEAD)
+          fi
+          echo "website=$website" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: Build and browser QA
+    if: needs.changes.outputs.website == 'true'
+    needs: changes
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: "0.12.5"
+          enable-cache: true
+
+      - name: Install explorer tests
+        run: >-
+          uv sync --locked --package vepbench-explorer
+          --extra qa --group test
+
+      - name: Install Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: projects/explorer/package-lock.json
+
+      - name: Install Observable Framework
+        run: npm ci
+        working-directory: projects/explorer
+
+      - name: Run website unit tests
+        run: |
+          uv run --no-sync pytest tests/test_site.py tests/test_browser_qa_fixture.py
+          npm test --prefix projects/explorer
+
+      - name: Build validated static site
+        run: >-
+          uv run --no-sync vepbench-site build
+          --config projects/explorer/config/site.yaml
+          --output _site
+
+      - name: Run browser smoke QA
+        run: bash projects/explorer/scripts/browser_qa.sh _site browser-qa
+
+      - name: Upload explorer preview
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: vepbench-explorer
+          path: _site
+          retention-days: 7
+
+      - name: Upload browser QA
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: vepbench-browser-qa
+          path: browser-qa
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Configure Pages
+        if: github.event_name != 'pull_request'
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
+
+      - name: Upload Pages artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
+        with:
+          path: _site
+
+  deploy:
+    name: Deploy
+    if: github.event_name != 'pull_request' && needs.changes.outputs.website == 'true'
+    needs: [changes, build]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5
+
+  website:
+    name: Website
+    if: always()
+    needs: [changes, build, deploy]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require selected website jobs to pass
+        env:
+          BUILD_RESULT: ${{ needs.build.result }}
+          DEPLOY_RESULT: ${{ needs.deploy.result }}
+          ROUTE_RESULT: ${{ needs.changes.result }}
+        run: |
+          for result in "$ROUTE_RESULT" "$BUILD_RESULT" "$DEPLOY_RESULT"; do
+            if [[ "$result" != "success" && "$result" != "skipped" ]]; then
+              exit 1
+            fi
+          done

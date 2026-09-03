@@ -1,0 +1,18 @@
+[project]
+name = "vepbench-explorer"
+version = "0.1.0"
+description = "Private VEP-bench static explorer tooling"
+requires-python = "==3.14.*"
+dependencies = [
+    "vepbench",
+]
+
+[project.optional-dependencies]
+qa = ["vepbench-publishing"]
+
+[project.scripts]
+vepbench-site = "vepbench_explorer.cli:main"
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"

@@ -4,10 +4,9 @@ from collections import Counter
 from pathlib import Path
 
 import pytest
+import yaml
 from jsonschema import Draft202012Validator
-
-from vepbench.builder import build_questions, load_template, read_jsonl
-from vepbench.satmut_mpra import (
+from vepbench_satmut_mpra.task import (
     ELEMENT_SPECS,
     PGL4_23_MINIMAL_PROMOTER_SEQUENCE,
     PGL4Z_FIXED_DOWNSTREAM_SEQUENCE,
@@ -23,13 +22,16 @@ from vepbench.satmut_mpra import (
     validate_reference,
 )
 
+from vepbench.artifacts import read_jsonl
+from vepbench.questions.builder import build_questions, load_template
+
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "tests/fixtures/synthetic-ranking-source.jsonl"
-TEMPLATE = ROOT / "templates/satmut_mpra.json"
-SCHEMA = ROOT / "schemas/question.schema.json"
+TEMPLATE = ROOT / "configs/tasks/satmut-mpra/prompt.yaml"
+SCHEMA = ROOT / "src/vepbench/schemas/question.schema.json"
 PRODUCTION_SOURCE = ROOT / "data/sources/satmut-mpra-cadd-v1.7.jsonl"
 PRODUCTION_MANIFEST = ROOT / "data/sources/satmut-mpra-cadd-v1.7.manifest.json"
-INPUT_PINS = ROOT / "configs/sources/satmut-mpra-v1.json"
+INPUT_PINS = ROOT / "tasks/satmut-mpra/config/source-pins.yaml"
 
 
 def test_ranking_builder_emits_structured_candidates_and_exact_prompt_rows() -> None:
@@ -202,7 +204,7 @@ def test_unexpected_target_sequence_discrepancy_is_rejected() -> None:
 
 def test_committed_satmut_artifacts_and_question_set_are_complete() -> None:
     manifest = validate_prepared_artifacts(PRODUCTION_SOURCE, PRODUCTION_MANIFEST)
-    pins = json.loads(INPUT_PINS.read_text(encoding="utf-8"))
+    pins = yaml.safe_load(INPUT_PINS.read_text(encoding="utf-8"))
     records = read_jsonl(PRODUCTION_SOURCE)
     schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
     questions = build_questions(records, load_template(TEMPLATE), schema)

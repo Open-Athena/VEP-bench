@@ -3,10 +3,11 @@ from pathlib import Path
 
 import pytest
 from huggingface_hub import BucketFile
+from vepbench_publishing.bucket import _shared_root_plan, apply_bucket_plan, create_bucket_plan
+from vepbench_publishing.publication import build_version
 
-from vepbench.bucket import _shared_root_plan, apply_bucket_plan, create_bucket_plan
-from vepbench.builder import BuildError, canonical_json
-from vepbench.publication import build_version
+from vepbench.artifacts import canonical_json
+from vepbench.errors import BuildError
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -16,8 +17,8 @@ def publication(tmp_path: Path, version: str = "candidate") -> Path:
     build_version(
         questions_path=ROOT / "tests/fixtures/synthetic-questions.jsonl",
         results_dir=ROOT / "tests/fixtures/results",
-        result_schema_path=ROOT / "schemas/result.schema.json",
-        schemas_dir=ROOT / "schemas",
+        result_schema_path=ROOT / "src/vepbench/schemas/result.schema.json",
+        schemas_dir=ROOT / "src/vepbench/schemas",
         output=output,
         version_name=version,
     )
@@ -65,7 +66,7 @@ def test_plan_records_shared_root_mutations(
             )
             return FakePlan()
 
-    monkeypatch.setattr("vepbench.bucket.HfApi", lambda token: FakeApi())
+    monkeypatch.setattr("vepbench_publishing.bucket.HfApi", lambda token: FakeApi())
 
     summary = create_bucket_plan(
         root=root,
@@ -182,7 +183,7 @@ def test_apply_removes_marker_and_uploads_new_manifest_last(
                 local.write_bytes((root / remote).read_bytes())
 
     fake = FakeApi()
-    monkeypatch.setattr("vepbench.bucket.HfApi", lambda token: fake)
+    monkeypatch.setattr("vepbench_publishing.bucket.HfApi", lambda token: fake)
 
     apply_bucket_plan(
         plan_path=plan,
@@ -261,7 +262,7 @@ def test_named_apply_rejects_shared_schema_divergence_before_mutation(
             self.events.append("sync")
 
     fake = FakeApi()
-    monkeypatch.setattr("vepbench.bucket.HfApi", lambda token: fake)
+    monkeypatch.setattr("vepbench_publishing.bucket.HfApi", lambda token: fake)
 
     with pytest.raises(BuildError, match="named versions may not change"):
         apply_bucket_plan(
