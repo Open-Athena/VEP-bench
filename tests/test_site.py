@@ -37,10 +37,8 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     leaderboard_source = (output / "index.md").read_text(encoding="utf-8")
     assert 'label: "Task"' in leaderboard_source
     assert '{task_family: null, label: "All tasks"}' in leaderboard_source
-    assert 'value: taskOptions[0]' in leaderboard_source
-    assert 'columns: ["model", "score", "release_date", "tokens", "cost"]' in (
-        leaderboard_source
-    )
+    assert "value: taskOptions[0]" in leaderboard_source
+    assert 'columns: ["model", "score", "release_date", "tokens", "cost"]' in (leaderboard_source)
     assert 'y: {\n      label: "Score"' in leaderboard_source
     assert "Pearson r" not in leaderboard_source
     assert "Valid outputs" not in leaderboard_source
