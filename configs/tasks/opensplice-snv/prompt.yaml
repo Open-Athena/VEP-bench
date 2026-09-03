@@ -1,0 +1,33 @@
+template_id: opensplice-snv-ranking-v1
+template_version: "1.0"
+task_type: ranking
+prompt: |-
+  Predict the signed change in exon inclusion caused by every candidate variant in this minigene panel.
+
+  **Assay context:**
+  {assay_context}
+
+  {reporter_context}
+
+  **Complete wild-type splicing cassette:**
+
+  Sequence lines contain 80 bases except the final line.
+
+  ```fasta
+  >element
+  {reference_sequence}
+  ```
+
+  **Candidate SNVs:**
+
+  ```vcf
+  ##fileformat=VCFv4.3
+  #CHROM	POS	ID	REF	ALT
+  {candidate_table}
+  ```
+
+  For each candidate ID, predict one finite signed change in percentage spliced in (PSI), in percentage points, relative to the wild-type construct. Positive values mean increased exon inclusion, negative values mean decreased exon inclusion, and zero means no predicted change. Numerical distances should reflect predicted differences in effect magnitude, although exact calibration is not required.
+
+  You may explain your reasoning. Your final line must contain only `FINAL: ` followed by one strict JSON object with every candidate ID exactly once and no additional keys. Values must be finite JSON numbers.
+
+  Example form: `FINAL: {{"V01": -12.4, "V02": 3.1}}`

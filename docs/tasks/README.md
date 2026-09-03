@@ -9,6 +9,7 @@ task-specific manual.
 
 | Task | Family | Status |
 | --- | --- | --- |
+| [OpenSplice SNV](opensplice-snv.md) | `opensplice_snv` | Public development set |
 | [satMutMPRA](satmut-mpra.md) | `satmut_mpra` | Public development set |
 | [Saturation genome editing](sge.md) | `sge` | Public development set |
 

@@ -29,6 +29,7 @@ direct source leakage but do not guarantee absence from training data.
 
 | Task | Model input | Target | Questions |
 | --- | --- | --- | ---: |
+| [OpenSplice SNV](docs/tasks/opensplice-snv.md) | Complete three-exon minigene cassette, assay context, and a 50-SNV panel | Signed change in exon inclusion | 20 |
 | [satMutMPRA](docs/tasks/satmut-mpra.md) | Physical reporter context, the complete mutagenized insert, and a 50-variant panel | Signed reporter-activity effects | 16 |
 | [Saturation genome editing](docs/tasks/sge.md) | Gene and endogenous assay context, one exon with 100 bp flanks, and a 50-SNV panel | Continuous functional damage | 15 |
 
@@ -54,7 +55,7 @@ batch collection, and local question files.
 
 The [explorer](https://openathena.ai/VEP-bench/) provides task-specific
 leaderboards and lets readers inspect the exact prompt given to a model, its
-complete response, available reasoning, and deterministic score. Interpret the
+complete response, available reasoning, and deterministic score. Interpret each
 score alongside the task's methodology and limitations.
 
 ## Documentation

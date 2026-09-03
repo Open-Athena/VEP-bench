@@ -7,6 +7,7 @@ members = [
     "vepbench",
     "vepbench-explorer",
     "vepbench-publishing",
+    "vepbench-task-opensplice-snv",
     "vepbench-task-satmut-mpra",
     "vepbench-task-sge",
 ]
@@ -1136,6 +1137,21 @@ requires-dist = [
     { name = "zstandard", specifier = ">=0.23,<1" },
 ]
 provides-extras = ["bucket"]
+
+[[package]]
+name = "vepbench-task-opensplice-snv"
+version = "0.1.0"
+source = { editable = "tasks/opensplice-snv" }
+dependencies = [
+    { name = "huggingface-hub", extra = ["hf-xet"] },
+    { name = "vepbench" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "huggingface-hub", extras = ["hf-xet"], specifier = ">=1.6,<2" },
+    { name = "vepbench", editable = "." },
+]
 
 [[package]]
 name = "vepbench-task-satmut-mpra"

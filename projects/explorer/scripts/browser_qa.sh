@@ -86,6 +86,9 @@ common=(
 "$chrome" "${common[@]}" --window-size=1440,1600 \
   --dump-dom "http://127.0.0.1:$port/tasks/sge.html" \
   >"$output_dir/sge-task.dom.html"
+"$chrome" "${common[@]}" --window-size=1440,1600 \
+  --dump-dom "http://127.0.0.1:$port/tasks/opensplice-snv.html" \
+  >"$output_dir/opensplice-task.dom.html"
 "$chrome" "${common[@]}" --window-size=1440,2400 \
   --dump-dom "http://127.0.0.1:$port/tasks/satmut-mpra.html?question=satmut-mpra-ranking-v1%3AF9&run=browser-qa" \
   >"$output_dir/question.dom.html"
@@ -113,6 +116,7 @@ for check in \
   'leaderboard.dom.html|https://github.com/Open-Athena/VEP-bench' \
   'tasks.dom.html|>satMutMPRA<' \
   'tasks.dom.html|>Saturation genome editing<' \
+  'tasks.dom.html|>OpenSplice SNV<' \
   'tasks.dom.html|Open task' \
   'task.dom.html|>satMutMPRA</a></h1>' \
   'task.dom.html|>Task version<' \
@@ -124,6 +128,9 @@ for check in \
   'sge-question.dom.html|Local DNA sequence context' \
   'sge-question.dom.html|#CHROM' \
   'sge-question.dom.html|Reference panel: 50 candidate variants' \
+  'opensplice-task.dom.html|>OpenSplice SNV</a></h1>' \
+  'opensplice-task.dom.html|large measured 5th-to-95th-percentile' \
+  'opensplice-task.dom.html|not direct estimates of native-tissue splicing' \
   'question.dom.html|>Prompt given to model<' \
   'question.dom.html|Complete mutagenized insert (reporter-construct orientation)' \
   'question.dom.html|Sequence lines contain 80 bases except the final line.' \
@@ -169,7 +176,7 @@ if [[ "$header_order" != 'Model|Score|Release date|Tokens|Cost' ]]; then
 fi
 
 for file in leaderboard.dom.html tasks.dom.html task.dom.html sge-task.dom.html \
-  question.dom.html sge-question.dom.html; do
+  opensplice-task.dom.html question.dom.html sge-question.dom.html; do
   if grep -q 'observablehq--error' "$output_dir/$file"; then
     echo "rendered Observable error in $file" >&2
     status=1

@@ -10,13 +10,14 @@ ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / "projects/explorer/web"
 SATMUT_SOURCE = ROOT / "data/sources/satmut-mpra-cadd-v1.7.jsonl"
 SGE_SOURCE = ROOT / "data/sources/sge-mavedb-2026-09-03.jsonl"
+OPENSPLICE_SOURCE = ROOT / "data/sources/opensplice-snv-figshare-v5.jsonl"
 OFFICIAL_DATA_BASE_URL = (
     "https://huggingface.co/buckets/open-athena/VEP-bench/resolve/versions/main"
 )
 
 
 def production_question_metadata() -> dict:
-    return build_question_metadata(source_paths=[SATMUT_SOURCE, SGE_SOURCE])
+    return build_question_metadata(source_paths=[OPENSPLICE_SOURCE, SATMUT_SOURCE, SGE_SOURCE])
 
 
 def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path) -> None:
@@ -32,7 +33,8 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     assert config["data_base_url"] == OFFICIAL_DATA_BASE_URL
     assert json.loads((output / "data/config.json").read_text()) == config
     assert json.loads((output / "data/question-metadata.json").read_text()) == metadata
-    assert set(metadata["by_task_family"]) == {"satmut_mpra", "sge"}
+    assert set(metadata["by_task_family"]) == {"opensplice_snv", "satmut_mpra", "sge"}
+    assert len(metadata["by_task_family"]["opensplice_snv"]) == 20
     assert len(metadata["by_task_family"]["satmut_mpra"]) == 16
     assert len(metadata["by_task_family"]["sge"]) == 15
     assert metadata["by_task_family"]["satmut_mpra"]["GP1BA"] == {"element": "GP1BB promoter"}
@@ -41,6 +43,7 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     assert not (output / "questions.md").exists()
     assert (output / "tasks/satmut-mpra.md").is_file()
     assert (output / "tasks/sge.md").is_file()
+    assert (output / "tasks/opensplice-snv.md").is_file()
     assert not (output / "tasks/consequence-classification.md").exists()
     assert not (output / "tasks/clinvar.md").exists()
     assert not (output / "data/explorer.json").exists()
@@ -70,6 +73,9 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     assert "const controls = view(controlsInput);" in task_source
     assert "const selected = view(questionTable);" in task_source
     assert "Generators.input" not in task_source
+    opensplice_source = (output / "tasks/opensplice-snv.md").read_text(encoding="utf-8")
+    assert "large measured 5th-to-95th-percentile" in opensplice_source
+    assert "not direct estimates of native-tissue splicing" in opensplice_source
     component_source = (output / "components/vepbench.js").read_text(encoding="utf-8")
     assert 'element("h2", null, "Prompt given to model")' in component_source
     assert "markdownNode(question.prompt)" in component_source

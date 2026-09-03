@@ -1,0 +1,10 @@
+# Human-maintained descriptor for deterministic OpenSplice question construction.
+schema_version: "1.0"
+task_family: opensplice_snv
+question:
+  type: ranking
+  source: ../../../data/sources/opensplice-snv-figshare-v5.jsonl
+  prompt: prompt.yaml
+evaluation:
+  generation:
+    max_tokens: 128000
