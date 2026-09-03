@@ -124,8 +124,10 @@ token limit, and any remaining unparseable completion is a format error. For
 ranking, the scorer reads the last well-formed
 `FINAL: {<candidate-id>: <number>, ...}` object and requires every candidate
 exactly once with finite numeric values. Invalid completed ranking output gets
-the documented floor correlations rather than a null API score. An API failure
-is not a result type: it receives null scoring and makes the run incomplete.
+zero for both correlations and remains a format failure rather than receiving a
+null API score. A valid, perfectly reversed ranking can still receive `-1`. An
+API failure is not a result type: it receives null scoring and makes the run
+incomplete.
 
 Result snapshots retain the complete question, provider response, final
 content, nullable provider-exposed reasoning, usage, finish reason, non-secret

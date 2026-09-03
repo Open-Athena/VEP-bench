@@ -151,6 +151,8 @@ def test_ranking_score_handles_perfect_reversed_tied_and_constant_vectors() -> N
     assert perfect.valid is True
     assert perfect.spearman_rho == pytest.approx(1.0)
     assert perfect.pearson_r == pytest.approx(1.0)
+    assert reversed_score.valid is True
+    assert reversed_score.value == pytest.approx(-1.0)
     assert reversed_score.spearman_rho == pytest.approx(-1.0)
     assert reversed_score.pearson_r == pytest.approx(-1.0)
     assert tied.spearman_rho == pytest.approx(1.0)
@@ -172,9 +174,9 @@ def test_ranking_score_handles_perfect_reversed_tied_and_constant_vectors() -> N
 def test_ranking_score_strictly_rejects_invalid_outputs(content: str, error: str) -> None:
     score = score_ranking(content, {"V01": -1.0, "V02": 1.0})
 
-    assert score.value == -1.0
-    assert score.spearman_rho == -1.0
-    assert score.pearson_r == -1.0
+    assert score.value == 0.0
+    assert score.spearman_rho == 0.0
+    assert score.pearson_r == 0.0
     assert score.valid is False
     assert score.parsed_answer is None
     assert error in score.parse_error
@@ -197,7 +199,7 @@ def test_ranking_score_rejects_integer_too_large_for_float() -> None:
         {"V01": -1.0, "V02": 1.0},
     )
 
-    assert score.value == -1.0
+    assert score.value == 0.0
     assert score.valid is False
     assert score.parse_error == "prediction for 'V01' must be finite"
 
@@ -219,7 +221,7 @@ def test_ranking_score_rejects_reference_integer_too_large_for_float() -> None:
         {"V01": 10**400, "V02": 1.0},
     )
 
-    assert score.value == -1.0
+    assert score.value == 0.0
     assert score.valid is False
     assert score.parse_error == "reference score for 'V01' must be finite"
 
