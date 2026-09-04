@@ -32,9 +32,65 @@ export default {
       .vepbench-record-card {
         display: flex;
         flex-direction: column;
-        height: min(70vh, 48rem);
+        height: min(78vh, 52rem);
+        min-height: 40rem;
+        min-width: 0;
+        overflow: hidden;
+      }
+
+      .vepbench-answer-sections {
+        display: grid;
+        flex: 1 1 auto;
+        gap: 0.9rem;
+        grid-template-rows: auto minmax(0, 1fr);
         min-height: 0;
         overflow: hidden;
+      }
+
+      .vepbench-prediction-section,
+      .vepbench-response-section {
+        min-height: 0;
+      }
+
+      .vepbench-prediction-section {
+        border-top: 1px solid var(--theme-foreground-faintest);
+        padding-top: 0.65rem;
+      }
+
+      .vepbench-response-section {
+        border-top: 1px solid var(--theme-foreground-faintest);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        padding-top: 0.65rem;
+      }
+
+      .vepbench-section-heading {
+        align-items: baseline;
+        display: flex;
+        gap: 1rem;
+        justify-content: space-between;
+      }
+
+      .vepbench-section-heading h3,
+      .vepbench-response-section > h3 {
+        margin: 0 0 0.35rem;
+      }
+
+      .vepbench-prediction-section figure {
+        margin: 0;
+      }
+
+      .vepbench-plot-caption {
+        font-size: 0.8rem;
+        margin: 0.25rem 0 0;
+      }
+
+      .vepbench-plot-empty {
+        align-items: center;
+        display: flex;
+        min-height: 13.75rem;
+        margin: 0;
       }
 
       .vepbench-record-content {
@@ -128,6 +184,17 @@ export default {
       @container (max-width: 639px) {
         .vepbench-record-card {
           height: auto;
+          min-height: 0;
+          overflow: visible;
+        }
+
+        .vepbench-answer-sections {
+          display: flex;
+          flex-direction: column;
+          overflow: visible;
+        }
+
+        .vepbench-response-section {
           overflow: visible;
         }
 

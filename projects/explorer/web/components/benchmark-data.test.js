@@ -19,6 +19,7 @@ import {
   orderTaskFamilies,
   overallLeaderboardRows,
   outcomeIndexPath,
+  predictionComparisonRows,
   resultTypeForAnswer,
   resultTypeLabel,
   runForTask,
@@ -532,6 +533,36 @@ test("question explorer exposes only complete runs", () => {
     run({runId: "alpha"})
   ]);
   assert.deepEqual(runs.map((candidate) => candidate.run_id), ["alpha", "zeta"]);
+});
+
+test("prediction comparison pairs reference effects with parsed ranking values", () => {
+  const question = {
+    task_type: "ranking",
+    candidates: [
+      {candidate_id: "V01", reference_score: -1.5},
+      {candidate_id: "V02", reference_score: 0.25},
+      {candidate_id: "V03", reference_score: 2}
+    ]
+  };
+  const result = {
+    scoring: {
+      metric: "rank_correlation",
+      parsed_answer: {V01: -0.9, V02: 0.5, V03: 1.75}
+    }
+  };
+
+  assert.deepEqual(predictionComparisonRows(question, result), [
+    {candidate_id: "V01", measured: -1.5, predicted: -0.9},
+    {candidate_id: "V02", measured: 0.25, predicted: 0.5},
+    {candidate_id: "V03", measured: 2, predicted: 1.75}
+  ]);
+  assert.deepEqual(predictionComparisonRows(question, {
+    scoring: {metric: "rank_correlation", parsed_answer: null}
+  }), []);
+  assert.deepEqual(predictionComparisonRows(
+    {...question, task_type: "multiple_choice"},
+    result
+  ), []);
 });
 
 test("result types use stored values and preserve legacy fallbacks", () => {
