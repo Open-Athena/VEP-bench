@@ -141,9 +141,7 @@ def _assay_publication(value: Any, location: str) -> dict[str, str]:
     if parsed_date.isoformat() != value["date"]:
         raise BuildError(f"{location}.date must use YYYY-MM-DD")
     if value["kind"] not in ASSAY_PUBLICATION_KINDS:
-        raise BuildError(
-            f"{location}.kind must be one of {sorted(ASSAY_PUBLICATION_KINDS)}"
-        )
+        raise BuildError(f"{location}.kind must be one of {sorted(ASSAY_PUBLICATION_KINDS)}")
     parsed_url = urlparse(value["url"])
     if parsed_url.scheme != "https" or not parsed_url.netloc:
         raise BuildError(f"{location}.url must be an absolute HTTPS URL")

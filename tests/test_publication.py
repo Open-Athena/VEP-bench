@@ -755,9 +755,7 @@ def test_publication_enriches_run_with_versioned_model_catalog(tmp_path: Path) -
     assert run["model"]["family"] == "Synthetic family"
     assert run["model"]["release_date"] == "2026-07-09"
     assert run["model"]["knowledge_cutoff"] == "2025-06-30"
-    assert run["model"]["knowledge_cutoff_url"] == (
-        "https://example.test/models/synthetic-demo"
-    )
+    assert run["model"]["knowledge_cutoff_url"] == ("https://example.test/models/synthetic-demo")
 
 
 def test_production_model_catalog_records_only_verified_knowledge_cutoffs() -> None:
@@ -799,9 +797,9 @@ def test_publication_accepts_legacy_model_catalog_without_cutoff(tmp_path: Path)
         version_name="candidate",
     )
 
-    run = json.loads((output / "versions/candidate/runs.json").read_text(encoding="utf-8"))[
-        "runs"
-    ][0]
+    run = json.loads((output / "versions/candidate/runs.json").read_text(encoding="utf-8"))["runs"][
+        0
+    ]
     assert run["model"]["knowledge_cutoff"] is None
     assert run["model"]["knowledge_cutoff_url"] is None
 

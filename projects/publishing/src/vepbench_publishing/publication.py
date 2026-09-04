@@ -114,9 +114,7 @@ def _load_model_catalog(path: Path) -> dict[str, dict[str, str | None]]:
             if not isinstance(knowledge_cutoff_url, str) or not knowledge_cutoff_url.startswith(
                 "https://"
             ):
-                raise BuildError(
-                    f"{path}: model {model_id!r} knowledge_cutoff_url must use HTTPS"
-                )
+                raise BuildError(f"{path}: model {model_id!r} knowledge_cutoff_url must use HTTPS")
         models[model_id] = {
             "family": family.strip(),
             "release_date": release_date,

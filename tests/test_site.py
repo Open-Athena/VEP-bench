@@ -47,9 +47,7 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     assert len(metadata["by_task_family"]["opensplice_snv"]) == 20
     assert len(metadata["by_task_family"]["satmut_mpra"]) == 16
     assert len(metadata["by_task_family"]["sge"]) == 15
-    assert metadata["by_task_family"]["opensplice_snv"]["E01"][
-        "assay_first_indexed"
-    ] == {
+    assert metadata["by_task_family"]["opensplice_snv"]["E01"]["assay_first_indexed"] == {
         "date": "2026-05-24",
         "kind": "dataset",
         "registry": "Figshare",
@@ -91,6 +89,7 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     assert not (output / "data/questions.jsonl").exists()
     assert not (output / "data/results").exists()
     leaderboard_source = (output / "index.md").read_text(encoding="utf-8")
+    helper_source = (output / "components/vepbench.js").read_text(encoding="utf-8")
     assert 'label: "Task"' in leaderboard_source
     assert 'label: "Metric"' in leaderboard_source
     assert '{key: "spearman", label: "Spearman"}' in leaderboard_source
@@ -104,7 +103,8 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     )
     assert 'knowledge_cutoff: "Knowledge cutoff"' in leaderboard_source
     assert "knowledge_cutoff: formatKnowledgeCutoff" in leaderboard_source
-    assert "release_date: \"Release date\"" not in leaderboard_source
+    assert 'return "Not disclosed"' in helper_source
+    assert 'release_date: "Release date"' not in leaderboard_source
     assert "Unscored model attempts" in leaderboard_source
     assert 'status: "Content filtered"' in leaderboard_source
     assert "Claude Fable 5.1 (medium)" in leaderboard_source

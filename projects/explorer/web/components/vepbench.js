@@ -34,6 +34,7 @@ export function formatCorrelation(value) {
 }
 
 export function formatKnowledgeCutoff(value) {
+  if (value === null || value === undefined) return "Not disclosed";
   if (typeof value !== "string") return "—";
   if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
   if (!/^\d{4}-\d{2}$/.test(value)) return "—";
@@ -64,7 +65,7 @@ export function assayFirstIndexedLink(value) {
   const kind = typeof value.kind === "string" ? value.kind.replaceAll("_", " ") : null;
   const cutoff = typeof value.knowledge_cutoff === "string"
     ? `model cutoff ${formatKnowledgeCutoff(value.knowledge_cutoff)}`
-    : "model cutoff not reported";
+    : "model cutoff not disclosed";
   link.title = [value.registry, kind, relation, cutoff].filter(Boolean).join(" · ");
   return link;
 }
@@ -88,7 +89,7 @@ export function knowledgeCutoffNote(run) {
   const cutoff = run?.model?.knowledge_cutoff;
   const sourceUrl = run?.model?.knowledge_cutoff_url;
   if (typeof cutoff !== "string") {
-    note.textContent = "Knowledge cutoff not reported; cutoff relations remain Unknown.";
+    note.textContent = "Knowledge cutoff not disclosed; cutoff relations remain Unknown.";
     return note;
   }
   note.append("Knowledge cutoff: ");
