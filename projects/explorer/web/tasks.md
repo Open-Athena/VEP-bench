@@ -12,7 +12,7 @@ VEP-bench publishes transparent development tasks with exact model prompts, comp
 
 Predict continuous functional damage for panels sampled from endogenous-locus saturation genome editing assays.
 
-- One eligible exon-level question per gene with 50 assayed SNVs
+- One eligible exon-level question per gene with 50 complete assayed alleles
 - Gene, assay mechanism, and exon sequence with exact 100 bp flanks
 - Mean within-gene Spearman correlation, with Pearson and output-validity diagnostics
 - Source: published SGE score sets in [MaveDB](https://www.mavedb.org/), cited as [Rubin et al. (2025)](https://doi.org/10.1186/s13059-025-03476-y)
@@ -40,10 +40,10 @@ Predict signed reporter-activity effects for panels sampled across the measured 
 
 ## Splicing (OpenSplice)
 
-Predict signed changes in exon inclusion for quantile-balanced SNV panels in
+Predict signed changes in exon inclusion for score-space-sampled allele panels in
 complete source-derived three-exon minigene cassettes.
 
-- 20 exon-level questions from 20 distinct genes, with 50 SNVs each
+- 20 exon-level questions from 20 distinct genes, with 50 complete alleles each
 - Complete cassette sequence, exact segment intervals, and HEK293T assay context
 - Mean within-exon Spearman correlation, with Pearson and output-validity diagnostics
 - Source: [Quarantani et al. (2026)](https://doi.org/10.64898/2026.05.22.727141) and the [OpenSplice Figshare v5 dataset](https://doi.org/10.6084/m9.figshare.32337414.v5)

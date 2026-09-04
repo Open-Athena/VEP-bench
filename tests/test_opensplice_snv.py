@@ -1,13 +1,11 @@
 import json
 from collections import Counter
-from dataclasses import replace
 from io import StringIO
 from pathlib import Path
 
 import pytest
 from jsonschema import Draft202012Validator
 from vepbench_opensplice_snv.configuration import CONFIG
-from vepbench_opensplice_snv.prepare import _validate_variant_metadata
 from vepbench_opensplice_snv.task import (
     FAS_E5,
     FAS_E7,
@@ -62,40 +60,12 @@ def _write_tampered_artifacts(
     return source, manifest_path
 
 
-def _prediction(mode: str, identifier: str) -> dict:
-    if mode == "genome":
-        return {
-            "variant_id": identifier,
-            "acceptor_ref_at_canonical": 0.8,
-            "acceptor_alt_at_canonical": 0.7,
-            "donor_ref_at_canonical": 0.6,
-            "donor_alt_at_canonical": 0.5,
-            "delta_acceptor": -0.1,
-            "delta_donor": -0.1,
-            "mean_delta_splice": -0.1,
-        }
-    return {
-        "identifier": identifier,
-        "acceptor_wt": 0.8,
-        "donor_wt": 0.6,
-        "acceptor_mut": 0.7,
-        "donor_mut": 0.5,
-        "delta_acceptor": -0.1,
-        "delta_donor": -0.1,
-        "delta_mean": -0.1,
-    }
-
-
 def _variant(exon_id: str, gene: str, index: int, effect: float) -> Variant:
     start = index // 3 + 1
     mut = "CGT"[index % 3]
     wt_seq = "A" * 80
     variant_id = f"{exon_id}_A{start}{mut}"
     return Variant(
-        chrom="chr1",
-        pos=1_000 + start,
-        genomic_ref="A",
-        genomic_alt=mut,
         gene=gene,
         exon_id=f"{gene}_e1",
         ensembl_exon_id=exon_id,
@@ -105,7 +75,6 @@ def _variant(exon_id: str, gene: str, index: int, effect: float) -> Variant:
         wt="A",
         mut=mut,
         region="Exon",
-        exon_length=30,
         psi_r1=50.0,
         psi_r2=51.0,
         psi_r3=49.0,
@@ -118,8 +87,6 @@ def _variant(exon_id: str, gene: str, index: int, effect: float) -> Variant:
         se_wt=0.4,
         se_d=0.5,
         significant="yes",
-        alphagenome_genome=_prediction("genome", f"{exon_id}_A{start}{mut}"),
-        alphagenome_minigene=_prediction("minigene", variant_id),
     )
 
 
@@ -159,13 +126,6 @@ def _master_row(exon: ExonMetadata) -> dict[str, str]:
             "measured": "True",
         }
     )
-    for field in row:
-        if field.startswith("alphagenome_genome__"):
-            row[field] = "0.25"
-        elif field.startswith("alphagenome_minigene__"):
-            row[field] = "0.5"
-    row["alphagenome_genome__variant_id"] = "ENSE_TEST_A2G"
-    row["alphagenome_minigene__Identifier"] = "TEST_e1_U2G"
     return row
 
 
@@ -175,8 +135,6 @@ def test_required_columns_and_source_pins_are_strict() -> None:
     assert set(CONFIG.pins["files"]) == {
         "master",
         "exon_metadata",
-        "variant_metadata",
-        "alphagenome_genome_inputs",
     }
     assert CONFIG.pins["files"]["master"]["sha256"] == (
         "1ec5aa239793bf6e84d5d771990d04486f03017b8d8cfb67d323076575d05bf4"
@@ -224,7 +182,7 @@ def test_eligibility_excludes_missing_replicates_and_fails_closed() -> None:
 
     disagreement = _master_row(exon)
     disagreement["nt_seq"] = exon.wt_seq
-    with pytest.raises(OpenSplicePreparationError, match="expected substitution"):
+    with pytest.raises(OpenSplicePreparationError, match="reconstructed mutant mismatch"):
         eligible_variant_from_row(disagreement, {exon.ensembl_exon_id: exon}, label="master:2")
 
 
@@ -232,31 +190,6 @@ def test_duplicate_construct_keys_and_sequences_fail_closed() -> None:
     variant = _variant("ENSE_TEST", "TEST", 1, 1.0)
     with pytest.raises(OpenSplicePreparationError, match="duplicate construct variant key"):
         validate_unique_variants([variant, variant], exon_id="ENSE_TEST")
-
-
-def test_minigene_metadata_join_uses_exact_sequence_and_deposited_identifier(
-    tmp_path: Path,
-) -> None:
-    exon = ExonMetadata("ENSE_TEST", 1, 100, 129, "A" * 80, 30, 25, 25)
-    variant = _variant("ENSE_TEST", "RENAMED", 1, 1.0)
-    deposited_id = "LEGACY_e1_A1C"
-    variant = replace(
-        variant,
-        alphagenome_minigene={
-            **variant.alphagenome_minigene,
-            "identifier": deposited_id,
-        },
-    )
-    metadata = tmp_path / "variant-metadata.tsv"
-    metadata.write_text(
-        "ensembl_exon_id\tvariant_id\tnt_seq\texon_length\tstart\tlength\n"
-        f"ENSE_TEST\tLEGACY_e1_wt\t{exon.wt_seq}\t30\t0\t0\n"
-        f"ENSE_TEST\t{deposited_id}\t{variant.nt_seq}\t\t{variant.start}\t1\n",
-        encoding="utf-8",
-        newline="\n",
-    )
-
-    _validate_variant_metadata(metadata, {"ENSE_TEST": [variant]}, {"ENSE_TEST": exon})
 
 
 def test_type7_quantile_and_exon_selection_are_order_invariant() -> None:
@@ -288,16 +221,14 @@ def test_type7_quantile_and_exon_selection_are_order_invariant() -> None:
     assert "ENSE_ALT" not in {summary.ensembl_exon_id for summary in first}
 
 
-def test_rank_quantile_panel_is_balanced_and_order_invariant() -> None:
+def test_score_space_panel_is_balanced_and_order_invariant() -> None:
     variants = [_variant("ENSE_TEST", "TEST", index, float(index)) for index in range(83)]
     first = select_panel(variants, exon_id="ENSE_TEST")
     second = select_panel(list(reversed(variants)), exon_id="ENSE_TEST")
 
     assert first == second
     assert len(first) == 50
-    assert Counter(bin_index for _, bin_index, _ in first) == Counter(
-        dict.fromkeys(range(1, 11), 5)
-    )
+    assert Counter(bin_index for _, bin_index, _ in first) == Counter(dict.fromkeys(range(5), 10))
     assert [item[0].construct_key for item in first] == sorted(
         item[0].construct_key for item in first
     )
@@ -322,16 +253,9 @@ def test_complete_cassette_and_segments_use_actual_upstream_flank() -> None:
     ]
 
 
-def test_source_record_keeps_predictions_private_and_renders_full_cassette() -> None:
+def test_source_record_renders_full_cassette_and_keeps_measurements_private() -> None:
     exon = ExonMetadata("ENSE_TEST", -1, 100, 129, "A" * 80, 30, 25, 25)
     variants = [_variant("ENSE_TEST", "SECRETGENE", index, float(index)) for index in range(60)]
-    variants[0] = replace(
-        variants[0],
-        alphagenome_minigene={
-            **variants[0].alphagenome_minigene,
-            "delta_mean": None,
-        },
-    )
     _summaries, selected = summarize_and_select_exons(
         {
             **{
@@ -350,7 +274,6 @@ def test_source_record_keeps_predictions_private_and_renders_full_cassette() -> 
         summary,
         variants,
         source_record_id="E01",
-        genome_vcf_path="inputs/ENSE_TEST.vcf",
     )
     schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
     question = build_questions([record], load_template(TEMPLATE), schema)[0]
@@ -360,17 +283,10 @@ def test_source_record_keeps_predictions_private_and_renders_full_cassette() -> 
     assert len(record["candidates"]) == 50
     assert "SECRETGENE" not in question["prompt"]
     assert "ENSE_TEST" not in question["prompt"]
-    assert "AlphaGenome" not in question["prompt"]
-    assert "left_n_padding" not in question["prompt"]
     assert "NNNNNNNN" not in question["prompt"]
     assert "three replicate measurements" not in question["prompt"]
     assert "Every candidate is a single-nucleotide substitution" not in question["prompt"]
     assert "tested alternative exon" in question["prompt"]
-    assert record["source_metadata"]["selected_candidates"][0]["alphagenome"]
-    assert any(
-        not candidate["alphagenome"]["minigene"]["quality"]["available"]
-        for candidate in record["source_metadata"]["selected_candidates"]
-    )
 
 
 def test_committed_opensplice_artifacts_are_complete_and_reproducible() -> None:
@@ -385,7 +301,10 @@ def test_committed_opensplice_artifacts_are_complete_and_reproducible() -> None:
     for record, question in zip(records, questions, strict=True):
         assert len(record["candidates"]) == len(question["candidates"]) == 50
         assert all(
-            record["reference_sequence"][candidate["pos"] - 1] == candidate["ref"]
+            record["reference_sequence"][
+                candidate["pos"] - 1 : candidate["pos"] - 1 + len(candidate["ref"])
+            ]
+            == candidate["ref"]
             for candidate in record["candidates"]
         )
         assert all(
@@ -393,9 +312,8 @@ def test_committed_opensplice_artifacts_are_complete_and_reproducible() -> None:
             for marker in (
                 record["source_metadata"]["gene"],
                 record["source_metadata"]["ensembl_exon_id"],
-                "AlphaGenome",
                 "delta_psi",
-                "quantile_bin",
+                "score_bin",
             )
         )
 
@@ -410,33 +328,7 @@ def test_artifact_validation_recomputes_sampling_digest(tmp_path: Path) -> None:
     manifest["selected_panels"][0]["members"][0]["sampling_digest"] = fabricated
     source, manifest_path = _write_tampered_artifacts(tmp_path, records, manifest)
 
-    with pytest.raises(OpenSplicePreparationError, match="private candidate provenance"):
-        validate_prepared_artifacts(source, manifest_path)
-
-
-def test_artifact_validation_recomputes_alphagenome_quality(tmp_path: Path) -> None:
-    records = read_jsonl(SOURCE)
-    manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
-    quality = records[0]["source_metadata"]["selected_candidates"][0]["alphagenome"]["minigene"][
-        "quality"
-    ]
-    quality["baseline_eligible"] = not quality["baseline_eligible"]
-    source, manifest_path = _write_tampered_artifacts(tmp_path, records, manifest)
-
-    with pytest.raises(OpenSplicePreparationError, match="minigene input reconstruction"):
-        validate_prepared_artifacts(source, manifest_path)
-
-
-def test_artifact_validation_recomputes_alphagenome_genome_input(tmp_path: Path) -> None:
-    records = read_jsonl(SOURCE)
-    manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
-    genome_input = records[0]["source_metadata"]["selected_candidates"][0]["alphagenome"]["genome"][
-        "input"
-    ]
-    genome_input["canonical_sites"][0]["site_pos1"] += 1
-    source, manifest_path = _write_tampered_artifacts(tmp_path, records, manifest)
-
-    with pytest.raises(OpenSplicePreparationError, match="genome input reconstruction"):
+    with pytest.raises(OpenSplicePreparationError, match="candidate reconstruction or provenance"):
         validate_prepared_artifacts(source, manifest_path)
 
 
@@ -445,8 +337,67 @@ def test_artifact_validation_recomputes_processed_cache_key(tmp_path: Path) -> N
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
     fabricated = "0" * 64
     manifest["sources"]["processed_cache"]["cache_key"] = fabricated
-    manifest["sources"]["processed_cache"]["prefix"] = f"data_prep/opensplice-snv/v1/{fabricated}"
+    manifest["sources"]["processed_cache"]["prefix"] = f"data_prep/opensplice-snv/v2/{fabricated}"
     source, manifest_path = _write_tampered_artifacts(tmp_path, records, manifest)
 
     with pytest.raises(OpenSplicePreparationError, match="processed-cache provenance"):
         validate_prepared_artifacts(source, manifest_path)
+
+
+@pytest.mark.parametrize("length", [1, 3, 6, 21])
+def test_deletions_reconstruct_the_complete_assayed_insert(length):
+    reference = "ACGT" * 20
+    exon = ExonMetadata("ENSE_TEST", -1, 100, 129, reference, 30, 25, 25)
+    row = _master_row(exon)
+    row.update(
+        start="3",
+        end=str(2 + length),
+        length=str(length),
+        wt=reference[2 : 2 + length].replace("T", "U"),
+        mut_type=f"∆{length}nt",
+        mut=f"∆{length}nt",
+        nt_seq=(reference[:2] + reference[2 + length :]).replace("T", "U"),
+    )
+    variant, reasons = eligible_variant_from_row(row, {"ENSE_TEST": exon}, label="deletion")
+    assert reasons == () and variant is not None
+    assert variant.wt == reference[2 : 2 + length] and variant.mut == ""
+    with pytest.raises(OpenSplicePreparationError, match="notation"):
+        eligible_variant_from_row({**row, "mut": "∆99nt"}, {"ENSE_TEST": exon}, label="bad")
+    with pytest.raises(OpenSplicePreparationError, match="reconstructed mutant mismatch"):
+        eligible_variant_from_row({**row, "nt_seq": reference}, {"ENSE_TEST": exon}, label="bad")
+
+
+def test_deletion_crossing_splice_boundary_has_shortened_source_exon():
+    reference = "ACGT" * 20
+    exon = ExonMetadata("ENSE_TEST", 1, 100, 129, reference, 30, 25, 25)
+    row = _master_row(exon)
+    row.update(
+        start="24",
+        end="26",
+        length="3",
+        wt=reference[23:26],
+        mut_type="∆3nt",
+        mut="∆3nt",
+        exon_length="29",
+        nt_seq=reference[:23] + reference[26:],
+    )
+    variant, reasons = eligible_variant_from_row(row, {"ENSE_TEST": exon}, label="boundary")
+    assert variant is not None and not reasons
+
+
+def test_complete_exon_deletion_is_not_excluded_by_a_positive_length_requirement():
+    reference = "ACGT" * 20
+    exon = ExonMetadata("ENSE_TEST", 1, 100, 120, reference, 21, 34, 25)
+    row = _master_row(exon)
+    row.update(
+        start="35",
+        end="55",
+        length="21",
+        wt=reference[34:55],
+        mut_type="∆21nt",
+        mut="∆21nt",
+        exon_length="0",
+        nt_seq=reference[:34] + reference[55:],
+    )
+    variant, reasons = eligible_variant_from_row(row, {"ENSE_TEST": exon}, label="complete-exon")
+    assert variant is not None and not reasons

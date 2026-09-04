@@ -30,7 +30,7 @@ not local regulatory context needed to interpret the tested sequence.
 Every VCF record uses the synthetic contig `element`, with 1-based
 positions relative to the first base of the displayed sequence. Genomic
 chromosomes and positions are not model-visible. The prompt does not expose the
-measured effect, p-value, barcode count, source `FILTER`, quantile bin, MaveDB
+measured effect, p-value, barcode count, source `FILTER`, score bin, MaveDB
 accession, or selection metadata.
 
 The model predicts one finite signed log2-scale activity effect per candidate.
@@ -52,8 +52,8 @@ selected by
 
 The source is the canonical 16-file RegSeq validation collection distributed
 with [CADD v1.7](https://kircherlab.bihealth.org/download/CADD-development/v1.7/validation/regseq/).
-Only `FILTER=SIGN` rows are eligible for sampling; `MIN` and `QUAL` rows are
-retained for provenance and crosswalk validation.
+`FILTER=SIGN` and `FILTER=MIN` rows are eligible for sampling. `QUAL` rows are
+excluded but retained for provenance and full-source crosswalk validation.
 
 Every CADD row is independently cross-checked against a pinned
 [MaveDB](https://www.mavedb.org/) score set using source-study coordinates and
@@ -97,20 +97,19 @@ or any other mismatch, aborts preparation.
 
 ## Deterministic panel construction
 
-Each element's eligible `FILTER=SIGN` variants are sorted by measured effect,
-then divided into ten equal-population rank bins. When a count is not divisible
-by ten, the first remainder bins receive one additional row. Five variants per
-bin are selected by seeded SHA-256 ordering; the resulting 50 variants are
-sorted by genomic `CHROM`, `POS`, `REF`, and `ALT`, then assigned
-opaque IDs `V01` through `V50`. Genomic coordinates and alleles also break
-effect ties before binning; only element-relative coordinates are rendered in
-the generated question.
+The [shared score-space protocol](../task-construction.md) samples the signed
+activity coefficients of the SIGN+MIN population. Complete alleles are normalized
+against the reporter sequence; all rows sharing a normalized allele identity
+are excluded rather than choosing among repeated measurements. There is no SNV
+preference. A deletion's genomic VCF anchor may precede the displayed insert:
+shared padding outside the insert is removed and the edit is re-anchored inside
+the display, preserving the assayed mutant sequence.
 
-This design guarantees five candidates from each effect quantile while keeping
-the prompt free of measured effects and bin labels. Exact sampling parameters
-live in `preparation.yaml`; the
-[preparation code](../../tasks/satmut-mpra/src/vepbench_satmut_mpra/task.py)
-implements the selection and records each selected variant's bin in provenance.
+The 50 selected variants are sorted by displayed position, REF, and ALT before
+opaque IDs are assigned. Score-bin boundaries, capacities, allocations, source
+FILTER values, duplicate exclusions, and original genomic allele keys remain
+private provenance. Exact parameters live in `preparation.yaml` and selection
+is implemented in [task.py](../../tasks/satmut-mpra/src/vepbench_satmut_mpra/task.py).
 
 ## Parsing and scoring
 
@@ -135,13 +134,12 @@ artifacts, validate them, and build questions:
 bash scripts/run_prepare_satmut_mpra_sky.sh
 ```
 
-For the small canonical source, preparation can also run locally. It uploads
-the cache by default; use `--skip-cache-upload` to rebuild local artifacts
-without uploading:
+Preparation uploads its cache by default. Use `--skip-cache-upload` when
+rebuilding without publication. Full reference validation runs on cloud compute;
+the compact source and question fingerprints can be checked offline:
 
 ```bash
 uv sync --locked --package vepbench-task-satmut-mpra
-uv run --no-sync vepbench-satmut-mpra prepare
 uv run --no-sync vepbench-satmut-mpra validate
 uv run --no-sync vepbench questions build \
   --task configs/tasks/satmut-mpra/task.yaml \
@@ -153,8 +151,8 @@ cmp benchmark/satmut-mpra-expected-manifest.json \
 ## Interpretation and limitations
 
 Spearman measures within-panel ordering, not absolute calibration, and Pearson
-is sensitive to numerical scale and outliers. Five samples per effect quantile
-produce broad effect coverage but do not reproduce the natural frequency of
+is sensitive to numerical scale and outliers. Sampling across score-space bins
+provides broad effect coverage but do not reproduce the natural frequency of
 effects in the complete assay. A 50-candidate panel is a sampled view of each
 element, not an exhaustive score of all variants.
 

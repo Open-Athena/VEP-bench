@@ -67,23 +67,9 @@ def load_preparation_config(path: str | Path = PREPARATION_CONFIG_PATH) -> Prepa
     for field in ("reporter_vector", "reporter_vector_accession"):
         _require_string(element_defaults[field], source_path, f"element_defaults.{field}")
 
-    sampling = _require_mapping(values["sampling"], source_path, "sampling")
-    _require_exact_fields(
-        sampling,
-        {"panel_size", "quantile_bins", "samples_per_bin", "seed", "algorithm"},
-        source_path,
-        "sampling",
-    )
-    for field in ("panel_size", "quantile_bins", "samples_per_bin"):
-        value = sampling[field]
-        if isinstance(value, bool) or not isinstance(value, int) or value < 1:
-            raise BuildError(f"{source_path}: sampling.{field} must be a positive integer")
-    if sampling["panel_size"] != sampling["quantile_bins"] * sampling["samples_per_bin"]:
-        raise BuildError(
-            f"{source_path}: sampling panel size must equal bins times samples per bin"
-        )
-    _require_string(sampling["seed"], source_path, "sampling.seed")
-    _require_string(sampling["algorithm"], source_path, "sampling.algorithm")
+    from vepbench.sampling import validate_sampling_config
+
+    validate_sampling_config(values["sampling"])
 
     sequence_policy = _require_mapping(values["sequence_policy"], source_path, "sequence_policy")
     _require_exact_fields(
@@ -186,13 +172,12 @@ def load_preparation_config(path: str | Path = PREPARATION_CONFIG_PATH) -> Prepa
             "bucket",
             "root",
             "data_files",
-            "legacy_implementation_sha256",
             "implementation_sha256",
         },
         source_path,
         "cache",
     )
-    for field in ("bucket", "root", "legacy_implementation_sha256", "implementation_sha256"):
+    for field in ("bucket", "root", "implementation_sha256"):
         _require_string(cache[field], source_path, f"cache.{field}")
     if not isinstance(cache["data_files"], list) or not all(
         isinstance(item, str) and item for item in cache["data_files"]

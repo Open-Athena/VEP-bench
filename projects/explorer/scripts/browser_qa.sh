@@ -90,10 +90,10 @@ common=(
   --dump-dom "http://127.0.0.1:$port/tasks/opensplice-snv.html" \
   >"$output_dir/opensplice-task.dom.html"
 "$chrome" "${common[@]}" --window-size=1440,2400 \
-  --dump-dom "http://127.0.0.1:$port/tasks/satmut-mpra.html?question=satmut-mpra-ranking-v1%3AF9&run=browser-qa" \
+  --dump-dom "http://127.0.0.1:$port/tasks/satmut-mpra.html?question=satmut-mpra-ranking-v2%3AF9&run=browser-qa" \
   >"$output_dir/question.dom.html"
 "$chrome" "${common[@]}" --window-size=1440,2400 \
-  --dump-dom "http://127.0.0.1:$port/tasks/sge.html?question=sge-ranking-v1%3ABAP1&run=browser-qa-task-2" \
+  --dump-dom "http://127.0.0.1:$port/tasks/sge.html?question=sge-ranking-v2%3ABAP1&run=browser-qa-task-2" \
   >"$output_dir/sge-question.dom.html"
 "$chrome" "${common[@]}" --window-size=1440,1600 \
   --dump-dom "http://127.0.0.1:$port/tasks/satmut-mpra.html?run=missing-run" \
@@ -226,10 +226,10 @@ browser_pid=
   "http://127.0.0.1:$port/index.html"
 "$chrome" "${common[@]}" --window-size=1440,1600 \
   --screenshot="$output_dir/question-desktop.png" \
-  "http://127.0.0.1:$port/tasks/satmut-mpra.html?question=satmut-mpra-ranking-v1%3AF9&run=browser-qa"
+  "http://127.0.0.1:$port/tasks/satmut-mpra.html?question=satmut-mpra-ranking-v2%3AF9&run=browser-qa"
 "$chrome" "${common[@]}" --window-size=1440,1600 \
   --screenshot="$output_dir/sge-question-desktop.png" \
-  "http://127.0.0.1:$port/tasks/sge.html?question=sge-ranking-v1%3ABAP1&run=browser-qa-task-2"
+  "http://127.0.0.1:$port/tasks/sge.html?question=sge-ranking-v2%3ABAP1&run=browser-qa-task-2"
 "$chrome" "${common[@]}" --window-size=390,844 \
   --screenshot="$output_dir/task-mobile.png" \
   "http://127.0.0.1:$port/tasks/satmut-mpra.html"

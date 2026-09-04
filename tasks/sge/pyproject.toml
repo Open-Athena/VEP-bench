@@ -4,9 +4,7 @@ version = "0.1.0"
 description = "Private preparation tooling for the VEP-bench SGE task"
 requires-python = "==3.14.*"
 dependencies = [
-    "fsspec[http]>=2026.5.0,<2027",
     "huggingface-hub[hf-xet]>=1.6,<2",
-    "polars>=1.37,<2",
     "pyfaidx>=0.9,<1",
     "pyhgvs>=0.11.1,<0.12",
     "vepbench",

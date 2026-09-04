@@ -38,6 +38,11 @@ by_task_family:
         kind: paper
         registry: PubMed
         url: https://pubmed.ncbi.nlm.nih.gov/39779857/
+      CARD11:
+        date: "2020-11-16"
+        kind: paper
+        registry: PubMed
+        url: https://pubmed.ncbi.nlm.nih.gov/33202260/
       CTCF:
         date: "2026-06-17"
         kind: assay_repository

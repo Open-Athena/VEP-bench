@@ -41,7 +41,7 @@ def test_ranking_builder_emits_structured_candidates_and_exact_prompt_rows() -> 
     Draft202012Validator(schema).validate(question)
     assert question["schema_version"] == "2.0"
     assert question["task_type"] == "ranking"
-    assert question["question_id"] == "satmut-mpra-ranking-v1:synthetic-ranking-001"
+    assert question["question_id"] == "satmut-mpra-ranking-v2:synthetic-ranking-001"
     assert len(question["candidates"]) == 5
     assert "element\t1\tV01\tA\tC" in question["prompt"]
     assert "Sequence lines contain 80 bases except the final line." in question["prompt"]
@@ -78,7 +78,7 @@ def test_ranking_builder_sorts_candidates_by_full_vcf_key() -> None:
     )
 
 
-def test_rank_quantile_panel_is_deterministic_and_balanced() -> None:
+def test_score_space_panel_is_deterministic_and_balanced() -> None:
     variants = [
         Variant("1", index + 1, "A", "C", float(index), 1e-8, 20, "SIGN") for index in range(103)
     ]
@@ -89,15 +89,15 @@ def test_rank_quantile_panel_is_deterministic_and_balanced() -> None:
     assert first == second
     assert len(first) == 50
     assert len({variant.key for variant, _ in first}) == 50
-    assert Counter(bin_index for _, bin_index in first) == Counter(dict.fromkeys(range(1, 11), 5))
+    assert Counter(bin_index for _, bin_index in first) == Counter(dict.fromkeys(range(5), 10))
     assert [variant.key for variant, _ in first] == sorted(variant.key for variant, _ in first)
 
 
-def test_panel_requires_fifty_significant_records() -> None:
+def test_panel_requires_fifty_eligible_records() -> None:
     variants = [
         Variant("1", index + 1, "A", "C", float(index), 1e-8, 20, "SIGN") for index in range(49)
     ]
-    with pytest.raises(SatMutPreparationError, match="at least 50 required"):
+    with pytest.raises(ValueError, match="insufficient bin capacity"):
         select_panel(variants, element_label="small")
 
 
@@ -170,6 +170,36 @@ def test_source_record_keeps_qc_private_and_assigns_opaque_ids() -> None:
     ]
 
 
+def test_panel_includes_min_and_excludes_qual_and_equivalent_alleles() -> None:
+    variants = (
+        *(
+            Variant("X", 100 + i, "A", "C", i / 10, 0.2, 20, "MIN" if i % 2 else "SIGN")
+            for i in range(50)
+        ),
+        Variant("X", 150, "AA", "A", -1.0, 0.2, 20, "MIN"),
+        Variant("X", 151, "AA", "A", -2.0, 1e-8, 20, "SIGN"),
+        Variant("X", 159, "A", "G", 100.0, 0.9, 2, "QUAL"),
+    )
+    record = build_source_record(
+        PreparedElement(
+            ELEMENT_SPECS[0],
+            ElementMetadata("A" * 60, "A" * 60, "X", 100, 159, "2026-01-01"),
+            variants,
+            {"MIN": 26, "SIGN": 26, "QUAL": 1},
+            53,
+            53,
+        )
+    )
+    metadata = record["source_metadata"]
+    assert metadata["duplicate_normalized_allele_rows_excluded"] == 2
+    assert Counter(c["source_filter"] for c in metadata["selected_candidates"]) == {
+        "MIN": 25,
+        "SIGN": 25,
+    }
+    assert len(record["candidates"]) == 50
+    assert all(c["ref"] == "A" and c["alt"] == "C" for c in record["candidates"])
+
+
 def test_known_zrs_reference_discrepancy_is_allowed_only_for_excluded_row() -> None:
     metadata = ElementMetadata("CA", "CA", "7", 156_791_603, 156_791_604, "2026-01-01")
 
@@ -238,9 +268,8 @@ def test_committed_satmut_artifacts_and_question_set_are_complete() -> None:
     for record, question in zip(records, questions, strict=True):
         assert len(record["candidates"]) == 50
         assert Counter(
-            candidate["quantile_bin"]
-            for candidate in record["source_metadata"]["selected_candidates"]
-        ) == Counter(dict.fromkeys(range(1, 11), 5))
+            candidate["score_bin"] for candidate in record["source_metadata"]["selected_candidates"]
+        ) == Counter(dict(enumerate(record["source_metadata"]["sampling"]["allocations"])))
         assert len(question["candidates"]) == 50
         assert question["prompt"].count("#CHROM\tPOS\tID\tREF\tALT") == 1
         assert all(candidate["chrom"] == "element" for candidate in question["candidates"])
@@ -264,23 +293,23 @@ def test_committed_satmut_artifacts_and_question_set_are_complete() -> None:
         assert "\nX\t" not in question["prompt"]
 
     question_by_id = {question["question_id"]: question for question in questions}
-    f9_prompt = question_by_id["satmut-mpra-ranking-v1:F9"]["prompt"]
+    f9_prompt = question_by_id["satmut-mpra-ranking-v2:F9"]["prompt"]
     assert "F9" not in f9_prompt
     assert "directly drives a firefly luciferase reporter" in f9_prompt
     assert PGL4_23_MINIMAL_PROMOTER_SEQUENCE not in f9_prompt
 
-    irf4_prompt = question_by_id["satmut-mpra-ranking-v1:IRF4"]["prompt"]
+    irf4_prompt = question_by_id["satmut-mpra-ranking-v2:IRF4"]["prompt"]
     assert "IRF4" not in irf4_prompt
     assert PGL4_23_MINIMAL_PROMOTER_SEQUENCE in irf4_prompt
     assert "24 hours after transfection" in irf4_prompt
 
-    myc_prompt = question_by_id["satmut-mpra-ranking-v1:MYCrs6983267"]["prompt"]
+    myc_prompt = question_by_id["satmut-mpra-ranking-v2:MYCrs6983267"]["prompt"]
     assert "MYC" not in myc_prompt
     assert "rs6983267" not in myc_prompt
     assert "32 hours after transfection" in myc_prompt
     assert "20 nM LiCl was added 24 hours after transfection" in myc_prompt
 
-    zrs_prompt = question_by_id["satmut-mpra-ranking-v1:ZRSh13"]["prompt"]
+    zrs_prompt = question_by_id["satmut-mpra-ranking-v2:ZRSh13"]["prompt"]
     assert "ZRS" not in zrs_prompt
     assert "Hoxd13" in zrs_prompt
     assert PGL4Z_FIXED_DOWNSTREAM_SEQUENCE[:80] in zrs_prompt

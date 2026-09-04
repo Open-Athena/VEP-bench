@@ -1,4 +1,4 @@
-"""Deterministic selection and artifact validation for the OpenSplice SNV task."""
+"""Deterministic selection and artifact validation for the OpenSplice task."""
 
 from __future__ import annotations
 
@@ -6,14 +6,22 @@ import csv
 import hashlib
 import json
 import math
-from collections import Counter, defaultdict
+from collections import defaultdict
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, TextIO, cast
 
+from vepbench.alleles import normalize_allele
 from vepbench.artifacts import canonical_json, read_jsonl, sha256_file
 from vepbench.errors import BuildError
+from vepbench.sampling import (
+    ScoredAllele,
+    quantile,
+    sample_score_bins,
+    sampling_digest,
+    validate_sampling_provenance,
+)
 
 from .configuration import CONFIG, cache_configuration, cache_key
 
@@ -22,8 +30,6 @@ SOURCE_DATASET = CONFIG.values["source_dataset"]
 REFERENCE_CONTIG = CONFIG.values["reference_contig"]
 EXON_COUNT = CONFIG.values["sampling"]["exon_count"]
 PANEL_SIZE = CONFIG.values["sampling"]["panel_size"]
-QUANTILE_BINS = CONFIG.values["sampling"]["quantile_bins"]
-SAMPLES_PER_BIN = CONFIG.values["sampling"]["samples_per_bin"]
 SAMPLING_SEED = CONFIG.values["sampling"]["seed"]
 SAMPLING_ALGORITHM = CONFIG.values["sampling"]["algorithm"]
 FAS_E5 = CONFIG.values["reporter"]["fas_e5"]
@@ -33,34 +39,9 @@ FAS_E7 = CONFIG.values["reporter"]["fas_e7"]
 FIXED_PREFIX = FAS_E5 + FAS_I5
 FIXED_SUFFIX = FAS_I6 + FAS_E7
 DOWNSTREAM_NATIVE_FLANK = CONFIG.values["reporter"]["downstream_native_flank"]
-ALPHAGENOME = CONFIG.values["alphagenome"]
 MISSING_NUMBERS = {"", "NA", "N/A", "null", "None"}
 
-GENOME_PREDICTION_COLUMNS = {
-    "variant_id": "alphagenome_genome__variant_id",
-    "acceptor_ref_at_canonical": "alphagenome_genome__acceptor_ref_at_canonical",
-    "acceptor_alt_at_canonical": "alphagenome_genome__acceptor_alt_at_canonical",
-    "donor_ref_at_canonical": "alphagenome_genome__donor_ref_at_canonical",
-    "donor_alt_at_canonical": "alphagenome_genome__donor_alt_at_canonical",
-    "delta_acceptor": "alphagenome_genome__delta_acceptor",
-    "delta_donor": "alphagenome_genome__delta_donor",
-    "mean_delta_splice": "alphagenome_genome__mean_delta_splice",
-}
-MINIGENE_PREDICTION_COLUMNS = {
-    "identifier": "alphagenome_minigene__Identifier",
-    "acceptor_wt": "alphagenome_minigene__alphagenome_minigene_acceptor_wt",
-    "donor_wt": "alphagenome_minigene__alphagenome_minigene_donor_wt",
-    "acceptor_mut": "alphagenome_minigene__alphagenome_minigene_acceptor_mut",
-    "donor_mut": "alphagenome_minigene__alphagenome_minigene_donor_mut",
-    "delta_acceptor": "alphagenome_minigene__alphagenome_minigene_delta_acceptor",
-    "delta_donor": "alphagenome_minigene__alphagenome_minigene_delta_donor",
-    "delta_mean": "alphagenome_minigene__alphagenome_minigene_delta_mean",
-}
 REQUIRED_MASTER_COLUMNS = {
-    "CHROM",
-    "POS",
-    "REF",
-    "ALT",
     "gene",
     "exon_id",
     "ensembl_exon_id",
@@ -73,7 +54,6 @@ REQUIRED_MASTER_COLUMNS = {
     "mut",
     "mut_type",
     "region",
-    "exon_length",
     "psi_r1",
     "psi_r2",
     "psi_r3",
@@ -87,8 +67,6 @@ REQUIRED_MASTER_COLUMNS = {
     "se_d",
     "significant",
     "measured",
-    *GENOME_PREDICTION_COLUMNS.values(),
-    *MINIGENE_PREDICTION_COLUMNS.values(),
 }
 REQUIRED_EXON_COLUMNS = {
     "ensembl_exon_id",
@@ -99,14 +77,6 @@ REQUIRED_EXON_COLUMNS = {
     "wt_seq",
     "down_5k",
     "exon_length",
-}
-REQUIRED_VARIANT_METADATA_COLUMNS = {
-    "ensembl_exon_id",
-    "variant_id",
-    "nt_seq",
-    "exon_length",
-    "start",
-    "length",
 }
 
 
@@ -130,12 +100,8 @@ class ExonMetadata:
 
 @dataclass(frozen=True)
 class Variant:
-    """One fully validated eligible OpenSplice substitution."""
+    """One fully validated eligible OpenSplice allele."""
 
-    chrom: str
-    pos: int
-    genomic_ref: str
-    genomic_alt: str
     gene: str
     exon_id: str
     ensembl_exon_id: str
@@ -145,7 +111,6 @@ class Variant:
     wt: str
     mut: str
     region: str
-    exon_length: int
     psi_r1: float
     psi_r2: float
     psi_r3: float
@@ -158,8 +123,6 @@ class Variant:
     se_wt: float | None
     se_d: float | None
     significant: str
-    alphagenome_genome: dict[str, Any]
-    alphagenome_minigene: dict[str, Any]
 
     @property
     def stable_key(self) -> str:
@@ -169,14 +132,10 @@ class Variant:
     def construct_key(self) -> tuple[int, str, str]:
         return (self.start, self.wt, self.mut)
 
-    @property
-    def genomic_key(self) -> tuple[str, int, str, str]:
-        return (self.chrom, self.pos, self.genomic_ref, self.genomic_alt)
-
 
 @dataclass(frozen=True)
 class ExonSummary:
-    """Selection statistics for one exon with at least one eligible SNV."""
+    """Selection statistics for one exon with at least one eligible allele."""
 
     ensembl_exon_id: str
     gene: str | None
@@ -186,6 +145,8 @@ class ExonSummary:
     robust_range: float | None
     minimum: float | None
     maximum: float | None
+    q01: float | None = None
+    q99: float | None = None
     gene_winner: bool = False
     gene_winner_rank: int | None = None
     selected_rank: int | None = None
@@ -293,34 +254,16 @@ def parse_exon_metadata(stream: TextIO, *, label: str) -> dict[str, ExonMetadata
     return exons
 
 
-def _prediction_object(
-    row: Mapping[str, str],
-    columns: Mapping[str, str],
-    *,
-    label: str,
-) -> dict[str, Any]:
-    values: dict[str, Any] = {}
-    for output_name, source_name in columns.items():
-        value = row[source_name].strip()
-        if output_name in {"variant_id", "identifier"}:
-            values[output_name] = value or None
-        else:
-            values[output_name] = parse_optional_number(value, label=f"{label}:{source_name}")
-    return values
-
-
 def eligible_variant_from_row(
     row: Mapping[str, str],
     exons: Mapping[str, ExonMetadata],
     *,
     label: str,
 ) -> tuple[Variant | None, tuple[str, ...]]:
-    """Validate one master row and return an eligible SNV or exclusion reasons."""
+    """Validate one master row and return an eligible allele or exclusion reasons."""
 
     measured = parse_boolean(row["measured"], label=f"{label}:measured")
     length = parse_integral(row["length"], label=f"{label}:length")
-    if row["mut_type"] != "sub" or length != 1:
-        return None, ("not_single_nucleotide_substitution",)
     if not measured:
         return None, ("not_measured",)
 
@@ -346,38 +289,27 @@ def eligible_variant_from_row(
 
     start = parse_integral(row["start"], label=f"{label}:start")
     end = parse_integral(row["end"], label=f"{label}:end")
-    row_exon_length = parse_integral(row["exon_length"], label=f"{label}:exon_length")
-    if end != start or row_exon_length != exon.exon_length:
-        raise OpenSplicePreparationError(f"{label}: SNV or exon geometry disagrees")
-    if start > len(exon.wt_seq):
-        raise OpenSplicePreparationError(f"{label}: local position is outside wt_seq")
+    if not 1 <= start <= end <= len(exon.wt_seq):
+        raise OpenSplicePreparationError(f"{label}: allele or exon geometry disagrees")
     wt = normalize_dna(row["wt"], label=f"{label}:wt")
-    mut = normalize_dna(row["mut"], label=f"{label}:mut")
-    if len(wt) != 1 or len(mut) != 1 or wt == mut:
-        raise OpenSplicePreparationError(f"{label}: expected distinct single-base alleles")
-    if exon.wt_seq[start - 1] != wt:
-        raise OpenSplicePreparationError(f"{label}: wt allele disagrees with exon metadata")
+    if row["mut_type"] == "sub":
+        mut = normalize_dna(row["mut"], label=f"{label}:mut")
+    elif row["mut_type"] == f"∆{length}nt" and row["mut"] == row["mut_type"]:
+        mut = ""
+    else:
+        raise OpenSplicePreparationError(f"{label}: unsupported source allele notation")
+    if end - start + 1 != length or exon.wt_seq[start - 1 : end] != wt or wt == mut:
+        raise OpenSplicePreparationError(f"{label}: source REF/interval mismatch")
     nt_seq = normalize_dna(row["nt_seq"], label=f"{label}:nt_seq")
-    expected_mutant = exon.wt_seq[: start - 1] + mut + exon.wt_seq[start:]
-    if nt_seq != expected_mutant:
-        raise OpenSplicePreparationError(f"{label}: nt_seq is not the expected substitution")
+    if nt_seq != exon.wt_seq[: start - 1] + mut + exon.wt_seq[end:]:
+        raise OpenSplicePreparationError(f"{label}: reconstructed mutant mismatch")
 
-    chrom = row["CHROM"].strip()
-    pos = parse_integral(row["POS"], label=f"{label}:POS")
-    genomic_ref = normalize_dna(row["REF"], label=f"{label}:REF")
-    genomic_alt = normalize_dna(row["ALT"], label=f"{label}:ALT")
-    if not chrom or len(genomic_ref) != 1 or len(genomic_alt) != 1 or genomic_ref == genomic_alt:
-        raise OpenSplicePreparationError(f"{label}: malformed genomic SNV")
     optional = {
         field: parse_optional_number(row[field], label=f"{label}:{field}")
         for field in ("wt_psi", "psi", "se_wt_psi", "se_psi", "se", "se_wt", "se_d")
     }
     return (
         Variant(
-            chrom=chrom,
-            pos=pos,
-            genomic_ref=genomic_ref,
-            genomic_alt=genomic_alt,
             gene=row["gene"].strip(),
             exon_id=row["exon_id"].strip(),
             ensembl_exon_id=exon_id,
@@ -387,7 +319,6 @@ def eligible_variant_from_row(
             wt=wt,
             mut=mut,
             region=row["region"].strip(),
-            exon_length=row_exon_length,
             psi_r1=required_numeric["psi_r1"],
             psi_r2=required_numeric["psi_r2"],
             psi_r3=required_numeric["psi_r3"],
@@ -400,8 +331,6 @@ def eligible_variant_from_row(
             se_wt=optional["se_wt"],
             se_d=optional["se_d"],
             significant=row["significant"].strip(),
-            alphagenome_genome=_prediction_object(row, GENOME_PREDICTION_COLUMNS, label=label),
-            alphagenome_minigene=_prediction_object(row, MINIGENE_PREDICTION_COLUMNS, label=label),
         ),
         (),
     )
@@ -422,15 +351,7 @@ def validate_unique_variants(variants: Sequence[Variant], *, exon_id: str) -> No
 
 
 def type7_quantile(values: Sequence[float], probability: float) -> float:
-    """Compute a Hyndman-Fan type 7 quantile by the issue's explicit formula."""
-
-    if not values or not 0 <= probability <= 1:
-        raise OpenSplicePreparationError("type 7 quantile requires values and 0 <= p <= 1")
-    ordered = sorted(values)
-    h = (len(ordered) - 1) * probability
-    lower = math.floor(h)
-    upper = math.ceil(h)
-    return ordered[lower] + (h - lower) * (ordered[upper] - ordered[lower])
+    return quantile(sorted(values), probability)
 
 
 def summarize_and_select_exons(
@@ -453,7 +374,10 @@ def summarize_exon(variants: Sequence[Variant], *, exon_id: str) -> ExonSummary:
         raise OpenSplicePreparationError(f"{exon_id}: cannot summarize an empty exon")
     validate_unique_variants(variants, exon_id=exon_id)
     effects = [variant.delta_psi for variant in variants]
-    eligible = len(effects) >= PANEL_SIZE
+    enough = len(effects) >= PANEL_SIZE
+    q01, q99 = type7_quantile(effects, 0.01), type7_quantile(effects, 0.99)
+    collapsed = enough and q01 >= q99
+    eligible = enough and not collapsed
     q05 = type7_quantile(effects, 0.05) if eligible else None
     q95 = type7_quantile(effects, 0.95) if eligible else None
     return ExonSummary(
@@ -465,7 +389,15 @@ def summarize_exon(variants: Sequence[Variant], *, exon_id: str) -> ExonSummary:
         robust_range=q95 - q05 if q05 is not None and q95 is not None else None,
         minimum=min(effects),
         maximum=max(effects),
-        exclusion_reasons=() if eligible else ("fewer_than_50_eligible_snvs",),
+        q01=q01,
+        q99=q99,
+        exclusion_reasons=(
+            ()
+            if eligible
+            else ("collapsed_score_anchors",)
+            if collapsed
+            else ("fewer_than_50_eligible_alleles",)
+        ),
     )
 
 
@@ -536,60 +468,33 @@ def select_exon_summaries(
     return sorted(final, key=lambda summary: summary.ensembl_exon_id), selected
 
 
-def _sample_digest(seed: str, exon_id: str, bin_index: int, variant: Variant) -> str:
-    return _sample_digest_from_stable_key(seed, exon_id, bin_index, variant.stable_key)
-
-
-def _sample_digest_from_stable_key(
-    seed: str,
-    exon_id: str,
-    bin_index: int,
-    stable_key: str,
-) -> str:
-    payload = "\0".join((SAMPLING_ALGORITHM, seed, exon_id, str(bin_index), stable_key)).encode()
-    return hashlib.sha256(payload).hexdigest()
-
-
 def select_panel(
     variants: Sequence[Variant],
     *,
     exon_id: str,
     seed: str = SAMPLING_SEED,
 ) -> tuple[tuple[Variant, int, str], ...]:
-    """Select five variants from each of ten equal-population effect-rank bins."""
-
+    """Sample native signed effects using the shared score-space protocol."""
     validate_unique_variants(variants, exon_id=exon_id)
-    ordered = sorted(
-        variants,
-        key=lambda variant: (
-            variant.delta_psi,
-            variant.start,
-            variant.wt,
-            variant.mut,
-            variant.variant_id,
-        ),
+    panel = sample_score_bins(
+        [ScoredAllele(v.stable_key, v.delta_psi) for v in variants],
+        question_key=f"opensplice:{exon_id}:all_alleles",
+        seed=seed,
     )
-    if len(ordered) < PANEL_SIZE:
-        raise OpenSplicePreparationError(
-            f"{exon_id}: only {len(ordered)} eligible SNVs; at least {PANEL_SIZE} required"
+    by_key = {v.stable_key: v for v in variants}
+    return tuple(
+        sorted(
+            (
+                (
+                    by_key[a.key],
+                    b,
+                    sampling_digest(seed, f"opensplice:{exon_id}:all_alleles", b, a.key),
+                )
+                for a, b in panel.selected
+            ),
+            key=lambda item: item[0].construct_key,
         )
-    base, remainder = divmod(len(ordered), QUANTILE_BINS)
-    selected: list[tuple[Variant, int, str]] = []
-    offset = 0
-    for bin_index in range(1, QUANTILE_BINS + 1):
-        bin_size = base + (bin_index <= remainder)
-        values = ordered[offset : offset + bin_size]
-        offset += bin_size
-        ranked = sorted(
-            values, key=lambda variant: _sample_digest(seed, exon_id, bin_index, variant)
-        )
-        selected.extend(
-            (variant, bin_index, _sample_digest(seed, exon_id, bin_index, variant))
-            for variant in ranked[:SAMPLES_PER_BIN]
-        )
-    if offset != len(ordered) or len(selected) != PANEL_SIZE:
-        raise AssertionError("rank-quantile sampling did not consume the eligible population")
-    return tuple(sorted(selected, key=lambda item: item[0].construct_key))
+    )
 
 
 def cassette_segments(exon: ExonMetadata) -> list[dict[str, Any]]:
@@ -625,18 +530,6 @@ def complete_cassette(exon: ExonMetadata) -> str:
     """Construct the complete three-exon reporter cassette."""
 
     return FIXED_PREFIX + exon.wt_seq + FIXED_SUFFIX
-
-
-def _alphagenome_provenance() -> dict[str, Any]:
-    return {
-        "repository": ALPHAGENOME["repository"],
-        "commit": ALPHAGENOME["commit"],
-        "minigene_script": ALPHAGENOME["minigene_script"],
-        "genome_script": ALPHAGENOME["genome_script"],
-        "library_design_script": ALPHAGENOME["library_design_script"],
-        "ontology_term": ALPHAGENOME["ontology_term"],
-        "ontology_label": ALPHAGENOME["ontology_label"],
-    }
 
 
 def _format_segment_table(segments: Sequence[Mapping[str, Any]]) -> str:
@@ -676,15 +569,81 @@ def _reporter_context(cassette: str, exon: ExonMetadata) -> str:
     )
 
 
-def _genome_interval(exon: ExonMetadata) -> dict[str, int]:
-    center_pos1 = (exon.start_exon + exon.end_exon) // 2
-    center0 = center_pos1 - 1
-    start0 = center0 - ALPHAGENOME["input_length"] // 2
-    return {
-        "center_pos1": center_pos1,
-        "start0": start0,
-        "end0": start0 + ALPHAGENOME["input_length"],
-    }
+def _build_candidate_records(
+    exon: ExonMetadata,
+    panel: Sequence[tuple[Variant, int, str]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Render the complete assayed edits, then assign IDs in displayed VCF order."""
+    cassette = complete_cassette(exon)
+    panel = sorted(
+        panel,
+        key=lambda item: normalize_allele(
+            cassette, len(FIXED_PREFIX) + item[0].start, item[0].wt, item[0].mut
+        ),
+    )
+    candidates, private = [], []
+    for index, (variant, score_bin, digest) in enumerate(panel, 1):
+        candidate_id = f"V{index:02d}"
+        pos, ref, alt = normalize_allele(
+            cassette, len(FIXED_PREFIX) + variant.start, variant.wt, variant.mut
+        )
+        if cassette[: pos - 1] + alt + cassette[pos - 1 + len(ref) :] != (
+            FIXED_PREFIX + variant.nt_seq + FIXED_SUFFIX
+        ):
+            raise OpenSplicePreparationError(
+                "displayed VCF does not reconstruct the assayed cassette"
+            )
+        candidates.append(
+            {
+                "candidate_id": candidate_id,
+                "chrom": REFERENCE_CONTIG,
+                "pos": pos,
+                "ref": ref,
+                "alt": alt,
+                "reference_score": variant.delta_psi,
+            }
+        )
+        private.append(
+            {
+                "candidate_id": candidate_id,
+                "source": {
+                    "gene": variant.gene,
+                    "exon_id": variant.exon_id,
+                    "ensembl_exon_id": variant.ensembl_exon_id,
+                    "variant_id": variant.variant_id,
+                    "mutant_insert_sequence": variant.nt_seq,
+                    "construct_variant": {
+                        "insert_position": variant.start,
+                        "cassette_position": pos,
+                        "ref": variant.wt,
+                        "alt": variant.mut,
+                        "region": variant.region,
+                    },
+                },
+                "measurements": {
+                    **{
+                        k: getattr(variant, k)
+                        for k in (
+                            "psi_r1",
+                            "psi_r2",
+                            "psi_r3",
+                            "wt_psi",
+                            "psi",
+                            "delta_psi",
+                            "se_wt_psi",
+                            "se_psi",
+                            "se",
+                            "se_wt",
+                            "se_d",
+                            "significant",
+                        )
+                    },
+                    "measured": True,
+                },
+                "selection": {"score_bin": score_bin, "sampling_digest": digest},
+            }
+        )
+    return candidates, private
 
 
 def build_source_record(
@@ -693,170 +652,18 @@ def build_source_record(
     variants: Sequence[Variant],
     *,
     source_record_id: str,
-    genome_vcf_path: str,
 ) -> dict[str, Any]:
     """Build one compact public source record with model-private provenance."""
 
     cassette = complete_cassette(exon)
     segments = cassette_segments(exon)
     panel = select_panel(variants, exon_id=exon.ensembl_exon_id)
-    interval = _genome_interval(exon)
-    actual_acceptor_pos0 = len(FIXED_PREFIX) + exon.native_upstream_length
-    deposited_acceptor_pos0 = ALPHAGENOME["deposited_minigene_acceptor_pos0"]
-    minigene_sites_verified = actual_acceptor_pos0 == deposited_acceptor_pos0
-    total_padding = ALPHAGENOME["input_length"] - len(cassette)
-    left_padding = total_padding // 2
-    right_padding = total_padding - left_padding
-    candidates = []
-    private_candidates = []
-    for display_index, (variant, quantile_bin, sampling_digest) in enumerate(panel, start=1):
-        candidate_id = f"V{display_index:02d}"
-        cassette_pos = len(FIXED_PREFIX) + variant.start
-        if cassette[cassette_pos - 1] != variant.wt:
-            raise OpenSplicePreparationError(
-                f"{exon.ensembl_exon_id}: displayed REF does not match cassette"
-            )
-        candidates.append(
-            {
-                "candidate_id": candidate_id,
-                "chrom": REFERENCE_CONTIG,
-                "pos": cassette_pos,
-                "ref": variant.wt,
-                "alt": variant.mut,
-                "reference_score": variant.delta_psi,
-            }
-        )
-        genome_prediction = dict(variant.alphagenome_genome)
-        minigene_prediction = dict(variant.alphagenome_minigene)
-        private_candidates.append(
-            {
-                "candidate_id": candidate_id,
-                "source": {
-                    "gene": variant.gene,
-                    "exon_id": variant.exon_id,
-                    "ensembl_exon_id": variant.ensembl_exon_id,
-                    "variant_id": variant.variant_id,
-                    "genomic_variant": {
-                        "chrom": variant.chrom,
-                        "pos": variant.pos,
-                        "ref": variant.genomic_ref,
-                        "alt": variant.genomic_alt,
-                        "strand": exon.strand,
-                    },
-                    "construct_variant": {
-                        "insert_position": variant.start,
-                        "cassette_position": cassette_pos,
-                        "ref": variant.wt,
-                        "alt": variant.mut,
-                        "region": variant.region,
-                    },
-                },
-                "measurements": {
-                    "psi_r1": variant.psi_r1,
-                    "psi_r2": variant.psi_r2,
-                    "psi_r3": variant.psi_r3,
-                    "wt_psi": variant.wt_psi,
-                    "psi": variant.psi,
-                    "delta_psi": variant.delta_psi,
-                    "se_wt_psi": variant.se_wt_psi,
-                    "se_psi": variant.se_psi,
-                    "se": variant.se,
-                    "se_wt": variant.se_wt,
-                    "se_d": variant.se_d,
-                    "measured": True,
-                    "significant": variant.significant,
-                },
-                "selection": {
-                    "quantile_bin": quantile_bin,
-                    "sampling_digest": sampling_digest,
-                },
-                "alphagenome": {
-                    "genome": {
-                        "input": {
-                            "vcf_path": genome_vcf_path,
-                            "vcf_variant_id": genome_prediction["variant_id"],
-                            "chrom": variant.chrom,
-                            "position_1based": variant.pos,
-                            "reference_bases": variant.genomic_ref,
-                            "alternate_bases": variant.genomic_alt,
-                            "interval_start0": interval["start0"],
-                            "interval_end0": interval["end0"],
-                            "interval_center_pos1": interval["center_pos1"],
-                            "strand": "+" if exon.strand == 1 else "-",
-                            "canonical_sites": [
-                                {
-                                    "boundary": "start_exon",
-                                    "site_pos1": exon.start_exon,
-                                    "role": "acceptor" if exon.strand == 1 else "donor",
-                                },
-                                {
-                                    "boundary": "end_exon",
-                                    "site_pos1": exon.end_exon,
-                                    "role": "donor" if exon.strand == 1 else "acceptor",
-                                },
-                            ],
-                            "ontology_term": ALPHAGENOME["ontology_term"],
-                            "organism": ALPHAGENOME["organism"],
-                            "requested_output": ALPHAGENOME["requested_output"],
-                        },
-                        "prediction": genome_prediction,
-                        "quality": {
-                            "available": all(
-                                value is not None for value in genome_prediction.values()
-                            ),
-                            "vcf_input_verified": True,
-                        },
-                    },
-                    "minigene": {
-                        "input": {
-                            "variant_metadata_identifier": minigene_prediction["identifier"],
-                            "mutagenized_insert_sequence": variant.nt_seq,
-                            "complete_variant_cassette_sha256": hashlib.sha256(
-                                (FIXED_PREFIX + variant.nt_seq + FIXED_SUFFIX).encode()
-                            ).hexdigest(),
-                            "core_length": len(cassette),
-                            "target_length": ALPHAGENOME["input_length"],
-                            "left_n_padding": left_padding,
-                            "right_n_padding": right_padding,
-                            "actual_acceptor_construct_pos0": actual_acceptor_pos0,
-                            "deposited_acceptor_construct_pos0": deposited_acceptor_pos0,
-                            "actual_acceptor_padded_pos0": left_padding + actual_acceptor_pos0,
-                            "deposited_acceptor_padded_pos0": left_padding
-                            + deposited_acceptor_pos0,
-                            "actual_donor_construct_pos0": actual_acceptor_pos0
-                            + exon.exon_length
-                            - 1,
-                            "deposited_donor_construct_pos0": deposited_acceptor_pos0
-                            + exon.exon_length
-                            - 1,
-                            "actual_donor_padded_pos0": left_padding
-                            + actual_acceptor_pos0
-                            + exon.exon_length
-                            - 1,
-                            "deposited_donor_padded_pos0": left_padding
-                            + deposited_acceptor_pos0
-                            + exon.exon_length
-                            - 1,
-                            "ontology_term": ALPHAGENOME["ontology_term"],
-                            "organism": ALPHAGENOME["organism"],
-                            "requested_output": ALPHAGENOME["requested_output"],
-                            "model_loading_identifier": ALPHAGENOME["model_loading_identifier"],
-                            "interval": None,
-                        },
-                        "prediction": minigene_prediction,
-                        "quality": {
-                            "available": all(
-                                value is not None for value in minigene_prediction.values()
-                            ),
-                            "variant_metadata_verified": True,
-                            "canonical_sites_verified": minigene_sites_verified,
-                            "baseline_eligible": minigene_sites_verified,
-                            "short_upstream_flank": exon.native_upstream_length != 70,
-                        },
-                    },
-                },
-            }
-        )
+    candidates, private_candidates = _build_candidate_records(exon, panel)
+    sampling = sample_score_bins(
+        [ScoredAllele(v.stable_key, v.delta_psi) for v in variants],
+        question_key=f"opensplice:{exon.ensembl_exon_id}:all_alleles",
+        seed=SAMPLING_SEED,
+    )
 
     return {
         "source_dataset": SOURCE_DATASET,
@@ -866,7 +673,7 @@ def build_source_record(
         "reporter_context": _reporter_context(cassette, exon),
         "candidates": candidates,
         "task_family": TASK_FAMILY,
-        "tags": ["minigene", "quantitative", "ranking", "snv", "splicing"],
+        "tags": ["minigene", "quantitative", "ranking", "splicing"],
         "source_metadata": {
             "display_name": f"OpenSplice exon {source_record_id}",
             "gene": summary.gene,
@@ -916,7 +723,11 @@ def build_source_record(
                 "end_exon": exon.end_exon,
                 "exon_length": exon.exon_length,
             },
-            "alphagenome_provenance": _alphagenome_provenance(),
+            "sampling": {
+                "algorithm": SAMPLING_ALGORITHM,
+                "seed": SAMPLING_SEED,
+                **sampling.provenance(),
+            },
             "selected_candidates": private_candidates,
         },
     }
@@ -933,8 +744,8 @@ def _manifest_configuration() -> dict[str, Any]:
         "exon_count": EXON_COUNT,
         "distinct_gene_count": EXON_COUNT,
         "panel_size": PANEL_SIZE,
-        "quantile_bins": QUANTILE_BINS,
-        "samples_per_bin": SAMPLES_PER_BIN,
+        "score_bins": 5,
+        "anchor_policy": "p01_p99",
         "sampling_seed": SAMPLING_SEED,
         "sampling_algorithm": SAMPLING_ALGORITHM,
         "quantile_algorithm": "Hyndman-Fan type 7 with linear interpolation",
@@ -945,7 +756,7 @@ def _manifest_configuration() -> dict[str, Any]:
         "variant_rank_tiebreakers": (
             "ascending delta_psi, local position, REF, ALT, source variant_id"
         ),
-        "bin_allocation": "first N mod 10 bins receive one extra row",
+        "bin_allocation": "equal allocation capped by population; redistribute by ascending bin",
         "candidate_display_order": "local position, REF, ALT",
         "candidate_ids": "V01 through V50",
         "model_visible_coordinates": (
@@ -969,7 +780,7 @@ def _selected_panel_manifest(record: Mapping[str, Any]) -> dict[str, Any]:
                     alt=candidate["source"]["construct_variant"]["alt"],
                     variant_id=candidate["source"]["variant_id"],
                 ),
-                "quantile_bin": candidate["selection"]["quantile_bin"],
+                "score_bin": candidate["selection"]["score_bin"],
                 "sampling_digest": candidate["selection"]["sampling_digest"],
             }
             for candidate in metadata["selected_candidates"]
@@ -1060,13 +871,6 @@ def validate_prepared_artifacts(
     }
     if not isinstance(sources, dict) or sources.get("figshare") != expected_figshare:
         raise OpenSplicePreparationError("OpenSplice Figshare provenance does not match")
-    repository = sources.get("opensplice_repository")
-    if (
-        not isinstance(repository, dict)
-        or repository.get("url") != ALPHAGENOME["repository"]
-        or repository.get("commit") != ALPHAGENOME["commit"]
-    ):
-        raise OpenSplicePreparationError("OpenSplice repository provenance does not match")
     processed_cache = sources.get("processed_cache")
     expected_cache_key = cache_key(cache_configuration())
     if (
@@ -1114,7 +918,17 @@ def validate_prepared_artifacts(
             or (gene is not None and (not isinstance(gene, str) or not gene))
         ):
             raise OpenSplicePreparationError("OpenSplice exon summary identity is invalid")
-        if count >= PANEL_SIZE:
+        q01, q99 = summary.get("q01"), summary.get("q99")
+        if count and (
+            not isinstance(q01, (int, float))
+            or not isinstance(q99, (int, float))
+            or not math.isfinite(q01)
+            or not math.isfinite(q99)
+            or q01 > q99
+        ):
+            raise OpenSplicePreparationError("exon score anchors are invalid")
+        collapsed = count >= PANEL_SIZE and q01 == q99
+        if count >= PANEL_SIZE and not collapsed:
             q05 = summary.get("q05")
             q95 = summary.get("q95")
             robust_range = summary.get("robust_range")
@@ -1138,7 +952,7 @@ def validate_prepared_artifacts(
             if any(summary.get(field) is not None for field in ("q05", "q95", "robust_range")):
                 raise OpenSplicePreparationError("ineligible exon has quantile statistics")
             reasons = (
-                "fewer_than_50_eligible_snvs",
+                "collapsed_score_anchors" if collapsed else "fewer_than_50_eligible_alleles",
                 *(("missing_source_gene_assignment",) if gene is None else ()),
             )
         provisional.append(
@@ -1151,6 +965,8 @@ def validate_prepared_artifacts(
                 robust_range=summary.get("robust_range"),
                 minimum=summary.get("minimum"),
                 maximum=summary.get("maximum"),
+                q01=q01,
+                q99=q99,
                 exclusion_reasons=reasons,
             )
         )
@@ -1287,7 +1103,6 @@ def validate_prepared_artifacts(
             }
             or construct.get("tested_exon_interval")
             != {"start": expected_segments[3]["start"], "end": expected_segments[3]["end"]}
-            or metadata.get("alphagenome_provenance") != _alphagenome_provenance()
             or record.get("assay_context") != _assay_context()
             or record.get("reporter_context") != _reporter_context(cassette, exon)
         ):
@@ -1306,252 +1121,74 @@ def validate_prepared_artifacts(
             or [item.get("candidate_id") for item in private] != expected_candidate_ids
         ):
             raise OpenSplicePreparationError(f"{label}: private candidate IDs mismatch")
-        bins = Counter(item.get("selection", {}).get("quantile_bin") for item in private)
-        if bins != Counter(dict.fromkeys(range(1, QUANTILE_BINS + 1), SAMPLES_PER_BIN)):
-            raise OpenSplicePreparationError(f"{label}: rank bins are unbalanced")
-        keys = []
-        for candidate, private_candidate in zip(candidates, private, strict=True):
-            position = candidate.get("pos")
-            ref = candidate.get("ref")
-            alt = candidate.get("alt")
-            measurements = private_candidate.get("measurements", {})
-            if not isinstance(measurements, dict):
-                raise OpenSplicePreparationError(f"{label}: private measurements are invalid")
+        validate_sampling_provenance(
+            metadata.get("sampling"),
+            [
+                (item["measurements"]["delta_psi"], item["selection"]["score_bin"])
+                for item in private
+            ],
+            seed=SAMPLING_SEED,
+            algorithm=SAMPLING_ALGORITHM,
+        )
+        keys = [(c["pos"], c["ref"], c["alt"]) for c in candidates]
+        restored = []
+        for item in private:
+            src, measures = item["source"], item["measurements"]
+            edit = src["construct_variant"]
+            start, ref, alt = edit["insert_position"], edit["ref"], edit["alt"]
+            mutant = src["mutant_insert_sequence"]
             if (
-                candidate.get("chrom") != REFERENCE_CONTIG
-                or isinstance(position, bool)
-                or not isinstance(position, int)
-                or not isinstance(ref, str)
-                or not isinstance(alt, str)
-                or len(ref) != 1
-                or len(alt) != 1
-                or ref == alt
-                or cassette[position - 1 : position] != ref
-                or candidate.get("reference_score") != measurements.get("delta_psi")
-                or isinstance(candidate.get("reference_score"), bool)
-                or not isinstance(candidate.get("reference_score"), (int, float))
-                or not math.isfinite(candidate["reference_score"])
-            ):
-                raise OpenSplicePreparationError(f"{label}: invalid displayed candidate")
-            keys.append((position, ref, alt))
-            source = private_candidate.get("source", {})
-            if not isinstance(source, dict):
-                raise OpenSplicePreparationError(f"{label}: private source metadata is invalid")
-            construct_variant = source.get("construct_variant", {})
-            genomic_variant = source.get("genomic_variant", {})
-            measurements = private_candidate.get("measurements", {})
-            selection = private_candidate.get("selection", {})
-            if not all(
-                isinstance(value, dict)
-                for value in (construct_variant, genomic_variant, measurements, selection)
-            ):
-                raise OpenSplicePreparationError(f"{label}: private candidate structure is invalid")
-            variant_id = source.get("variant_id")
-            insert_position = construct_variant.get("insert_position")
-            quantile_bin = selection.get("quantile_bin")
-            stable_key = f"{insert_position}:{ref}:{alt}:{variant_id}"
-            expected_digest = (
-                _sample_digest_from_stable_key(
-                    SAMPLING_SEED,
-                    exon_id,
-                    quantile_bin,
-                    stable_key,
-                )
-                if isinstance(quantile_bin, int) and not isinstance(quantile_bin, bool)
-                else None
-            )
-            if (
-                set(source)
-                != {
-                    "gene",
-                    "exon_id",
-                    "ensembl_exon_id",
-                    "variant_id",
-                    "genomic_variant",
-                    "construct_variant",
-                }
-                or source.get("gene") != metadata.get("gene")
-                or source.get("ensembl_exon_id") != exon_id
-                or not isinstance(source.get("exon_id"), str)
-                or not source["exon_id"]
-                or not isinstance(variant_id, str)
-                or not variant_id
-                or set(construct_variant)
-                != {"insert_position", "cassette_position", "ref", "alt", "region"}
-                or construct_variant.get("cassette_position") != position
-                or construct_variant.get("ref") != ref
-                or construct_variant.get("alt") != alt
-                or construct_variant.get("insert_position") != position - len(FIXED_PREFIX)
-                or not isinstance(construct_variant.get("region"), str)
-                or set(genomic_variant) != {"chrom", "pos", "ref", "alt", "strand"}
-                or not isinstance(genomic_variant.get("chrom"), str)
-                or not genomic_variant["chrom"]
-                or isinstance(genomic_variant.get("pos"), bool)
-                or not isinstance(genomic_variant.get("pos"), int)
-                or genomic_variant["pos"] < 1
-                or not isinstance(genomic_variant.get("ref"), str)
-                or not isinstance(genomic_variant.get("alt"), str)
-                or len(genomic_variant["ref"]) != 1
-                or len(genomic_variant["alt"]) != 1
-                or genomic_variant["ref"] == genomic_variant["alt"]
-                or genomic_variant.get("strand") != strand
-                or measurements.get("measured") is not True
+                src["ensembl_exon_id"] != exon_id
+                or src["gene"] != metadata["gene"]
+                or wt_insert[start - 1 : start - 1 + len(ref)] != ref
+                or wt_insert[: start - 1] + alt + wt_insert[start - 1 + len(ref) :] != mutant
                 or any(
-                    isinstance(measurements.get(field), bool)
-                    or not isinstance(measurements.get(field), (int, float))
-                    or not math.isfinite(measurements[field])
-                    for field in ("psi_r1", "psi_r2", "psi_r3", "delta_psi")
+                    isinstance(measures.get(f), bool)
+                    or not isinstance(measures.get(f), (int, float))
+                    or not math.isfinite(measures[f])
+                    for f in ("delta_psi", "psi_r1", "psi_r2", "psi_r3")
                 )
-                or set(selection) != {"quantile_bin", "sampling_digest"}
-                or not isinstance(quantile_bin, int)
-                or isinstance(quantile_bin, bool)
-                or not 1 <= quantile_bin <= QUANTILE_BINS
-                or selection.get("sampling_digest") != expected_digest
             ):
-                raise OpenSplicePreparationError(f"{label}: private candidate provenance mismatch")
-            alphagenome = private_candidate.get("alphagenome", {})
-            if not isinstance(alphagenome, dict) or set(alphagenome) != {
-                "genome",
-                "minigene",
-            }:
-                raise OpenSplicePreparationError(f"{label}: AlphaGenome metadata is incomplete")
-            for mode in ("genome", "minigene"):
-                member = alphagenome[mode]
-                if not isinstance(member, dict) or set(member) != {
-                    "input",
-                    "prediction",
-                    "quality",
-                }:
-                    raise OpenSplicePreparationError(
-                        f"{label}: AlphaGenome {mode} metadata is incomplete"
+                raise OpenSplicePreparationError(f"{label}: source allele or measurement mismatch")
+            variant = Variant(
+                gene=src["gene"],
+                exon_id=src["exon_id"],
+                ensembl_exon_id=exon_id,
+                variant_id=src["variant_id"],
+                nt_seq=mutant,
+                start=start,
+                wt=ref,
+                mut=alt,
+                region=edit["region"],
+                **{
+                    k: measures[k]
+                    for k in (
+                        "psi_r1",
+                        "psi_r2",
+                        "psi_r3",
+                        "wt_psi",
+                        "psi",
+                        "delta_psi",
+                        "se_wt_psi",
+                        "se_psi",
+                        "se",
+                        "se_wt",
+                        "se_d",
+                        "significant",
                     )
-                prediction = member["prediction"]
-                quality = member["quality"]
-                expected_prediction_fields = (
-                    set(GENOME_PREDICTION_COLUMNS)
-                    if mode == "genome"
-                    else set(MINIGENE_PREDICTION_COLUMNS)
-                )
-                identifier_field = "variant_id" if mode == "genome" else "identifier"
-                if (
-                    not isinstance(prediction, dict)
-                    or set(prediction) != expected_prediction_fields
-                    or not isinstance(quality, dict)
-                    or quality.get("available")
-                    is not all(value is not None for value in prediction.values())
-                ):
-                    raise OpenSplicePreparationError(
-                        f"{label}: AlphaGenome {mode} prediction metadata is invalid"
-                    )
-                for field, value in prediction.items():
-                    if value is None:
-                        continue
-                    if field == identifier_field:
-                        valid = isinstance(value, str) and bool(value)
-                    else:
-                        valid = (
-                            isinstance(value, (int, float))
-                            and not isinstance(value, bool)
-                            and math.isfinite(value)
-                        )
-                    if not valid:
-                        raise OpenSplicePreparationError(
-                            f"{label}: AlphaGenome {mode} prediction value is invalid"
-                        )
-            genome_prediction = alphagenome["genome"]["prediction"]
-            minigene_prediction = alphagenome["minigene"]["prediction"]
-            minigene_input = alphagenome["minigene"]["input"]
-            genome_input = alphagenome["genome"]["input"]
-            if not isinstance(minigene_input, dict) or not isinstance(genome_input, dict):
-                raise OpenSplicePreparationError(f"{label}: AlphaGenome inputs are invalid")
-            expected_mutant = wt_insert[: insert_position - 1] + alt + wt_insert[insert_position:]
-            total_padding = ALPHAGENOME["input_length"] - len(cassette)
-            left_padding = total_padding // 2
-            right_padding = total_padding - left_padding
-            actual_acceptor_pos0 = len(FIXED_PREFIX) + upstream_length
-            deposited_acceptor_pos0 = ALPHAGENOME["deposited_minigene_acceptor_pos0"]
-            actual_donor_pos0 = actual_acceptor_pos0 + exon_length - 1
-            deposited_donor_pos0 = deposited_acceptor_pos0 + exon_length - 1
-            expected_minigene_input = {
-                "variant_metadata_identifier": minigene_prediction["identifier"],
-                "mutagenized_insert_sequence": expected_mutant,
-                "complete_variant_cassette_sha256": hashlib.sha256(
-                    (FIXED_PREFIX + expected_mutant + FIXED_SUFFIX).encode()
-                ).hexdigest(),
-                "core_length": len(cassette),
-                "target_length": ALPHAGENOME["input_length"],
-                "left_n_padding": left_padding,
-                "right_n_padding": right_padding,
-                "actual_acceptor_construct_pos0": actual_acceptor_pos0,
-                "deposited_acceptor_construct_pos0": deposited_acceptor_pos0,
-                "actual_acceptor_padded_pos0": left_padding + actual_acceptor_pos0,
-                "deposited_acceptor_padded_pos0": left_padding + deposited_acceptor_pos0,
-                "actual_donor_construct_pos0": actual_donor_pos0,
-                "deposited_donor_construct_pos0": deposited_donor_pos0,
-                "actual_donor_padded_pos0": left_padding + actual_donor_pos0,
-                "deposited_donor_padded_pos0": left_padding + deposited_donor_pos0,
-                "ontology_term": ALPHAGENOME["ontology_term"],
-                "organism": ALPHAGENOME["organism"],
-                "requested_output": ALPHAGENOME["requested_output"],
-                "model_loading_identifier": ALPHAGENOME["model_loading_identifier"],
-                "interval": None,
-            }
-            sites_verified = actual_acceptor_pos0 == deposited_acceptor_pos0
-            expected_minigene_quality = {
-                "available": all(value is not None for value in minigene_prediction.values()),
-                "variant_metadata_verified": True,
-                "canonical_sites_verified": sites_verified,
-                "baseline_eligible": sites_verified,
-                "short_upstream_flank": not sites_verified,
-            }
-            if (
-                minigene_input != expected_minigene_input
-                or alphagenome["minigene"]["quality"] != expected_minigene_quality
-            ):
-                raise OpenSplicePreparationError(
-                    f"{label}: AlphaGenome minigene input reconstruction failed"
-                )
-            interval = _genome_interval(exon)
-            expected_genome_input = {
-                "vcf_path": (
-                    f"alphagenome_genome_input_per_exon/{exon_id}_vcf_spliceai_pangolin.vcf"
-                ),
-                "vcf_variant_id": genome_prediction["variant_id"],
-                "chrom": genomic_variant["chrom"],
-                "position_1based": genomic_variant["pos"],
-                "reference_bases": genomic_variant["ref"],
-                "alternate_bases": genomic_variant["alt"],
-                "interval_start0": interval["start0"],
-                "interval_end0": interval["end0"],
-                "interval_center_pos1": interval["center_pos1"],
-                "strand": "+" if strand == 1 else "-",
-                "canonical_sites": [
-                    {
-                        "boundary": "start_exon",
-                        "site_pos1": start_exon,
-                        "role": "acceptor" if strand == 1 else "donor",
-                    },
-                    {
-                        "boundary": "end_exon",
-                        "site_pos1": end_exon,
-                        "role": "donor" if strand == 1 else "acceptor",
-                    },
-                ],
-                "ontology_term": ALPHAGENOME["ontology_term"],
-                "organism": ALPHAGENOME["organism"],
-                "requested_output": ALPHAGENOME["requested_output"],
-            }
-            expected_genome_quality = {
-                "available": all(value is not None for value in genome_prediction.values()),
-                "vcf_input_verified": True,
-            }
-            if (
-                genome_input != expected_genome_input
-                or alphagenome["genome"]["quality"] != expected_genome_quality
-            ):
-                raise OpenSplicePreparationError(
-                    f"{label}: AlphaGenome genome input reconstruction failed"
-                )
+                },
+            )
+            bin_index = item["selection"]["score_bin"]
+            digest = sampling_digest(
+                SAMPLING_SEED, f"opensplice:{exon_id}:all_alleles", bin_index, variant.stable_key
+            )
+            restored.append((variant, bin_index, digest))
+        validate_unique_variants([v for v, _, _ in restored], exon_id=exon_id)
+        expected_candidates, expected_private = _build_candidate_records(exon, restored)
+        if candidates != expected_candidates or private != expected_private:
+            raise OpenSplicePreparationError(
+                f"{label}: candidate reconstruction or provenance mismatch"
+            )
         if keys != sorted(keys) or len(keys) != len(set(keys)):
             raise OpenSplicePreparationError(f"{label}: candidates are not canonically ordered")
         expected_manifest_panels.append(_selected_panel_manifest(record))
@@ -1559,9 +1196,8 @@ def validate_prepared_artifacts(
         for forbidden in (
             metadata.get("gene"),
             metadata.get("ensembl_exon_id"),
-            "AlphaGenome",
             "delta_psi",
-            "quantile_bin",
+            "score_bin",
         ):
             if isinstance(forbidden, str) and forbidden and forbidden in prompt_fields:
                 raise OpenSplicePreparationError(f"{label}: private metadata leaked into context")
