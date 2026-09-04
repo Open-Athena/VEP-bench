@@ -189,6 +189,34 @@ export function outcomeBadge(value) {
   return badge;
 }
 
+export function enhanceTableRowSelection(table) {
+  table.classList.add("vepbench-row-select-table");
+
+  const labelRows = () => {
+    for (const row of table.querySelectorAll("tbody tr")) {
+      const radio = row.querySelector('input[type="radio"]');
+      if (!radio || radio.hasAttribute("aria-label")) continue;
+      const label = row.cells[1]?.textContent.trim();
+      radio.setAttribute("aria-label", label ? `Select ${label}` : "Select row");
+    }
+  };
+
+  labelRows();
+  new MutationObserver(labelRows).observe(table, {childList: true, subtree: true});
+
+  table.addEventListener("click", (event) => {
+    if (event.target.closest("a, button, input, select, textarea, [role=button]")) return;
+    const row = event.target.closest("tbody tr");
+    if (!row || !table.contains(row)) return;
+    const radio = row.querySelector('input[type="radio"]');
+    if (!radio) return;
+    radio.focus({preventScroll: true});
+    radio.click();
+  });
+
+  return table;
+}
+
 function element(tag, className, text) {
   const node = document.createElement(tag);
   if (className) node.className = className;
