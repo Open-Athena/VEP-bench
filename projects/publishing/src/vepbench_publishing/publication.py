@@ -165,7 +165,7 @@ def _published_upstream_provider(providers: set[str | None]) -> str | None:
 
 def _leaderboard_metadata(task_sets: Mapping[str, Mapping[str, Any]]) -> dict[str, Any]:
     return {
-        "aggregation_method": "classification_task_macro_average_v0",
+        "aggregation_method": "task_score_macro_average_v1",
         "evaluation_profiles": [
             {
                 "task_family": task_family,
@@ -174,19 +174,6 @@ def _leaderboard_metadata(task_sets: Mapping[str, Mapping[str, Any]]) -> dict[st
                 "primary_metric": (
                     "exact_match" if task_set["task_type"] == "multiple_choice" else "spearman"
                 ),
-            }
-            for task_family, task_set in sorted(task_sets.items())
-        ],
-    }
-
-
-def _legacy_leaderboard_metadata(task_sets: Mapping[str, Mapping[str, Any]]) -> dict[str, Any]:
-    return {
-        "aggregation_method": "task_macro_average_v0",
-        "evaluation_profiles": [
-            {
-                "task_family": task_family,
-                "evaluation_profile": task_set["evaluation_profile"],
             }
             for task_family, task_set in sorted(task_sets.items())
         ],
@@ -437,16 +424,10 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
     ):
         raise BuildError("runs.json does not match the manifest question set")
     expected_leaderboard = _leaderboard_metadata(task_sets)
-    accepted_leaderboards = {canonical_json(expected_leaderboard)}
-    if all(task_set["task_type"] == "multiple_choice" for task_set in task_sets.values()):
-        accepted_leaderboards.add(canonical_json(_legacy_leaderboard_metadata(task_sets)))
-    if (
-        "leaderboard" in runs_document
-        and canonical_json(runs_document["leaderboard"]) not in accepted_leaderboards
-    ):
+    if "leaderboard" not in runs_document:
+        raise BuildError("runs.json is missing leaderboard aggregation metadata")
+    if canonical_json(runs_document["leaderboard"]) != canonical_json(expected_leaderboard):
         raise BuildError("runs.json has invalid leaderboard aggregation metadata")
-    if len(task_sets) > 1 and "leaderboard" not in runs_document:
-        raise BuildError("multi-task runs.json is missing leaderboard aggregation metadata")
     runs = runs_document["runs"]
     if len(runs) != runs_descriptor["records"]:
         raise BuildError("run artifact record count does not match its contents")

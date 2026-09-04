@@ -124,7 +124,7 @@ test("new comparison models have human-readable labels", () => {
 
 test("overall leaderboard macro-averages complete task profiles", () => {
   const leaderboard = {
-    aggregation_method: "task_macro_average_v0",
+    aggregation_method: "task_score_macro_average_v1",
     evaluation_profiles: [
       {
         task_family: "synthetic_alpha",
@@ -178,6 +178,54 @@ test("overall leaderboard macro-averages complete task profiles", () => {
   ]);
 });
 
+test("overall leaderboard macro-averages task Score across different metrics", () => {
+  const leaderboard = {
+    aggregation_method: "task_score_macro_average_v1",
+    evaluation_profiles: [
+      {
+        task_family: "synthetic_effect",
+        evaluation_profile: "synthetic_effect:mc-effect-v1@1.0",
+        primary_metric: "exact_match",
+        task_type: "multiple_choice"
+      },
+      {
+        task_family: "synthetic_ranking",
+        evaluation_profile: "synthetic_ranking:ranking-v1@1.0",
+        primary_metric: "spearman",
+        task_type: "ranking"
+      }
+    ]
+  };
+  const rows = overallLeaderboardRows([
+    run({
+      accuracy: 0.8,
+      evaluationProfile: "synthetic_effect:mc-effect-v1@1.0",
+      runId: "mixed-model-classification"
+    }),
+    run({
+      accuracy: null,
+      configurationKey: `cfg-${"1".repeat(64)}`,
+      evaluationProfile: "synthetic_ranking:ranking-v1@1.0",
+      runId: "mixed-model-ranking",
+      spearman: -0.2,
+      taskType: "ranking",
+      validOutputRate: 1
+    })
+  ], leaderboard);
+
+  assert.equal(rows.length, 1);
+  assert.ok(Math.abs(rows[0].score - 0.3) < Number.EPSILON);
+  assert.equal(rows[0].accuracy, null);
+  assert.equal(rows[0].primary_metric, "task_macro_average");
+  assert.deepEqual(
+    rows[0].task_scores.map((task) => [task.task_family, task.score, task.primary_metric]),
+    [
+      ["synthetic_effect", 0.8, "exact_match"],
+      ["synthetic_ranking", -0.2, "spearman"]
+    ]
+  );
+});
+
 test("overall leaderboard rejects unknown aggregation metadata", () => {
   assert.deepEqual(overallLeaderboardRows([], null), []);
   assert.deepEqual(overallLeaderboardRows([], {
@@ -186,7 +234,7 @@ test("overall leaderboard rejects unknown aggregation metadata", () => {
   }), []);
 });
 
-test("overall leaderboard scope is hidden when classification aggregation has only ranking tasks", () => {
+test("overall leaderboard requires the task Score macro-average contract", () => {
   assert.equal(supportsOverallLeaderboard({
     aggregation_method: "classification_task_macro_average_v0",
     evaluation_profiles: [
@@ -197,16 +245,20 @@ test("overall leaderboard scope is hidden when classification aggregation has on
   assert.equal(supportsOverallLeaderboard({
     aggregation_method: "classification_task_macro_average_v0",
     evaluation_profiles: [{task_family: "synthetic", task_type: "multiple_choice"}]
-  }), true);
+  }), false);
   assert.equal(supportsOverallLeaderboard({
     aggregation_method: "task_macro_average_v0",
+    evaluation_profiles: [{task_family: "synthetic", task_type: "multiple_choice"}]
+  }), false);
+  assert.equal(supportsOverallLeaderboard({
+    aggregation_method: "task_score_macro_average_v1",
     evaluation_profiles: [{task_family: "synthetic", task_type: "multiple_choice"}]
   }), true);
 });
 
 test("leaderboard scope switches score, tokens, and cost to one task", () => {
   const leaderboard = {
-    aggregation_method: "task_macro_average_v0",
+    aggregation_method: "task_score_macro_average_v1",
     evaluation_profiles: [
       {task_family: "synthetic_alpha", evaluation_profile: "synthetic_alpha:synthetic_alpha-snv-v1@1.0"},
       {
@@ -302,7 +354,7 @@ test("ranking scope uses Spearman and exposes ranking diagnostics", () => {
   assert.equal(rows[0].primary_metric, "spearman");
 });
 
-test("classification overall excludes ranking but model selection retains its run", () => {
+test("unsupported classification aggregation does not affect model selection", () => {
   const leaderboard = {
     aggregation_method: "classification_task_macro_average_v0",
     evaluation_profiles: [
@@ -338,9 +390,7 @@ test("classification overall excludes ranking but model selection retains its ru
   ];
 
   const overall = overallLeaderboardRows(runs, leaderboard);
-  assert.equal(overall.length, 1);
-  assert.equal(overall[0].score, 0.75);
-  assert.deepEqual(overall[0].runs.map((candidate) => candidate.run_id), ["model-synthetic_alpha"]);
+  assert.deepEqual(overall, []);
 
   const selections = modelSelectionRows(runs, leaderboard);
   assert.equal(selections.length, 1);
@@ -384,7 +434,7 @@ test("model selection includes a configuration with only a complete ranking run"
 
 test("model selection has one best-first row with a task run for each model", () => {
   const leaderboard = {
-    aggregation_method: "task_macro_average_v0",
+    aggregation_method: "task_score_macro_average_v1",
     evaluation_profiles: [
       {task_family: "synthetic_alpha", evaluation_profile: "synthetic_alpha:synthetic_alpha-snv-v1@1.0"},
       {

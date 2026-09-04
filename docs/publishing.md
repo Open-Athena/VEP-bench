@@ -158,13 +158,18 @@ uv run --no-sync vepbench-site build \
 
 The explorer is a read-only static site. It loads `versions/main/runs.json`
 first, including the leaderboard's model release date, total tokens, and total
-cost. The score-efficiency chart switches between cost and tokens and draws one
-line per model family. Leaderboard score bars and chart values are presented as
-percentages; published score values remain in their canonical representation,
-and negative correlations are displayed as 0%. The explorer fetches the
-question index and a compact
+cost. Its default **All tasks** view macro-averages each task profile's primary
+`Score`, independent of the metric that defines that score. Task-specific views
+retain their own primary metric. The score-efficiency chart switches between
+cost and tokens and draws one line per model family. Leaderboard score bars and
+chart values are presented as percentages; published score values remain in
+their canonical representation, and negative correlations are displayed as 0%.
+The explorer fetches the question index and a compact
 outcome index for the selected run when a user opens the question view on its
 task page.
+Unscored attempts caused by a refusal or content filter in any task are shown
+once in a benchmark-wide section at the bottom of the leaderboard page rather
+than being filtered by the task selector.
 This supports valid-output and format-failure filters while full answer content
 is loaded one compressed object at a time. The question pane renders the exact
 stored model prompt; it does not display a measured-versus-predicted effect

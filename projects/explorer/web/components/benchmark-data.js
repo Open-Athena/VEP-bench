@@ -152,17 +152,15 @@ function sumIfComplete(values) {
     : null;
 }
 
-export function overallLeaderboardRows(runs, leaderboard) {
-  const method = leaderboard?.aggregation_method;
-  if (!["task_macro_average_v0", "classification_task_macro_average_v0"].includes(method)) {
-    return [];
-  }
-  const allProfiles = leaderboard.evaluation_profiles;
-  if (!Array.isArray(allProfiles) || allProfiles.length === 0) return [];
-  const profiles = method === "classification_task_macro_average_v0"
-    ? allProfiles.filter((profile) => profile.task_type === "multiple_choice")
-    : allProfiles;
+function overallProfiles(leaderboard) {
+  const profiles = leaderboard?.evaluation_profiles;
   if (!Array.isArray(profiles) || profiles.length === 0) return [];
+  return leaderboard.aggregation_method === "task_score_macro_average_v1" ? profiles : [];
+}
+
+export function overallLeaderboardRows(runs, leaderboard) {
+  const profiles = overallProfiles(leaderboard);
+  if (profiles.length === 0) return [];
   const profileKeys = new Set();
   for (const profile of profiles) {
     if (typeof profile?.task_family !== "string"
@@ -195,20 +193,22 @@ export function overallLeaderboardRows(runs, leaderboard) {
   for (const group of groups.values()) {
     const taskRuns = profiles.map((profile) => group.get(profile.evaluation_profile));
     if (taskRuns.some((run) => !run)) continue;
-    const taskAccuracies = taskRuns.map((run) => nonnegativeNumber(run.metrics.accuracy));
-    if (taskAccuracies.some((accuracy) => accuracy === null)) continue;
-    const representative = taskRuns[0];
-    const row = rowForRun(representative);
+    const taskRows = taskRuns.map(rowForRun);
+    const taskScores = taskRows.map((taskRow) => taskRow.score);
+    const taskPrimaryMetrics = taskRows.map((taskRow) => taskRow.primary_metric);
+    if (taskScores.some((score) => score === null)) continue;
+    const row = taskRows[0];
     const providers = new Set(
       taskRuns.map((run) => run.model.upstream_provider ?? "not reported")
     );
     if (providers.size > 1) row.model_cell.provider = AUTO_ROUTED_PROVIDER;
     row.runs = taskRuns;
     delete row.run;
-    row.accuracy = taskAccuracies.reduce((total, accuracy) => total + accuracy, 0)
-      / taskAccuracies.length;
-    row.score = row.accuracy;
-    row.primary_metric = "exact_match";
+    row.score = taskScores.reduce((total, score) => total + score, 0) / taskScores.length;
+    row.accuracy = taskPrimaryMetrics.every((metric) => metric === "exact_match")
+      ? row.score
+      : null;
+    row.primary_metric = "task_macro_average";
     row.tokens = sumIfComplete(
       taskRuns.map((run) => nonnegativeNumber(run.metrics.total_tokens))
     );
@@ -222,7 +222,9 @@ export function overallLeaderboardRows(runs, leaderboard) {
     row.task_scores = profiles.map((profile, index) => ({
       task_family: profile.task_family,
       evaluation_profile: profile.evaluation_profile,
-      accuracy: taskAccuracies[index],
+      score: taskScores[index],
+      accuracy: taskPrimaryMetrics[index] === "exact_match" ? taskScores[index] : null,
+      primary_metric: taskPrimaryMetrics[index],
       run: taskRuns[index]
     }));
     rows.push(row);
@@ -231,11 +233,7 @@ export function overallLeaderboardRows(runs, leaderboard) {
 }
 
 export function supportsOverallLeaderboard(leaderboard) {
-  const profiles = leaderboard?.evaluation_profiles;
-  if (!Array.isArray(profiles) || profiles.length === 0) return false;
-  if (leaderboard.aggregation_method === "task_macro_average_v0") return true;
-  return leaderboard.aggregation_method === "classification_task_macro_average_v0"
-    && profiles.some((profile) => profile.task_type === "multiple_choice");
+  return overallProfiles(leaderboard).length > 0;
 }
 
 export function leaderboardRowsForScope(runs, leaderboard, taskFamily = null) {

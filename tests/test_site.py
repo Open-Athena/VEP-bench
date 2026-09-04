@@ -53,7 +53,8 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     assert 'label: "Task"' in leaderboard_source
     assert "supportsOverallLeaderboard(aggregation)" in leaderboard_source
     assert "? [null]" in leaderboard_source
-    assert "value: taskOptions[0]" in leaderboard_source
+    assert "value: allTasksAvailable ? null : taskOptions[0]" in leaderboard_source
+    assert "macro average of each task's primary Score" in leaderboard_source
     assert 'columns: ["model", "score", "release_date", "tokens", "cost"]' in (leaderboard_source)
     assert "Unscored model attempts" in leaderboard_source
     assert 'status: "Content filtered"' in leaderboard_source
@@ -61,6 +62,11 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     assert "Claude Opus 5 (medium)" in leaderboard_source
     assert "8/8 panels; zero output tokens; not ranked" in leaderboard_source
     assert "5/8 panels; run stopped and not ranked" in leaderboard_source
+    assert "visibleUnscoredAttempts" not in leaderboard_source
+    assert "visible regardless of the task selected" in leaderboard_source
+    assert leaderboard_source.index("## Unscored model attempts") > leaderboard_source.index(
+        "## Score by cost and token usage"
+    )
     assert 'y: {\n      label: "Score"' in leaderboard_source
     assert "displayScore," in leaderboard_source
     assert "score: displayScore(row.score)" in leaderboard_source
