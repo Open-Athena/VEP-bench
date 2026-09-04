@@ -144,6 +144,53 @@ export default {
         color: #5c4600;
       }
 
+      .vepbench-assay-date {
+        border-radius: 0.2rem;
+        font-variant-numeric: tabular-nums;
+        font-weight: 600;
+        padding: 0.05rem 0.2rem;
+        text-decoration-thickness: 0.08em;
+      }
+
+      .vepbench-assay-date-before {
+        background: #fff3bf;
+        color: #7a5200 !important;
+      }
+
+      .vepbench-assay-date-after {
+        background: #e6f4ea;
+        color: #0b6b2a !important;
+      }
+
+      .vepbench-assay-date-unknown {
+        background: color-mix(in srgb, currentColor 8%, transparent);
+        color: var(--theme-foreground-muted) !important;
+      }
+
+      .vepbench-cutoff-badge {
+        display: inline-block;
+        border-radius: 999px;
+        font-weight: 600;
+        line-height: 1.4;
+        padding: 0.05rem 0.4rem;
+        white-space: nowrap;
+      }
+
+      .vepbench-cutoff-before {
+        background: #fff3bf;
+        color: #5c4600;
+      }
+
+      .vepbench-cutoff-after {
+        background: #e6f4ea;
+        color: #0b5d1e;
+      }
+
+      .vepbench-cutoff-unknown {
+        background: color-mix(in srgb, currentColor 8%, transparent);
+        color: var(--theme-foreground-muted);
+      }
+
       .vepbench-score-cell {
         background: color-mix(in srgb, currentColor 6%, transparent);
         border-radius: 0.2rem;

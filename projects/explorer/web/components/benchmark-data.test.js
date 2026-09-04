@@ -4,6 +4,7 @@ import test from "node:test";
 
 import {
   answerPath,
+  assayCutoffRelation,
   defaultQuestionForExplorer,
   displayScore,
   fetchAnswer,
@@ -20,6 +21,7 @@ import {
   overallLeaderboardRows,
   outcomeIndexPath,
   predictionComparisonRows,
+  rankingOutcomeMetrics,
   resultTypeForAnswer,
   resultTypeLabel,
   runForTask,
@@ -34,6 +36,45 @@ test("display scores use a fixed zero-to-one percentage domain", () => {
   assert.equal(displayScore(Number.NaN), null);
 });
 
+test("ranking outcome metrics support current and legacy compact indexes", () => {
+  assert.deepEqual(
+    rankingOutcomeMetrics({value: -0.2, spearman_rho: -0.2, pearson_r: 0.4}),
+    {spearman_rho: -0.2, pearson_r: 0.4}
+  );
+  assert.deepEqual(
+    rankingOutcomeMetrics({value: 0.3, valid: true}),
+    {spearman_rho: 0.3, pearson_r: null}
+  );
+  assert.deepEqual(
+    rankingOutcomeMetrics({value: null, spearman_rho: null, pearson_r: null}),
+    {spearman_rho: null, pearson_r: null}
+  );
+});
+
+test("assay dates are compared with an explicit model knowledge cutoff", () => {
+  assert.equal(
+    assayCutoffRelation({date: "2024-01-01"}, "2026-02-16"),
+    "Before cutoff"
+  );
+  assert.equal(
+    assayCutoffRelation({date: "2026-02-16"}, "2026-02-16"),
+    "Before cutoff"
+  );
+  assert.equal(
+    assayCutoffRelation({date: "2026-02-17"}, "2026-02-16"),
+    "After cutoff"
+  );
+  assert.equal(assayCutoffRelation({date: "2026-04-30"}, "2026-05"), "Before cutoff");
+  assert.equal(assayCutoffRelation({date: "2026-05-31"}, "2026-05"), "Unknown");
+  assert.equal(
+    assayCutoffRelation({date: "2026-06-01"}, "2026-05"),
+    "After cutoff"
+  );
+  assert.equal(assayCutoffRelation({date: "2026-02-17"}, null), "Unknown");
+  assert.equal(assayCutoffRelation(null, "2026-02-16"), "Unknown");
+  assert.equal(assayCutoffRelation({date: "2026-02-17"}, "2026-13"), "Unknown");
+});
+
 function run({
   accuracy = 0.5,
   complete = true,
@@ -42,6 +83,7 @@ function run({
   effort = "medium",
   evaluationProfile = "synthetic_effect:mc-effect-v1@1.0",
   family = "Test family",
+  knowledgeCutoff = "2024-01-01",
   modelId = "test/model",
   provider = "Test provider",
   pearson = null,
@@ -79,6 +121,7 @@ function run({
     model: {
       model_id: modelId,
       family,
+      knowledge_cutoff: knowledgeCutoff,
       release_date: releaseDate,
       upstream_provider: provider
     },
@@ -104,6 +147,7 @@ test("leaderboard keeps the latest complete run per model configuration", () => 
   assert.equal(rows[0].model_cell.model, "model (medium)");
   assert.equal(rows[0].family, "Test family");
   assert.equal(rows[0].release_date, "2026-07-09");
+  assert.equal(rows[0].knowledge_cutoff, "2024-01-01");
   assert.equal(rows[0].tokens, 1200);
   assert.equal(rows[0].cost, 0.25);
 });
@@ -353,6 +397,69 @@ test("ranking scope uses Spearman and exposes ranking diagnostics", () => {
   assert.equal(rows[0].pearson, 0.41);
   assert.equal(rows[0].valid_output_rate, 0.9375);
   assert.equal(rows[0].primary_metric, "spearman");
+});
+
+test("leaderboard metric selection recomputes task and overall ranking scores", () => {
+  const leaderboard = {
+    aggregation_method: "task_score_macro_average_v1",
+    evaluation_profiles: [
+      {
+        task_family: "synthetic_alpha",
+        evaluation_profile: "synthetic_alpha:ranking-v1@1.0",
+        primary_metric: "spearman",
+        task_type: "ranking"
+      },
+      {
+        task_family: "synthetic_beta",
+        evaluation_profile: "synthetic_beta:ranking-v1@1.0",
+        primary_metric: "spearman",
+        task_type: "ranking"
+      }
+    ]
+  };
+  const runs = [
+    run({
+      accuracy: null,
+      configurationKey: `cfg-${"1".repeat(64)}`,
+      evaluationProfile: "synthetic_alpha:ranking-v1@1.0",
+      pearson: 0.8,
+      runId: "alpha",
+      spearman: 0.2,
+      taskType: "ranking",
+      validOutputRate: 1
+    }),
+    run({
+      accuracy: null,
+      configurationKey: `cfg-${"2".repeat(64)}`,
+      evaluationProfile: "synthetic_beta:ranking-v1@1.0",
+      pearson: 0.4,
+      runId: "beta",
+      spearman: 0.6,
+      taskType: "ranking",
+      validOutputRate: 1
+    })
+  ];
+
+  const spearmanOverall = leaderboardRowsForScope(runs, leaderboard, null, "spearman");
+  const pearsonOverall = leaderboardRowsForScope(runs, leaderboard, null, "pearson");
+  assert.equal(spearmanOverall.length, 1);
+  assert.equal(pearsonOverall.length, 1);
+  assert.equal(spearmanOverall[0].score, 0.4);
+  assert.equal(pearsonOverall[0].score, 0.6000000000000001);
+  assert.equal(pearsonOverall[0].primary_metric, "task_macro_average");
+  assert.deepEqual(
+    pearsonOverall[0].task_scores.map((task) => task.primary_metric),
+    ["pearson", "pearson"]
+  );
+
+  const pearsonTask = leaderboardRowsForScope(
+    runs,
+    leaderboard,
+    "synthetic_alpha",
+    "pearson"
+  );
+  assert.equal(pearsonTask[0].score, 0.8);
+  assert.equal(pearsonTask[0].primary_metric, "pearson");
 });
 
 test("unsupported classification aggregation does not affect model selection", () => {

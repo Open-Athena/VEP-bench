@@ -5,8 +5,8 @@ title: VEP-bench
 ```js
 import {
   formatCost,
-  formatDate,
   formatInteger,
+  formatKnowledgeCutoff,
   formatPercent
 } from "./components/vepbench.js";
 import {
@@ -50,17 +50,32 @@ const taskInput = Inputs.select(taskOptions, {
   value: allTasksAvailable ? null : taskOptions[0],
   format: (taskFamily) => taskFamily === null ? "All tasks" : taskName(taskFamily)
 });
-taskInput.style.maxWidth = "22rem";
-const metricOptions = [
+taskInput.style.maxWidth = "18rem";
+taskInput.style.display = "inline-grid";
+taskInput.style.verticalAlign = "top";
+const scoreMetricOptions = [
+  {key: "spearman", label: "Spearman"},
+  {key: "pearson", label: "Pearson"}
+];
+const scoreMetricInput = Inputs.select(scoreMetricOptions, {
+  label: "Metric",
+  value: scoreMetricOptions[0],
+  format: (option) => option.label
+});
+scoreMetricInput.style.maxWidth = "18rem";
+scoreMetricInput.style.display = "inline-grid";
+scoreMetricInput.style.marginLeft = "1rem";
+scoreMetricInput.style.verticalAlign = "top";
+const comparisonOptions = [
   {key: "cost", label: "Total cost", axis_label: "Total cost (USD)"},
   {key: "tokens", label: "Total tokens", axis_label: "Total tokens"}
 ];
-const metricInput = Inputs.select(metricOptions, {
+const comparisonInput = Inputs.select(comparisonOptions, {
   label: "Compare score against",
-  value: metricOptions[0],
+  value: comparisonOptions[0],
   format: (option) => option.label
 });
-metricInput.style.maxWidth = "22rem";
+comparisonInput.style.maxWidth = "22rem";
 ```
 
 # VEP-bench
@@ -73,17 +88,26 @@ every response and deterministic score can be inspected.
 
 ```js
 const selectedTaskFamily = view(taskInput);
+const selectedScoreMetric = view(scoreMetricInput);
 ```
 
 ```js
 const selectedTaskLabel = selectedTaskFamily === null
   ? "All tasks"
   : taskName(selectedTaskFamily);
+const scoreMetric = selectedScoreMetric?.key
+  ?? scoreMetricInput.value?.key
+  ?? "spearman";
+const scoreMetricLabel = scoreMetricOptions.find(
+  (option) => option.key === scoreMetric
+)?.label ?? "Spearman";
 ```
 
-<div style="display: flex; justify-content: flex-end; margin: 0.75rem 0;">
-  ${taskInput}
-</div>
+```js
+display(html`<nav aria-label="Leaderboard controls" style="display: flex; justify-content: flex-end; flex-wrap: wrap; margin: 0.75rem 0;">
+  ${taskInput}${scoreMetricInput}
+</nav>`);
+```
 
 ```js
 if (runsState.error) {
@@ -99,20 +123,21 @@ if (runsState.error) {
 const rows = leaderboardRowsForScope(
   runsState.document.runs,
   aggregation,
-  selectedTaskFamily
+  selectedTaskFamily,
+  scoreMetric
 );
 const formatScore = (value) => formatPercent(displayScore(value));
 ```
 
 ${selectedTaskFamily === null
-  ? "Showing the macro average of each task's primary Score."
-  : `Showing the primary Score for ${selectedTaskLabel}.`}
+  ? `Showing the macro-average ${scoreMetricLabel} correlation across tasks.`
+  : `Showing the mean ${scoreMetricLabel} correlation for ${selectedTaskLabel}.`}
 
 ```js
 const tableRows = rows.map((row) => ({
   model: row.model_cell.model,
   score: displayScore(row.score),
-  release_date: row.release_date,
+  knowledge_cutoff: row.knowledge_cutoff,
   tokens: row.tokens,
   cost: row.cost,
   family: row.family
@@ -126,17 +151,17 @@ function scoreBar(value) {
   </span>`;
 }
 const leaderboardTable = Inputs.table(tableRows, {
-  columns: ["model", "score", "release_date", "tokens", "cost"],
+  columns: ["model", "score", "knowledge_cutoff", "tokens", "cost"],
   header: {
     model: "Model",
     score: "Score",
-    release_date: "Release date",
+    knowledge_cutoff: "Knowledge cutoff",
     tokens: "Tokens",
     cost: "Cost"
   },
   format: {
     score: scoreBar,
-    release_date: formatDate,
+    knowledge_cutoff: formatKnowledgeCutoff,
     tokens: (value) => value === null ? "—" : formatInteger(value),
     cost: formatCost
   },
@@ -148,7 +173,7 @@ const leaderboardTable = Inputs.table(tableRows, {
   width: {
     model: 240,
     score: 100,
-    release_date: 110,
+    knowledge_cutoff: 130,
     tokens: 100,
     cost: 90
   },
@@ -168,12 +193,12 @@ display(html`<div class="card">${leaderboardTable}</div>`);
 Each line connects evaluated configurations from the same model family. Use the selector to compare the selected task's score with total run cost or total token usage.
 
 ```js
-const selectedMetric = view(metricInput);
+const selectedComparison = view(comparisonInput);
 ```
 
 ```js
-const metric = selectedMetric?.key ?? metricInput.value?.key ?? "cost";
-const metricLabel = metricOptions.find((option) => option.key === metric)?.axis_label
+const metric = selectedComparison?.key ?? comparisonInput.value?.key ?? "cost";
+const metricLabel = comparisonOptions.find((option) => option.key === metric)?.axis_label
   ?? "Total cost (USD)";
 const efficiencyRows = tableRows
   .filter((row) => row.score !== null && row[metric] !== null)
@@ -225,7 +250,7 @@ function scoreEfficiencyPlot(data, {width}) {
 ```
 
 <div style="display: flex; justify-content: flex-end; margin: 0.75rem 0;">
-  ${metricInput}
+  ${comparisonInput}
 </div>
 
 ```js

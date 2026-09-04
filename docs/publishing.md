@@ -29,10 +29,23 @@ and validates schemas, fingerprints, run completeness, and configuration
 identity.
 The publishing config selects the reviewed bucket and model catalog, resolving
 its catalog path relative to the YAML file. The catalog supplies leaderboard
-family and release-date metadata. `--model-catalog` can select another reviewed
-catalog for an experiment. Publication aggregates provider-reported usage into
-total tokens and total USD cost per run. Every published model must have a
-catalog entry. Named versions use lowercase slugs. Only `main` is official.
+family, release-date, and provider-documented knowledge-cutoff metadata.
+Knowledge cutoffs include an evidence URL or are explicitly null; they are never
+inferred from a model's release date. The catalog preserves the provider's
+published precision (`YYYY-MM` or `YYYY-MM-DD`). `--model-catalog` can select another
+reviewed catalog for an experiment. Publication aggregates provider-reported
+usage into total tokens and total USD cost per run. Every published model must
+have a catalog entry. Named versions use lowercase slugs. Only `main` is official.
+The main leaderboard can be filtered by task and switched between macro-average
+Spearman and Pearson correlation; either selection remains sorted from highest
+to lowest. The efficiency chart follows the same selected correlation metric.
+
+When an explorer change starts reading newly published run or outcome fields,
+rebuild and validate a candidate locally before merging. Deploy the
+backward-compatible explorer against the current official data before applying
+the new `versions/main`; then verify the refreshed bucket with a production
+smoke test. Browser-QA fixtures validate the contract but do not migrate the
+official bucket.
 
 For satMutMPRA, name the question set and curated result staging directory explicitly:
 
@@ -157,25 +170,43 @@ uv run --no-sync vepbench-site build \
 ```
 
 The explorer is a read-only static site. It loads `versions/main/runs.json`
-first, including the leaderboard's model release date, total tokens, and total
-cost. Its default **All tasks** view macro-averages each task profile's primary
-`Score`, independent of the metric that defines that score. Task-specific views
-retain their own primary metric. The score-efficiency chart switches between
-cost and tokens and draws one line per model family. Leaderboard score bars and
-chart values are presented as percentages; published score values remain in
-their canonical representation, and negative correlations are displayed as 0%.
+first, including each model's release date, nullable knowledge cutoff and
+evidence URL, total tokens, and total cost. The main leaderboard displays the
+knowledge cutoff rather than the release date because it is the relevant
+temporal boundary for assay exposure. The default **Spearman** view uses mean
+Spearman within a task and its macro-average across tasks; the adjacent metric
+selector switches both calculations to Pearson. The score-efficiency chart
+follows the selected correlation and can compare it with either cost or tokens,
+drawing one line per model family. Leaderboard score bars and chart values are
+presented as percentages; published score values remain in their canonical
+representation, and negative correlations are displayed as 0%.
 The explorer fetches the question index and a compact
 outcome index for the selected run when a user opens the question view on its
-task page.
+task page. Each task's question table also shows the assay's first verified
+date in an indexed public record. These dates and evidence links are reviewed
+in `projects/explorer/config/assay-publications.yaml`; they are site metadata,
+not model-visible question content.
+For the selected model, the task page compares each assay date with the
+provider-documented knowledge cutoff. Dates on or before an exact cutoff date
+are amber; dates after it are green. For a month-only cutoff, earlier and later
+months are classified, while an assay in the same month remains **Unknown**
+because its ordering cannot be established. The separate **Cutoff relation**
+column and filter use **Before cutoff**, **After cutoff**, or **Unknown**.
+Missing model cutoff metadata stays **Unknown** rather than falling back to
+model release date.
 Unscored attempts caused by a refusal or content filter in any task are shown
 once in a benchmark-wide section at the bottom of the leaderboard page rather
 than being filtered by the task selector.
 This supports valid-output and format-failure filters while full answer content
-is loaded one compressed object at a time. The question pane renders the exact
-stored model prompt. For ranking tasks, the answer pane pairs the written model
-response with a responsive measured-versus-predicted effect plot, including
-independently scaled axes, a dashed fitted trend line, and per-variant hover
-details. Complete raw archives remain downloadable without requiring a backend.
+is loaded one compressed object at a time. Ranking question lists show the
+per-question Spearman and Pearson correlations directly from the compact
+outcome index; older indexes still supply Spearman through their primary
+`value`, while Pearson is shown as unavailable. The question pane renders the
+exact stored model prompt. For ranking tasks, the answer pane pairs the written
+model response with a responsive measured-versus-predicted effect plot,
+including independently scaled axes, a dashed fitted trend line, and
+per-variant hover details. It does not expose the values as a comparison table.
+Complete raw archives remain downloadable without requiring a backend.
 
 `runs.json` names each task's evaluation profile and primary metric. Both
 satMutMPRA and SGE use mean within-question Spearman; Pearson correlation and

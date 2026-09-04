@@ -52,6 +52,8 @@ and locally computed SHA-256. It also pins OpenSplice repository commit
 AlphaGenome inference scripts recover the reporter and predictor geometry.
 Exact pins live in
 [`source-pins.yaml`](../../tasks/opensplice-snv/config/source-pins.yaml).
+For explorer provenance, the assay's first indexed-public date is the Figshare
+article's initial publication date, 2026-05-24.
 
 The primary master table has 590,104 measured rows. A row enters the 300,327-SNV
 eligible population only when it is a measured single-base substitution with a

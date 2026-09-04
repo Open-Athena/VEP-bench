@@ -164,17 +164,23 @@ def prepare_fixture(
         candidate = work / "candidate"
         model_catalog = work / "model-catalog.json"
         catalog_document = {
-            "schema_version": "1.0",
+            "schema_version": "1.1",
             "models": {
                 "synthetic/browser-qa": {
                     "family": "Synthetic browser QA",
                     "release_date": "2026-08-01",
+                    "knowledge_cutoff": "2026-05",
+                    "knowledge_cutoff_url": "https://example.test/models/browser-qa",
                 },
                 **(
                     {
                         "synthetic/browser-qa-alternate": {
                             "family": "Synthetic browser QA alternate",
                             "release_date": "2026-08-02",
+                            "knowledge_cutoff": "2026-05",
+                            "knowledge_cutoff_url": (
+                                "https://example.test/models/browser-qa-alternate"
+                            ),
                         }
                     }
                     if include_alternate_model

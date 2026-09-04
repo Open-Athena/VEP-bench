@@ -3,20 +3,75 @@
 import json
 import shutil
 from collections.abc import Mapping, Sequence
+from datetime import date
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 from vepbench.artifacts import canonical_json, read_jsonl
+from vepbench.config.loader import load_yaml_mapping
 from vepbench.errors import BuildError
+
+ASSAY_PUBLICATION_KINDS = {"assay_repository", "dataset", "paper"}
+ASSAY_PUBLICATION_FIELDS = {"date", "kind", "registry", "url"}
+
+
+def load_assay_publications(path: str | Path) -> dict[str, Any]:
+    """Load reviewed first-indexed dates for assay records shown by the explorer."""
+
+    source_path, raw = load_yaml_mapping(path, label="assay publication metadata")
+    if set(raw) != {"schema_version", "by_task_family"} or raw["schema_version"] != "1.0":
+        raise BuildError(f"{source_path}: invalid assay publication metadata contract")
+    families = raw["by_task_family"]
+    if not isinstance(families, dict) or not families:
+        raise BuildError(f"{source_path}: by_task_family must be a non-empty object")
+
+    normalized: dict[str, dict[str, Any]] = {}
+    for task_family, rule in families.items():
+        location = f"{source_path}: by_task_family.{task_family}"
+        if not isinstance(task_family, str) or not task_family:
+            raise BuildError(f"{source_path}: task family names must be non-empty strings")
+        if (
+            not isinstance(rule, dict)
+            or not rule
+            or set(rule) - {"default", "records"}
+            or not set(rule) & {"default", "records"}
+        ):
+            raise BuildError(f"{location} must contain only default and/or records")
+        normalized_rule: dict[str, Any] = {}
+        if "default" in rule:
+            normalized_rule["default"] = _assay_publication(rule["default"], f"{location}.default")
+        if "records" in rule:
+            records = rule["records"]
+            if not isinstance(records, dict) or not records:
+                raise BuildError(f"{location}.records must be a non-empty object")
+            normalized_rule["records"] = {
+                record_id: _assay_publication(publication, f"{location}.records.{record_id}")
+                for record_id, publication in records.items()
+                if isinstance(record_id, str) and record_id
+            }
+            if len(normalized_rule["records"]) != len(records):
+                raise BuildError(f"{location}.records keys must be non-empty strings")
+        normalized[task_family] = normalized_rule
+    return {
+        "schema_version": "1.0",
+        "by_task_family": dict(sorted(normalized.items())),
+    }
 
 
 def build_question_metadata(
     *,
     source_paths: Sequence[str | Path],
+    assay_publications: Mapping[str, Any],
 ) -> dict[str, Any]:
     """Build safe display metadata without changing model-visible questions."""
 
-    by_task_family: dict[str, dict[str, dict[str, str]]] = {}
+    if assay_publications.get("schema_version") != "1.0" or not isinstance(
+        assay_publications.get("by_task_family"), Mapping
+    ):
+        raise BuildError("assay publication metadata has an invalid shape")
+    publication_families = assay_publications["by_task_family"]
+    by_task_family: dict[str, dict[str, dict[str, Any]]] = {}
     for source_path in source_paths:
         for record in read_jsonl(source_path):
             task_family = record.get("task_family")
@@ -28,6 +83,18 @@ def build_question_metadata(
                 raise BuildError(
                     f"{source_path}: duplicate display metadata record {source_record_id!r}"
                 )
+            publication_rule = publication_families.get(task_family)
+            publication = None
+            if isinstance(publication_rule, Mapping):
+                records = publication_rule.get("records", {})
+                if isinstance(records, Mapping):
+                    publication = records.get(source_record_id)
+                if publication is None:
+                    publication = publication_rule.get("default")
+            if not isinstance(publication, Mapping):
+                raise BuildError(
+                    f"{source_path}: {source_record_id!r} is missing assay publication metadata"
+                )
             source_metadata = record.get("source_metadata", {})
             if (
                 isinstance(source_metadata, dict)
@@ -36,10 +103,23 @@ def build_question_metadata(
             ):
                 display_metadata = {
                     "element": source_metadata["display_name"],
+                    "assay_first_indexed": dict(publication),
                 }
             else:
                 raise BuildError(f"{source_path}: {source_record_id!r} is missing display metadata")
             task_records[source_record_id] = display_metadata
+
+    unknown_families = set(publication_families) - set(by_task_family)
+    if unknown_families:
+        raise BuildError(f"unused assay publication task families: {sorted(unknown_families)}")
+    for task_family, task_records in by_task_family.items():
+        publication_rule = publication_families[task_family]
+        configured_records = publication_rule.get("records", {})
+        unknown_records = set(configured_records) - set(task_records)
+        if unknown_records:
+            raise BuildError(
+                f"unused assay publication records for {task_family}: {sorted(unknown_records)}"
+            )
     return {
         "schema_version": "1.0",
         "by_task_family": {
@@ -47,6 +127,25 @@ def build_question_metadata(
             for task_family, records in sorted(by_task_family.items())
         },
     }
+
+
+def _assay_publication(value: Any, location: str) -> dict[str, str]:
+    if not isinstance(value, dict) or set(value) != ASSAY_PUBLICATION_FIELDS:
+        raise BuildError(f"{location} must contain exactly {sorted(ASSAY_PUBLICATION_FIELDS)}")
+    if any(not isinstance(value[field], str) or not value[field] for field in value):
+        raise BuildError(f"{location} fields must be non-empty strings")
+    try:
+        parsed_date = date.fromisoformat(value["date"])
+    except ValueError as exc:
+        raise BuildError(f"{location}.date must be an ISO 8601 calendar date") from exc
+    if parsed_date.isoformat() != value["date"]:
+        raise BuildError(f"{location}.date must use YYYY-MM-DD")
+    if value["kind"] not in ASSAY_PUBLICATION_KINDS:
+        raise BuildError(f"{location}.kind must be one of {sorted(ASSAY_PUBLICATION_KINDS)}")
+    parsed_url = urlparse(value["url"])
+    if parsed_url.scheme != "https" or not parsed_url.netloc:
+        raise BuildError(f"{location}.url must be an absolute HTTPS URL")
+    return {field: value[field] for field in sorted(ASSAY_PUBLICATION_FIELDS)}
 
 
 def build_site(

@@ -67,9 +67,53 @@ export function displayScore(value) {
   return score === null ? null : Math.max(0, Math.min(1, score));
 }
 
+export function rankingOutcomeMetrics(outcome) {
+  return {
+    spearman_rho: finiteNumber(outcome?.spearman_rho) ?? finiteNumber(outcome?.value),
+    pearson_r: finiteNumber(outcome?.pearson_r)
+  };
+}
+
+export function assayCutoffRelation(assayFirstIndexed, knowledgeCutoff) {
+  const assayDate = typeof assayFirstIndexed === "string"
+    ? assayFirstIndexed
+    : assayFirstIndexed?.date;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(assayDate ?? "")
+    || !/^\d{4}-\d{2}(?:-\d{2})?$/.test(knowledgeCutoff ?? "")) {
+    return "Unknown";
+  }
+  const normalizedCutoff = knowledgeCutoff.length === 7
+    ? `${knowledgeCutoff}-01`
+    : knowledgeCutoff;
+  const parsedAssayDate = new Date(`${assayDate}T00:00:00Z`);
+  const parsedCutoff = new Date(`${normalizedCutoff}T00:00:00Z`);
+  if (Number.isNaN(parsedAssayDate.valueOf())
+    || Number.isNaN(parsedCutoff.valueOf())
+    || parsedAssayDate.toISOString().slice(0, 10) !== assayDate
+    || parsedCutoff.toISOString().slice(0, 10) !== normalizedCutoff) {
+    return "Unknown";
+  }
+  if (knowledgeCutoff.length === 7) {
+    const assayMonth = assayDate.slice(0, 7);
+    if (assayMonth === knowledgeCutoff) return "Unknown";
+    return assayMonth < knowledgeCutoff ? "Before cutoff" : "After cutoff";
+  }
+  return assayDate <= knowledgeCutoff ? "Before cutoff" : "After cutoff";
+}
+
 function primaryScore(run) {
   return finiteNumber(run.metrics.mean_spearman_rho)
     ?? nonnegativeNumber(run.metrics.accuracy);
+}
+
+function leaderboardScore(run, scoreMetric) {
+  if (scoreMetric === "spearman") {
+    return finiteNumber(run.metrics.mean_spearman_rho);
+  }
+  if (scoreMetric === "pearson") {
+    return finiteNumber(run.metrics.mean_pearson_r);
+  }
+  return primaryScore(run);
 }
 
 export function formatRunLabel(run) {
@@ -91,7 +135,7 @@ function latestCompleteRuns(runs) {
   return [...latestByConfiguration.values()];
 }
 
-function rowForRun(run) {
+function rowForRun(run, scoreMetric = null) {
   const family = run.model.family ?? modelName(run.model.model_id);
   return {
     run,
@@ -102,13 +146,15 @@ function rowForRun(run) {
     family,
     family_id: family,
     release_date: run.model.release_date ?? null,
+    knowledge_cutoff: run.model.knowledge_cutoff ?? null,
     tokens: nonnegativeNumber(run.metrics.total_tokens),
     cost: nonnegativeNumber(run.metrics.total_cost_usd),
-    score: primaryScore(run),
+    score: leaderboardScore(run, scoreMetric),
     accuracy: nonnegativeNumber(run.metrics.accuracy),
     pearson: finiteNumber(run.metrics.mean_pearson_r),
     valid_output_rate: nonnegativeNumber(run.metrics.valid_output_rate),
-    primary_metric: run.task_type === "ranking" ? "spearman" : "exact_match",
+    primary_metric: scoreMetric
+      ?? (run.task_type === "ranking" ? "spearman" : "exact_match"),
     format_failures: run.metrics.format_failures
   };
 }
@@ -121,8 +167,10 @@ function sortLeaderboardRows(rows) {
   );
 }
 
-export function leaderboardRows(runs) {
-  return sortLeaderboardRows(latestCompleteRuns(runs).map(rowForRun));
+export function leaderboardRows(runs, scoreMetric = null) {
+  return sortLeaderboardRows(
+    latestCompleteRuns(runs).map((run) => rowForRun(run, scoreMetric))
+  );
 }
 
 function canonicalValue(value) {
@@ -158,7 +206,7 @@ function overallProfiles(leaderboard) {
   return leaderboard.aggregation_method === "task_score_macro_average_v1" ? profiles : [];
 }
 
-export function overallLeaderboardRows(runs, leaderboard) {
+export function overallLeaderboardRows(runs, leaderboard, scoreMetric = null) {
   const profiles = overallProfiles(leaderboard);
   if (profiles.length === 0) return [];
   const profileKeys = new Set();
@@ -193,7 +241,7 @@ export function overallLeaderboardRows(runs, leaderboard) {
   for (const group of groups.values()) {
     const taskRuns = profiles.map((profile) => group.get(profile.evaluation_profile));
     if (taskRuns.some((run) => !run)) continue;
-    const taskRows = taskRuns.map(rowForRun);
+    const taskRows = taskRuns.map((run) => rowForRun(run, scoreMetric));
     const taskScores = taskRows.map((taskRow) => taskRow.score);
     const taskPrimaryMetrics = taskRows.map((taskRow) => taskRow.primary_metric);
     if (taskScores.some((score) => score === null)) continue;
@@ -236,16 +284,24 @@ export function supportsOverallLeaderboard(leaderboard) {
   return overallProfiles(leaderboard).length > 0;
 }
 
-export function leaderboardRowsForScope(runs, leaderboard, taskFamily = null) {
+export function leaderboardRowsForScope(
+  runs,
+  leaderboard,
+  taskFamily = null,
+  scoreMetric = null
+) {
   if (taskFamily === null) {
-    return leaderboard ? overallLeaderboardRows(runs, leaderboard) : leaderboardRows(runs);
+    return leaderboard
+      ? overallLeaderboardRows(runs, leaderboard, scoreMetric)
+      : leaderboardRows(runs, scoreMetric);
   }
   const profile = leaderboard?.evaluation_profiles?.find(
     (candidate) => candidate.task_family === taskFamily
   );
   if (!profile) return [];
   return leaderboardRows(
-    runs.filter((run) => run.evaluation_profile === profile.evaluation_profile)
+    runs.filter((run) => run.evaluation_profile === profile.evaluation_profile),
+    scoreMetric
   );
 }
 

@@ -554,6 +554,8 @@ def test_publication_aggregates_ranking_metrics_without_classification_accuracy(
     assert outcome["outcomes"] == [
         {
             "question_id": "satmut-mpra-ranking-v1:synthetic-ranking-001",
+            "pearson_r": pytest.approx(1.0),
+            "spearman_rho": pytest.approx(1.0),
             "valid": True,
             "value": pytest.approx(1.0),
         }
@@ -721,6 +723,56 @@ def test_publication_enriches_run_with_versioned_model_catalog(tmp_path: Path) -
     catalog.write_text(
         canonical_json(
             {
+                "schema_version": "1.1",
+                "models": {
+                    "synthetic/demo": {
+                        "family": "Synthetic family",
+                        "release_date": "2026-07-09",
+                        "knowledge_cutoff": "2025-06-30",
+                        "knowledge_cutoff_url": "https://example.test/models/synthetic-demo",
+                    }
+                },
+            }
+        ),
+        encoding="utf-8",
+        newline="\n",
+    )
+    output = tmp_path / "publication"
+
+    build_version(
+        questions_path=QUESTIONS,
+        results_dir=RESULTS,
+        result_schema_path=RESULT_SCHEMA,
+        schemas_dir=SCHEMAS,
+        model_catalog_path=catalog,
+        output=output,
+        version_name="candidate",
+    )
+
+    run = json.loads((output / "versions/candidate/runs.json").read_text(encoding="utf-8"))["runs"][
+        0
+    ]
+    assert run["model"]["family"] == "Synthetic family"
+    assert run["model"]["release_date"] == "2026-07-09"
+    assert run["model"]["knowledge_cutoff"] == "2025-06-30"
+    assert run["model"]["knowledge_cutoff_url"] == ("https://example.test/models/synthetic-demo")
+
+
+def test_production_model_catalog_records_only_verified_knowledge_cutoffs() -> None:
+    catalog = publication_module._load_model_catalog(ROOT / "configs/models/catalog.yaml")
+
+    assert catalog["openai/gpt-5.6-sol"]["knowledge_cutoff"] == "2026-02-16"
+    assert catalog["openai/gpt-5.6-luna"]["knowledge_cutoff"] == "2026-02-16"
+    assert catalog["anthropic/claude-fable-5.1"]["knowledge_cutoff"] == "2026-06"
+    assert catalog["anthropic/claude-opus-5"]["knowledge_cutoff"] == "2026-05"
+    assert catalog["deepseek/deepseek-v4-flash-0731"]["knowledge_cutoff"] is None
+
+
+def test_publication_accepts_legacy_model_catalog_without_cutoff(tmp_path: Path) -> None:
+    catalog = tmp_path / "model-catalog.json"
+    catalog.write_text(
+        canonical_json(
+            {
                 "schema_version": "1.0",
                 "models": {
                     "synthetic/demo": {
@@ -748,8 +800,40 @@ def test_publication_enriches_run_with_versioned_model_catalog(tmp_path: Path) -
     run = json.loads((output / "versions/candidate/runs.json").read_text(encoding="utf-8"))["runs"][
         0
     ]
-    assert run["model"]["family"] == "Synthetic family"
-    assert run["model"]["release_date"] == "2026-07-09"
+    assert run["model"]["knowledge_cutoff"] is None
+    assert run["model"]["knowledge_cutoff_url"] is None
+
+
+def test_publication_rejects_cutoff_without_evidence_url(tmp_path: Path) -> None:
+    catalog = tmp_path / "model-catalog.json"
+    catalog.write_text(
+        canonical_json(
+            {
+                "schema_version": "1.1",
+                "models": {
+                    "synthetic/demo": {
+                        "family": "Synthetic family",
+                        "release_date": "2026-07-09",
+                        "knowledge_cutoff": "2025-06-30",
+                        "knowledge_cutoff_url": None,
+                    }
+                },
+            }
+        ),
+        encoding="utf-8",
+        newline="\n",
+    )
+
+    with pytest.raises(BuildError, match="both knowledge cutoff fields or neither"):
+        build_version(
+            questions_path=QUESTIONS,
+            results_dir=RESULTS,
+            result_schema_path=RESULT_SCHEMA,
+            schemas_dir=SCHEMAS,
+            model_catalog_path=catalog,
+            output=tmp_path / "publication",
+            version_name="candidate",
+        )
 
 
 def test_publication_rejects_model_missing_from_catalog(tmp_path: Path) -> None:

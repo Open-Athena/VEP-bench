@@ -3,6 +3,7 @@ schema_version: "1.0"
 data_base_url: https://huggingface.co/buckets/open-athena/VEP-bench/resolve/versions/main
 assets_dir: ../web
 observable_config: ../observablehq.config.js
+assay_publications: assay-publications.yaml
 question_metadata_sources:
   - ../../../data/sources/opensplice-snv-figshare-v5.jsonl
   - ../../../data/sources/satmut-mpra-cadd-v1.7.jsonl
