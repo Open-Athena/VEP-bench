@@ -109,9 +109,11 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
         assert '<div class="card">' not in description
 
     tasks_source = (output / "tasks.md").read_text(encoding="utf-8")
-    assert tasks_source.index("## Fitness (SGE)") < tasks_source.index(
-        "## Expression (satMutMPRA)"
-    ) < tasks_source.index("## Splicing (OpenSplice)")
+    assert (
+        tasks_source.index("## Fitness (SGE)")
+        < tasks_source.index("## Expression (satMutMPRA)")
+        < tasks_source.index("## Splicing (OpenSplice)")
+    )
 
 
 def test_question_metadata_requires_display_metadata_for_every_task_record(tmp_path: Path) -> None:
