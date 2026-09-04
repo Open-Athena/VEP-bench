@@ -6,6 +6,7 @@ title: Fitness (SGE)
 import {
   assayFirstIndexedLink,
   cutoffRelationBadge,
+  enhanceTableRowSelection,
   entriesForQuestions,
   entryForAnswer,
   formatCorrelation,
@@ -276,6 +277,7 @@ const questionTable = Inputs.table(visibleEntries, {
   required: false,
   value: defaultQuestion
 });
+enhanceTableRowSelection(questionTable);
 ```
 
 ```js

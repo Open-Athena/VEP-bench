@@ -201,12 +201,14 @@ This supports valid-output and format-failure filters while full answer content
 is loaded one compressed object at a time. Ranking question lists show the
 per-question Spearman and Pearson correlations directly from the compact
 outcome index; older indexes still supply Spearman through their primary
-`value`, while Pearson is shown as unavailable. The question pane renders the
-exact stored model prompt. For ranking tasks, the answer pane pairs the written
-model response with a responsive measured-versus-predicted effect plot,
-including independently scaled axes, a dashed fitted trend line, and
-per-variant hover details. It does not expose the values as a comparison table.
-Complete raw archives remain downloadable without requiring a backend.
+`value`, while Pearson is shown as unavailable. Questions use whole-row table
+selection with a highlighted current row; the visually hidden native selection
+control preserves keyboard navigation and Observable reactivity. The question
+pane renders the exact stored model prompt. For ranking tasks, the answer pane
+pairs the written model response with a responsive measured-versus-predicted
+effect plot, including independently scaled axes, a dashed fitted trend line,
+and per-variant hover details. It does not expose the values as a comparison
+table. Complete raw archives remain downloadable without requiring a backend.
 
 `runs.json` names each task's evaluation profile and primary metric. Both
 satMutMPRA and SGE use mean within-question Spearman; Pearson correlation and

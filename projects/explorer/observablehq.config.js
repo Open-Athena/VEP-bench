@@ -191,6 +191,51 @@ export default {
         color: var(--theme-foreground-muted);
       }
 
+      .vepbench-row-select-table thead th:first-child,
+      .vepbench-row-select-table tbody td:first-child {
+        border: 0;
+        padding: 0;
+        width: 0;
+      }
+
+      .vepbench-row-select-table thead th:first-child input {
+        display: none;
+      }
+
+      .vepbench-row-select-table input[type="radio"] {
+        block-size: 1px;
+        clip-path: inset(50%);
+        inline-size: 1px;
+        overflow: hidden;
+        position: absolute;
+        white-space: nowrap;
+      }
+
+      .vepbench-row-select-table tbody tr:has(input[type="radio"]) {
+        cursor: pointer;
+      }
+
+      .vepbench-row-select-table tbody tr:has(input[type="radio"]):hover > td {
+        background: color-mix(in srgb, #4267d2 7%, var(--theme-background));
+      }
+
+      .vepbench-row-select-table tbody tr:has(input[type="radio"]:checked) > td {
+        background: color-mix(in srgb, #4267d2 15%, var(--theme-background));
+      }
+
+      .vepbench-row-select-table tbody tr:has(input[type="radio"]:checked) > td:nth-child(2) {
+        box-shadow: inset 3px 0 #4267d2;
+        font-weight: 650;
+      }
+
+      .vepbench-row-select-table tbody tr:has(input[type="radio"]:focus-visible) > td {
+        box-shadow: inset 0 0 0 2px #4267d2;
+      }
+
+      .vepbench-row-select-table tbody tr:has(input[type="radio"]:focus-visible) > td:nth-child(2) {
+        box-shadow: inset 3px 0 #4267d2, inset 0 0 0 2px #4267d2;
+      }
+
       .vepbench-score-cell {
         background: color-mix(in srgb, currentColor 6%, transparent);
         border-radius: 0.2rem;

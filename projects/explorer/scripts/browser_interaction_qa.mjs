@@ -131,10 +131,11 @@ await waitFor(
 );
 assert.equal(
   await evaluate(`(() => {
-    const radios = [...document.querySelectorAll('table tbody input[type="radio"]')];
-    const radio = radios.find((candidate) => !candidate.checked) ?? radios[1];
-    radio.click();
-    return Boolean(radio);
+    const rows = [...document.querySelectorAll('.vepbench-row-select-table tbody tr')];
+    const row = rows.find((candidate) => !candidate.querySelector('input[type="radio"]')?.checked)
+      ?? rows[1];
+    row.click();
+    return Boolean(row);
   })()`),
   true
 );
@@ -142,8 +143,101 @@ await waitFor(
   `new URLSearchParams(location.search).get("question") !== ${JSON.stringify(initialQuestionId)}`,
   "row selection URL update"
 );
-const selectedQuestionId = await evaluate(
+let selectedQuestionId = await evaluate(
   'new URLSearchParams(location.search).get("question")'
+);
+assert.equal(
+  await evaluate(`(() => {
+    const selectedRow = document.querySelector(
+      '.vepbench-row-select-table tbody tr:has(input[type="radio"]:checked)'
+    );
+    const radio = selectedRow?.querySelector('input[type="radio"]');
+    return Boolean(
+      selectedRow
+      && radio
+      && radio.getBoundingClientRect().width <= 1
+      && radio.getAttribute("aria-label")?.startsWith("Select Q")
+      && getComputedStyle(
+        document.querySelector('.vepbench-row-select-table thead input[type="checkbox"]')
+      ).display === "none"
+      && getComputedStyle(selectedRow.cells[1]).backgroundColor
+        !== getComputedStyle(document.body).backgroundColor
+    );
+  })()`),
+  true,
+  "selected question row is not highlighted or its radio remains visible"
+);
+
+assert.equal(
+  await evaluate(`(async () => {
+    const link = [...document.querySelectorAll('.vepbench-row-select-table tbody tr')]
+      .find((row) => !row.querySelector('input[type="radio"]')?.checked)
+      ?.querySelector("a");
+    if (!link) return false;
+    link.addEventListener("click", (event) => event.preventDefault(), {once: true});
+    link.focus();
+    link.click();
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    return document.activeElement === link
+      && new URLSearchParams(location.search).get("question")
+        === ${JSON.stringify(selectedQuestionId)};
+  })()`),
+  true,
+  "assay citation link changed the question selection or lost focus"
+);
+
+assert.equal(
+  await evaluate(`(() => {
+    const radio = document.querySelector(
+      '.vepbench-row-select-table tbody input[type="radio"]:checked'
+    );
+    radio?.focus();
+    return document.activeElement === radio;
+  })()`),
+  true,
+  "selected row radio could not receive keyboard focus"
+);
+await send("Input.dispatchKeyEvent", {
+  type: "keyDown",
+  key: "ArrowDown",
+  code: "ArrowDown",
+  windowsVirtualKeyCode: 40,
+  nativeVirtualKeyCode: 40
+});
+await send("Input.dispatchKeyEvent", {
+  type: "keyUp",
+  key: "ArrowDown",
+  code: "ArrowDown",
+  windowsVirtualKeyCode: 40,
+  nativeVirtualKeyCode: 40
+});
+await waitFor(
+  `new URLSearchParams(location.search).get("question") !== ${JSON.stringify(selectedQuestionId)}
+    && document.activeElement?.matches('input[type="radio"]:checked')`,
+  "keyboard row selection"
+);
+selectedQuestionId = await evaluate(
+  'new URLSearchParams(location.search).get("question")'
+);
+
+assert.equal(
+  await evaluate(`(() => {
+    const header = document.querySelector('.vepbench-row-select-table th[title="spearman_rho"]');
+    header?.click();
+    return Boolean(header);
+  })()`),
+  true
+);
+await waitFor(
+  `document.querySelector(
+    '.vepbench-row-select-table tbody tr:has(input[type="radio"]:checked)'
+  )?.querySelector('input[type="radio"]')?.getAttribute("aria-label")?.startsWith("Select Q")`,
+  "highlighted row selection after sorting"
+);
+assert.equal(
+  await evaluate('new URLSearchParams(location.search).get("question")'),
+  selectedQuestionId,
+  "sorting did not preserve the selected question"
 );
 const initialRunId = await evaluate('new URLSearchParams(location.search).get("run")');
 
@@ -156,6 +250,13 @@ assert.equal(
   await evaluate('new URLSearchParams(location.search).get("question")'),
   selectedQuestionId,
   "model selection did not preserve the selected question"
+);
+assert.equal(
+  await evaluate(`Boolean(document.querySelector(
+    '.vepbench-row-select-table tbody tr:has(input[type="radio"]:checked)'
+  ))`),
+  true,
+  "model selection did not preserve the highlighted row"
 );
 
 socket.close();

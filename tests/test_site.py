@@ -157,6 +157,7 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     assert "export function cutoffRelationBadge(value)" in component_source
     assert "export function knowledgeCutoffNote(run)" in component_source
     assert "dates in the cutoff month are gray and Unknown" in component_source
+    assert "export function enhanceTableRowSelection(table)" in component_source
     sge_source = (output / "tasks/sge.md").read_text(encoding="utf-8")
     assert "# Fitness (SGE)" in sge_source
     assert "https://www.mavedb.org/" in sge_source
@@ -164,6 +165,7 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     assert "gene: Inputs.select([" in sge_source
     assert "Reference effects" not in sge_source
     for source in (task_source, opensplice_source, sge_source):
+        assert "enhanceTableRowSelection(questionTable);" in source
         description = source.split("## Questions", maxsplit=1)[0]
         assert "## Task description" not in description
         assert "## Task design" not in description
