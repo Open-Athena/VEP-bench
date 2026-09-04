@@ -1,0 +1,3763 @@
+[
+  {
+    "analysis_schema_version": "1.0",
+    "filters": {
+      "F9": {
+        "counts": {
+          "MIN": 810,
+          "QUAL": 32,
+          "SIGN": 142
+        },
+        "source_headers": [
+          "##FILTER=<ID=SIGN,Description=\"minimum support 10 and significant 1<e-5\">",
+          "##FILTER=<ID=MIN,Description=\"Minimum of 10 supporting BCs\">",
+          "##FILTER=<ID=QUAL,Description=\"low quality, Not significant and lower than 10 BCs\">"
+        ]
+      },
+      "GP1BA": {
+        "counts": {
+          "MIN": 1055,
+          "QUAL": 29,
+          "SIGN": 184
+        },
+        "source_headers": [
+          "##FILTER=<ID=SIGN,Description=\"minimum support 10 and significant 1<e-5\">",
+          "##FILTER=<ID=MIN,Description=\"Minimum of 10 supporting BCs\">",
+          "##FILTER=<ID=QUAL,Description=\"low quality, Not significant and lower than 10 BCs\">"
+        ]
+      },
+      "HBB": {
+        "counts": {
+          "MIN": 506,
+          "QUAL": 27,
+          "SIGN": 90
+        },
+        "source_headers": [
+          "##FILTER=<ID=SIGN,Description=\"minimum support 10 and significant 1<e-5\">",
+          "##FILTER=<ID=MIN,Description=\"Minimum of 10 supporting BCs\">",
+          "##FILTER=<ID=QUAL,Description=\"low quality, Not significant and lower than 10 BCs\">"
+        ]
+      },
+      "HBG1": {
+        "counts": {
+          "MIN": 707,
+          "QUAL": 19,
+          "SIGN": 181
+        },
+        "source_headers": [
+          "##FILTER=<ID=SIGN,Description=\"minimum support 10 and significant 1<e-5\">",
+          "##FILTER=<ID=MIN,Description=\"Minimum of 10 supporting BCs\">",
+          "##FILTER=<ID=QUAL,Description=\"low quality, Not significant and lower than 10 BCs\">"
+        ]
+      },
+      "HNF4A": {
+        "counts": {
+          "MIN": 812,
+          "QUAL": 46,
+          "SIGN": 119
+        },
+        "source_headers": [
+          "##FILTER=<ID=SIGN,Description=\"minimum support 10 and significant 1<e-5\">",
+          "##FILTER=<ID=MIN,Description=\"Minimum of 10 supporting BCs\">",
+          "##FILTER=<ID=QUAL,Description=\"low quality, Not significant and lower than 10 BCs\">"
+        ]
+      },
+      "IRF4": {
+        "counts": {
+          "MIN": 783,
+          "QUAL": 52,
+          "SIGN": 675
+        },
+        "source_headers": [
+          "##FILTER=<ID=SIGN,Description=\"minimum support 10 and significant 1<e-5\">",
+          "##FILTER=<ID=MIN,Description=\"Minimum of 10 supporting BCs\">",
+          "##FILTER=<ID=QUAL,Description=\"low quality, Not significant and lower than 10 BCs\">"
+        ]
+      },
+      "IRF6": {
+        "counts": {
+          "MIN": 1433,
+          "QUAL": 167,
+          "SIGN": 306
+        },
+        "source_headers": [
+          "##FILTER=<ID=SIGN,Description=\"minimum support 10 and significant 1<e-5\">",
+          "##FILTER=<ID=MIN,Description=\"Minimum of 10 supporting BCs\">",
+          "##FILTER=<ID=QUAL,Description=\"low quality, Not significant and lower than 10 BCs\">"
+        ]
+      },
+      "LDLR": {
+        "counts": {
+          "MIN": 615,
+          "QUAL": 69,
+          "SIGN": 409
+        },
+        "source_headers": [
+          "##FILTER=<ID=SIGN,Description=\"minimum support 10 and significant 1<e-5\">",
+          "##FILTER=<ID=MIN,Description=\"Minimum of 10 supporting BCs\">",
+          "##FILTER=<ID=QUAL,Description=\"low quality, Not significant and lower than 10 BCs\">"
+        ]
+      },
+      "MSMB": {
+        "counts": {
+          "MIN": 1543,
+          "QUAL": 107,
+          "SIGN": 369
+        },
+        "source_headers": [
+          "##FILTER=<ID=SIGN,Description=\"minimum support 10 and significant 1<e-5\">",
+          "##FILTER=<ID=MIN,Description=\"Minimum of 10 supporting BCs\">",
+          "##FILTER=<ID=QUAL,Description=\"low quality, Not significant and lower than 10 BCs\">"
+        ]
+      },
+      "MYCrs6983267": {
+        "counts": {
+          "MIN": 1724,
+          "QUAL": 141,
+          "SIGN": 85
+        },
+        "source_headers": [
+          "##FILTER=<ID=SIGN,Description=\"minimum support 10 and significant 1<e-5\">",
+          "##FILTER=<ID=MIN,Description=\"Minimum of 10 supporting BCs\">",
+          "##FILTER=<ID=QUAL,Description=\"low quality, Not significant and lower than 10 BCs\">"
+        ]
+      },
+      "PKLR": {
+        "counts": {
+          "MIN": 1256,
+          "QUAL": 261,
+          "SIGN": 277
+        },
+        "source_headers": [
+          "##FILTER=<ID=SIGN,Description=\"minimum support 10 and significant 1<e-5\">",
+          "##FILTER=<ID=MIN,Description=\"Minimum of 10 supporting BCs\">",
+          "##FILTER=<ID=QUAL,Description=\"low quality, Not significant and lower than 10 BCs\">"
+        ]
+      },
+      "SORT1": {
+        "counts": {
+          "MIN": 1020,
+          "QUAL": 121,
+          "SIGN": 786
+        },
+        "source_headers": [
+          "##FILTER=<ID=SIGN,Description=\"minimum support 10 and significant 1<e-5\">",
+          "##FILTER=<ID=MIN,Description=\"Minimum of 10 supporting BCs\">",
+          "##FILTER=<ID=QUAL,Description=\"low quality, Not significant and lower than 10 BCs\">"
+        ]
+      },
+      "TCF7L2": {
+        "counts": {
+          "MIN": 1672,
+          "QUAL": 109,
+          "SIGN": 129
+        },
+        "source_headers": [
+          "##FILTER=<ID=SIGN,Description=\"minimum support 10 and significant 1<e-5\">",
+          "##FILTER=<ID=MIN,Description=\"Minimum of 10 supporting BCs\">",
+          "##FILTER=<ID=QUAL,Description=\"low quality, Not significant and lower than 10 BCs\">"
+        ]
+      },
+      "TERT": {
+        "counts": {
+          "MIN": 743,
+          "QUAL": 110,
+          "SIGN": 122
+        },
+        "source_headers": [
+          "##FILTER=<ID=SIGN,Description=\"minimum support 10 and significant 1<e-5\">",
+          "##FILTER=<ID=MIN,Description=\"Minimum of 10 supporting BCs\">",
+          "##FILTER=<ID=QUAL,Description=\"low quality, Not significant and lower than 10 BCs\">"
+        ]
+      },
+      "ZFAND3": {
+        "counts": {
+          "MIN": 1566,
+          "QUAL": 119,
+          "SIGN": 327
+        },
+        "source_headers": [
+          "##FILTER=<ID=SIGN,Description=\"minimum support 10 and significant 1<e-5\">",
+          "##FILTER=<ID=MIN,Description=\"Minimum of 10 supporting BCs\">",
+          "##FILTER=<ID=QUAL,Description=\"low quality, Not significant and lower than 10 BCs\">"
+        ]
+      },
+      "ZRSh13": {
+        "counts": {
+          "MIN": 1440,
+          "QUAL": 90,
+          "SIGN": 131
+        },
+        "source_headers": [
+          "##FILTER=<ID=SIGN,Description=\"minimum support 10 and significant 1<e-5\">",
+          "##FILTER=<ID=MIN,Description=\"Minimum of 10 supporting BCs\">",
+          "##FILTER=<ID=QUAL,Description=\"low quality, Not significant and lower than 10 BCs\">"
+        ]
+      }
+    },
+    "implementation_sha256": {
+      "scripts/analyze_task_sampling.py": "983d1204484d0ac4bcf36c951ab5275bd1839a82ad8c52120f4adcd2a47d6c52",
+      "src/vepbench/sampling.py": "eed30e5807f041974a5f06e69c038434e802006d6d9b37f5d69ef2a9fa6cb289"
+    },
+    "inputs": {
+      "SatMut.all.F9.vcf.gz": {
+        "bytes": 23501,
+        "sha256": "43826280be83c2fea62cbd961bd97f62193b0a388510e45ee7edd1456c70e294"
+      },
+      "SatMut.all.GP1BA.vcf.gz": {
+        "bytes": 30345,
+        "sha256": "3c7d7bf38e8b37cf51add3335fea8be754c293297a8917a71c3769c65138a31c"
+      },
+      "SatMut.all.HBB.vcf.gz": {
+        "bytes": 15187,
+        "sha256": "d115561476e0c867527286b8e88ac41604ae8cbd295d1b7dffa74e8eee71edc4"
+      },
+      "SatMut.all.HBG1.vcf.gz": {
+        "bytes": 21815,
+        "sha256": "2ff2a103f2d4d450fc363bcc3a3e75af69b58897f36d89ab18665ff5a5e2da73"
+      },
+      "SatMut.all.HNF4A.vcf.gz": {
+        "bytes": 23496,
+        "sha256": "56f05f6d6f0b4fd4b45e70405b03f68c37ff3e238144fd5c7cd94bdfcc8c83ce"
+      },
+      "SatMut.all.IRF4.vcf.gz": {
+        "bytes": 36230,
+        "sha256": "9d16f11c4972cf4cf58675347ffbf8d732b9047b3a07e2b3412d235d26c3c1d9"
+      },
+      "SatMut.all.IRF6.vcf.gz": {
+        "bytes": 44439,
+        "sha256": "f8958d10627cfd02cbb1ac442885bc98e34aff43d1bb4e0345fef68945287857"
+      },
+      "SatMut.all.LDLR.vcf.gz": {
+        "bytes": 25854,
+        "sha256": "99271daf883ef9b2ce703c0ac2c9a44b45e13dd542801926541581b375033c95"
+      },
+      "SatMut.all.MSMB.vcf.gz": {
+        "bytes": 48747,
+        "sha256": "5c48933c681f4fcb7631cf3a74214feea9fc309ffd6935eb13333c548c32b125"
+      },
+      "SatMut.all.MYCrs6983267.vcf.gz": {
+        "bytes": 44898,
+        "sha256": "691ee199f66ddbe3976490e7086f7b47b47d541aa0df60c2f4fee1331a4b3b80"
+      },
+      "SatMut.all.PKLR.vcf.gz": {
+        "bytes": 42243,
+        "sha256": "58586276dfb1d4335f75a98e67d7b2653ec397241d3967058b8aecaa81235657"
+      },
+      "SatMut.all.SORT1.vcf.gz": {
+        "bytes": 45583,
+        "sha256": "6a6b98f3bbe7e220f52ac07f19aa5821bfd3805c1331227b7dc87cf973fb2744"
+      },
+      "SatMut.all.TCF7L2.vcf.gz": {
+        "bytes": 44339,
+        "sha256": "f5dd589bcacd0460d737242f496f6e0d0da1ef1cb7170fae8b82448d87c203cc"
+      },
+      "SatMut.all.TERT.vcf.gz": {
+        "bytes": 23043,
+        "sha256": "cd9a21b6b335bf8a3772b5ec9f3a12e3a82f4be803fadc4b26ea32d74b3ea1cb"
+      },
+      "SatMut.all.ZFAND3.vcf.gz": {
+        "bytes": 47703,
+        "sha256": "e4881e64b4526220d0d66372e8a87aae004a7ef66d9ec83b3e40aa1d9eac79b6"
+      },
+      "SatMut.all.ZRSh13.vcf.gz": {
+        "bytes": 39739,
+        "sha256": "1c9b03f4056e8ecc2a630347cc86e612df8200890030b2b717af5640371209f2"
+      }
+    },
+    "populations": [
+      {
+        "count": 142,
+        "eligibility": "SIGN",
+        "key": "satmut_mpra:F9:SIGN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              11,
+              11,
+              10,
+              10,
+              8
+            ],
+            "anchors": [
+              -1.07408179917368,
+              1.12864846972167
+            ],
+            "cutpoints": [
+              -0.63353574539461,
+              -0.19298969161553986,
+              0.24755636216353005,
+              0.6881024159426002
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              14,
+              41,
+              49,
+              30,
+              8
+            ],
+            "selected_p95_minus_p05": 1.7663637498295985,
+            "selected_range": [
+              -0.928119431299791,
+              1.12864846972167
+            ],
+            "selected_variant_types": {
+              "SNV": 49,
+              "deletion_1nt": 1
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              11,
+              11,
+              10,
+              10,
+              8
+            ],
+            "anchors": [
+              -0.891155819275248,
+              0.9836470795224552
+            ],
+            "cutpoints": [
+              -0.5161952395157074,
+              -0.14123465975616667,
+              0.2337259200033739,
+              0.6086864997629147
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              25,
+              36,
+              39,
+              34,
+              8
+            ],
+            "selected_p95_minus_p05": 1.6965291536153613,
+            "selected_range": [
+              -0.80152514368272,
+              1.12864846972167
+            ],
+            "selected_variant_types": {
+              "SNV": 49,
+              "deletion_1nt": 1
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 1.5111437325005088,
+            "selected_range": [
+              -0.80152514368272,
+              0.987957049191644
+            ],
+            "selected_variant_types": {
+              "SNV": 48,
+              "deletion_1nt": 2
+            }
+          }
+        },
+        "robust_range": 1.436739422316438,
+        "score_quantiles": {
+          "0": -1.07408179917368,
+          "0.01": -0.891155819275248,
+          "0.05": -0.7272060577141461,
+          "0.5": 0.161741174683527,
+          "0.95": 0.7095333646022918,
+          "0.99": 0.9836470795224552,
+          "1": 1.12864846972167
+        },
+        "unique_scores": 142,
+        "unit": "F9",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 139,
+          "deletion_1nt": 3
+        }
+      },
+      {
+        "count": 952,
+        "eligibility": "SIGN_MIN",
+        "key": "satmut_mpra:F9:SIGN_MIN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              11,
+              11,
+              10,
+              10,
+              8
+            ],
+            "anchors": [
+              -1.07408179917368,
+              1.12864846972167
+            ],
+            "cutpoints": [
+              -0.63353574539461,
+              -0.19298969161553986,
+              0.24755636216353005,
+              0.6881024159426002
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              15,
+              90,
+              789,
+              50,
+              8
+            ],
+            "selected_p95_minus_p05": 1.7133136901778565,
+            "selected_range": [
+              -0.928119431299791,
+              1.12864846972167
+            ],
+            "selected_variant_types": {
+              "SNV": 46,
+              "deletion_1nt": 4
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "anchors": [
+              -0.7186680171717862,
+              0.5673621760602665
+            ],
+            "cutpoints": [
+              -0.4614619785253756,
+              -0.20425593987896512,
+              0.05295009876744544,
+              0.310156137413856
+            ],
+            "exact_five_by_ten": true,
+            "population_counts": [
+              33,
+              65,
+              501,
+              317,
+              36
+            ],
+            "selected_p95_minus_p05": 1.2392008189689565,
+            "selected_range": [
+              -0.80152514368272,
+              1.12864846972167
+            ],
+            "selected_variant_types": {
+              "SNV": 47,
+              "deletion_1nt": 3
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 0.8058908856861128,
+            "selected_range": [
+              -0.80152514368272,
+              0.42699418589661
+            ],
+            "selected_variant_types": {
+              "SNV": 49,
+              "deletion_1nt": 1
+            }
+          }
+        },
+        "robust_range": 0.6489061116443338,
+        "score_quantiles": {
+          "0": -1.07408179917368,
+          "0.01": -0.7186680171717862,
+          "0.05": -0.3777913257594455,
+          "0.5": 0.01047902087616815,
+          "0.95": 0.27111478588488824,
+          "0.99": 0.5673621760602665,
+          "1": 1.12864846972167
+        },
+        "unique_scores": 952,
+        "unit": "F9",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 888,
+          "deletion_1nt": 64
+        }
+      },
+      {
+        "count": 184,
+        "eligibility": "SIGN",
+        "key": "satmut_mpra:GP1BA:SIGN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              2,
+              6,
+              14,
+              14,
+              14
+            ],
+            "anchors": [
+              -2.15010129766182,
+              0.52630050633736
+            ],
+            "cutpoints": [
+              -1.614820936861984,
+              -1.079540576062148,
+              -0.5442602152623119,
+              -0.008979854462475845
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              2,
+              6,
+              45,
+              98,
+              33
+            ],
+            "selected_p95_minus_p05": 1.694877670937222,
+            "selected_range": [
+              -2.15010129766182,
+              0.488747043778135
+            ],
+            "selected_variant_types": {
+              "SNV": 48,
+              "deletion_1nt": 2
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              4,
+              12,
+              12,
+              11,
+              11
+            ],
+            "anchors": [
+              -1.5864132760592615,
+              0.4181758547915332
+            ],
+            "cutpoints": [
+              -1.1854954498891028,
+              -0.7845776237189436,
+              -0.38365979754878476,
+              0.01725802862137432
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              4,
+              17,
+              59,
+              71,
+              33
+            ],
+            "selected_p95_minus_p05": 1.655471333906497,
+            "selected_range": [
+              -2.15010129766182,
+              0.368493264918708
+            ],
+            "selected_variant_types": {
+              "SNV": 50
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 1.336081748870574,
+            "selected_range": [
+              -2.15010129766182,
+              0.324897978530103
+            ],
+            "selected_variant_types": {
+              "SNV": 48,
+              "deletion_1nt": 2
+            }
+          }
+        },
+        "robust_range": 1.2916146371237092,
+        "score_quantiles": {
+          "0": -2.15010129766182,
+          "0.01": -1.5864132760592615,
+          "0.05": -1.0234095166224524,
+          "0.5": -0.33370079861888347,
+          "0.95": 0.2682051205012567,
+          "0.99": 0.4181758547915332,
+          "1": 0.52630050633736
+        },
+        "unique_scores": 184,
+        "unit": "GP1BA",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 178,
+          "deletion_1nt": 6
+        }
+      },
+      {
+        "count": 1239,
+        "eligibility": "SIGN_MIN",
+        "key": "satmut_mpra:GP1BA:SIGN_MIN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              2,
+              6,
+              14,
+              14,
+              14
+            ],
+            "anchors": [
+              -2.15010129766182,
+              0.621169169159186
+            ],
+            "cutpoints": [
+              -1.5958472042976188,
+              -1.0415931109334176,
+              -0.48733901756921644,
+              0.0669150757949849
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              2,
+              6,
+              55,
+              948,
+              228
+            ],
+            "selected_p95_minus_p05": 1.6144012059044464,
+            "selected_range": [
+              -2.15010129766182,
+              0.368493264918708
+            ],
+            "selected_variant_types": {
+              "SNV": 45,
+              "deletion_1nt": 5
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "anchors": [
+              -0.9332961405612887,
+              0.34907159621760264
+            ],
+            "cutpoints": [
+              -0.6768225932055105,
+              -0.4203490458497321,
+              -0.16387549849395397,
+              0.09259804886182443
+            ],
+            "exact_five_by_ten": true,
+            "population_counts": [
+              33,
+              45,
+              132,
+              864,
+              165
+            ],
+            "selected_p95_minus_p05": 1.1674417366816843,
+            "selected_range": [
+              -1.10819605587903,
+              0.368493264918708
+            ],
+            "selected_variant_types": {
+              "SNV": 47,
+              "deletion_1nt": 3
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 0.5616002076887321,
+            "selected_range": [
+              -0.600872473353911,
+              0.259142330945356
+            ],
+            "selected_variant_types": {
+              "SNV": 46,
+              "deletion_1nt": 4
+            }
+          }
+        },
+        "robust_range": 0.6593083860527782,
+        "score_quantiles": {
+          "0": -2.15010129766182,
+          "0.01": -0.9332961405612887,
+          "0.05": -0.49215405785432326,
+          "0.5": -0.0209120827654474,
+          "0.95": 0.1671543281984549,
+          "0.99": 0.34907159621760264,
+          "1": 0.621169169159186
+        },
+        "unique_scores": 1239,
+        "unit": "GP1BA",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 1154,
+          "deletion_1nt": 85
+        }
+      },
+      {
+        "count": 90,
+        "eligibility": "SIGN",
+        "key": "satmut_mpra:HBB:SIGN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              16,
+              16,
+              15,
+              2,
+              1
+            ],
+            "anchors": [
+              -0.487295363989861,
+              1.18544488199261
+            ],
+            "cutpoints": [
+              -0.15274731479336684,
+              0.18180073440312738,
+              0.5163487835996216,
+              0.8508968327961158
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              50,
+              20,
+              17,
+              2,
+              1
+            ],
+            "selected_p95_minus_p05": 0.8279754631766012,
+            "selected_range": [
+              -0.392570552167111,
+              1.18544488199261
+            ],
+            "selected_variant_types": {
+              "SNV": 48,
+              "deletion_1nt": 2
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              12,
+              12,
+              11,
+              11,
+              4
+            ],
+            "anchors": [
+              -0.4029902814676135,
+              0.6185857383972418
+            ],
+            "cutpoints": [
+              -0.19867507749464247,
+              0.00564012647832865,
+              0.20995533045129966,
+              0.4142705344242708
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              39,
+              18,
+              17,
+              12,
+              4
+            ],
+            "selected_p95_minus_p05": 0.8164703832581146,
+            "selected_range": [
+              -0.378283582800366,
+              1.18544488199261
+            ],
+            "selected_variant_types": {
+              "SNV": 47,
+              "deletion_1nt": 3
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 0.6473365436317599,
+            "selected_range": [
+              -0.392570552167111,
+              0.5203795874099
+            ],
+            "selected_variant_types": {
+              "SNV": 48,
+              "deletion_1nt": 2
+            }
+          }
+        },
+        "robust_range": 0.6878415294881167,
+        "score_quantiles": {
+          "0": -0.487295363989861,
+          "0.01": -0.4029902814676135,
+          "0.05": -0.36381205664609995,
+          "0.5": -0.17403878674920897,
+          "0.95": 0.3240294728420168,
+          "0.99": 0.6185857383972418,
+          "1": 1.18544488199261
+        },
+        "unique_scores": 90,
+        "unit": "HBB",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 85,
+          "deletion_1nt": 5
+        }
+      },
+      {
+        "count": 596,
+        "eligibility": "SIGN_MIN",
+        "key": "satmut_mpra:HBB:SIGN_MIN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              16,
+              15,
+              15,
+              3,
+              1
+            ],
+            "anchors": [
+              -0.565326472481527,
+              1.18544488199261
+            ],
+            "cutpoints": [
+              -0.21517220158669964,
+              0.13498206930812778,
+              0.48513634020295515,
+              0.8352906110977826
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              59,
+              480,
+              53,
+              3,
+              1
+            ],
+            "selected_p95_minus_p05": 0.8733113198709851,
+            "selected_range": [
+              -0.378961066048989,
+              1.18544488199261
+            ],
+            "selected_variant_types": {
+              "SNV": 46,
+              "deletion_1nt": 4
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "anchors": [
+              -0.3796415403548951,
+              0.31393587452583216
+            ],
+            "cutpoints": [
+              -0.24092605737874967,
+              -0.1022105744026042,
+              0.036504908573541245,
+              0.17522039154968672
+            ],
+            "exact_five_by_ten": true,
+            "population_counts": [
+              48,
+              99,
+              267,
+              138,
+              44
+            ],
+            "selected_p95_minus_p05": 0.5764230050356505,
+            "selected_range": [
+              -0.347114750495652,
+              0.5203795874099
+            ],
+            "selected_variant_types": {
+              "SNV": 48,
+              "deletion_1nt": 2
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 0.49708552123058647,
+            "selected_range": [
+              -0.346124635790886,
+              0.470950899952997
+            ],
+            "selected_variant_types": {
+              "SNV": 48,
+              "deletion_1nt": 2
+            }
+          }
+        },
+        "robust_range": 0.4825425922507585,
+        "score_quantiles": {
+          "0": -0.565326472481527,
+          "0.01": -0.3796415403548951,
+          "0.05": -0.273475014738414,
+          "0.5": -0.020547239830891698,
+          "0.95": 0.2090675775123445,
+          "0.99": 0.31393587452583216,
+          "1": 1.18544488199261
+        },
+        "unique_scores": 596,
+        "unit": "HBB",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 561,
+          "deletion_1nt": 35
+        }
+      },
+      {
+        "count": 181,
+        "eligibility": "SIGN",
+        "key": "satmut_mpra:HBG1:SIGN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              1,
+              13,
+              12,
+              12,
+              12
+            ],
+            "anchors": [
+              -1.91674535442718,
+              0.606493081846469
+            ],
+            "cutpoints": [
+              -1.4120976671724503,
+              -0.9074499799177204,
+              -0.40280229266299067,
+              0.1018453945917393
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              1,
+              35,
+              65,
+              56,
+              24
+            ],
+            "selected_p95_minus_p05": 1.4682785715363589,
+            "selected_range": [
+              -1.91674535442718,
+              0.464800061376647
+            ],
+            "selected_variant_types": {
+              "SNV": 47,
+              "deletion_1nt": 3
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "anchors": [
+              -1.2937938601481058,
+              0.47004384016822687
+            ],
+            "cutpoints": [
+              -0.9410263200848392,
+              -0.5882587800215727,
+              -0.23549123995830623,
+              0.11727630010496043
+            ],
+            "exact_five_by_ten": true,
+            "population_counts": [
+              31,
+              40,
+              59,
+              27,
+              24
+            ],
+            "selected_p95_minus_p05": 1.3969688248321734,
+            "selected_range": [
+              -1.91674535442718,
+              0.464800061376647
+            ],
+            "selected_variant_types": {
+              "SNV": 47,
+              "deletion_1nt": 3
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 1.41974412717726,
+            "selected_range": [
+              -1.91674535442718,
+              0.606493081846469
+            ],
+            "selected_variant_types": {
+              "SNV": 44,
+              "deletion_1nt": 6
+            }
+          }
+        },
+        "robust_range": 1.394652017990876,
+        "score_quantiles": {
+          "0": -1.91674535442718,
+          "0.01": -1.2937938601481058,
+          "0.05": -1.14403035996888,
+          "0.5": -0.449023290023559,
+          "0.95": 0.250621658021996,
+          "0.99": 0.47004384016822687,
+          "1": 0.606493081846469
+        },
+        "unique_scores": 181,
+        "unit": "HBG1",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 168,
+          "deletion_1nt": 13
+        }
+      },
+      {
+        "count": 888,
+        "eligibility": "SIGN_MIN",
+        "key": "satmut_mpra:HBG1:SIGN_MIN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              1,
+              13,
+              12,
+              12,
+              12
+            ],
+            "anchors": [
+              -1.91674535442718,
+              0.606493081846469
+            ],
+            "cutpoints": [
+              -1.4120976671724503,
+              -0.9074499799177204,
+              -0.40280229266299067,
+              0.1018453945917393
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              1,
+              35,
+              77,
+              636,
+              139
+            ],
+            "selected_p95_minus_p05": 1.4149949187391218,
+            "selected_range": [
+              -1.91674535442718,
+              0.432253541367084
+            ],
+            "selected_variant_types": {
+              "SNV": 47,
+              "deletion_1nt": 3
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "anchors": [
+              -1.1445437512619283,
+              0.3681868474650105
+            ],
+            "cutpoints": [
+              -0.8419976315165405,
+              -0.5394515117711528,
+              -0.23690539202576502,
+              0.06564072771962282
+            ],
+            "exact_five_by_ten": true,
+            "population_counts": [
+              40,
+              43,
+              82,
+              525,
+              198
+            ],
+            "selected_p95_minus_p05": 1.2506519912472063,
+            "selected_range": [
+              -1.22626803218794,
+              0.432253541367084
+            ],
+            "selected_variant_types": {
+              "SNV": 47,
+              "deletion_1nt": 3
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 0.9347279863738012,
+            "selected_range": [
+              -0.917179581500554,
+              0.295935615624052
+            ],
+            "selected_variant_types": {
+              "SNV": 47,
+              "deletion_1nt": 3
+            }
+          }
+        },
+        "robust_range": 1.0284705170084316,
+        "score_quantiles": {
+          "0": -1.91674535442718,
+          "0.01": -1.1445437512619283,
+          "0.05": -0.8054541839177711,
+          "0.5": -0.04601603349624115,
+          "0.95": 0.2230163330906606,
+          "0.99": 0.3681868474650105,
+          "1": 0.606493081846469
+        },
+        "unique_scores": 888,
+        "unit": "HBG1",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 820,
+          "deletion_1nt": 68
+        }
+      },
+      {
+        "count": 119,
+        "eligibility": "SIGN",
+        "key": "satmut_mpra:HNF4A:SIGN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              20,
+              19,
+              8,
+              1,
+              2
+            ],
+            "anchors": [
+              -0.289556113945135,
+              1.03529516387368
+            ],
+            "cutpoints": [
+              -0.02458585838137195,
+              0.24038439718239107,
+              0.505354652746154,
+              0.7703249083099172
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              55,
+              53,
+              8,
+              1,
+              2
+            ],
+            "selected_p95_minus_p05": 0.6933758486342273,
+            "selected_range": [
+              -0.270886894050857,
+              1.03529516387368
+            ],
+            "selected_variant_types": {
+              "SNV": 46,
+              "deletion_1nt": 4
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              16,
+              15,
+              15,
+              2,
+              2
+            ],
+            "anchors": [
+              -0.26516805778247393,
+              0.8936814685305733
+            ],
+            "cutpoints": [
+              -0.0333981525198645,
+              0.19837175274274496,
+              0.4301416580053544,
+              0.6619115632679639
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              55,
+              45,
+              15,
+              2,
+              2
+            ],
+            "selected_p95_minus_p05": 0.6822919735398355,
+            "selected_range": [
+              -0.270886894050857,
+              1.03529516387368
+            ],
+            "selected_variant_types": {
+              "SNV": 47,
+              "deletion_1nt": 3
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 0.4303609994166776,
+            "selected_range": [
+              -0.270886894050857,
+              0.605478284056029
+            ],
+            "selected_variant_types": {
+              "SNV": 46,
+              "deletion_1nt": 4
+            }
+          }
+        },
+        "robust_range": 0.5578886905030644,
+        "score_quantiles": {
+          "0": -0.289556113945135,
+          "0.01": -0.26516805778247393,
+          "0.05": -0.1634364152746044,
+          "0.5": 0.0636683744784233,
+          "0.95": 0.3944522752284601,
+          "0.99": 0.8936814685305733,
+          "1": 1.03529516387368
+        },
+        "unique_scores": 119,
+        "unit": "HNF4A",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 111,
+          "deletion_1nt": 8
+        }
+      },
+      {
+        "count": 931,
+        "eligibility": "SIGN_MIN",
+        "key": "satmut_mpra:HNF4A:SIGN_MIN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              14,
+              16,
+              15,
+              3,
+              2
+            ],
+            "anchors": [
+              -0.4976601822691,
+              1.03529516387368
+            ],
+            "cutpoints": [
+              -0.19106911304054403,
+              0.11552195618801203,
+              0.4221130254165679,
+              0.7287040946451241
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              14,
+              869,
+              43,
+              3,
+              2
+            ],
+            "selected_p95_minus_p05": 0.8865897273038823,
+            "selected_range": [
+              -0.4976601822691,
+              1.03529516387368
+            ],
+            "selected_variant_types": {
+              "SNV": 44,
+              "deletion_1nt": 6
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "anchors": [
+              -0.21894400996705768,
+              0.2478195291363129
+            ],
+            "cutpoints": [
+              -0.12559130214638356,
+              -0.03223859432570944,
+              0.06111411349496465,
+              0.1544668213156388
+            ],
+            "exact_five_by_ten": true,
+            "population_counts": [
+              37,
+              252,
+              526,
+              86,
+              30
+            ],
+            "selected_p95_minus_p05": 0.4834835547794897,
+            "selected_range": [
+              -0.4976601822691,
+              0.95694558219572
+            ],
+            "selected_variant_types": {
+              "SNV": 48,
+              "deletion_1nt": 2
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 0.19352587914752264,
+            "selected_range": [
+              -0.147537779153706,
+              1.03529516387368
+            ],
+            "selected_variant_types": {
+              "SNV": 46,
+              "deletion_1nt": 4
+            }
+          }
+        },
+        "robust_range": 0.23643895730126951,
+        "score_quantiles": {
+          "0": -0.4976601822691,
+          "0.01": -0.21894400996705768,
+          "0.05": -0.117428178725551,
+          "0.5": -0.0051805804739664,
+          "0.95": 0.1190107785757185,
+          "0.99": 0.2478195291363129,
+          "1": 1.03529516387368
+        },
+        "unique_scores": 931,
+        "unit": "HNF4A",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 854,
+          "deletion_1nt": 77
+        }
+      },
+      {
+        "count": 675,
+        "eligibility": "SIGN",
+        "key": "satmut_mpra:IRF4:SIGN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "anchors": [
+              -3.55999158292158,
+              1.66979971495935
+            ],
+            "cutpoints": [
+              -2.514033323345394,
+              -1.468075063769208,
+              -0.4221168041930221,
+              0.6238414553831643
+            ],
+            "exact_five_by_ten": true,
+            "population_counts": [
+              24,
+              57,
+              158,
+              404,
+              32
+            ],
+            "selected_p95_minus_p05": 4.085389734965778,
+            "selected_range": [
+              -3.55999158292158,
+              1.24951190464825
+            ],
+            "selected_variant_types": {
+              "SNV": 45,
+              "deletion_1nt": 5
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "anchors": [
+              -3.042687916176408,
+              1.071703926061296
+            ],
+            "cutpoints": [
+              -2.2198095477288673,
+              -1.3969311792813264,
+              -0.5740528108337857,
+              0.24882555761375524
+            ],
+            "exact_five_by_ten": true,
+            "population_counts": [
+              39,
+              46,
+              106,
+              320,
+              164
+            ],
+            "selected_p95_minus_p05": 3.666466766338641,
+            "selected_range": [
+              -3.55999158292158,
+              1.24951190464825
+            ],
+            "selected_variant_types": {
+              "SNV": 47,
+              "deletion_1nt": 3
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 3.1589367878588535,
+            "selected_range": [
+              -3.55999158292158,
+              1.09520770225891
+            ],
+            "selected_variant_types": {
+              "SNV": 49,
+              "deletion_1nt": 1
+            }
+          }
+        },
+        "robust_range": 2.8712616657834156,
+        "score_quantiles": {
+          "0": -3.55999158292158,
+          "0.01": -3.042687916176408,
+          "0.05": -2.259243776719779,
+          "0.5": -0.214951228712385,
+          "0.95": 0.6120178890636365,
+          "0.99": 1.071703926061296,
+          "1": 1.66979971495935
+        },
+        "unique_scores": 675,
+        "unit": "IRF4",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 645,
+          "deletion_1nt": 30
+        }
+      },
+      {
+        "count": 1458,
+        "eligibility": "SIGN_MIN",
+        "key": "satmut_mpra:IRF4:SIGN_MIN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "anchors": [
+              -3.55999158292158,
+              1.66979971495935
+            ],
+            "cutpoints": [
+              -2.514033323345394,
+              -1.468075063769208,
+              -0.4221168041930221,
+              0.6238414553831643
+            ],
+            "exact_five_by_ten": true,
+            "population_counts": [
+              24,
+              59,
+              162,
+              1180,
+              33
+            ],
+            "selected_p95_minus_p05": 4.052454157381766,
+            "selected_range": [
+              -3.55999158292158,
+              1.42082854022383
+            ],
+            "selected_variant_types": {
+              "SNV": 46,
+              "deletion_1nt": 4
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "anchors": [
+              -2.777006716853178,
+              0.868831438517836
+            ],
+            "cutpoints": [
+              -2.047839085778975,
+              -1.3186714547047722,
+              -0.5895038236305697,
+              0.13966380744363338
+            ],
+            "exact_five_by_ten": true,
+            "population_counts": [
+              50,
+              47,
+              93,
+              933,
+              335
+            ],
+            "selected_p95_minus_p05": 3.345323460186674,
+            "selected_range": [
+              -3.55999158292158,
+              0.849204959808635
+            ],
+            "selected_variant_types": {
+              "SNV": 47,
+              "deletion_1nt": 3
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 1.323707904314762,
+            "selected_range": [
+              -3.55999158292158,
+              0.630737231263514
+            ],
+            "selected_variant_types": {
+              "SNV": 45,
+              "deletion_1nt": 5
+            }
+          }
+        },
+        "robust_range": 2.0530622750663863,
+        "score_quantiles": {
+          "0": -3.55999158292158,
+          "0.01": -2.777006716853178,
+          "0.05": -1.6141407895885556,
+          "0.5": -0.0175559941367317,
+          "0.95": 0.43892148547783083,
+          "0.99": 0.868831438517836,
+          "1": 1.66979971495935
+        },
+        "unique_scores": 1458,
+        "unit": "IRF4",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 1353,
+          "deletion_1nt": 105
+        }
+      },
+      {
+        "count": 306,
+        "eligibility": "SIGN",
+        "key": "satmut_mpra:IRF6:SIGN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              12,
+              12,
+              11,
+              11,
+              4
+            ],
+            "anchors": [
+              -3.2927976320893,
+              2.77513497615239
+            ],
+            "cutpoints": [
+              -2.079211110440962,
+              -0.8656245887926239,
+              0.34796193285571375,
+              1.5615484545040523
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              12,
+              37,
+              200,
+              53,
+              4
+            ],
+            "selected_p95_minus_p05": 4.6238680840655,
+            "selected_range": [
+              -3.2927976320893,
+              2.77513497615239
+            ],
+            "selected_variant_types": {
+              "SNV": 46,
+              "deletion_1nt": 4
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "anchors": [
+              -2.6369600236807758,
+              1.8299864513313298
+            ],
+            "cutpoints": [
+              -1.7435707286783548,
+              -0.8501814336759334,
+              0.04320786132648746,
+              0.9365971563289089
+            ],
+            "exact_five_by_ten": true,
+            "population_counts": [
+              19,
+              32,
+              143,
+              96,
+              16
+            ],
+            "selected_p95_minus_p05": 4.156114731836576,
+            "selected_range": [
+              -3.2927976320893,
+              2.77513497615239
+            ],
+            "selected_variant_types": {
+              "SNV": 46,
+              "deletion_1nt": 4
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 2.005035819369599,
+            "selected_range": [
+              -2.643180434516,
+              1.99321854772754
+            ],
+            "selected_variant_types": {
+              "SNV": 47,
+              "deletion_1nt": 3
+            }
+          }
+        },
+        "robust_range": 2.9221227142828923,
+        "score_quantiles": {
+          "0": -3.2927976320893,
+          "0.01": -2.6369600236807758,
+          "0.05": -1.9686332907481225,
+          "0.5": -0.2620266368942705,
+          "0.95": 0.9534894235347695,
+          "0.99": 1.8299864513313298,
+          "1": 2.77513497615239
+        },
+        "unique_scores": 306,
+        "unit": "IRF6",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 299,
+          "deletion_1nt": 7
+        }
+      },
+      {
+        "count": 1739,
+        "eligibility": "SIGN_MIN",
+        "key": "satmut_mpra:IRF6:SIGN_MIN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              12,
+              12,
+              11,
+              11,
+              4
+            ],
+            "anchors": [
+              -3.2927976320893,
+              2.77513497615239
+            ],
+            "cutpoints": [
+              -2.079211110440962,
+              -0.8656245887926239,
+              0.34796193285571375,
+              1.5615484545040523
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              12,
+              37,
+              1623,
+              63,
+              4
+            ],
+            "selected_p95_minus_p05": 4.6238680840655,
+            "selected_range": [
+              -3.2927976320893,
+              2.77513497615239
+            ],
+            "selected_variant_types": {
+              "SNV": 48,
+              "deletion_1nt": 2
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "anchors": [
+              -1.7974090340031204,
+              0.826352872278812
+            ],
+            "cutpoints": [
+              -1.272656652746734,
+              -0.7479042714903472,
+              -0.22315189023396098,
+              0.30160049102242575
+            ],
+            "exact_five_by_ten": true,
+            "population_counts": [
+              25,
+              33,
+              186,
+              1406,
+              89
+            ],
+            "selected_p95_minus_p05": 2.476331823184531,
+            "selected_range": [
+              -3.2927976320893,
+              0.599662107145666
+            ],
+            "selected_variant_types": {
+              "SNV": 49,
+              "deletion_1nt": 1
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 0.6516167693837058,
+            "selected_range": [
+              -2.12475212849114,
+              1.02615048411765
+            ],
+            "selected_variant_types": {
+              "SNV": 50
+            }
+          }
+        },
+        "robust_range": 0.7862271544502235,
+        "score_quantiles": {
+          "0": -3.2927976320893,
+          "0.01": -1.7974090340031204,
+          "0.05": -0.4789722930439106,
+          "0.5": -0.0161918157446264,
+          "0.95": 0.307254861406313,
+          "0.99": 0.826352872278812,
+          "1": 2.77513497615239
+        },
+        "unique_scores": 1739,
+        "unit": "IRF6",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 1676,
+          "deletion_1nt": 63
+        }
+      },
+      {
+        "count": 409,
+        "eligibility": "SIGN",
+        "key": "satmut_mpra:LDLR:SIGN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "anchors": [
+              -3.7838579601735,
+              1.610504655388
+            ],
+            "cutpoints": [
+              -2.7049854370612,
+              -1.6261129139489001,
+              -0.5472403908366,
+              0.5316321322757003
+            ],
+            "exact_five_by_ten": true,
+            "population_counts": [
+              28,
+              59,
+              98,
+              199,
+              25
+            ],
+            "selected_p95_minus_p05": 4.391259265550468,
+            "selected_range": [
+              -3.51832451698793,
+              1.48279287771019
+            ],
+            "selected_variant_types": {
+              "SNV": 47,
+              "deletion_1nt": 3
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "anchors": [
+              -3.4784182690189147,
+              1.3954948845786976
+            ],
+            "cutpoints": [
+              -2.503635638299392,
+              -1.5288530075798699,
+              -0.5540703768603473,
+              0.4207122538591753
+            ],
+            "exact_five_by_ten": true,
+            "population_counts": [
+              36,
+              56,
+              92,
+              190,
+              35
+            ],
+            "selected_p95_minus_p05": 3.9548026956031324,
+            "selected_range": [
+              -3.51832451698793,
+              1.16238314151597
+            ],
+            "selected_variant_types": {
+              "SNV": 47,
+              "deletion_1nt": 3
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 3.517741883193062,
+            "selected_range": [
+              -2.83621155670951,
+              1.48279287771019
+            ],
+            "selected_variant_types": {
+              "SNV": 45,
+              "deletion_1nt": 5
+            }
+          }
+        },
+        "robust_range": 3.367498258166648,
+        "score_quantiles": {
+          "0": -3.7838579601735,
+          "0.01": -3.4784182690189147,
+          "0.05": -2.804650710752768,
+          "0.5": -0.445647906273493,
+          "0.95": 0.5628475474138801,
+          "0.99": 1.3954948845786976,
+          "1": 1.610504655388
+        },
+        "unique_scores": 409,
+        "unit": "LDLR",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 381,
+          "deletion_1nt": 28
+        }
+      },
+      {
+        "count": 1024,
+        "eligibility": "SIGN_MIN",
+        "key": "satmut_mpra:LDLR:SIGN_MIN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "anchors": [
+              -3.7838579601735,
+              1.610504655388
+            ],
+            "cutpoints": [
+              -2.7049854370612,
+              -1.6261129139489001,
+              -0.5472403908366,
+              0.5316321322757003
+            ],
+            "exact_five_by_ten": true,
+            "population_counts": [
+              28,
+              59,
+              101,
+              811,
+              25
+            ],
+            "selected_p95_minus_p05": 4.48902256599826,
+            "selected_range": [
+              -3.7838579601735,
+              1.48279287771019
+            ],
+            "selected_variant_types": {
+              "SNV": 43,
+              "deletion_1nt": 7
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "anchors": [
+              -3.281787491622001,
+              0.8250275703392518
+            ],
+            "cutpoints": [
+              -2.4604244792297507,
+              -1.6390614668374996,
+              -0.8176984544452495,
+              0.003664557947001379
+            ],
+            "exact_five_by_ten": true,
+            "population_counts": [
+              39,
+              45,
+              67,
+              492,
+              381
+            ],
+            "selected_p95_minus_p05": 3.567876300360936,
+            "selected_range": [
+              -3.7838579601735,
+              0.754930261505328
+            ],
+            "selected_variant_types": {
+              "SNV": 47,
+              "deletion_1nt": 3
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 2.3034098554651776,
+            "selected_range": [
+              -3.51832451698793,
+              0.387143614303213
+            ],
+            "selected_variant_types": {
+              "SNV": 45,
+              "deletion_1nt": 5
+            }
+          }
+        },
+        "robust_range": 2.49947865264571,
+        "score_quantiles": {
+          "0": -3.7838579601735,
+          "0.01": -3.281787491622001,
+          "0.05": -2.1695173852617615,
+          "0.5": -0.0373790799738577,
+          "0.95": 0.3299612673839481,
+          "0.99": 0.8250275703392518,
+          "1": 1.610504655388
+        },
+        "unique_scores": 1024,
+        "unit": "LDLR",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 950,
+          "deletion_1nt": 74
+        }
+      },
+      {
+        "count": 369,
+        "eligibility": "SIGN",
+        "key": "satmut_mpra:MSMB:SIGN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              1,
+              11,
+              16,
+              16,
+              6
+            ],
+            "anchors": [
+              -1.02928167419102,
+              0.85599211236233
+            ],
+            "cutpoints": [
+              -0.6522269168803501,
+              -0.27517215956967994,
+              0.1018825977409899,
+              0.47893735505166
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              1,
+              11,
+              235,
+              116,
+              6
+            ],
+            "selected_p95_minus_p05": 1.0164650499519206,
+            "selected_range": [
+              -1.02928167419102,
+              0.85599211236233
+            ],
+            "selected_variant_types": {
+              "SNV": 48,
+              "deletion_1nt": 2
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "anchors": [
+              -0.3617685500970528,
+              0.5297583239588193
+            ],
+            "cutpoints": [
+              -0.18346317528587835,
+              -0.005157800474703933,
+              0.17314757433647046,
+              0.3514529491476449
+            ],
+            "exact_five_by_ten": true,
+            "population_counts": [
+              56,
+              136,
+              103,
+              57,
+              17
+            ],
+            "selected_p95_minus_p05": 0.8533076496739074,
+            "selected_range": [
+              -0.401144153976243,
+              0.85599211236233
+            ],
+            "selected_variant_types": {
+              "SNV": 48,
+              "deletion_1nt": 2
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 0.595827233005402,
+            "selected_range": [
+              -0.401144153976243,
+              0.428511337029264
+            ],
+            "selected_variant_types": {
+              "SNV": 47,
+              "deletion_1nt": 3
+            }
+          }
+        },
+        "robust_range": 0.5803147189538769,
+        "score_quantiles": {
+          "0": -1.02928167419102,
+          "0.01": -0.3617685500970528,
+          "0.05": -0.237958156266062,
+          "0.5": -0.0618866218967494,
+          "0.95": 0.3423565626878149,
+          "0.99": 0.5297583239588193,
+          "1": 0.85599211236233
+        },
+        "unique_scores": 369,
+        "unit": "MSMB",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 354,
+          "deletion_1nt": 15
+        }
+      },
+      {
+        "count": 1912,
+        "eligibility": "SIGN_MIN",
+        "key": "satmut_mpra:MSMB:SIGN_MIN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              1,
+              15,
+              14,
+              14,
+              6
+            ],
+            "anchors": [
+              -1.02928167419102,
+              0.85599211236233
+            ],
+            "cutpoints": [
+              -0.6522269168803501,
+              -0.27517215956967994,
+              0.1018825977409899,
+              0.47893735505166
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              1,
+              21,
+              1718,
+              166,
+              6
+            ],
+            "selected_p95_minus_p05": 1.1442678943203628,
+            "selected_range": [
+              -1.02928167419102,
+              0.85599211236233
+            ],
+            "selected_variant_types": {
+              "SNV": 39,
+              "deletion_1nt": 11
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "anchors": [
+              -0.28123984471012864,
+              0.3403517805398637
+            ],
+            "cutpoints": [
+              -0.15692151966013018,
+              -0.0326031946101317,
+              0.09171513043986676,
+              0.21603345548986524
+            ],
+            "exact_five_by_ten": true,
+            "population_counts": [
+              112,
+              506,
+              1101,
+              135,
+              58
+            ],
+            "selected_p95_minus_p05": 0.6074024159012057,
+            "selected_range": [
+              -0.401144153976243,
+              0.487020325663962
+            ],
+            "selected_variant_types": {
+              "SNV": 41,
+              "deletion_1nt": 9
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 0.37269093967482203,
+            "selected_range": [
+              -0.401144153976243,
+              0.399297356527658
+            ],
+            "selected_variant_types": {
+              "SNV": 43,
+              "deletion_1nt": 7
+            }
+          }
+        },
+        "robust_range": 0.327537075480428,
+        "score_quantiles": {
+          "0": -1.02928167419102,
+          "0.01": -0.28123984471012864,
+          "0.05": -0.1694880863887278,
+          "0.5": -0.0038182614839433002,
+          "0.95": 0.1580489890917002,
+          "0.99": 0.3403517805398637,
+          "1": 0.85599211236233
+        },
+        "unique_scores": 1912,
+        "unit": "MSMB",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 1772,
+          "deletion_1nt": 140
+        }
+      },
+      {
+        "count": 85,
+        "eligibility": "SIGN",
+        "key": "satmut_mpra:MYCrs6983267:SIGN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              2,
+              16,
+              15,
+              15,
+              2
+            ],
+            "anchors": [
+              -0.922499059422459,
+              0.922542202167385
+            ],
+            "cutpoints": [
+              -0.5534908071044903,
+              -0.1844825547865213,
+              0.18452569753144732,
+              0.5535339498494163
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              2,
+              23,
+              38,
+              20,
+              2
+            ],
+            "selected_p95_minus_p05": 0.9079125809882005,
+            "selected_range": [
+              -0.922499059422459,
+              0.922542202167385
+            ],
+            "selected_variant_types": {
+              "SNV": 47,
+              "deletion_1nt": 3
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              4,
+              15,
+              15,
+              14,
+              2
+            ],
+            "anchors": [
+              -0.8091215314336131,
+              0.8893120619390027
+            ],
+            "cutpoints": [
+              -0.46943481275908994,
+              -0.12974809408456678,
+              0.20993862458995638,
+              0.5496253432644795
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              4,
+              29,
+              36,
+              14,
+              2
+            ],
+            "selected_p95_minus_p05": 0.9245539863841749,
+            "selected_range": [
+              -0.922499059422459,
+              0.922542202167385
+            ],
+            "selected_variant_types": {
+              "SNV": 48,
+              "deletion_1nt": 2
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 0.8825787326121952,
+            "selected_range": [
+              -0.922499059422459,
+              0.922542202167385
+            ],
+            "selected_variant_types": {
+              "SNV": 49,
+              "deletion_1nt": 1
+            }
+          }
+        },
+        "robust_range": 0.8059154547183476,
+        "score_quantiles": {
+          "0": -0.922499059422459,
+          "0.01": -0.8091215314336131,
+          "0.05": -0.44691659112925936,
+          "0.5": 0.10030629007883,
+          "0.95": 0.35899886358908817,
+          "0.99": 0.8893120619390027,
+          "1": 0.922542202167385
+        },
+        "unique_scores": 85,
+        "unit": "MYCrs6983267",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 82,
+          "deletion_1nt": 3
+        }
+      },
+      {
+        "count": 1809,
+        "eligibility": "SIGN_MIN",
+        "key": "satmut_mpra:MYCrs6983267:SIGN_MIN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              2,
+              16,
+              15,
+              15,
+              2
+            ],
+            "anchors": [
+              -0.922499059422459,
+              0.922542202167385
+            ],
+            "cutpoints": [
+              -0.5534908071044903,
+              -0.1844825547865213,
+              0.18452569753144732,
+              0.5535339498494163
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              2,
+              54,
+              1714,
+              37,
+              2
+            ],
+            "selected_p95_minus_p05": 0.8583199244072754,
+            "selected_range": [
+              -0.922499059422459,
+              0.922542202167385
+            ],
+            "selected_variant_types": {
+              "SNV": 47,
+              "deletion_1nt": 3
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "anchors": [
+              -0.383164511493495,
+              0.2543861447873941
+            ],
+            "cutpoints": [
+              -0.25565438023731724,
+              -0.12814424898113935,
+              -0.0006341177249615804,
+              0.12687601353121628
+            ],
+            "exact_five_by_ten": true,
+            "population_counts": [
+              29,
+              77,
+              840,
+              768,
+              95
+            ],
+            "selected_p95_minus_p05": 0.5999285303463173,
+            "selected_range": [
+              -0.922499059422459,
+              0.223551819541722
+            ],
+            "selected_variant_types": {
+              "SNV": 47,
+              "deletion_1nt": 3
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 0.3732242140710096,
+            "selected_range": [
+              -0.368597163158917,
+              0.487481545069528
+            ],
+            "selected_variant_types": {
+              "SNV": 48,
+              "deletion_1nt": 2
+            }
+          }
+        },
+        "robust_range": 0.27254609764779697,
+        "score_quantiles": {
+          "0": -0.922499059422459,
+          "0.01": -0.383164511493495,
+          "0.05": -0.1437559981851746,
+          "0.5": -0.00286754895144308,
+          "0.95": 0.12879009946262238,
+          "0.99": 0.2543861447873941,
+          "1": 0.922542202167385
+        },
+        "unique_scores": 1809,
+        "unit": "MYCrs6983267",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 1715,
+          "deletion_1nt": 94
+        }
+      },
+      {
+        "count": 277,
+        "eligibility": "SIGN",
+        "key": "satmut_mpra:PKLR:SIGN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "anchors": [
+              -2.94383829827722,
+              1.65546441398504
+            ],
+            "cutpoints": [
+              -2.0239777558247685,
+              -1.1041172133723158,
+              -0.1842566709198642,
+              0.7356038715325883
+            ],
+            "exact_five_by_ten": true,
+            "population_counts": [
+              19,
+              40,
+              130,
+              61,
+              27
+            ],
+            "selected_p95_minus_p05": 3.458317210665065,
+            "selected_range": [
+              -2.94383829827722,
+              1.61305379128435
+            ],
+            "selected_variant_types": {
+              "SNV": 49,
+              "deletion_1nt": 1
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "anchors": [
+              -2.480373567204328,
+              1.420717094734577
+            ],
+            "cutpoints": [
+              -1.700155434816547,
+              -0.919937302428766,
+              -0.139719170040985,
+              0.6404989623467962
+            ],
+            "exact_five_by_ten": true,
+            "population_counts": [
+              37,
+              41,
+              111,
+              48,
+              40
+            ],
+            "selected_p95_minus_p05": 3.1562961236388025,
+            "selected_range": [
+              -2.41212932320005,
+              1.61305379128435
+            ],
+            "selected_variant_types": {
+              "SNV": 49,
+              "deletion_1nt": 1
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 3.0697517544479864,
+            "selected_range": [
+              -2.41212932320005,
+              1.57415537886082
+            ],
+            "selected_variant_types": {
+              "SNV": 48,
+              "deletion_1nt": 2
+            }
+          }
+        },
+        "robust_range": 3.070172464700451,
+        "score_quantiles": {
+          "0": -2.94383829827722,
+          "0.01": -2.480373567204328,
+          "0.05": -2.164807247641792,
+          "0.5": -0.592036951720249,
+          "0.95": 0.9053652170586586,
+          "0.99": 1.420717094734577,
+          "1": 1.65546441398504
+        },
+        "unique_scores": 277,
+        "unit": "PKLR",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 270,
+          "deletion_1nt": 7
+        }
+      },
+      {
+        "count": 1533,
+        "eligibility": "SIGN_MIN",
+        "key": "satmut_mpra:PKLR:SIGN_MIN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "anchors": [
+              -2.94383829827722,
+              1.65546441398504
+            ],
+            "cutpoints": [
+              -2.0239777558247685,
+              -1.1041172133723158,
+              -0.1842566709198642,
+              0.7356038715325883
+            ],
+            "exact_five_by_ten": true,
+            "population_counts": [
+              19,
+              43,
+              351,
+              1087,
+              33
+            ],
+            "selected_p95_minus_p05": 3.6740613002376343,
+            "selected_range": [
+              -2.59529572487927,
+              1.65546441398504
+            ],
+            "selected_variant_types": {
+              "SNV": 48,
+              "deletion_1nt": 2
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "anchors": [
+              -2.1196052889324193,
+              0.9082322713825683
+            ],
+            "cutpoints": [
+              -1.5140377768694218,
+              -0.908470264806424,
+              -0.3029027527434267,
+              0.302664759319571
+            ],
+            "exact_five_by_ten": true,
+            "population_counts": [
+              41,
+              46,
+              206,
+              1051,
+              189
+            ],
+            "selected_p95_minus_p05": 2.735295524424486,
+            "selected_range": [
+              -2.59529572487927,
+              1.65546441398504
+            ],
+            "selected_variant_types": {
+              "SNV": 46,
+              "deletion_1nt": 4
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 1.4584593062059465,
+            "selected_range": [
+              -1.87103731500056,
+              0.709249429794616
+            ],
+            "selected_variant_types": {
+              "SNV": 42,
+              "deletion_1nt": 8
+            }
+          }
+        },
+        "robust_range": 1.4906988940870947,
+        "score_quantiles": {
+          "0": -2.94383829827722,
+          "0.01": -2.1196052889324193,
+          "0.05": -0.979179387523053,
+          "0.5": -0.0124816441654161,
+          "0.95": 0.5115195065640417,
+          "0.99": 0.9082322713825683,
+          "1": 1.65546441398504
+        },
+        "unique_scores": 1533,
+        "unit": "PKLR",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 1379,
+          "deletion_1nt": 154
+        }
+      },
+      {
+        "count": 786,
+        "eligibility": "SIGN",
+        "key": "satmut_mpra:SORT1:SIGN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              11,
+              10,
+              10,
+              10,
+              9
+            ],
+            "anchors": [
+              -3.16986427914204,
+              2.40419767490769
+            ],
+            "cutpoints": [
+              -2.0550518883320943,
+              -0.9402394975221479,
+              0.17457289328779768,
+              1.2893852840977442
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              37,
+              86,
+              434,
+              220,
+              9
+            ],
+            "selected_p95_minus_p05": 4.48297209202347,
+            "selected_range": [
+              -3.16986427914204,
+              2.40419767490769
+            ],
+            "selected_variant_types": {
+              "SNV": 47,
+              "deletion_1nt": 3
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "anchors": [
+              -2.6148547600921646,
+              1.330402824151724
+            ],
+            "cutpoints": [
+              -1.8258032432433868,
+              -1.036751726394609,
+              -0.24770020954583138,
+              0.5413513073029464
+            ],
+            "exact_five_by_ten": true,
+            "population_counts": [
+              47,
+              58,
+              327,
+              266,
+              88
+            ],
+            "selected_p95_minus_p05": 3.509557935807438,
+            "selected_range": [
+              -3.16986427914204,
+              1.31699434219201
+            ],
+            "selected_variant_types": {
+              "SNV": 47,
+              "deletion_1nt": 3
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 2.1122412242035855,
+            "selected_range": [
+              -2.83663991244069,
+              2.40419767490769
+            ],
+            "selected_variant_types": {
+              "SNV": 48,
+              "deletion_1nt": 2
+            }
+          }
+        },
+        "robust_range": 2.778600846808076,
+        "score_quantiles": {
+          "0": -3.16986427914204,
+          "0.01": -2.6148547600921646,
+          "0.05": -1.99548048713415,
+          "0.5": -0.296749045385755,
+          "0.95": 0.7831203596739258,
+          "0.99": 1.330402824151724,
+          "1": 2.40419767490769
+        },
+        "unique_scores": 786,
+        "unit": "SORT1",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 745,
+          "deletion_1nt": 41
+        }
+      },
+      {
+        "count": 1806,
+        "eligibility": "SIGN_MIN",
+        "key": "satmut_mpra:SORT1:SIGN_MIN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              11,
+              10,
+              10,
+              10,
+              9
+            ],
+            "anchors": [
+              -3.16986427914204,
+              2.40419767490769
+            ],
+            "cutpoints": [
+              -2.0550518883320943,
+              -0.9402394975221479,
+              0.17457289328779768,
+              1.2893852840977442
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              37,
+              89,
+              1386,
+              285,
+              9
+            ],
+            "selected_p95_minus_p05": 4.5033361873124775,
+            "selected_range": [
+              -2.83663991244069,
+              2.40419767490769
+            ],
+            "selected_variant_types": {
+              "SNV": 46,
+              "deletion_1nt": 4
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "anchors": [
+              -2.3032191212242066,
+              1.1626006026764713
+            ],
+            "cutpoints": [
+              -1.6100551764440711,
+              -0.9168912316639355,
+              -0.22372728688379995,
+              0.46943665789633576
+            ],
+            "exact_five_by_ten": true,
+            "population_counts": [
+              61,
+              68,
+              378,
+              1183,
+              116
+            ],
+            "selected_p95_minus_p05": 3.363141314705932,
+            "selected_range": [
+              -2.49499140429004,
+              1.77246782818615
+            ],
+            "selected_variant_types": {
+              "SNV": 47,
+              "deletion_1nt": 3
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 1.8979484686358794,
+            "selected_range": [
+              -2.19432490601952,
+              1.2486209558371
+            ],
+            "selected_variant_types": {
+              "SNV": 46,
+              "deletion_1nt": 4
+            }
+          }
+        },
+        "robust_range": 1.7042379907956253,
+        "score_quantiles": {
+          "0": -3.16986427914204,
+          "0.01": -2.3032191212242066,
+          "0.05": -1.170007148288785,
+          "0.5": -0.037475847483289554,
+          "0.95": 0.5342308425068403,
+          "0.99": 1.1626006026764713,
+          "1": 2.40419767490769
+        },
+        "unique_scores": 1806,
+        "unit": "SORT1",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 1710,
+          "deletion_1nt": 96
+        }
+      },
+      {
+        "count": 129,
+        "eligibility": "SIGN",
+        "key": "satmut_mpra:TCF7L2:SIGN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              15,
+              14,
+              14,
+              6,
+              1
+            ],
+            "anchors": [
+              -0.735529369321069,
+              1.17923625896247
+            ],
+            "cutpoints": [
+              -0.35257624366436124,
+              0.030376881992346616,
+              0.41333000764905437,
+              0.7962831333057623
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              15,
+              72,
+              35,
+              6,
+              1
+            ],
+            "selected_p95_minus_p05": 1.0261592907673416,
+            "selected_range": [
+              -0.735529369321069,
+              1.17923625896247
+            ],
+            "selected_variant_types": {
+              "SNV": 47,
+              "deletion_1nt": 3
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              11,
+              10,
+              10,
+              10,
+              9
+            ],
+            "anchors": [
+              -0.5674881539579737,
+              0.6112437681162164
+            ],
+            "cutpoints": [
+              -0.3317417695431357,
+              -0.09599538512829764,
+              0.13975099928654033,
+              0.3754973837013784
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              21,
+              65,
+              13,
+              21,
+              9
+            ],
+            "selected_p95_minus_p05": 0.9322764608490653,
+            "selected_range": [
+              -0.735529369321069,
+              1.17923625896247
+            ],
+            "selected_variant_types": {
+              "SNV": 48,
+              "deletion_1nt": 2
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 0.7794640256269971,
+            "selected_range": [
+              -0.735529369321069,
+              0.501194680037395
+            ],
+            "selected_variant_types": {
+              "SNV": 48,
+              "deletion_1nt": 2
+            }
+          }
+        },
+        "robust_range": 0.8635219234871379,
+        "score_quantiles": {
+          "0": -0.735529369321069,
+          "0.01": -0.5674881539579737,
+          "0.05": -0.44470958099567104,
+          "0.5": -0.166577079685373,
+          "0.95": 0.41881234249146687,
+          "0.99": 0.6112437681162164,
+          "1": 1.17923625896247
+        },
+        "unique_scores": 129,
+        "unit": "TCF7L2",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 125,
+          "deletion_1nt": 4
+        }
+      },
+      {
+        "count": 1801,
+        "eligibility": "SIGN_MIN",
+        "key": "satmut_mpra:TCF7L2:SIGN_MIN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              16,
+              16,
+              15,
+              1,
+              2
+            ],
+            "anchors": [
+              -0.735529369321069,
+              1.55170382628193
+            ],
+            "cutpoints": [
+              -0.2780827302004692,
+              0.17936390892013065,
+              0.6368105480407303,
+              1.0942571871613305
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              47,
+              1706,
+              45,
+              1,
+              2
+            ],
+            "selected_p95_minus_p05": 0.9456291960415413,
+            "selected_range": [
+              -0.461210398859344,
+              1.55170382628193
+            ],
+            "selected_variant_types": {
+              "SNV": 46,
+              "deletion_1nt": 4
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "anchors": [
+              -0.36288472625119,
+              0.281928962495452
+            ],
+            "cutpoints": [
+              -0.2339219885018616,
+              -0.10495925075253319,
+              0.024003486996795192,
+              0.15296622474612365
+            ],
+            "exact_five_by_ten": true,
+            "population_counts": [
+              82,
+              141,
+              1044,
+              469,
+              65
+            ],
+            "selected_p95_minus_p05": 0.576756481954352,
+            "selected_range": [
+              -0.461210398859344,
+              0.654040635702425
+            ],
+            "selected_variant_types": {
+              "SNV": 42,
+              "deletion_1nt": 8
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 0.30458036647279857,
+            "selected_range": [
+              -0.418659214139066,
+              0.251132175479422
+            ],
+            "selected_variant_types": {
+              "SNV": 48,
+              "deletion_1nt": 2
+            }
+          }
+        },
+        "robust_range": 0.348508030096255,
+        "score_quantiles": {
+          "0": -0.735529369321069,
+          "0.01": -0.36288472625119,
+          "0.05": -0.221808757622322,
+          "0.5": -0.00727750767377364,
+          "0.95": 0.126699272473933,
+          "0.99": 0.281928962495452,
+          "1": 1.55170382628193
+        },
+        "unique_scores": 1801,
+        "unit": "TCF7L2",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 1700,
+          "deletion_1nt": 101
+        }
+      },
+      {
+        "count": 122,
+        "eligibility": "SIGN",
+        "key": "satmut_mpra:TERT:SIGN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              17,
+              17,
+              12,
+              2,
+              2
+            ],
+            "anchors": [
+              -0.949879048939101,
+              1.997811557601
+            ],
+            "cutpoints": [
+              -0.36034092763108083,
+              0.22919719367693947,
+              0.8187353149849594,
+              1.40827343629298
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              52,
+              54,
+              12,
+              2,
+              2
+            ],
+            "selected_p95_minus_p05": 1.6123993785324373,
+            "selected_range": [
+              -0.74998233637668,
+              1.997811557601
+            ],
+            "selected_variant_types": {
+              "SNV": 50
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              14,
+              14,
+              13,
+              5,
+              4
+            ],
+            "anchors": [
+              -0.9201645272705471,
+              1.3456916017068108
+            ],
+            "cutpoints": [
+              -0.4669933014750756,
+              -0.013822075679603918,
+              0.4393491501158676,
+              0.8925203759113391
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              33,
+              60,
+              20,
+              5,
+              4
+            ],
+            "selected_p95_minus_p05": 1.6511598021760747,
+            "selected_range": [
+              -0.949879048939101,
+              1.997811557601
+            ],
+            "selected_variant_types": {
+              "SNV": 50
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 1.2746926586480276,
+            "selected_range": [
+              -0.949879048939101,
+              0.805423649854723
+            ],
+            "selected_variant_types": {
+              "SNV": 50
+            }
+          }
+        },
+        "robust_range": 1.2754831447749142,
+        "score_quantiles": {
+          "0": -0.949879048939101,
+          "0.01": -0.9201645272705471,
+          "0.05": -0.6948176156629936,
+          "0.5": -0.303272938364524,
+          "0.95": 0.5806655291119205,
+          "0.99": 1.3456916017068108,
+          "1": 1.997811557601
+        },
+        "unique_scores": 122,
+        "unit": "TERT",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 118,
+          "deletion_1nt": 4
+        }
+      },
+      {
+        "count": 865,
+        "eligibility": "SIGN_MIN",
+        "key": "satmut_mpra:TERT:SIGN_MIN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              16,
+              15,
+              15,
+              2,
+              2
+            ],
+            "anchors": [
+              -0.949879048939101,
+              1.997811557601
+            ],
+            "cutpoints": [
+              -0.36034092763108083,
+              0.22919719367693947,
+              0.8187353149849594,
+              1.40827343629298
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              87,
+              734,
+              40,
+              2,
+              2
+            ],
+            "selected_p95_minus_p05": 1.608833654157929,
+            "selected_range": [
+              -0.937927953656184,
+              1.997811557601
+            ],
+            "selected_variant_types": {
+              "SNV": 41,
+              "deletion_1nt": 9
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "anchors": [
+              -0.6578712782694529,
+              0.5170575228698832
+            ],
+            "cutpoints": [
+              -0.4228855180415857,
+              -0.18789975781371848,
+              0.04708600241414873,
+              0.28207176264201594
+            ],
+            "exact_five_by_ten": true,
+            "population_counts": [
+              56,
+              141,
+              447,
+              194,
+              27
+            ],
+            "selected_p95_minus_p05": 1.1209276094535219,
+            "selected_range": [
+              -0.937927953656184,
+              0.805423649854723
+            ],
+            "selected_variant_types": {
+              "SNV": 44,
+              "deletion_1nt": 6
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 0.6640340297913584,
+            "selected_range": [
+              -0.937927953656184,
+              0.409200903433523
+            ],
+            "selected_variant_types": {
+              "SNV": 46,
+              "deletion_1nt": 4
+            }
+          }
+        },
+        "robust_range": 0.7051752952581274,
+        "score_quantiles": {
+          "0": -0.949879048939101,
+          "0.01": -0.6578712782694529,
+          "0.05": -0.47666446863835576,
+          "0.5": -0.0419042369694023,
+          "0.95": 0.2285108266197716,
+          "0.99": 0.5170575228698832,
+          "1": 1.997811557601
+        },
+        "unique_scores": 865,
+        "unit": "TERT",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 770,
+          "deletion_1nt": 95
+        }
+      },
+      {
+        "count": 327,
+        "eligibility": "SIGN",
+        "key": "satmut_mpra:ZFAND3:SIGN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              3,
+              12,
+              12,
+              12,
+              11
+            ],
+            "anchors": [
+              -1.32393634157516,
+              0.743853320161317
+            ],
+            "cutpoints": [
+              -0.9103784092278646,
+              -0.4968204768805691,
+              -0.08326254453327386,
+              0.33029538781402173
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              3,
+              24,
+              195,
+              65,
+              40
+            ],
+            "selected_p95_minus_p05": 1.612045280795025,
+            "selected_range": [
+              -1.32393634157516,
+              0.743853320161317
+            ],
+            "selected_variant_types": {
+              "SNV": 46,
+              "deletion_1nt": 4
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "anchors": [
+              -0.8569995170609465,
+              0.6992686578220875
+            ],
+            "cutpoints": [
+              -0.5457458820843397,
+              -0.23449224710773287,
+              0.07676138786887388,
+              0.38801502284548073
+            ],
+            "exact_five_by_ten": true,
+            "population_counts": [
+              21,
+              120,
+              84,
+              71,
+              31
+            ],
+            "selected_p95_minus_p05": 1.4937901004909078,
+            "selected_range": [
+              -1.32393634157516,
+              0.743853320161317
+            ],
+            "selected_variant_types": {
+              "SNV": 49,
+              "deletion_1nt": 1
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 1.1618537237058018,
+            "selected_range": [
+              -1.32393634157516,
+              0.743853320161317
+            ],
+            "selected_variant_types": {
+              "SNV": 48,
+              "deletion_1nt": 2
+            }
+          }
+        },
+        "robust_range": 1.0589150597262775,
+        "score_quantiles": {
+          "0": -1.32393634157516,
+          "0.01": -0.8569995170609465,
+          "0.05": -0.5703175119893567,
+          "0.5": -0.202155777387178,
+          "0.95": 0.4885975477369209,
+          "0.99": 0.6992686578220875,
+          "1": 0.743853320161317
+        },
+        "unique_scores": 327,
+        "unit": "ZFAND3",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 315,
+          "deletion_1nt": 12
+        }
+      },
+      {
+        "count": 1893,
+        "eligibility": "SIGN_MIN",
+        "key": "satmut_mpra:ZFAND3:SIGN_MIN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              3,
+              12,
+              12,
+              12,
+              11
+            ],
+            "anchors": [
+              -1.32393634157516,
+              0.887614861929254
+            ],
+            "cutpoints": [
+              -0.8816261008742773,
+              -0.4393158601733943,
+              0.0029943805274883495,
+              0.4453046212283713
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              3,
+              47,
+              1051,
+              768,
+              24
+            ],
+            "selected_p95_minus_p05": 1.555870695525872,
+            "selected_range": [
+              -1.32393634157516,
+              0.700850171316366
+            ],
+            "selected_variant_types": {
+              "SNV": 47,
+              "deletion_1nt": 3
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "anchors": [
+              -0.5729039306649365,
+              0.4875014787964218
+            ],
+            "cutpoints": [
+              -0.36082284877266485,
+              -0.14874176688039314,
+              0.06333931501187845,
+              0.2754203969041502
+            ],
+            "exact_five_by_ten": true,
+            "population_counts": [
+              73,
+              220,
+              1232,
+              301,
+              67
+            ],
+            "selected_p95_minus_p05": 0.9835431775573482,
+            "selected_range": [
+              -0.675531791976952,
+              0.634434991072261
+            ],
+            "selected_variant_types": {
+              "SNV": 44,
+              "deletion_1nt": 6
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 0.7502105491579283,
+            "selected_range": [
+              -0.473068671763953,
+              0.743853320161317
+            ],
+            "selected_variant_types": {
+              "SNV": 48,
+              "deletion_1nt": 2
+            }
+          }
+        },
+        "robust_range": 0.5610148540303281,
+        "score_quantiles": {
+          "0": -1.32393634157516,
+          "0.01": -0.5729039306649365,
+          "0.05": -0.3381642935667972,
+          "0.5": -0.0144367427253384,
+          "0.95": 0.22285056046353097,
+          "0.99": 0.4875014787964218,
+          "1": 0.887614861929254
+        },
+        "unique_scores": 1893,
+        "unit": "ZFAND3",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 1735,
+          "deletion_1nt": 158
+        }
+      },
+      {
+        "count": 131,
+        "eligibility": "SIGN",
+        "key": "satmut_mpra:ZRSh13:SIGN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              16,
+              15,
+              15,
+              3,
+              1
+            ],
+            "anchors": [
+              -0.20406326171925,
+              0.757399045713401
+            ],
+            "cutpoints": [
+              -0.011770800232719786,
+              0.18052166125381047,
+              0.37281412274034054,
+              0.5651065842268709
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              35,
+              75,
+              17,
+              3,
+              1
+            ],
+            "selected_p95_minus_p05": 0.5521384902309023,
+            "selected_range": [
+              -0.126962011606443,
+              0.757399045713401
+            ],
+            "selected_variant_types": {
+              "SNV": 46,
+              "deletion_1nt": 4
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              15,
+              14,
+              14,
+              3,
+              4
+            ],
+            "anchors": [
+              -0.1501708826532352,
+              0.5385106237635637
+            ],
+            "cutpoints": [
+              -0.012434581369875408,
+              0.12530171991348438,
+              0.2630380211968441,
+              0.40077432248020395
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              35,
+              49,
+              40,
+              3,
+              4
+            ],
+            "selected_p95_minus_p05": 0.5521384902309023,
+            "selected_range": [
+              -0.126962011606443,
+              0.757399045713401
+            ],
+            "selected_variant_types": {
+              "SNV": 47,
+              "deletion_1nt": 3
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 0.48884385710664,
+            "selected_range": [
+              -0.126962011606443,
+              0.563062087063231
+            ],
+            "selected_variant_types": {
+              "SNV": 47,
+              "deletion_1nt": 3
+            }
+          }
+        },
+        "robust_range": 0.3765353767870915,
+        "score_quantiles": {
+          "0": -0.20406326171925,
+          "0.01": -0.1501708826532352,
+          "0.05": -0.107666367719785,
+          "0.5": 0.0855042305103755,
+          "0.95": 0.2688690090673065,
+          "0.99": 0.5385106237635637,
+          "1": 0.757399045713401
+        },
+        "unique_scores": 131,
+        "unit": "ZRSh13",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 126,
+          "deletion_1nt": 5
+        }
+      },
+      {
+        "count": 1571,
+        "eligibility": "SIGN_MIN",
+        "key": "satmut_mpra:ZRSh13:SIGN_MIN",
+        "policies": {
+          "minmax": {
+            "allocations": [
+              5,
+              17,
+              16,
+              10,
+              2
+            ],
+            "anchors": [
+              -0.494295750790299,
+              0.757399045713401
+            ],
+            "cutpoints": [
+              -0.243956791489559,
+              0.006382167811181061,
+              0.25672112711192097,
+              0.5070600864126611
+            ],
+            "exact_five_by_ten": false,
+            "population_counts": [
+              5,
+              876,
+              678,
+              10,
+              2
+            ],
+            "selected_p95_minus_p05": 0.8507182505812206,
+            "selected_range": [
+              -0.494295750790299,
+              0.757399045713401
+            ],
+            "selected_variant_types": {
+              "SNV": 39,
+              "deletion_1nt": 11
+            }
+          },
+          "p01_p99": {
+            "allocations": [
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "anchors": [
+              -0.1508494574491105,
+              0.23260398601348656
+            ],
+            "cutpoints": [
+              -0.07415876875659108,
+              0.0025319199359283284,
+              0.07922260862844771,
+              0.15591329732096715
+            ],
+            "exact_five_by_ten": true,
+            "population_counts": [
+              94,
+              732,
+              599,
+              95,
+              51
+            ],
+            "selected_p95_minus_p05": 0.42746983764509544,
+            "selected_range": [
+              -0.494295750790299,
+              0.563062087063231
+            ],
+            "selected_variant_types": {
+              "SNV": 44,
+              "deletion_1nt": 6
+            }
+          },
+          "rank_quantile": {
+            "bins": 10,
+            "samples_per_bin": 5,
+            "selected_p95_minus_p05": 0.2000870959766743,
+            "selected_range": [
+              -0.494295750790299,
+              0.427342487568806
+            ],
+            "selected_variant_types": {
+              "SNV": 47,
+              "deletion_1nt": 3
+            }
+          }
+        },
+        "robust_range": 0.20729194348775026,
+        "score_quantiles": {
+          "0": -0.494295750790299,
+          "0.01": -0.1508494574491105,
+          "0.05": -0.08031628383029725,
+          "0.5": -0.000383150742231165,
+          "0.95": 0.126975659657453,
+          "0.99": 0.23260398601348656,
+          "1": 0.757399045713401
+        },
+        "unique_scores": 1571,
+        "unit": "ZRSh13",
+        "validation": "pinned VCF/parser checks; existing pinned crosswalk provenance",
+        "variant_types": {
+          "SNV": 1455,
+          "deletion_1nt": 116
+        }
+      }
+    ],
+    "python_version": "3.14.7",
+    "sampling": {
+      "algorithm": "score_space_audit_v1",
+      "bins": 5,
+      "boundary": "equal goes right",
+      "panel_size": 50,
+      "seed": "2026090400"
+    },
+    "task": "satmut_mpra"
+  }
+]

@@ -16,6 +16,9 @@ working on VEP-bench.
   benchmark version.
 - [Task catalog](tasks/README.md): task documentation conventions and the list
   of implemented benchmark tasks.
+- [Task sampling analysis](analysis/task-sampling-2026-09-04.md): preliminary
+  evidence and reproducible experiments for expanded variant eligibility and
+  score-based sampling (issue #62).
 
 Task methodology belongs under `docs/tasks/`, one Markdown file per task. Shared
 mechanics belong in the guides above. This keeps the root README stable as new

@@ -1,0 +1,27 @@
+name: vepbench-task-sampling-audit
+
+resources:
+  cpus: 8+
+  memory: 32+
+  disk_size: 40
+  use_spot: false
+
+workdir: .
+
+envs:
+  AUDIT_TASKS: satmut-mpra opensplice sge
+  POLARS_MAX_THREADS: "4"
+  OMP_NUM_THREADS: "1"
+
+setup: |
+  python3 -m pip install --user uv==0.12.5
+  ~/.local/bin/uv sync --locked --all-packages --all-extras --group test --group quality --group analysis
+
+run: |
+  set -euo pipefail
+  mkdir -p ~/issue62-inputs ~/issue62-analysis
+  /usr/bin/time -v ~/.local/bin/uv run --locked python scripts/analyze_task_sampling.py \
+    --inputs ~/issue62-inputs --output ~/issue62-analysis \
+    --tasks $AUDIT_TASKS --download
+  ~/.local/bin/uv run --locked --group analysis python scripts/render_sampling_audit.py \
+    --analysis ~/issue62-analysis --output ~/issue62-analysis/figures

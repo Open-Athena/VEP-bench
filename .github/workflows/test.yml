@@ -59,6 +59,12 @@ jobs:
                 evaluator=true
                 task=true
                 ;;
+              scripts/analyze_task_sampling.py|sky/analyze_task_sampling.yaml|tests/test_sampling_audit.py)
+                task=true
+                ;;
+              tests/test_sampling.py)
+                evaluator=true
+                ;;
               data/sources/*|tasks/opensplice-snv/*|tasks/satmut-mpra/*|tasks/sge/*|sky/prepare_opensplice_snv.yaml|sky/prepare_satmut_mpra.yaml|sky/prepare_sge.yaml|scripts/run_prepare_opensplice_snv_sky.sh|scripts/run_prepare_satmut_mpra_sky.sh|scripts/run_prepare_sge_sky.sh|scripts/validate_satmut_mpra_artifacts.py|scripts/validate_sge_artifacts.py|tests/test_opensplice_cache.py|tests/test_opensplice_snv.py|tests/test_satmut_cache.py|tests/test_satmut_mpra.py|tests/test_sge_cache.py|tests/test_sge.py)
                 task=true
                 ;;
@@ -112,6 +118,7 @@ jobs:
           tests/test_model_profile.py
           tests/test_question_fetch.py
           tests/test_task_profile.py
+          tests/test_sampling.py
           --cov=vepbench
           --cov-fail-under=72
           --cov-report=term-missing:skip-covered
@@ -168,6 +175,7 @@ jobs:
           tests/test_satmut_cache.py
           tests/test_sge.py
           tests/test_sge_cache.py
+          tests/test_sampling_audit.py
 
       - name: Verify generated benchmark artifacts
         run: |

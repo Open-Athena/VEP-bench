@@ -30,6 +30,9 @@ dev = [
     { include-group = "test" },
     { include-group = "quality" },
 ]
+analysis = [
+    "matplotlib>=3.10,<4",
+]
 
 [tool.uv]
 default-groups = []
