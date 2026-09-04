@@ -118,7 +118,7 @@ await waitFor(
   "SGE task scope"
 );
 
-const initialQuestionId = "satmut-mpra-ranking-v1:F9";
+const initialQuestionId = "satmut-mpra-ranking-v2:F9";
 await navigate(
   `/tasks/satmut-mpra.html?question=${encodeURIComponent(initialQuestionId)}&run=browser-qa`
 );

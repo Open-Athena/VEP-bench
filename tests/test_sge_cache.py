@@ -29,10 +29,6 @@ def _cache_inputs() -> tuple[dict, dict, dict, dict, dict]:
                 -1.0,
                 1.0,
                 {"score": "-1.0"},
-                "missense_variant",
-                "missense_variant",
-                "missense_variant",
-                0,
             ),
         )
         transcripts[spec.gene] = Transcript(

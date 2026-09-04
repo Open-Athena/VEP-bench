@@ -13,6 +13,15 @@ const RESULT_TYPE_LABELS = Object.freeze({
   format_error: "Format error"
 });
 
+export function questionDisplayMetadata(question, document) {
+  const metadata = document?.by_task_family?.[question.metadata?.task_family]
+    ?.[question.provenance?.source_record_id];
+  return metadata?.source_record_sha256
+    && metadata.source_record_sha256 === question.provenance?.source_record_sha256
+    ? metadata
+    : null;
+}
+
 export function resultTypeForAnswer(result) {
   if (!result) return null;
   if (result.response?.status && result.response.status !== "completed") return null;

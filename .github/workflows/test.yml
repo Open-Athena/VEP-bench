@@ -62,8 +62,11 @@ jobs:
               data/sources/*|tasks/opensplice-snv/*|tasks/satmut-mpra/*|tasks/sge/*|sky/prepare_opensplice_snv.yaml|sky/prepare_satmut_mpra.yaml|sky/prepare_sge.yaml|scripts/run_prepare_opensplice_snv_sky.sh|scripts/run_prepare_satmut_mpra_sky.sh|scripts/run_prepare_sge_sky.sh|scripts/validate_satmut_mpra_artifacts.py|scripts/validate_sge_artifacts.py|tests/test_opensplice_cache.py|tests/test_opensplice_snv.py|tests/test_satmut_cache.py|tests/test_satmut_mpra.py|tests/test_sge_cache.py|tests/test_sge.py)
                 task=true
                 ;;
-              tests/test_batch.py|tests/test_builder.py|tests/test_cli.py|tests/test_evaluator.py|tests/test_model_profile.py|tests/test_question_fetch.py|tests/test_task_profile.py)
+              tests/test_alleles.py|tests/test_sampling.py|tests/test_batch.py|tests/test_builder.py|tests/test_cli.py|tests/test_evaluator.py|tests/test_model_profile.py|tests/test_question_fetch.py|tests/test_task_profile.py)
                 evaluator=true
+                ;;
+              scripts/update_preparation_digests.py|tests/test_preparation_digests.py)
+                task=true
                 ;;
             esac
           done <<< "$changed"
@@ -105,6 +108,8 @@ jobs:
       - name: Run evaluator tests with coverage
         run: >-
           uv run --no-sync pytest
+          tests/test_alleles.py
+          tests/test_sampling.py
           tests/test_batch.py
           tests/test_builder.py
           tests/test_cli.py
@@ -162,6 +167,7 @@ jobs:
       - name: Run task tests
         run: >-
           uv run --no-sync pytest
+          tests/test_preparation_digests.py
           tests/test_opensplice_snv.py
           tests/test_opensplice_cache.py
           tests/test_satmut_mpra.py

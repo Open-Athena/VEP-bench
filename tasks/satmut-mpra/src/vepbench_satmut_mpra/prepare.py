@@ -22,10 +22,9 @@ from .configuration import CONFIG
 from .genome import Genome
 from .task import (
     ELEMENT_SPECS,
+    ELIGIBLE_FILTERS,
     EXPECTED_FILTER_COUNTS,
-    KNOWN_TARGET_SEQUENCE_MISMATCHES,
     SPEC_BY_LABEL,
-    TARGET_SEQUENCE_MISMATCH_TREATMENT,
     ElementMetadata,
     PreparedElement,
     SatMutPreparationError,
@@ -57,7 +56,6 @@ MANIFEST_OUTPUT = CONFIG.resolve_path("manifest_output")
 PINNED_INPUTS_PATH = (CONFIG.path.parent / CONFIG.values["source_pins"]).resolve()
 CACHE_BUCKET = CONFIG.values["cache"]["bucket"]
 CACHE_ROOT = CONFIG.values["cache"]["root"]
-LEGACY_PREPARATION_IMPLEMENTATION_SHA256 = CONFIG.values["cache"]["legacy_implementation_sha256"]
 PREPARATION_IMPLEMENTATION_SHA256 = CONFIG.values["cache"]["implementation_sha256"]
 EXPECTED_CADD_MD5 = CONFIG.values["upstream"]["expected_cadd_md5"]
 CACHE_DATA_FILES = tuple(CONFIG.values["cache"]["data_files"])
@@ -139,7 +137,7 @@ def _cache_configuration(
             "assembly": REFERENCE_ASSEMBLY,
             **reference_pin,
         },
-        "eligibility": "FILTER == SIGN",
+        "eligibility": "FILTER in SIGN, MIN; QUAL excluded",
     }
 
 
@@ -209,24 +207,6 @@ def _write_cache(
         expected_configuration=configuration,
     )
     return key, manifest
-
-
-def _normalize_cached_reference_discrepancies(
-    discrepancies: list[dict[str, Any]],
-) -> tuple[dict[str, Any], ...]:
-    normalized = []
-    for cached_discrepancy in discrepancies:
-        discrepancy = dict(cached_discrepancy)
-        target_mismatch = (
-            discrepancy.get("chrom"),
-            discrepancy.get("pos"),
-            discrepancy.get("mavedb_base"),
-            discrepancy.get("grch38_base"),
-        )
-        if target_mismatch in KNOWN_TARGET_SEQUENCE_MISMATCHES:
-            discrepancy["treatment"] = TARGET_SEQUENCE_MISMATCH_TREATMENT
-        normalized.append(discrepancy)
-    return tuple(normalized)
 
 
 def _load_cache(
@@ -315,7 +295,7 @@ def _load_cache(
             or isinstance(row["barcode_count"], bool)
             or not isinstance(row["barcode_count"], int)
             or row["barcode_count"] < 1
-            or row["source_filter"] != "SIGN"
+            or row["source_filter"] not in ELIGIBLE_FILTERS
         ):
             raise SatMutPreparationError("processed cache has invalid eligible variant values")
         variants_by_element[label].append(
@@ -407,7 +387,7 @@ def _load_cache(
                 isinstance(value, bool) or not isinstance(value, int) or value < 0
                 for value in counts.values()
             )
-            or counts["SIGN"] != len(variants)
+            or sum(counts[f] for f in ELIGIBLE_FILTERS) != len(variants)
             or isinstance(reference_records, bool)
             or not isinstance(reference_records, int)
             or isinstance(mavedb_records, bool)
@@ -417,9 +397,7 @@ def _load_cache(
             or len({variant.key for variant in variants}) != len(variants)
         ):
             raise SatMutPreparationError("processed cache has invalid element metadata values")
-        reference_discrepancies = _normalize_cached_reference_discrepancies(
-            record["reference_discrepancies"]
-        )
+        reference_discrepancies = tuple(record["reference_discrepancies"])
         elements.append(
             PreparedElement(
                 spec,
@@ -527,23 +505,10 @@ def prepare(*, upload_cache: bool) -> tuple[int, str]:
     cache_configuration = _cache_configuration()
     cache_key = _cache_key(cache_configuration)
     cache_prefix = f"{CACHE_ROOT}/{cache_key}"
-    legacy_cache_configuration = _cache_configuration(
-        implementation_sha256=LEGACY_PREPARATION_IMPLEMENTATION_SHA256
-    )
-    legacy_cache_key = _cache_key(legacy_cache_configuration)
-    legacy_cache_prefix = f"{CACHE_ROOT}/{legacy_cache_key}"
     api = HfApi(token=token)
     cache_state = _remote_cache_state(api, cache_prefix, token)
     if cache_state == "incomplete":
         raise RuntimeError(f"refusing to use incomplete cache prefix {cache_prefix}")
-    legacy_cache_state = (
-        _remote_cache_state(api, legacy_cache_prefix, token)
-        if cache_state == "absent"
-        else "absent"
-    )
-    if legacy_cache_state == "incomplete":
-        raise RuntimeError(f"refusing to use incomplete cache prefix {legacy_cache_prefix}")
-
     with tempfile.TemporaryDirectory(prefix="vepbench-satmut-mpra-") as temporary:
         cache_dir = Path(temporary) / "processed-cache"
         if cache_state == "complete":
@@ -555,27 +520,6 @@ def prepare(*, upload_cache: bool) -> tuple[int, str]:
                 token,
                 expected_key=cache_key,
             )
-        elif legacy_cache_state == "complete":
-            legacy_cache_dir = Path(temporary) / "legacy-processed-cache"
-            print(f"migrating processed cache {legacy_cache_prefix}", flush=True)
-            elements = _download_cache(
-                api,
-                legacy_cache_dir,
-                legacy_cache_prefix,
-                token,
-                expected_key=legacy_cache_key,
-                expected_configuration=legacy_cache_configuration,
-            )
-            written_key, _ = _write_cache(
-                cache_dir,
-                elements=elements,
-                configuration=cache_configuration,
-            )
-            if written_key != cache_key:
-                raise RuntimeError("processed cache key changed while migrating")
-            if upload_cache:
-                assert token is not None
-                _publish_cache(api, cache_dir, cache_prefix, token)
         else:
             md5_payload = _download(CADD_MD5_URL)
             md5_manifest_pin = PINNED_INPUTS.get("cadd_md5_manifest")
@@ -652,7 +596,7 @@ def prepare(*, upload_cache: bool) -> tuple[int, str]:
                     )
                     print(
                         f"validated {spec.cadd_label}: {len(variants):,} records, "
-                        f"{filter_counts['SIGN']:,} eligible",
+                        f"{sum(filter_counts[f] for f in ELIGIBLE_FILTERS):,} source-QC eligible",
                         flush=True,
                     )
             written_key, _ = _write_cache(
@@ -743,7 +687,7 @@ def prepare(*, upload_cache: bool) -> tuple[int, str]:
             "bucket": CACHE_BUCKET,
             "prefix": cache_prefix,
             "cache_key": cache_key,
-            "records": EXPECTED_FILTER_COUNTS["SIGN"],
+            "records": sum(EXPECTED_FILTER_COUNTS[f] for f in ELIGIBLE_FILTERS),
         },
     }
     return write_prepared_dataset(

@@ -18,15 +18,3 @@ files:
     bytes: 6220008
     md5: c8f9be07de206ba7fd9fac09c80dfc9f
     sha256: 34e24f699d04f15a6a021098f68efdf77000b74e718ecdbf164690dd60019e00
-  variant_metadata:
-    file_id: 64887942
-    filename: opensplice_predictors_benchmarking_variant_metadata.tsv
-    bytes: 182758966
-    md5: 72dc75b3482888031bacc6e86edf3171
-    sha256: 0ead80081d4f5b1438bb2e43856b73233c030a769ea2ffdd4ba11340e232ecaf
-  alphagenome_genome_inputs:
-    file_id: 64890999
-    filename: alphagenome_genome_input_per_exon.zip
-    bytes: 8418366
-    md5: acb6efd47062eae4bc557e0286f959ef
-    sha256: 5e50782c98786de304e65176942622c90d38c84c94714197120a4293ae1ef763

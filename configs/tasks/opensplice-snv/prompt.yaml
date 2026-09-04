@@ -1,5 +1,5 @@
-template_id: opensplice-snv-ranking-v1
-template_version: "1.0"
+template_id: opensplice-snv-ranking-v2
+template_version: "2.0"
 task_type: ranking
 prompt: |-
   Predict the signed change in exon inclusion caused by every candidate variant in this minigene panel.
@@ -18,7 +18,7 @@ prompt: |-
   {reference_sequence}
   ```
 
-  **Candidate SNVs:**
+  **Candidate variants:**
 
   ```vcf
   ##fileformat=VCFv4.3

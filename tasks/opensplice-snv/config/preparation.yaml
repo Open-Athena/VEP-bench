@@ -1,4 +1,4 @@
-# Scientific inputs and deterministic selection policy for the OpenSplice SNV pilot.
+# Scientific inputs and deterministic selection policy for the OpenSplice task.
 schema_version: "1.0"
 task_family: opensplice_snv
 source_dataset: OpenSplice-Figshare-v5
@@ -10,18 +10,17 @@ manifest_output: ../../../data/sources/opensplice-snv-figshare-v5.manifest.json
 sampling:
   exon_count: 20
   panel_size: 50
-  quantile_bins: 10
-  samples_per_bin: 5
-  seed: "2026090300"
-  algorithm: sha256_rank_quantile_v1
-  quantile: hyndman_fan_type_7
+  score_bins: 5
+  anchor_policy: p01_p99
+  seed: "2026090400"
+  algorithm: sha256_score_space_v1
 
 population:
   master_rows: 590104
   exon_metadata_records: 608
-  eligible_rows: 300327
-  eligible_exons: 585
-  eligible_genes: 457
+  eligible_rows: 578611
+  eligible_exons: 586
+  eligible_genes: 458
 
 reporter:
   fas_e5: ATGTGAACATGGAATCATCAAGGAATGCACACTCACCAGCAACACCAAGTGCAAAGAGGAAG
@@ -35,25 +34,11 @@ assay:
   cellular_context: human embryonic-kidney 293T (HEK293T) cells
   measurement: percentage spliced in (PSI)
 
-alphagenome:
-  repository: https://github.com/lehner-lab/OpenSplice
-  commit: 3e4ad8c037c216b952f1a8945f8f498669bff589
-  minigene_script: benchmarking_predictors/scripts/inference/alphagenome_minigene_mode_snvs_inference.py
-  genome_script: benchmarking_predictors/scripts/inference/alphagenome_genome_mode_snvs_inference.py
-  library_design_script: libraries_design/02_mutagenesis_libraries/01_design_mutagenesis_oligo_libraries.R
-  input_length: 16384
-  ontology_term: CL:0002518
-  ontology_label: kidney epithelial cell
-  organism: HOMO_SAPIENS
-  requested_output: SPLICE_SITES
-  model_loading_identifier: all_folds
-  deposited_minigene_acceptor_pos0: 216
-
 cache:
   bucket: open-athena/VEP-bench
-  root: data_prep/opensplice-snv/v1
-  # Digest of the cache-shaping implementation used for the canonical v1 cache.
-  implementation_sha256: 1119325e2b80495b19ff3804d962bf3594d8d2d100b57f5ea6a7ccd1af0e5ca7
+  root: data_prep/opensplice-snv/v2
+  # Updated by uv run scripts/update_preparation_digests.py.
+  implementation_sha256: 7ae8ac83ab2a906657d226319b2cabdd37245fe04d886a94cd3bc80cc23cc982
   data_files:
     - eligible-variants.jsonl.gz
     - exons.json

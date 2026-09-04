@@ -86,7 +86,7 @@ def qa_fixture(
     output: Path,
     site_root: Path | None = None,
     data_base_url: str | None = None,
-    question_id: str = "satmut-mpra-ranking-v1:F9",
+    question_id: str = "satmut-mpra-ranking-v2:F9",
     prediction: str = "unused-for-ranking",
     alternate_model: bool = False,
 ) -> int:

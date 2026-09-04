@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
-from vepbench.artifacts import canonical_json, read_jsonl
+from vepbench.artifacts import canonical_json, read_jsonl, sha256_json
 from vepbench.config.loader import load_yaml_mapping
 from vepbench.errors import BuildError
 
@@ -102,6 +102,7 @@ def build_question_metadata(
                 and source_metadata["display_name"]
             ):
                 display_metadata = {
+                    "source_record_sha256": sha256_json(record),
                     "element": source_metadata["display_name"],
                     "assay_first_indexed": dict(publication),
                 }

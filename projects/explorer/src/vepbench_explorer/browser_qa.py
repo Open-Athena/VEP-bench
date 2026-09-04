@@ -16,7 +16,7 @@ from vepbench.evaluation.core import evaluate_file
 from vepbench.resources import QUESTION_SCHEMA, RESULT_SCHEMA, SCHEMAS_DIR
 
 FIXED_TIME = datetime(2026, 8, 31, 12, 0, tzinfo=UTC)
-DEFAULT_QUESTION_ID = "satmut-mpra-ranking-v1:F9"
+DEFAULT_QUESTION_ID = "satmut-mpra-ranking-v2:F9"
 DEFAULT_PREDICTION = "unused-for-ranking"
 
 
