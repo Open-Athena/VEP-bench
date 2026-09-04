@@ -1,4 +1,4 @@
-import * as Plot from "npm:@observablehq/plot";
+import * as Plot from "npm:@observablehq/plot@0.6.17";
 import MarkdownIt from "npm:markdown-it@14.1.0";
 import {resize} from "observablehq:stdlib";
 
@@ -151,6 +151,9 @@ function predictionComparisonPlot(rows) {
         strokeWidth: 1.25,
         r: 4.5,
         tip: true,
+        ariaLabel: (row) => (
+          `${row.candidate_id}; measured ${row.measured}; predicted ${row.predicted}`
+        ),
         title: (row) => [
           row.candidate_id,
           `Measured: ${row.measured}`,

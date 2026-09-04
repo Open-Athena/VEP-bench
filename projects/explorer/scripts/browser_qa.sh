@@ -138,6 +138,10 @@ for check in \
   'question.dom.html|Reference panel: 50 candidate variants' \
   'question.dom.html|Spearman ρ:' \
   'question.dom.html|50 numeric predictions' \
+  'question.dom.html|Predictions vs. measurements' \
+  'question.dom.html|Predicted versus measured variant effects' \
+  'question.dom.html|Measured effect' \
+  'question.dom.html|Predicted effect' \
   'question.dom.html|>Reasoning<' \
   'question.dom.html|>Element</label>' \
   'question.dom.html|>Valid prediction</option>' \
@@ -154,8 +158,8 @@ do
   fi
 done
 
-for pattern in 'Reference effects' 'Measured effect' 'Predicted effect' \
-  'Consequence classification' 'ClinVar' 'satMutMPRA ranking'; do
+for pattern in 'Reference effects' 'Consequence classification' 'ClinVar' \
+  'satMutMPRA ranking'; do
   if grep -q "$pattern" "$output_dir/question.dom.html" \
     || grep -q "$pattern" "$output_dir/leaderboard.dom.html" \
     || grep -q "$pattern" "$output_dir/tasks.dom.html"; then
