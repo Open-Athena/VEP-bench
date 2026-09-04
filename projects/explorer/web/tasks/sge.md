@@ -1,5 +1,5 @@
 ---
-title: Saturation genome editing
+title: Fitness (SGE)
 ---
 
 ```js
@@ -91,7 +91,7 @@ const requestedQuestion = questionEntries.find(
 const knownQuestionIds = new Set(questionEntries.map((entry) => entry.question_id));
 ```
 
-# Saturation genome editing
+# Fitness (SGE)
 
 ```js
 if (runsState.error || questionState.error) {
@@ -102,23 +102,21 @@ if (metadataState.error) {
 }
 ```
 
+## Task description
+
 Predict continuous functional damage for assayed SNVs in endogenous-locus saturation genome editing screens, using the gene, assay mechanism, and local exon sequence.
 
-## Task design
-
-<div class="card">
-  <p><strong>${formatInteger(taskQuestions.length)} published gene panels</strong>, each containing 50 variants from one exon and exactly 100 unmarked flanking bases on each side. Panels prefer 25 missense and 25 local splicing variants and sample across measured-damage quantiles.</p>
-  <p>The primary score is mean within-gene Spearman correlation. Mean Pearson correlation reports numerical agreement, valid-output rate reports strict JSON compliance, and invalid completed outputs contribute zero while remaining identifiable as format failures.</p>
-  <dl>
-    <div><dt>Task version</dt><dd>1.0 · question schema 2.0</dd></div>
-    <div><dt>Output</dt><dd><code>FINAL: {"V01": number, ...}</code></dd></div>
-    <div><dt>Questions</dt><dd>Public development set</dd></div>
-  </dl>
-</div>
-
-## Interpretation
+**${formatInteger(taskQuestions.length)} published gene panels** each contain 50 variants from one exon and exactly 100 unmarked flanking bases on each side. Panels prefer 25 missense and 25 local splicing variants and sample across measured-damage quantiles. The primary score is mean within-gene Spearman correlation; mean Pearson correlation reports numerical agreement, valid-output rate reports strict JSON compliance, and invalid completed outputs contribute zero while remaining identifiable as format failures.
 
 Spearman measures ordering within each gene, not cross-assay calibration. SGE effects depend on the cellular system, engineered background, selection, timing, and treatment; they are not clinical classifications. One exon window omits distant gene and splice context, while class and quantile sampling do not reproduce the natural variant distribution.
+
+Source data come from published saturation genome editing score sets in [MaveDB](https://www.mavedb.org/), cited as [Rubin et al. (2025)](https://doi.org/10.1186/s13059-025-03476-y).
+
+<dl>
+  <div><dt>Task version</dt><dd>1.0 · question schema 2.0</dd></div>
+  <div><dt>Output</dt><dd><code>FINAL: {"V01": number, ...}</code></dd></div>
+  <div><dt>Questions</dt><dd>Public development set</dd></div>
+</dl>
 
 ## Questions
 

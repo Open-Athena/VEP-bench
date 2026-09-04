@@ -1,4 +1,4 @@
-# Saturation genome editing
+# Fitness (SGE)
 
 The SGE task asks a model to rank 50 assayed single-nucleotide variants by
 continuous functional damage within one gene and one exon window. It preserves

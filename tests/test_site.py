@@ -76,10 +76,15 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     assert "Pearson r" not in leaderboard_source
     assert "Valid outputs" not in leaderboard_source
     task_source = (output / "tasks/satmut-mpra.md").read_text(encoding="utf-8")
+    assert "# Expression (satMutMPRA)" in task_source
+    assert "## Task description" in task_source
+    assert "https://doi.org/10.1038/s41467-019-11526-w" in task_source
     assert "const controls = view(controlsInput);" in task_source
     assert "const selected = view(questionTable);" in task_source
     assert "Generators.input" not in task_source
     opensplice_source = (output / "tasks/opensplice-snv.md").read_text(encoding="utf-8")
+    assert "# Splicing (OpenSplice)" in opensplice_source
+    assert "https://doi.org/10.6084/m9.figshare.32337414.v5" in opensplice_source
     assert "large measured 5th-to-95th-percentile" in opensplice_source
     assert "not direct estimates of native-tissue splicing" in opensplice_source
     component_source = (output / "components/vepbench.js").read_text(encoding="utf-8")
@@ -92,9 +97,21 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     assert 'element("h3", null, "Predictions vs. measurements")' in component_source
     assert "predictionComparisonPlot(comparisonRows)" in component_source
     sge_source = (output / "tasks/sge.md").read_text(encoding="utf-8")
+    assert "# Fitness (SGE)" in sge_source
+    assert "https://www.mavedb.org/" in sge_source
     assert 'const taskFamily = "sge";' in sge_source
     assert "gene: Inputs.select([" in sge_source
     assert "Reference effects" not in sge_source
+    for source in (task_source, opensplice_source, sge_source):
+        description = source.split("## Questions", maxsplit=1)[0]
+        assert "## Task design" not in description
+        assert "## Interpretation" not in description
+        assert '<div class="card">' not in description
+
+    tasks_source = (output / "tasks.md").read_text(encoding="utf-8")
+    assert tasks_source.index("## Fitness (SGE)") < tasks_source.index(
+        "## Expression (satMutMPRA)"
+    ) < tasks_source.index("## Splicing (OpenSplice)")
 
 
 def test_question_metadata_requires_display_metadata_for_every_task_record(tmp_path: Path) -> None:
