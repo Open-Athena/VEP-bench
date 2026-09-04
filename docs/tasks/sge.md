@@ -6,8 +6,6 @@ endogenous-locus measurements from MaveDB rather than reusing a derived
 benchmark artifact.
 
 - **Task family:** `sge`
-- **Question schema:** 2.0 (the shared `ranking` question)
-- **Prompt version:** 1.0
 - **Question unit:** one deterministically selected exon window per included gene
 - **Size:** 15 questions, one for every provisional gene
 - **Candidates:** 50 SNVs per question
@@ -48,27 +46,21 @@ The versioned prompt and task descriptor are
 ## Catalog and source selection
 
 Preparation reruns the pinned public MaveDB search for published “saturation
-genome editing” score sets and records all 98 results from the 2026-09-03
-snapshot with an inclusion or exclusion reason. It selects at most one
-canonical score set for each provisional gene: BAP1, BARD1, BRCA1, BRCA2,
-CTCF, DDX3X, PALB2, RAD51C, RAD51D, SBDS, SFPQ, TINF2, TP53, VHL, and XRCC2.
+genome editing” score sets and records inclusion or exclusion reasons. It
+selects at most one canonical score set per gene from the reviewed
+[`preparation.yaml`](../../tasks/sge/config/preparation.yaml).
 The reviewed selection prefers current aggregates, direct endogenous
 loss-of-function assays, combined measurements, baseline conditions, and
-primary continuous scores. BRCA2 is subject to the same eligibility checks as
-every other gene. CARD11 is excluded because its library is predominantly
-multi-base codon substitutions and does not provide the intended SNV and
-splice-region panel.
+primary continuous scores. CARD11 is excluded because its library is
+predominantly multi-base codon substitutions and does not provide the intended
+SNV and splice-region panel.
 
 For every selected score set, the primary MaveDB `score` is used directly.
-Preparation validates and records the score-set and experiment URNs, title,
-dates, license, target, controlled vocabulary, publications, column inventory,
-payload URL, byte size, and SHA-256. A reviewed direction of `1` or `-1` is
-then applied so larger values always mean more damage; there is no other
-normalization, standardization, calibration, or rescaling.
+Preparation records source metadata and fingerprints. A reviewed direction of
+`1` or `-1` is then applied so larger values always mean more damage; there is
+no other normalization, standardization, calibration, or rescaling.
 
-The strict reviewed gene configuration is
-[`preparation.yaml`](../../tasks/sge/config/preparation.yaml), and exact source
-payload pins are in
+Exact source payload pins are in
 [`source-pins.yaml`](../../tasks/sge/config/source-pins.yaml).
 For explorer provenance, each question uses the earlier of its linked
 PubMed-indexed online publication and its MaveDB publication date. When MaveDB
@@ -78,11 +70,10 @@ the explorer does not guess an earlier date.
 ## Coordinate and consequence policy
 
 Sequence extraction and REF validation use the GRCh38 primary assembly from
-`marin-dna/human-genome` at revision
-`11b9433582981bb929af333bc6422f10a8fd71b4`. Declared target transcripts define
-exon geometry and display orientation. DDX3X and TINF2 use pinned MANE Select
+`marin-dna/human-genome`. Declared target transcripts define exon geometry and
+display orientation. DDX3X and TINF2 use pinned MANE Select
 fallbacks because their deposits do not declare a usable transcript accession.
-Their exact cdot records use data version 0.2.34.
+Exact reference and cdot versions are recorded in the preparation configuration.
 
 Transcript `c.` HGVS is projected to GRCh38 with PyHGVS using the pinned cdot
 transcript JSON adapter, including intronic coordinates. Genomic `g.` HGVS is
@@ -93,10 +84,9 @@ rejected. Every REF must match GRCh38; REF and ALT are never swapped.
 
 Global most-severe consequences come from
 [`songlab/hg38-variant-consequences`](https://huggingface.co/datasets/songlab/hg38-variant-consequences)
-at revision `eb3022cc6797b9369cca16af72ff3c4197df343a`, produced with Ensembl
-VEP 109.1 and `--most_severe --distance 1000`. The annotation may refer to a
-different transcript than the display transcript by design. Exon distance is
-computed from Ensembl release 107.
+using the revision and VEP settings in the preparation configuration. The
+annotation may refer to a different transcript than the display transcript by
+design. Exon distance is computed from Ensembl release 107.
 
 The pinned upstream policy is applied in this order:
 
@@ -121,24 +111,19 @@ damage-score `P95 - P05` spread with R type-7 percentiles, followed by the
 stable transcript and genomic exon key.
 
 Within each class allocation, variants are divided into five equal-population
-score-rank bins. SHA-256 ordering with seed `2026090300` selects evenly from
-each bin. Selected variants are sorted by displayed local position, REF, and
+score-rank bins. Seeded SHA-256 ordering selects evenly from each bin. Selected
+variants are sorted by displayed local position, REF, and
 ALT before opaque IDs are assigned. The complete eligible population, class
 counts, every exon-window feature, allocations, bins, and selected source rows
-remain private provenance.
+remain private provenance. Exact parameters live in `preparation.yaml` and
+selection is implemented in
+[`task.py`](../../tasks/sge/src/vepbench_sge/task.py).
 
 ## Parsing and scoring
 
-SGE uses the shared ranking parser and scorer without task-specific heuristics.
-Only the last well-formed `FINAL: {JSON object}` line is parsed; all expected
-IDs must occur exactly once with finite numeric values and no extra keys.
-Invalid completed output receives zero for Spearman and Pearson and lowers
-valid-output rate. Constant vectors have correlation zero. Provider or API
-failure remains null and makes the run incomplete.
-
-Spearman and Pearson are computed within each question before arithmetic
-macro-averaging, so every included gene has equal weight. This measures
-within-panel ordering and numerical agreement, not a common cross-assay scale.
+SGE uses the [shared ranking rules](../evaluation.md#completion-and-failure-semantics).
+Every included gene has equal weight. This measures within-panel ordering and
+numerical agreement, not a common cross-assay scale.
 
 ## Artifacts, cache, and regeneration
 
@@ -150,9 +135,6 @@ excluded genes, exon comparisons, cache identity, and output digest. The
 [expected question manifest](../../benchmark/sge-expected-manifest.json)
 fingerprints deterministic prompt generation.
 
-All 15 provisional genes pass the complete source, coordinate, consequence,
-QC, and exon-capacity checks. The reusable cache contains 55,924 eligible SNVs.
-
 The full preparation exceeds the shared development VM limits because the
 pinned per-chromosome consequence objects total several gigabytes. Run it on a
 SkyPilot worker:
@@ -161,17 +143,11 @@ SkyPilot worker:
 bash scripts/run_prepare_sge_sky.sh
 ```
 
-The command uploads a reusable content-addressed cache under:
-
-```text
-hf://buckets/open-athena/VEP-bench/data_prep/sge/v1/<cache-key>/
-```
-
-The cache contains the complete post-eligibility population and provenance,
-not redistributable upstream payloads. Data objects are uploaded first and the
-digest-bearing completion manifest last; existing prefixes are never
-overwritten. Subsequent preparations verify and reuse a complete matching
-cache. Offline validation and question regeneration use:
+The command uploads a reusable cache of the complete post-eligibility
+population and provenance. Cache configuration lives in `preparation.yaml`
+and its implementation in
+[`prepare.py`](../../tasks/sge/src/vepbench_sge/prepare.py).
+Offline validation and question regeneration use:
 
 ```bash
 uv sync --locked --package vepbench-task-sge

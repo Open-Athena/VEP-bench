@@ -5,8 +5,6 @@ single-nucleotide variants in one minigene cassette, then evaluates the ranking
 and relative numerical spacing of those predictions within the exon.
 
 - **Task family:** `opensplice_snv`
-- **Question schema:** 2.0
-- **Prompt version:** 1.0
 - **Size:** 20 questions from 20 distinct genes, with 50 SNVs per question
 - **Primary metric:** mean within-exon Spearman rank correlation
 - **Secondary metrics:** mean within-exon Pearson correlation and valid-output rate
@@ -46,11 +44,8 @@ model-visible contract.
 
 The task uses the CC BY 4.0
 [OpenSplice Figshare v5 dataset](https://doi.org/10.6084/m9.figshare.32337414.v5)
-and pins every consumed file by article ID, file ID, byte size, upstream MD5,
-and locally computed SHA-256. It also pins OpenSplice repository commit
-`3e4ad8c037c216b952f1a8945f8f498669bff589`, whose library-design and
-AlphaGenome inference scripts recover the reporter and predictor geometry.
-Exact pins live in
+and the pinned OpenSplice library-design and AlphaGenome inference scripts to
+recover reporter and predictor geometry. Exact input identities live in
 [`source-pins.yaml`](../../tasks/opensplice-snv/config/source-pins.yaml).
 For explorer provenance, the assay's first indexed-public date is the Figshare
 article's initial publication date, 2026-05-24.
@@ -80,13 +75,12 @@ rank, selected rank, and exclusion reasons.
 Within each selected exon, eligible variants are sorted by measured effect with
 stable variant tie-breakers and divided into ten equal-population rank bins.
 The first remainder bins receive one extra row. Five variants per bin are
-chosen by ascending SHA-256 using algorithm `sha256_rank_quantile_v1`, seed
-`2026090300`, exon ID, bin number, and the stable variant key. The resulting 50
+chosen by seeded SHA-256 ordering. The resulting 50
 variants are sorted by construct position, REF, and ALT before opaque IDs are
-assigned. The source manifest records each selected candidate's stable key,
-bin, and digest, and offline validation recomputes the digest rather than
-trusting those recorded values. This makes output byte-identical regardless of
-upstream row order.
+assigned. Exact parameters live in
+[`preparation.yaml`](../../tasks/opensplice-snv/config/preparation.yaml), and
+[`task.py`](../../tasks/opensplice-snv/src/vepbench_opensplice_snv/task.py)
+implements deterministic selection independent of upstream row order.
 
 ## Reporter and private AlphaGenome provenance
 
@@ -119,13 +113,9 @@ not assume mutable gene or exon-label text is a stable cross-file key.
 
 ## Parsing and scoring
 
-The shared ranking evaluator reads only the last well-formed `FINAL: {JSON
-object}` line. It requires every expected ID exactly once with a finite number.
-For valid output, Spearman uses average ranks for ties and Pearson uses raw
-predicted and measured signed effects. Constant vectors receive correlation
-zero. Invalid completed output receives zero for both correlations and lowers
-valid-output rate; API failures remain null and make a run incomplete. The
-primary task score is the arithmetic mean of the 20 within-exon Spearman values.
+The task uses the [shared ranking rules](../evaluation.md#completion-and-failure-semantics).
+Each selected exon contributes equally to the mean Spearman and Pearson scores;
+valid-output rate is reported alongside them.
 
 ## Artifacts, cache, and regeneration
 
@@ -136,17 +126,10 @@ The compact
 records upstream pins, full-population checks, selection statistics and
 configuration, and the exact output digest.
 
-Full-data preparation uses bounded-memory streaming on a SkyPilot worker. The
-content-addressed processed cache stores only validated eligible rows and exon
-metadata under:
-
-```text
-hf://buckets/open-athena/VEP-bench/data_prep/opensplice-snv/v1/<cache-key>/
-```
-
-Data objects are uploaded before the digest-bearing `manifest.json` completion
-marker. Existing complete or incomplete prefixes are never overwritten. The
-cache is separate from official `versions/` publication artifacts.
+Full-data preparation runs on a SkyPilot worker. Its processed cache stores
+validated eligible rows and exon metadata. Cache configuration lives in
+`preparation.yaml` and its implementation in
+[`prepare.py`](../../tasks/opensplice-snv/src/vepbench_opensplice_snv/prepare.py).
 
 Rebuild and copy back the compact artifacts with:
 

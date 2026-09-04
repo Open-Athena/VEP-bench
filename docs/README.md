@@ -6,10 +6,9 @@ working on VEP-bench.
 
 ## Guides
 
-- [Architecture](architecture.md): shared benchmark concepts, data contracts,
-  artifact flow, and the boundary between the framework and individual tasks.
-- [Development](development.md): local setup, repository layout, checks, and
-  artifact handling.
+- [Architecture](architecture.md): design rationale, task boundaries, and links
+  to authoritative code and contracts.
+- [Development](development.md): local setup, checks, and artifact handling.
 - [Evaluation](evaluation.md): building questions and running models through
   OpenRouter.
 - [Publishing](publishing.md): building, validating, and publishing a static
@@ -17,6 +16,8 @@ working on VEP-bench.
 - [Task catalog](tasks/README.md): task documentation conventions and the list
   of implemented benchmark tasks.
 
-Task methodology belongs under `docs/tasks/`, one Markdown file per task. Shared
-mechanics belong in the guides above. This keeps the root README stable as new
-tasks are added.
+Document rationale, scientific methodology, limitations, and workflows that
+require judgment. Link to code, schemas, configuration, and CI for exact fields,
+defaults, inventories, and validation rules instead of maintaining prose copies.
+Task methodology belongs under `docs/tasks/`, one file per task; shared workflows
+belong in the guides above.

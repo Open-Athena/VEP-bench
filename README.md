@@ -62,10 +62,6 @@ score alongside the task's methodology and limitations.
 
 - [Benchmark task catalog](docs/tasks/README.md)
 - [Contributor documentation](docs/README.md)
-- [Architecture and data contracts](docs/architecture.md)
-- [Development setup](docs/development.md)
-- [Evaluation](docs/evaluation.md)
-- [Publishing](docs/publishing.md)
 
 ## License
 
