@@ -114,21 +114,20 @@ for check in \
   'leaderboard.dom.html|Score by cost and token usage' \
   'leaderboard.dom.html|>Compare score against</label>' \
   'leaderboard.dom.html|https://github.com/Open-Athena/VEP-bench' \
-  'tasks.dom.html|>satMutMPRA<' \
-  'tasks.dom.html|>Saturation genome editing<' \
-  'tasks.dom.html|>OpenSplice SNV<' \
+  'tasks.dom.html|>Fitness (SGE)<' \
+  'tasks.dom.html|>Expression (satMutMPRA)<' \
+  'tasks.dom.html|>Splicing (OpenSplice)<' \
   'tasks.dom.html|Open task' \
-  'task.dom.html|>satMutMPRA</a></h1>' \
-  'task.dom.html|>Task version<' \
+  'task.dom.html|>Expression (satMutMPRA)</a></h1>' \
   'task.dom.html|published element panels' \
-  'sge-task.dom.html|>Saturation genome editing</a></h1>' \
+  'sge-task.dom.html|>Fitness (SGE)</a></h1>' \
   'sge-task.dom.html|published gene panels' \
   'sge-question.dom.html|>Prompt given to model<' \
   'sge-question.dom.html|<strong>Gene:</strong> BAP1' \
   'sge-question.dom.html|Local DNA sequence context' \
   'sge-question.dom.html|#CHROM' \
   'sge-question.dom.html|Reference panel: 50 candidate variants' \
-  'opensplice-task.dom.html|>OpenSplice SNV</a></h1>' \
+  'opensplice-task.dom.html|>Splicing (OpenSplice)</a></h1>' \
   'opensplice-task.dom.html|large measured 5th-to-95th-percentile' \
   'opensplice-task.dom.html|not direct estimates of native-tissue splicing' \
   'question.dom.html|>Prompt given to model<' \

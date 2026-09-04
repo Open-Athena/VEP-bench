@@ -12,16 +12,16 @@ export default {
       path: "/tasks",
       pages: [
         {
-          name: "OpenSplice SNV",
-          path: "/tasks/opensplice-snv"
+          name: "Fitness (SGE)",
+          path: "/tasks/sge"
         },
         {
-          name: "satMutMPRA",
+          name: "Expression (satMutMPRA)",
           path: "/tasks/satmut-mpra"
         },
         {
-          name: "Saturation genome editing",
-          path: "/tasks/sge"
+          name: "Splicing (OpenSplice)",
+          path: "/tasks/opensplice-snv"
         }
       ]
     }

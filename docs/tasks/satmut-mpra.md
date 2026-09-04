@@ -1,4 +1,4 @@
-# satMutMPRA
+# Expression (satMutMPRA)
 
 This task asks a model to predict the signed reporter-activity effect of 50
 variants from one saturation-mutagenesis MPRA, then evaluates the ranking and

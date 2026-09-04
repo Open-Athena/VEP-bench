@@ -1,9 +1,9 @@
 const SAFE_ID = /^[A-Za-z0-9][A-Za-z0-9._:-]*$/;
 const AUTO_ROUTED_PROVIDER = "OpenRouter auto-routing";
 const EXPLORER_TASK_ORDER = new Map([
-  ["opensplice_snv", 0],
+  ["sge", 0],
   ["satmut_mpra", 1],
-  ["sge", 2]
+  ["opensplice_snv", 2]
 ]);
 const RESULT_TYPE_LABELS = Object.freeze({
   correct: "Correct",

@@ -1,4 +1,4 @@
-# OpenSplice SNV
+# Splicing (OpenSplice)
 
 This task asks a model to predict the signed change in exon inclusion for 50
 single-nucleotide variants in one minigene cassette, then evaluates the ranking

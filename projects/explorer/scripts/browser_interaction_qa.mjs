@@ -88,19 +88,19 @@ assert.equal(
   "center",
   "score column header is not centered"
 );
-assert.equal(await chooseOptionContaining("satMutMPRA"), true);
+assert.equal(await chooseOptionContaining("Expression (satMutMPRA)"), true);
 await waitFor(
-  `document.querySelector('.card[aria-label^="satMutMPRA score versus"]') !== null`,
-  "satMutMPRA task scope"
+  `document.querySelector('.card[aria-label^="Expression (satMutMPRA) score versus"]') !== null`,
+  "Expression (satMutMPRA) task scope"
 );
 assert.equal(await chooseOptionContaining("Total tokens"), true);
 await waitFor(
-  `document.querySelector('.card[aria-label="satMutMPRA score versus Total tokens"]') !== null`,
+  `document.querySelector('.card[aria-label="Expression (satMutMPRA) score versus Total tokens"]') !== null`,
   "token plot"
 );
-assert.equal(await chooseOptionContaining("Saturation genome editing"), true);
+assert.equal(await chooseOptionContaining("Fitness (SGE)"), true);
 await waitFor(
-  `document.querySelector('.card[aria-label^="Saturation genome editing score versus"]') !== null`,
+  `document.querySelector('.card[aria-label^="Fitness (SGE) score versus"]') !== null`,
   "SGE task scope"
 );
 

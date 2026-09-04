@@ -316,9 +316,9 @@ test("task ordering keeps benchmark ranking tasks before unknown families", () =
       "synthetic_beta"
     ]),
     [
-      "opensplice_snv",
-      "satmut_mpra",
       "sge",
+      "satmut_mpra",
+      "opensplice_snv",
       "future_task",
       "synthetic_alpha",
       "synthetic_beta"

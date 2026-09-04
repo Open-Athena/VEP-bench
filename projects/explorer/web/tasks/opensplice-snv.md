@@ -1,5 +1,5 @@
 ---
-title: OpenSplice SNV
+title: Splicing (OpenSplice)
 ---
 
 ```js
@@ -91,7 +91,7 @@ const requestedQuestion = questionEntries.find(
 const knownQuestionIds = new Set(questionEntries.map((entry) => entry.question_id));
 ```
 
-# OpenSplice SNV
+# Splicing (OpenSplice)
 
 ```js
 if (runsState.error || questionState.error) {
@@ -105,19 +105,7 @@ if (metadataState.error) {
 Predict signed changes in alternative-exon inclusion for SNVs in complete
 three-exon minigene cassettes, using exact construct sequence and assay context.
 
-## Task design
-
-<div class="card">
-  <p><strong>${formatInteger(taskQuestions.length)} published exon panels</strong>, each containing 50 measured SNVs sampled as five candidates from each of ten effect-rank bins. Every prompt uses opaque candidate IDs and excludes source identity, outcomes, selection labels, genomic coordinates, and specialized predictor outputs.</p>
-  <p>The primary score is mean within-exon Spearman correlation. Mean Pearson correlation reports numerical agreement, valid-output rate reports strict JSON compliance, and invalid completed outputs contribute zero while remaining identifiable as format failures.</p>
-  <dl>
-    <div><dt>Task version</dt><dd>1.0 · question schema 2.0</dd></div>
-    <div><dt>Output</dt><dd><code>FINAL: {"V01": number, ...}</code></dd></div>
-    <div><dt>Questions</dt><dd>Public development set</dd></div>
-  </dl>
-</div>
-
-## Interpretation
+**${formatInteger(taskQuestions.length)} published exon panels** each contain 50 measured SNVs sampled as five candidates from each of ten effect-rank bins. Every prompt uses opaque candidate IDs and excludes source identity, outcomes, selection labels, genomic coordinates, and specialized predictor outputs. The primary score is mean within-exon Spearman correlation; mean Pearson correlation reports numerical agreement, valid-output rate reports strict JSON compliance, and invalid completed outputs contribute zero while remaining identifiable as format failures.
 
 Exons were deliberately selected for large measured 5th-to-95th-percentile
 effect range, and each panel is quantile-balanced. The task emphasizes effect
@@ -125,6 +113,8 @@ discrimination rather than the natural distribution of exon architectures or
 effect sizes. Scores describe exon inclusion in a specific HEK293T minigene
 reporter; they are not direct estimates of native-tissue splicing or clinical
 pathogenicity.
+
+Source data come from [Quarantani et al. (2026)](https://doi.org/10.64898/2026.05.22.727141) and the [OpenSplice Figshare v5 dataset](https://doi.org/10.6084/m9.figshare.32337414.v5).
 
 ## Questions
 
