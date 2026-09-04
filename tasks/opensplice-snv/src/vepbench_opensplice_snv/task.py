@@ -614,7 +614,7 @@ def _build_candidate_records(
                     "mutant_insert_sequence": variant.nt_seq,
                     "construct_variant": {
                         "insert_position": variant.start,
-                        "cassette_position": pos,
+                        "cassette_position": len(FIXED_PREFIX) + variant.start,
                         "ref": variant.wt,
                         "alt": variant.mut,
                         "region": variant.region,

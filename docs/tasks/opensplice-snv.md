@@ -74,6 +74,8 @@ The [shared score-space sampler](../task-construction.md) selects 50 complete
 alleles per exon. Whole-cassette reconstruction checks every displayed VCF edit
 before local coordinate sorting and opaque ID assignment. Exact parameters live
 in [preparation.yaml](../../tasks/opensplice-snv/config/preparation.yaml).
+Private source edits retain their original insert and cassette coordinates,
+which can differ from the normalized VCF position after indel anchoring.
 
 ## Reporter geometry
 

@@ -72,7 +72,7 @@ cache:
     - eligible-variants.jsonl.gz
     - elements.json
   # Updated by uv run scripts/update_preparation_digests.py.
-  implementation_sha256: 6dbce9afd93e656fe1c2e96c2b6b56e9b93d47be0fe7bd343d367f8d3564168f
+  implementation_sha256: a18d242b05d049a2fdfa97a1e104fcbfbbd35c710b02457bcbea8fdb4802537d
 
 elements:
   - cadd_label: F9

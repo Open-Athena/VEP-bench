@@ -38,7 +38,7 @@ cache:
   bucket: open-athena/VEP-bench
   root: data_prep/opensplice-snv/v2
   # Updated by uv run scripts/update_preparation_digests.py.
-  implementation_sha256: f15d5f8bd9a1d24a9109f5b1c49764a18ec620f25c3353fe7e2e42038f0173cd
+  implementation_sha256: 7ae8ac83ab2a906657d226319b2cabdd37245fe04d886a94cd3bc80cc23cc982
   data_files:
     - eligible-variants.jsonl.gz
     - exons.json

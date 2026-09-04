@@ -131,6 +131,30 @@ def test_vcf_reference_and_mavedb_crosswalk_include_anchored_deletion() -> None:
     assert validate_mavedb_crosswalk(variants, metadata, scores, spec=spec, genome=genome) == 3
 
 
+@pytest.mark.parametrize(
+    "pos,ref,alt",
+    [(2, "CG", "TA"), (2, "C", "CAT"), (2, "CGTA", "C"), (2, "CGT", "GA"), (1, "AC", "C")],
+)
+def test_vcf_parser_preserves_complete_alleles_without_length_restrictions(pos, ref, alt):
+    payload = gzip.compress(
+        (
+            "##fileformat=VCFv4.2\n"
+            "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n"
+            f"1\t{pos}\t.\t{ref}\t{alt}\t.\tSIGN\tEF=-1.2;PV=1e-8;BC=12\n"
+            "1\t1\t.\tA\tG\t.\tMIN\tEF=0.2;PV=0.25;BC=20\n"
+            "1\t8\t.\tT\tA\t.\tQUAL\tEF=0;PV=0.9;BC=2\n"
+        ).encode()
+    )
+    variants, _filters = parse_cadd_vcf(payload, label="complete-alleles.vcf.gz")
+    assert variants[0].key == ("1", pos, ref, alt)
+    sequence = "ACGTACGT"
+    metadata = ElementMetadata(sequence, sequence, "1", 1, len(sequence), "2026-01-01")
+    _metadata, checked = validate_reference(
+        variants, metadata, lambda chrom, start, end: sequence[start:end]
+    )
+    assert checked == 3
+
+
 def test_source_record_keeps_qc_private_and_assigns_opaque_ids() -> None:
     spec = ELEMENT_SPECS[0]
     variants = tuple(

@@ -15,6 +15,7 @@ from vepbench_opensplice_snv.task import (
     ExonMetadata,
     OpenSplicePreparationError,
     Variant,
+    _build_candidate_records,
     build_source_record,
     cassette_segments,
     complete_cassette,
@@ -361,6 +362,22 @@ def test_deletions_reconstruct_the_complete_assayed_insert(length):
     variant, reasons = eligible_variant_from_row(row, {"ENSE_TEST": exon}, label="deletion")
     assert reasons == () and variant is not None
     assert variant.wt == reference[2 : 2 + length] and variant.mut == ""
+    candidates, private = _build_candidate_records(exon, [(variant, 0, "test-digest")])
+    cassette = complete_cassette(exon)
+    expected = FAS_E5 + FAS_I5 + variant.nt_seq + FAS_I6 + FAS_E7
+    edit = private[0]["source"]["construct_variant"]
+    source_pos, source_ref, source_alt = edit["cassette_position"], edit["ref"], edit["alt"]
+    assert cassette[source_pos - 1 : source_pos - 1 + len(source_ref)] == source_ref
+    assert (
+        cassette[: source_pos - 1] + source_alt + cassette[source_pos - 1 + len(source_ref) :]
+    ) == expected
+    insert_pos = edit["insert_position"]
+    assert (
+        reference[: insert_pos - 1] + source_alt + reference[insert_pos - 1 + len(source_ref) :]
+    ) == variant.nt_seq
+    vcf = candidates[0]
+    pos, ref, alt = vcf["pos"], vcf["ref"], vcf["alt"]
+    assert cassette[: pos - 1] + alt + cassette[pos - 1 + len(ref) :] == expected
     with pytest.raises(OpenSplicePreparationError, match="notation"):
         eligible_variant_from_row({**row, "mut": "∆99nt"}, {"ENSE_TEST": exon}, label="bad")
     with pytest.raises(OpenSplicePreparationError, match="reconstructed mutant mismatch"):

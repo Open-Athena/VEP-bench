@@ -54,6 +54,9 @@ The source is the canonical 16-file RegSeq validation collection distributed
 with [CADD v1.7](https://kircherlab.bihealth.org/download/CADD-development/v1.7/validation/regseq/).
 `FILTER=SIGN` and `FILTER=MIN` rows are eligible for sampling. `QUAL` rows are
 excluded but retained for provenance and full-source crosswalk validation.
+The VCF parser preserves complete REF/ALT sequences without imposing an allele
+length or variant-type restriction; downstream reference and crosswalk checks
+still apply.
 
 Every CADD row is independently cross-checked against a pinned
 [MaveDB](https://www.mavedb.org/) score set using source-study coordinates and

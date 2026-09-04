@@ -183,15 +183,6 @@ def parse_cadd_vcf(payload: bytes, *, label: str) -> tuple[tuple[Variant, ...], 
             or barcode_count < 1
         ):
             raise SatMutPreparationError(f"{label}:{line_number}: invalid variant values")
-        if len(ref) == 2:
-            if len(alt) != 1 or ref[0] != alt:
-                raise SatMutPreparationError(
-                    f"{label}:{line_number}: deletion is not normalized and anchored"
-                )
-        elif len(ref) != 1 or len(alt) != 1:
-            raise SatMutPreparationError(
-                f"{label}:{line_number}: only substitutions and one-base deletions are allowed"
-            )
         variant = Variant(chrom, pos, ref, alt, effect, p_value, barcode_count, source_filter)
         if variant.key in seen:
             raise SatMutPreparationError(f"{label}:{line_number}: duplicate VCF key {variant.key}")
