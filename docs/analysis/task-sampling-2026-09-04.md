@@ -223,6 +223,8 @@ including reference download, took 5:03.70 and peaked at 181,136 KiB RSS.
 The complete cached-input run including CARD11 took 1:06.54 and peaked at
 180,740 KiB. All inputs passed pins. No model API calls or official cache or
 version uploads were made.
+The worker was terminated after retrieving the report artifacts. A future
+run recreates it and verifies or downloads the pinned public inputs.
 
 The local API server was stopped after exceeding the shared-node budget.
 Provisioning used the installed SkyPilot 0.13.0 synchronous execution engine
