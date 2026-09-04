@@ -5,8 +5,6 @@ variants from one saturation-mutagenesis MPRA, then evaluates the ranking and
 relative numerical spacing of those predictions within the regulatory element.
 
 - **Task family:** `satmut_mpra`
-- **Question schema:** 2.0
-- **Prompt version:** 1.1
 - **Size:** 16 questions, one per regulatory element and 50 candidates per question
 - **Primary metric:** mean within-element Spearman rank correlation
 - **Secondary metrics:** mean within-element Pearson correlation and valid-output rate
@@ -17,10 +15,9 @@ Every prompt contains the assay cell line, measurement time and perturbation,
 physical reporter configuration, the complete uppercase mutagenized insert in
 reporter-construct orientation, any fixed downstream sequence needed to define
 the insert-to-reporter interface, and a compact VCF table with `CHROM`, `POS`,
-opaque candidate ID, `REF`, and `ALT`. FASTA sequence lines contain 80 bases
-except the final line. Element and gene names, source-study labels, accessions,
-genomic coordinates, and vector names are retained as provenance or site
-display metadata but omitted from the model prompt.
+opaque candidate ID, `REF`, and `ALT`. Element and gene names, source-study
+labels, accessions, genomic coordinates, and vector names are retained as
+provenance or site display metadata but omitted from the model prompt.
 
 For promoter constructs, the mutagenized insert directly drives luciferase and
 the prompt states that no separate minimal promoter is present. For standard
@@ -55,44 +52,18 @@ selected by
 
 The source is the canonical 16-file RegSeq validation collection distributed
 with [CADD v1.7](https://kircherlab.bihealth.org/download/CADD-development/v1.7/validation/regseq/).
-Preparation pins the upstream `MD5SUMs` object and verifies the MD5 and SHA-256
-of every downloaded VCF. Across the 16 files there are 23,516 rows:
-
-| CADD `FILTER` | Rows | Use |
-| --- | ---: | --- |
-| `SIGN` | 4,332 | eligible sampling pool |
-| `MIN` | 17,685 | provenance and crosswalk validation only |
-| `QUAL` | 1,499 | provenance and crosswalk validation only |
+Only `FILTER=SIGN` rows are eligible for sampling; `MIN` and `QUAL` rows are
+retained for provenance and crosswalk validation.
 
 Every CADD row is independently cross-checked against a pinned
 [MaveDB](https://www.mavedb.org/) score set using source-study coordinates and
 alleles, effect after CADD's decimal rounding, p-value, and barcode count. The
-crosswalk is:
-
-| CADD label | MaveDB score set | Display element |
-| --- | --- | --- |
-| F9 | `urn:mavedb:00000015-a-1` | F9 promoter |
-| GP1BA | `urn:mavedb:00000017-a-1` | GP1BB promoter |
-| HBB | `urn:mavedb:00000018-a-1` | HBB promoter |
-| HBG1 | `urn:mavedb:00000019-a-1` | HBG1 promoter |
-| HNF4A | `urn:mavedb:00000020-a-1` | HNF4A promoter |
-| IRF4 | `urn:mavedb:00000021-a-1` | IRF4 enhancer |
-| IRF6 | `urn:mavedb:00000022-a-1` | IRF6 enhancer |
-| LDLR | `urn:mavedb:00000023-a-2` | LDLR promoter, replicate 2 |
-| MSMB | `urn:mavedb:00000024-a-1` | MSMB promoter |
-| MYCrs6983267 | `urn:mavedb:00000025-a-1` | MYC rs6983267 enhancer |
-| PKLR | `urn:mavedb:00000027-b-1` | PKLR promoter, 48 h |
-| SORT1 | `urn:mavedb:00000029-a-1` | SORT1 enhancer, replicate 1 |
-| TCF7L2 | `urn:mavedb:00000030-a-1` | TCF7L2 enhancer |
-| TERT | `urn:mavedb:00000031-a-1` | TERT promoter, HEK293T |
-| ZFAND3 | `urn:mavedb:00000033-a-1` | ZFAND3 enhancer |
-| ZRSh13 | `urn:mavedb:00000034-a-1` | ZRS enhancer, Hoxd13 |
+element-to-score-set crosswalk and reviewed assay conditions live in
+[`preparation.yaml`](../../tasks/satmut-mpra/config/preparation.yaml).
 
 `GP1BA` is the historical CADD filename; the matched MaveDB target and site
 display metadata correctly call the assayed sequence the GP1BB promoter. The
-exact mapping, reporter vector and GenBank accession, transfection time,
-perturbation, upstream digests, retrieval date, MaveDB modification dates, and
-validation counts are retained in the
+verified input metadata and validation counts are retained in the
 [`source manifest`](../../data/sources/satmut-mpra-cadd-v1.7.manifest.json).
 
 ## Reference validation and one excluded discrepancy
@@ -106,17 +77,11 @@ reverse-orientation SORT1 library as a separate experiment, which this task
 excludes.
 These sequences and eligible alleles are validated against the GRCh38 primary
 assembly from
-[`marin-dna/human-genome`](https://huggingface.co/datasets/marin-dna/human-genome)
-at revision `11b9433582981bb929af333bc6422f10a8fd71b4`. GRCh38 is used only for
-validation and genomic provenance, not as the display-orientation policy.
+[`marin-dna/human-genome`](https://huggingface.co/datasets/marin-dna/human-genome).
+GRCh38 is used only for validation and genomic provenance, not as the
+display-orientation policy.
 [`tasks/satmut-mpra/config/source-pins.yaml`](../../tasks/satmut-mpra/config/source-pins.yaml)
-pins every
-CADD file, the CADD checksum manifest, the reference file size and LFS SHA-256,
-and both MaveDB payloads for every score set. Preparation verifies the
-reference's Hub commit, linked digest, and size with a metadata request and
-aborts if any downloaded upstream payload differs.
-The manifest records the canonical snapshot retrieval date and verified size
-and digest of every input.
+records the exact input identities; preparation rejects unpinned changes.
 The earliest indexed-public date verified from the pinned provenance is the
 source study's 2019-08-08 online publication; this shared date is attached to
 all 16 explorer rows.
@@ -135,64 +100,33 @@ or any other mismatch, aborts preparation.
 Each element's eligible `FILTER=SIGN` variants are sorted by measured effect,
 then divided into ten equal-population rank bins. When a count is not divisible
 by ten, the first remainder bins receive one additional row. Five variants per
-bin are selected by SHA-256 ordering using seed `2026090200`; the resulting 50
-variants are sorted by genomic `CHROM`, `POS`, `REF`, and `ALT`, then assigned
+bin are selected by seeded SHA-256 ordering; the resulting 50 variants are
+sorted by genomic `CHROM`, `POS`, `REF`, and `ALT`, then assigned
 opaque IDs `V01` through `V50`. Genomic coordinates and alleles also break
 effect ties before binning; only element-relative coordinates are rendered in
-the generated question. The generic ranking builder sorts the visible VCF by
-`CHROM`, `POS`, `REF`, and `ALT`.
+the generated question.
 
 This design guarantees five candidates from each effect quantile while keeping
-the prompt free of measured effects and bin labels. Sampling algorithm version
-`sha256_rank_quantile_v1`, its parameters, and each selected
-variant's private bin are recorded in the compact source and manifest.
+the prompt free of measured effects and bin labels. Exact sampling parameters
+live in `preparation.yaml`; the
+[preparation code](../../tasks/satmut-mpra/src/vepbench_satmut_mpra/task.py)
+implements the selection and records each selected variant's bin in provenance.
 
 ## Parsing and scoring
 
-The evaluator uses the last well-formed `FINAL: {JSON object}` line. It rejects
-duplicate, missing, or extra candidate IDs; booleans, strings, nulls, or other
-nonnumeric values; and non-finite numbers. A malformed later line is ignored
-when an earlier well-formed final object exists. A syntactically valid object
-with invalid content is a format failure.
-
-For valid output, Spearman uses average ranks for ties and Pearson uses the raw
-predicted and measured effects. If either input vector is constant, the
-corresponding correlation is defined as zero. Invalid completed output receives
-zero for both correlations and is included in the 16-question mean; zero
-represents no usable ranking signal without equating malformed output to a
-valid, perfectly reversed ranking. Invalid output also lowers valid-output
-rate. API failures remain null and make the run incomplete. The task score is
-the arithmetic mean of the 16 per-element Spearman values, with mean Pearson
-and valid-output rate reported alongside it.
+The task uses the [shared ranking rules](../evaluation.md#completion-and-failure-semantics).
+Each element contributes equally to the mean Spearman and Pearson scores;
+valid-output rate is reported alongside them.
 
 ## Artifacts, cache, and regeneration
 
 The committed
 [`source JSONL`](../../data/sources/satmut-mpra-cadd-v1.7.jsonl) contains the 16
-selected panels plus private audit fields. The manifest records the full
-23,516-row population checks, target-sequence digests, deterministic selection
-configuration, and the compact source digest. The reusable processed cache
-contains all 4,332 eligible rows and element metadata, not the redistributable
-upstream VCF or MaveDB payloads. It is content-addressed under:
-
-```text
-hf://buckets/open-athena/VEP-bench/data_prep/satmut-mpra/v1/<cache-key>/
-```
-
-Data files are uploaded first and the digest-bearing `manifest.json` completion
-marker last. Existing complete or incomplete prefixes are never overwritten.
-Retrieval timestamps are excluded from the cache key. A complete matching cache
-is downloaded, digest-checked, and reconstructed before any CADD or MaveDB
-payload is requested. The cache is separate from official `versions/`
-publication artifacts, so a later panel size or sampling policy can reuse the
-validated eligible pool.
-
-Human-maintained element specifications, sampling parameters, upstream
-locations and revisions, validation counts, reporter sequences, and reviewed
-discrepancies live in the strictly validated
-[`preparation.yaml`](../../tasks/satmut-mpra/config/preparation.yaml). Cache
-identity is computed from canonical semantic configuration values, so YAML
-comments and formatting do not change it.
+selected panels plus private audit fields. The manifest records population
+checks, provenance, and output digests. A processed cache retains the full
+eligible pool so later sampling changes can reuse validated inputs. Its
+configuration lives in `preparation.yaml` and its implementation in
+[`prepare.py`](../../tasks/satmut-mpra/src/vepbench_satmut_mpra/prepare.py).
 
 To prepare on a SkyPilot worker, upload the cache, copy back the compact
 artifacts, validate them, and build questions:
@@ -202,7 +136,8 @@ bash scripts/run_prepare_satmut_mpra_sky.sh
 ```
 
 For the small canonical source, preparation can also run locally. It uploads
-the cache by default; use `--skip-cache-upload` for a read-only dry run:
+the cache by default; use `--skip-cache-upload` to rebuild local artifacts
+without uploading:
 
 ```bash
 uv sync --locked --package vepbench-task-satmut-mpra

@@ -26,8 +26,8 @@ task source + YAML task descriptor and prompt
  Hugging Face Storage Bucket + static explorer
 ```
 
-Only the model-visible prompt is sent to OpenRouter. Answer keys stay local and
-are applied after a response is returned. Tests, CI, and static-site builds do
+Only the model-visible prompt is sent to OpenRouter. Answer keys stay local.
+Evaluation is an explicit local action; tests, CI, and static-site builds do
 not make model calls.
 
 ## Prompt minimality and causal context
@@ -48,188 +48,72 @@ context field is needed.
 
 ## Shared and task-specific concerns
 
-The root `vepbench` project owns:
+The root [`vepbench`](../src/vepbench/) project owns question generation,
+validation, OpenRouter evaluation, scoring, and resumable results. Publication
+and bucket operations live in [`projects/publishing/`](../projects/publishing/);
+static-site assembly and browser QA live in
+[`projects/explorer/`](../projects/explorer/). This keeps the default evaluator
+independent of maintainer and task-preparation dependencies.
 
-- deterministic question generation and validation;
-- OpenRouter batch and bounded-parallel direct evaluation;
-- strict final-answer parsing, exact-match or rank-correlation scoring;
-- resumable local results and immutable question fingerprints.
+Each task owns its scientific interpretation, source preparation, provenance,
+sampling, prompt, task-level model settings, and validity checks. Keep
+task-specific assumptions out of shared evaluator, publication, and explorer
+code. The evaluator accepts one task family at a time; publication combines
+independently pinned runs without rewriting their question-set identities.
 
-Publication and bucket operations live in the private
-`projects/publishing/` workspace project. Static-site assembly and browser QA
-live in `projects/explorer/`. This keeps the default evaluator independent of
-Hugging Face, zstandard, task preparation, and Node tooling.
+Result snapshots retain the full question, response, and resolved non-secret
+request parameters so historical results remain independently inspectable.
+Configuration identities use validated values rather than YAML formatting.
+Observed upstream providers remain response metadata because OpenRouter can
+route an unpinned run across providers.
 
-The publication model catalog may add a provider-documented knowledge cutoff
-and its evidence URL to a published run. This metadata is nullable and is kept
-separate from model release date. The explorer combines it with reviewed assay
-first-indexed dates only for display and filtering; neither date is model-visible
-question content or part of scoring.
-
-Each task owns:
-
-- its scientific question and intended interpretation;
-- source data, provenance, sampling, and preparation code;
-- its prompt template, answer vocabulary, and task-level model settings;
-- task-specific validity checks and tests;
-- a methodology page under [`docs/tasks/`](tasks/README.md).
-
-Expensive task preparation may keep immutable, content-addressed processed
-intermediates under the public bucket's separate `data_prep/` namespace. Such a
-cache is task-owned, is not an official benchmark version, and must not contain
-raw upstream data that can be fetched from its authoritative archive. Cache
-completion manifests are installed last so readers never mistake a partial
-upload for a reusable result.
-
-Task-specific assumptions should not be added to shared evaluator,
-publication, or explorer code. Published questions identify their task through
-`metadata.task_family`, and task-profile evaluation checks that a question set
-contains exactly the expected family.
+Only `versions/main/` in the public bucket is official. The explorer reads
+published artifacts directly, with no database or backend. See
+[Publishing](publishing.md) for release and rollout policy.
 
 ## Adding a task
 
 Use a stable slug consistently and add, as applicable:
 
-1. A deterministic source artifact under `data/sources/`, with a provenance
-   manifest when the source is generated or downloaded.
-2. A versioned YAML prompt and strict task descriptor under
-   `configs/tasks/<task-slug>/`.
-3. Preparation configuration and code under `tasks/<task-slug>/` only when the
-   source cannot be maintained directly. Tasks using the generic question
-   formats can remain config-only.
-5. Offline fixtures and tests for generation, invariants, and schema
-   compatibility.
-6. A page at `docs/tasks/<task-slug>.md` following the conventions in the
-   [task catalog](tasks/README.md).
-7. A task page and catalog entry in the static explorer when the task is ready
-   to publish.
+1. A deterministic source artifact under `data/sources/`, with provenance.
+2. A versioned YAML prompt and task descriptor under `configs/tasks/<task-slug>/`.
+3. Preparation configuration and code under `tasks/<task-slug>/` when needed.
+   Tasks using generic question formats can remain config-only.
+4. Offline tests for generation, invariants, and schema compatibility.
+5. A methodology page under `docs/tasks/` following the
+   [task documentation convention](tasks/README.md#documentation-convention).
+6. An explorer task page and catalog entry when ready to publish.
 
-Question IDs must be globally unique across tasks. The shared CLI reads source,
-prompt, question type, and task-level generation settings from the descriptor,
-so adding a config-only task does not require a CLI or evaluator edit. Paths
-are resolved relative to the YAML file that declares them. The evaluator
-intentionally accepts one task family at a time. Publication combines those
-independently pinned task runs without rewriting their question-set identities.
+Question IDs must be globally unique across tasks. Descriptor paths are
+resolved relative to their YAML file; a config-only task needs no CLI edit.
 
-## Data contracts
+## Sources of truth
 
-The public on-disk contracts are:
+Use these definitions for exact fields, defaults, validation, and algorithms:
 
-- [Generated questions](../src/vepbench/schemas/question.schema.json)
-- [Local resumable results](../src/vepbench/schemas/result.schema.json)
-- [Published runs](../src/vepbench/schemas/run.schema.json)
-- [Normalized browser answers](../src/vepbench/schemas/answer.schema.json)
-- [Raw response envelopes](../src/vepbench/schemas/raw-response.schema.json)
-- [Published version manifests](../src/vepbench/schemas/manifest.schema.json)
+| Concern | Authoritative source |
+| --- | --- |
+| Public on-disk contracts | [JSON schemas](../src/vepbench/schemas/) |
+| Task and model settings | [Task descriptors and prompts](../configs/tasks/), [model profiles](../configs/models/), and [configuration loaders](../src/vepbench/config/) |
+| Question generation and cross-field invariants | [Builder](../src/vepbench/questions/builder.py) and [validation](../src/vepbench/questions/validation.py) |
+| Answer parsing and scoring | [Evaluator](../src/vepbench/evaluation/core.py) and [offline tests](../tests/test_evaluator.py) |
+| Batch collection and cost allocation | [Batch evaluator](../src/vepbench/evaluation/batch.py) |
+| Publication identity and aggregation | [Publisher](../projects/publishing/src/vepbench_publishing/publication.py) |
+| Explorer aggregation and compatibility | [Browser data helpers](../projects/explorer/web/components/benchmark-data.js) and [tests](../projects/explorer/web/components/benchmark-data.test.js) |
 
 The schema `$id` values retain their original `VEPBench` URLs as stable public
 identifiers; the product rename does not change existing contract identities.
 
-Generated questions are sorted by `question_id` and written as UTF-8 JSONL with
-LF line endings. The complete file has a lowercase SHA-256 fingerprint; each
-question is also fingerprinted from canonical compact JSON.
+## Temporal provenance
 
-Reproducibility identities use validated configuration values serialized as
-canonical JSON, not raw YAML bytes. Reformatting YAML or adding comments does
-not change an identity; changing a validated value does. Generated question
-digests additionally cover the rendered prompt and source-record content.
+The [model catalog](../configs/models/catalog.yaml) supplies provider-documented
+knowledge cutoffs and evidence links. The
+[reviewed assay metadata](../projects/explorer/config/assay-publications.yaml)
+records the earliest verified public date among indexed records linked from
+pinned task provenance, such as PubMed, MaveDB, or Figshare. Arbitrary project
+URLs and source-control history do not qualify.
 
-Task source records may contain a `source_metadata` object for audit fields
-that must remain out of model-visible prompts. The builder includes that object
-in the source-record fingerprint but does not copy it into generated questions;
-task-specific compact-source validators own its structure.
-
-Question schema 1.0 describes multiple-choice tasks and schema 2.0 describes
-quantitative ranking tasks. JSON Schema cannot express every question
-invariant. The builder additionally checks unique choice or candidate IDs,
-valid answer references, finite reference scores, and exact agreement between
-the structured choices or candidate rows and the rendered prompt. Ranking
-candidates and their rendered VCF rows are sorted by `CHROM`, `POS`, `REF`, and
-`ALT`.
-
-For multiple choice, the scorer reads only the last well-formed
-`FINAL: <choice-id>` line. A complete response is assigned one flat result type:
-`correct`, `incorrect`, `refusal`, `token_limit`, or `format_error`. Structured
-provider refusal evidence has precedence; otherwise a valid parsed answer
-determines correctness, an unparseable response finished for `length` is a
-token limit, and any remaining unparseable completion is a format error. For
-ranking, the scorer reads the last well-formed
-`FINAL: {<candidate-id>: <number>, ...}` object and requires every candidate
-exactly once with finite numeric values. Invalid completed ranking output gets
-zero for both correlations and remains a format failure rather than receiving a
-null API score. A valid, perfectly reversed ranking can still receive `-1`. An
-API failure is not a result type: it receives null scoring and makes the run
-incomplete.
-
-Result snapshots retain the complete question, provider response, final
-content, nullable provider-exposed reasoning, usage, finish reason, non-secret
-request parameters, question-set digest and size, and individual question
-digest. Historical results therefore remain inspectable without reconstructing
-the original run. When a provider exposes cost only for a whole batch, the
-normalized usage records retain the aggregate receipt and identify the
-deterministic allocation used to make per-result costs sum to that receipt.
-The retained batch membership lets merge and publication validation reject
-missing members, inconsistent receipts, or totals that do not reconcile.
-
-## Publication and explorer
-
-Local result JSONL is a resumable staging format. Publication validates and
-deduplicates it into run metadata, compact per-run outcome indexes, browser
-answers, and complete raw response archives. It also aggregates
-the five result counts, provider-reported token usage, and USD cost into each
-run and joins versioned model-family and release-date metadata from
-`configs/models/catalog.yaml`. Model catalog fields are display metadata
-and do not affect configuration identity. Question and raw-run archives are
-deterministic zstd JSONL; browser answers are deterministic gzip JSON objects.
-A manifest records compressed and decompressed sizes and digests.
-
-A model configuration key includes gateway, model ID, model revision, all
-generation parameters, and the prompt and task identity. The observed upstream
-provider is response metadata rather than configuration identity because
-OpenRouter may route one unpinned run across providers. A run with more than one
-observed provider is labeled `OpenRouter auto-routing`; every per-response
-provider remains preserved in local results and raw archives. The official
-version accepts only complete runs without API errors and at most one run for
-each configuration key. Every published task family must have at least one
-complete run, but those runs may belong to different model configurations.
-Publication processes result and raw-response data as streams so memory use
-does not grow with the total amount of model reasoning.
-Legacy result records without `result_type` remain publishable because the
-publisher derives the same classification from their score, finish reason, and
-retained structured provider response.
-For compatibility, `metrics.format_failures` continues to count every completed
-response with a parse error. The narrower five-way taxonomy is reported in
-`metrics.result_counts`, where only `format_error` excludes refusals and token
-limits.
-
-Ranking task leaderboards default to the task's mean within-question Spearman
-correlation and can switch `Score` to mean Pearson correlation. The all-task
-view macro-averages the selected correlation across published task profiles for
-model configurations that completed every task; it does not pool questions
-across tasks. The score-efficiency chart follows the selected correlation and
-compares it with cost or total tokens for one or more complete model runs.
-
-The question explorer has one page per task. It selects complete model
-configurations, resolves the matching task run after a question is selected,
-and renders the exact stored prompt alongside the complete response without
-exposing measured reference effects in a comparison table. Ranking-task lists
-show each question's Spearman and Pearson correlations from the compact outcome
-index. The primary `value` remains the Spearman score for compatibility, while
-new outcome indexes also name `spearman_rho` and `pearson_r` explicitly.
-Its compact `question-metadata.json` asset is deterministically derived from
-committed task sources and reviewed assay-publication metadata. satMutMPRA
-supplies its element label as `source_metadata.display_name`; SGE uses the same
-display field for its gene label. Each question also receives an
-`assay_first_indexed` object with a calendar date, source kind, registry, and
-HTTPS evidence URL. The date is the earliest verified public date among
-indexed records linked from the benchmark's pinned provenance, such as PubMed,
-MaveDB, or Figshare. Arbitrary project URLs and source-control history do not
-qualify, and an unknown date is not inferred. The task question tables expose
-this value as **Assay first indexed**, with a link to its evidence record.
-This display-only metadata is never added to model-visible prompts and does not
-change question or historical result fingerprints.
-
-Only `versions/main/` in the public bucket is official. Named lowercase-slug
-versions are reviewable release candidates or disposable experiments. The
-Observable Framework explorer is static and reads published artifacts directly
-from the bucket; it has no database, authentication, or backend service.
+These dates support explorer display and filtering, not model input or scoring.
+Unknown dates remain unknown; a model's release date is not a substitute for
+its knowledge cutoff. Temporal comparisons can help assess source exposure but
+cannot establish that an assay was absent from training data.
