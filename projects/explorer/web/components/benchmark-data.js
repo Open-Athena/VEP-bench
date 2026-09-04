@@ -306,6 +306,27 @@ export function orderQuestionsForExplorer(questions) {
   });
 }
 
+export function predictionComparisonRows(question, result) {
+  const predictions = result?.scoring?.parsed_answer;
+  if (question?.task_type !== "ranking"
+    || result?.scoring?.metric !== "rank_correlation"
+    || !predictions
+    || typeof predictions !== "object"
+    || Array.isArray(predictions)) return [];
+
+  return (Array.isArray(question.candidates) ? question.candidates : []).flatMap(
+    (candidate) => {
+      const measured = finiteNumber(candidate?.reference_score);
+      const predicted = Object.hasOwn(predictions, candidate?.candidate_id)
+        ? finiteNumber(predictions[candidate.candidate_id])
+        : null;
+      return measured === null || predicted === null
+        ? []
+        : [{candidate_id: candidate.candidate_id, measured, predicted}];
+    }
+  );
+}
+
 export function defaultQuestionForExplorer(
   visibleEntries,
   {

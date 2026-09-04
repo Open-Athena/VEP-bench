@@ -1,6 +1,12 @@
+import * as Plot from "npm:@observablehq/plot@0.6.17";
 import MarkdownIt from "npm:markdown-it@14.1.0";
+import {resize} from "observablehq:stdlib";
 
-import {resultTypeForAnswer, resultTypeLabel} from "./benchmark-data.js";
+import {
+  predictionComparisonRows,
+  resultTypeForAnswer,
+  resultTypeLabel
+} from "./benchmark-data.js";
 
 const markdown = new MarkdownIt({
   html: false,
@@ -114,6 +120,50 @@ function markdownNode(source) {
   return node;
 }
 
+function predictionComparisonPlot(rows) {
+  return resize((width) => Plot.plot({
+    width,
+    height: 220,
+    marginLeft: 54,
+    marginBottom: 46,
+    ariaLabel: "Predicted versus measured variant effects",
+    ariaDescription: (
+      `${rows.length} variants. The dashed line shows the fitted linear trend.`
+    ),
+    x: {grid: true, label: "Measured effect", nice: true},
+    y: {grid: true, label: "Predicted effect", nice: true},
+    marks: [
+      Plot.linearRegressionY(rows, {
+        ci: 0,
+        x: "measured",
+        y: "predicted",
+        stroke: "currentColor",
+        strokeDasharray: "4,4",
+        strokeOpacity: 0.35,
+        strokeWidth: 1.5
+      }),
+      Plot.dot(rows, {
+        x: "measured",
+        y: "predicted",
+        fill: "#4267d2",
+        fillOpacity: 0.82,
+        stroke: "var(--theme-background)",
+        strokeWidth: 1.25,
+        r: 4.5,
+        tip: true,
+        ariaLabel: (row) => (
+          `${row.candidate_id}; measured ${row.measured}; predicted ${row.predicted}`
+        ),
+        title: (row) => [
+          row.candidate_id,
+          `Measured: ${row.measured}`,
+          `Predicted: ${row.predicted}`
+        ].join("\n")
+      })
+    ]
+  }));
+}
+
 export function questionRecord(entry) {
   const {question, result, run} = entry;
   const root = element("article");
@@ -167,7 +217,10 @@ export function questionRecord(entry) {
           : "No complete evaluation runs are available."
     );
 
-  const answerColumn = element("section", "card vepbench-record-card");
+  const answerColumn = element(
+    "section",
+    "card vepbench-record-card vepbench-answer-card"
+  );
   answerColumn.style.minWidth = "0";
   const answerHeader = element("div");
   answerHeader.style.display = "flex";
@@ -192,6 +245,37 @@ export function questionRecord(entry) {
         "muted",
         `Parsed prediction: ${result?.scoring.parsed_answer ?? "—"} · ${entry.prediction}`
       );
+  const comparisonRows = predictionComparisonRows(question, result);
+  const answerSections = element("div", "vepbench-answer-sections");
+  if (question.task_type === "ranking") {
+    const plotSection = element("section", "vepbench-prediction-section");
+    const plotHeader = element("div", "vepbench-section-heading");
+    plotHeader.append(
+      element("h3", null, "Predictions vs. measurements"),
+      comparisonRows.length
+        ? element("span", "muted", `${comparisonRows.length} variants`)
+        : element("span", "muted", "Plot unavailable")
+    );
+    plotSection.append(plotHeader);
+    if (comparisonRows.length) {
+      plotSection.append(predictionComparisonPlot(comparisonRows));
+      plotSection.append(element(
+        "p",
+        "muted vepbench-plot-caption",
+        "Each point is one variant; the dashed line shows the fitted linear trend."
+      ));
+    } else {
+      plotSection.append(element(
+        "p",
+        "muted vepbench-plot-empty",
+        "A comparison plot is available when the response contains valid numeric predictions."
+      ));
+    }
+    answerSections.append(plotSection);
+  }
+
+  const responseSection = element("section", "vepbench-response-section");
+  responseSection.append(element("h3", null, "Model response"));
   const answerBody = element("div", "vepbench-record-content");
   answerBody.append(responseBody);
 
@@ -205,7 +289,9 @@ export function questionRecord(entry) {
     : element("p", "muted", "No provider-exposed reasoning was supplied.");
   reasoningSection.append(reasoningBody);
   answerBody.append(reasoningSection);
-  answerColumn.append(answerHeader, prediction, answerBody);
+  responseSection.append(answerBody);
+  answerSections.append(responseSection);
+  answerColumn.append(answerHeader, prediction, answerSections);
 
   comparison.append(questionColumn, answerColumn);
   root.append(comparison);

@@ -172,8 +172,10 @@ once in a benchmark-wide section at the bottom of the leaderboard page rather
 than being filtered by the task selector.
 This supports valid-output and format-failure filters while full answer content
 is loaded one compressed object at a time. The question pane renders the exact
-stored model prompt; it does not display a measured-versus-predicted effect
-table. Complete raw archives remain downloadable without requiring a backend.
+stored model prompt. For ranking tasks, the answer pane pairs the written model
+response with a responsive measured-versus-predicted effect plot, including
+independently scaled axes, a dashed fitted trend line, and per-variant hover
+details. Complete raw archives remain downloadable without requiring a backend.
 
 `runs.json` names each task's evaluation profile and primary metric. Both
 satMutMPRA and SGE use mean within-question Spearman; Pearson correlation and
