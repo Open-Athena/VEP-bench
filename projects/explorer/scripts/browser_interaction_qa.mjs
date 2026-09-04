@@ -83,6 +83,20 @@ await waitFor(
     && document.querySelector('.card[aria-label^="All tasks score versus"]') !== null`,
   "two-model default all-task leaderboard"
 );
+assert.equal(await chooseOptionContaining("Pearson"), true);
+await waitFor(
+  `[...document.querySelectorAll("p")].some(
+    (paragraph) => paragraph.textContent.includes("Pearson correlation")
+  )`,
+  "Pearson leaderboard metric"
+);
+assert.equal(await chooseOptionContaining("Spearman"), true);
+await waitFor(
+  `[...document.querySelectorAll("p")].some(
+    (paragraph) => paragraph.textContent.includes("Spearman correlation")
+  )`,
+  "Spearman leaderboard metric"
+);
 assert.equal(
   await evaluate('getComputedStyle(document.querySelector(\'th[title="score"]\')).textAlign'),
   "center",

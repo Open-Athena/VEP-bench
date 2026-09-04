@@ -117,6 +117,9 @@ reference's Hub commit, linked digest, and size with a metadata request and
 aborts if any downloaded upstream payload differs.
 The manifest records the canonical snapshot retrieval date and verified size
 and digest of every input.
+The earliest indexed-public date verified from the pinned provenance is the
+source study's 2019-08-08 online publication; this shared date is attached to
+all 16 explorer rows.
 
 The ZRS reporter-construct sequence has `A` at its terminal position
 7:156791604, whereas the pinned GRCh38 primary assembly has `T`. The prompt

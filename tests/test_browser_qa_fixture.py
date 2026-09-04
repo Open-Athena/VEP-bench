@@ -57,6 +57,10 @@ def test_browser_qa_fixture_is_complete_and_offline(tmp_path: Path, config_relat
     assert run["coverage"]["complete"] is True
     assert run["model"]["family"] == "Synthetic browser QA"
     assert run["model"]["release_date"] == "2026-08-01"
+    assert run["model"]["knowledge_cutoff"] == "2026-05"
+    assert run["model"]["knowledge_cutoff_url"] == (
+        "https://example.test/models/browser-qa"
+    )
     assert run["metrics"]["total_tokens"] == 112
     assert run["metrics"]["total_cost_usd"] == 0
     outcome_index = json.loads(

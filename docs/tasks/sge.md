@@ -70,6 +70,10 @@ The strict reviewed gene configuration is
 [`preparation.yaml`](../../tasks/sge/config/preparation.yaml), and exact source
 payload pins are in
 [`source-pins.yaml`](../../tasks/sge/config/source-pins.yaml).
+For explorer provenance, each question uses the earlier of its linked
+PubMed-indexed online publication and its MaveDB publication date. When MaveDB
+does not link a paper, its own published date is the verified indexed record;
+the explorer does not guess an earlier date.
 
 ## Coordinate and consequence policy
 

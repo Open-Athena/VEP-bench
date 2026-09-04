@@ -1,0 +1,95 @@
+# Earliest verified public date among indexed records linked from the benchmark's
+# pinned provenance. Prefer an indexed dataset or assay repository; use a
+# PubMed-indexed paper when that is the earliest linked public record. Do not
+# infer dates from arbitrary project URLs or source-control history.
+schema_version: "1.0"
+by_task_family:
+  opensplice_snv:
+    default:
+      date: "2026-05-24"
+      kind: dataset
+      registry: Figshare
+      url: https://doi.org/10.6084/m9.figshare.32337414.v5
+  satmut_mpra:
+    default:
+      date: "2019-08-08"
+      kind: paper
+      registry: PubMed
+      url: https://pubmed.ncbi.nlm.nih.gov/31395865/
+  sge:
+    records:
+      BAP1:
+        date: "2024-07-05"
+        kind: paper
+        registry: PubMed
+        url: https://pubmed.ncbi.nlm.nih.gov/38969833/
+      BARD1:
+        date: "2026-06-08"
+        kind: assay_repository
+        registry: MaveDB
+        url: https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001250-a-2
+      BRCA1:
+        date: "2018-09-12"
+        kind: paper
+        registry: PubMed
+        url: https://pubmed.ncbi.nlm.nih.gov/30209399/
+      BRCA2:
+        date: "2025-01-08"
+        kind: paper
+        registry: PubMed
+        url: https://pubmed.ncbi.nlm.nih.gov/39779857/
+      CTCF:
+        date: "2026-06-17"
+        kind: assay_repository
+        registry: MaveDB
+        url: https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001262-a-3
+      DDX3X:
+        date: "2023-12-06"
+        kind: paper
+        registry: PubMed
+        url: https://pubmed.ncbi.nlm.nih.gov/38057330/
+      PALB2:
+        date: "2026-01-19"
+        kind: paper
+        registry: PubMed
+        url: https://pubmed.ncbi.nlm.nih.gov/41554690/
+      RAD51C:
+        date: "2024-09-18"
+        kind: paper
+        registry: PubMed
+        url: https://pubmed.ncbi.nlm.nih.gov/39299233/
+      RAD51D:
+        date: "2026-06-08"
+        kind: assay_repository
+        registry: MaveDB
+        url: https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001260-a-2
+      SBDS:
+        date: "2026-08-24"
+        kind: assay_repository
+        registry: MaveDB
+        url: https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001284-a-1
+      SFPQ:
+        date: "2026-06-08"
+        kind: assay_repository
+        registry: MaveDB
+        url: https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001265-a-2
+      TINF2:
+        date: "2026-08-28"
+        kind: assay_repository
+        registry: MaveDB
+        url: https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001286-a-1
+      TP53:
+        date: "2025-01-07"
+        kind: paper
+        registry: PubMed
+        url: https://pubmed.ncbi.nlm.nih.gov/39774325/
+      VHL:
+        date: "2024-04-25"
+        kind: assay_repository
+        registry: MaveDB
+        url: https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00000675-a-1
+      XRCC2:
+        date: "2026-06-08"
+        kind: assay_repository
+        registry: MaveDB
+        url: https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001264-a-2

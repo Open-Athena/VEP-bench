@@ -16,7 +16,7 @@ from cyclopts.exceptions import CycloptsError
 from vepbench.errors import BuildError
 
 from .config import load_site_config
-from .site import build_question_metadata, build_site
+from .site import build_question_metadata, build_site, load_assay_publications
 
 app = App(
     name="vepbench-site",
@@ -50,7 +50,10 @@ def build(*, config: Path, output: Path = Path("_site")) -> int:
     with tempfile.TemporaryDirectory(prefix="vepbench-observable-") as temporary:
         temporary_project = Path(temporary)
         source = temporary_project / "web"
-        question_metadata = build_question_metadata(source_paths=settings.question_metadata_sources)
+        question_metadata = build_question_metadata(
+            source_paths=settings.question_metadata_sources,
+            assay_publications=load_assay_publications(settings.assay_publications),
+        )
         manifest = build_site(
             assets_dir=settings.assets_dir,
             output=source,

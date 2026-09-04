@@ -121,7 +121,21 @@ for check in \
   'task.dom.html|>Expression (satMutMPRA)</a></h1>' \
   'task.dom.html|published element panels' \
   'sge-task.dom.html|>Fitness (SGE)</a></h1>' \
+  'task.dom.html|>Assay first indexed<' \
+  'task.dom.html|>2019-08-08</a>' \
+  'task.dom.html|href="https://pubmed.ncbi.nlm.nih.gov/31395865/"' \
+  'task.dom.html|>Spearman ρ<' \
+  'task.dom.html|>Pearson r<' \
+  'task.dom.html|>Cutoff relation<' \
+  'task.dom.html|>All cutoff relations</option>' \
+  'task.dom.html|class="vepbench-assay-date vepbench-assay-date-before"' \
+  'task.dom.html|>Before cutoff</span>' \
+  'task.dom.html|Knowledge cutoff: ' \
+  'task.dom.html|>May 2026</a>' \
   'sge-task.dom.html|published gene panels' \
+  'sge-task.dom.html|>2024-07-05</a>' \
+  'sge-task.dom.html|class="vepbench-assay-date vepbench-assay-date-after"' \
+  'sge-task.dom.html|>After cutoff</span>' \
   'sge-question.dom.html|>Prompt given to model<' \
   'sge-question.dom.html|<strong>Gene:</strong> BAP1' \
   'sge-question.dom.html|Local DNA sequence context' \
@@ -173,7 +187,7 @@ header_order=$(
     | sed -E 's/<span>[^<]*<\/span>//; s/<[^>]+>//g' \
     | paste -sd '|' -
 )
-if [[ "$header_order" != 'Model|Score|Release date|Tokens|Cost' ]]; then
+if [[ "$header_order" != 'Model|Score|Knowledge cutoff|Tokens|Cost' ]]; then
   echo "unexpected leaderboard column order: $header_order" >&2
   status=1
 fi

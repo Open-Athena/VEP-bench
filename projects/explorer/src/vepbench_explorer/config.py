@@ -15,6 +15,7 @@ class SiteConfig:
     data_base_url: str
     assets_dir: Path
     observable_config: Path
+    assay_publications: Path
     question_metadata_sources: tuple[Path, ...]
 
 
@@ -27,6 +28,7 @@ def load_site_config(path: str | Path) -> SiteConfig:
         "data_base_url",
         "assets_dir",
         "observable_config",
+        "assay_publications",
         "question_metadata_sources",
     }
     missing = required - raw.keys()
@@ -38,7 +40,7 @@ def load_site_config(path: str | Path) -> SiteConfig:
         )
     if raw["schema_version"] != "1.0":
         raise BuildError(f"{source_path}: unsupported site config schema version")
-    for field in ("data_base_url", "assets_dir", "observable_config"):
+    for field in ("data_base_url", "assets_dir", "observable_config", "assay_publications"):
         if not isinstance(raw[field], str) or not raw[field]:
             raise BuildError(f"{source_path}: {field} must be a non-empty string")
     metadata_sources = raw["question_metadata_sources"]
@@ -54,5 +56,6 @@ def load_site_config(path: str | Path) -> SiteConfig:
         data_base_url=raw["data_base_url"],
         assets_dir=(config_dir / raw["assets_dir"]).resolve(),
         observable_config=(config_dir / raw["observable_config"]).resolve(),
+        assay_publications=(config_dir / raw["assay_publications"]).resolve(),
         question_metadata_sources=tuple((config_dir / item).resolve() for item in metadata_sources),
     )

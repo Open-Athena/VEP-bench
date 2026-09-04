@@ -29,6 +29,88 @@ export function formatDate(value) {
   return match ? match[1] : "—";
 }
 
+export function formatCorrelation(value) {
+  return Number.isFinite(value) ? value.toFixed(3) : "—";
+}
+
+export function formatKnowledgeCutoff(value) {
+  if (typeof value !== "string") return "—";
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+  if (!/^\d{4}-\d{2}$/.test(value)) return "—";
+  const parsed = new Date(`${value}-01T00:00:00Z`);
+  if (Number.isNaN(parsed.valueOf())) return "—";
+  return new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC"
+  }).format(parsed);
+}
+
+export function assayFirstIndexedLink(value) {
+  const label = formatDate(value?.date);
+  if (label === "—" || typeof value?.url !== "string") return label;
+  const link = document.createElement("a");
+  link.href = value.url;
+  link.rel = "noreferrer";
+  link.target = "_blank";
+  link.textContent = label;
+  const relation = value?.cutoff_relation;
+  const relationClass = {
+    "Before cutoff": "before",
+    "After cutoff": "after",
+    Unknown: "unknown"
+  }[relation];
+  if (relationClass) link.className = `vepbench-assay-date vepbench-assay-date-${relationClass}`;
+  const kind = typeof value.kind === "string" ? value.kind.replaceAll("_", " ") : null;
+  const cutoff = typeof value.knowledge_cutoff === "string"
+    ? `model cutoff ${formatKnowledgeCutoff(value.knowledge_cutoff)}`
+    : "model cutoff not reported";
+  link.title = [value.registry, kind, relation, cutoff].filter(Boolean).join(" · ");
+  return link;
+}
+
+export function cutoffRelationBadge(value) {
+  const badge = document.createElement("span");
+  const suffix = {
+    "Before cutoff": "before",
+    "After cutoff": "after",
+    Unknown: "unknown"
+  }[value] ?? "unknown";
+  badge.className = `vepbench-cutoff-badge vepbench-cutoff-${suffix}`;
+  badge.textContent = value ?? "Unknown";
+  return badge;
+}
+
+export function knowledgeCutoffNote(run) {
+  const note = document.createElement("p");
+  note.className = "muted";
+  note.style.margin = "0.5rem 0";
+  const cutoff = run?.model?.knowledge_cutoff;
+  const sourceUrl = run?.model?.knowledge_cutoff_url;
+  if (typeof cutoff !== "string") {
+    note.textContent = "Knowledge cutoff not reported; cutoff relations remain Unknown.";
+    return note;
+  }
+  note.append("Knowledge cutoff: ");
+  if (typeof sourceUrl === "string") {
+    const link = document.createElement("a");
+    link.href = sourceUrl;
+    link.rel = "noreferrer";
+    link.target = "_blank";
+    link.textContent = formatKnowledgeCutoff(cutoff);
+    link.title = "Provider model documentation";
+    note.append(link);
+  } else {
+    note.append(formatKnowledgeCutoff(cutoff));
+  }
+  note.append(
+    cutoff.length === 7
+      ? ". Later months are green; earlier months are amber; dates in the cutoff month are gray and Unknown."
+      : ". Green assay dates are after it; amber dates are on or before it."
+  );
+  return note;
+}
+
 export function formatCost(value) {
   if (value === null) return "—";
   const maximumFractionDigits = value > 0 && value < 0.01 ? 4 : 2;

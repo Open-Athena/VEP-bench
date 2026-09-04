@@ -22,7 +22,15 @@
         "model_revision": {"type": ["string", "null"]},
         "upstream_provider": {"type": ["string", "null"]},
         "family": {"type": "string", "minLength": 1},
-        "release_date": {"type": "string", "format": "date"}
+        "release_date": {"type": "string", "format": "date"},
+        "knowledge_cutoff": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "string", "format": "date"},
+            {"type": "string", "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"}
+          ]
+        },
+        "knowledge_cutoff_url": {"type": ["string", "null"], "format": "uri"}
       }
     },
     "generation_parameters": {"type": "object"},

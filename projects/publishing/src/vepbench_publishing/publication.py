@@ -60,21 +60,26 @@ def validate_version_name(version_name: str) -> None:
         raise BuildError("version name must be a lowercase URL-safe slug of at most 63 characters")
 
 
-def _load_model_catalog(path: Path) -> dict[str, dict[str, str]]:
+def _load_model_catalog(path: Path) -> dict[str, dict[str, str | None]]:
     """Load display-only model metadata used by published leaderboard rows."""
 
     _, document = load_yaml_mapping(path, label="model catalog")
     if not isinstance(document, dict) or set(document) != {"schema_version", "models"}:
         raise BuildError(f"{path}: model catalog must contain schema_version and models")
-    if document["schema_version"] != "1.0" or not isinstance(document["models"], dict):
+    schema_version = document["schema_version"]
+    if schema_version not in {"1.0", "1.1"} or not isinstance(document["models"], dict):
         raise BuildError(f"{path}: unsupported model catalog")
 
-    models: dict[str, dict[str, str]] = {}
+    models: dict[str, dict[str, str | None]] = {}
     for model_id, metadata in document["models"].items():
         if not isinstance(model_id, str) or not model_id or not isinstance(metadata, dict):
             raise BuildError(f"{path}: invalid model catalog entry {model_id!r}")
-        if set(metadata) != {"family", "release_date"}:
-            raise BuildError(f"{path}: model {model_id!r} must contain family and release_date")
+        required_fields = {"family", "release_date"}
+        if schema_version == "1.1":
+            required_fields |= {"knowledge_cutoff", "knowledge_cutoff_url"}
+        if set(metadata) != required_fields:
+            fields = ", ".join(sorted(required_fields))
+            raise BuildError(f"{path}: model {model_id!r} must contain {fields}")
         family = metadata["family"]
         release_date = metadata["release_date"]
         if not isinstance(family, str) or not family.strip():
@@ -87,7 +92,37 @@ def _load_model_catalog(path: Path) -> dict[str, dict[str, str]]:
             date.fromisoformat(release_date)
         except ValueError as exc:
             raise BuildError(f"{path}: model {model_id!r} has an invalid release_date") from exc
-        models[model_id] = {"family": family.strip(), "release_date": release_date}
+        knowledge_cutoff = metadata.get("knowledge_cutoff")
+        knowledge_cutoff_url = metadata.get("knowledge_cutoff_url")
+        if (knowledge_cutoff is None) != (knowledge_cutoff_url is None):
+            raise BuildError(
+                f"{path}: model {model_id!r} must provide both knowledge cutoff fields or neither"
+            )
+        if knowledge_cutoff is not None:
+            if not isinstance(knowledge_cutoff, str) or not re.fullmatch(
+                r"\d{4}-\d{2}(?:-\d{2})?", knowledge_cutoff
+            ):
+                raise BuildError(f"{path}: model {model_id!r} has an invalid knowledge_cutoff")
+            try:
+                date.fromisoformat(
+                    knowledge_cutoff if len(knowledge_cutoff) == 10 else f"{knowledge_cutoff}-01"
+                )
+            except ValueError as exc:
+                raise BuildError(
+                    f"{path}: model {model_id!r} has an invalid knowledge_cutoff"
+                ) from exc
+            if not isinstance(knowledge_cutoff_url, str) or not knowledge_cutoff_url.startswith(
+                "https://"
+            ):
+                raise BuildError(
+                    f"{path}: model {model_id!r} knowledge_cutoff_url must use HTTPS"
+                )
+        models[model_id] = {
+            "family": family.strip(),
+            "release_date": release_date,
+            "knowledge_cutoff": knowledge_cutoff,
+            "knowledge_cutoff_url": knowledge_cutoff_url,
+        }
     return models
 
 
@@ -573,6 +608,8 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
             expected_outcomes[(answer["run_id"], answer["question_id"])] = {
                 "question_id": answer["question_id"],
                 "value": answer["scoring"]["value"],
+                "spearman_rho": answer["scoring"]["spearman_rho"],
+                "pearson_r": answer["scoring"]["pearson_r"],
                 "valid": answer["scoring"]["valid"],
             }
         stats["format_failures"] += answer["scoring"]["parse_error"] is not None
@@ -641,12 +678,20 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
                 raise BuildError(f"{descriptor['path']}: invalid outcome record")
             outcome_key = (run_id, row["question_id"])
             expected_row = expected_outcomes.get(outcome_key)
-            legacy_row = (
-                {key: value for key, value in expected_row.items() if key != "result_type"}
-                if expected_row is not None and "result_type" in expected_row
-                else None
-            )
-            if expected_row is None or (row != expected_row and row != legacy_row):
+            compatible_rows = [expected_row]
+            if expected_row is not None and "result_type" in expected_row:
+                compatible_rows.append(
+                    {key: value for key, value in expected_row.items() if key != "result_type"}
+                )
+            if expected_row is not None and "spearman_rho" in expected_row:
+                compatible_rows.append(
+                    {
+                        key: value
+                        for key, value in expected_row.items()
+                        if key not in {"spearman_rho", "pearson_r"}
+                    }
+                )
+            if expected_row is None or row not in compatible_rows:
                 raise BuildError(f"{descriptor['path']}: outcome disagrees with its answer")
 
     runs_with_outcome_paths = {
@@ -1009,7 +1054,7 @@ def _convert_run(
     answer_validator: Draft202012Validator,
     raw_validator: Draft202012Validator,
     task_sets: Mapping[str, Mapping[str, Any]],
-    model_catalog: Mapping[str, Mapping[str, str]] | None,
+    model_catalog: Mapping[str, Mapping[str, str | None]] | None,
     version_dir: Path,
 ) -> dict[str, Any]:
     records = _iter_jsonl_file(result_file)
@@ -1198,6 +1243,8 @@ def _convert_run(
                         {
                             "question_id": question_id,
                             "value": record["scoring"]["value"],
+                            "spearman_rho": record["scoring"]["spearman_rho"],
+                            "pearson_r": record["scoring"]["pearson_r"],
                             "valid": record["scoring"]["valid"],
                         }
                     )

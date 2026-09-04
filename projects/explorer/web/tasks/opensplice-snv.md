@@ -4,20 +4,26 @@ title: Splicing (OpenSplice)
 
 ```js
 import {
+  assayFirstIndexedLink,
+  cutoffRelationBadge,
   entriesForQuestions,
   entryForAnswer,
+  formatCorrelation,
   formatInteger,
+  knowledgeCutoffNote,
   outcomeBadge,
   questionRecord
 } from "../components/vepbench.js";
 import {
   artifactUrl,
+  assayCutoffRelation,
   defaultQuestionForExplorer,
   fetchAnswerIfAvailable,
   fetchJson,
   fetchOutcomeIndex,
   modelSelectionRows,
   orderQuestionsForExplorer,
+  rankingOutcomeMetrics,
   resultTypeLabel,
   runForTask
 } from "../components/benchmark-data.js";
@@ -75,16 +81,18 @@ const resultLabel = (outcome) => outcome?.result_type !== undefined
     : outcome?.valid === false
       ? "Format failure"
       : "Not scored";
-const questionEntries = entriesForQuestions(taskQuestions).map((entry) => ({
-  ...entry,
-  element: (
+const questionEntries = entriesForQuestions(taskQuestions).map((entry) => {
+  const displayMetadata = (
     metadataState.document.by_task_family
       ?.[taskFamily]
       ?.[entry.question.provenance.source_record_id]
-      ?.element
-    ?? "—"
-  )
-}));
+  );
+  return {
+    ...entry,
+    element: displayMetadata?.element ?? "—",
+    assay_first_indexed: displayMetadata?.assay_first_indexed ?? null
+  };
+});
 const requestedQuestion = questionEntries.find(
   (entry) => entry.question_id === requestedQuestionId
 );
@@ -142,7 +150,13 @@ const controlsInput = Inputs.form({
     "All results",
     "Valid prediction",
     "Format failure"
-  ], {label: "Result"})
+  ], {label: "Result"}),
+  cutoff: Inputs.select([
+    "All cutoff relations",
+    "Before cutoff",
+    "After cutoff",
+    "Unknown"
+  ], {label: "Cutoff relation"})
 });
 controlsInput.style.display = "flex";
 controlsInput.style.flexWrap = "wrap";
@@ -170,6 +184,8 @@ const controls = view(controlsInput);
 ```js
 const modelOption = controls.model;
 const modelRow = modelOption.kind === "model" ? modelOption.row : null;
+const selectedTaskRun = modelRow ? runForTask(modelRow, taskFamily) : null;
+const knowledgeCutoff = selectedTaskRun?.model?.knowledge_cutoff ?? null;
 const selectedModelRuns = modelRow?.runs ?? [];
 const outcomeStates = await Promise.all(selectedModelRuns.map(async (run) => ({
   run,
@@ -186,22 +202,39 @@ const outcomesByQuestion = new Map(
   outcomeStates.flatMap((state) =>
     (state.value?.outcomes ?? []).map((outcome) => [
       outcome.question_id,
-      resultLabel(outcome)
+      outcome
     ])
   )
 );
-const entriesWithResults = controls.search.map((entry) => ({
-  ...entry,
-  outcome: modelRow
-    ? (outcomesByQuestion.get(entry.question_id) ?? "Unavailable")
-    : "Not evaluated"
-}));
+const entriesWithResults = controls.search.map((entry) => {
+  const outcome = outcomesByQuestion.get(entry.question_id);
+  const cutoffRelation = assayCutoffRelation(entry.assay_first_indexed, knowledgeCutoff);
+  return {
+    ...entry,
+    assay_first_indexed: entry.assay_first_indexed
+      ? {
+          ...entry.assay_first_indexed,
+          cutoff_relation: cutoffRelation,
+          knowledge_cutoff: knowledgeCutoff
+        }
+      : null,
+    cutoff_relation: cutoffRelation,
+    ...rankingOutcomeMetrics(outcome),
+    outcome: modelRow
+      ? (outcome ? resultLabel(outcome) : "Unavailable")
+      : "Not evaluated"
+  };
+});
 const visibleEntries = entriesWithResults.filter((entry) =>
   (
     controls.element === "All exons"
     || entry.element === controls.element
   )
   && (controls.result === "All results" || entry.outcome === controls.result)
+  && (
+    controls.cutoff === "All cutoff relations"
+    || entry.cutoff_relation === controls.cutoff
+  )
 );
 const currentQuestionId = new URLSearchParams(location.search).get("question");
 const defaultQuestion = defaultQuestionForExplorer(visibleEntries, {
@@ -214,19 +247,39 @@ const defaultQuestion = defaultQuestionForExplorer(visibleEntries, {
 
 ```js
 const questionTable = Inputs.table(visibleEntries, {
-  columns: ["question_label", "element", "outcome"],
+  columns: [
+    "question_label",
+    "element",
+    "assay_first_indexed",
+    "cutoff_relation",
+    "spearman_rho",
+    "pearson_r",
+    "outcome"
+  ],
   header: {
     question_label: "Question",
     element: "Exon",
+    assay_first_indexed: "Assay first indexed",
+    cutoff_relation: "Cutoff relation",
+    spearman_rho: "Spearman ρ",
+    pearson_r: "Pearson r",
     outcome: "Result"
   },
   format: {
+    assay_first_indexed: assayFirstIndexedLink,
+    cutoff_relation: cutoffRelationBadge,
+    spearman_rho: formatCorrelation,
+    pearson_r: formatCorrelation,
     outcome: outcomeBadge
   },
   width: {
     question_label: 70,
-    element: 230,
-    outcome: 100
+    element: 120,
+    assay_first_indexed: 150,
+    cutoff_relation: 115,
+    spearman_rho: 90,
+    pearson_r: 90,
+    outcome: 115
   },
   multiple: false,
   required: false,
@@ -239,6 +292,8 @@ const selected = view(questionTable);
 ```
 
 ${controlsInput}
+
+${knowledgeCutoffNote(selectedTaskRun)}
 
 ${questionTable}
 

@@ -60,6 +60,12 @@ Publication and bucket operations live in the private
 live in `projects/explorer/`. This keeps the default evaluator independent of
 Hugging Face, zstandard, task preparation, and Node tooling.
 
+The publication model catalog may add a provider-documented knowledge cutoff
+and its evidence URL to a published run. This metadata is nullable and is kept
+separate from model release date. The explorer combines it with reviewed assay
+first-indexed dates only for display and filtering; neither date is model-visible
+question content or part of scoring.
+
 Each task owns:
 
 - its scientific question and intended interpretation;
@@ -196,26 +202,32 @@ response with a parse error. The narrower five-way taxonomy is reported in
 `metrics.result_counts`, where only `format_error` excludes refusals and token
 limits.
 
-Ranking task leaderboards use the task's mean within-question Spearman
-correlation, with Pearson correlation and valid-output rate as diagnostics.
-The default all-task leaderboard macro-averages one primary `Score` from each
-published task profile for model configurations that completed every task. The
-aggregation consumes the task-level score without assuming that its underlying
-metric is accuracy, Spearman correlation, or any other particular metric; it
-does not pool questions across tasks.
-The score-efficiency chart compares the primary score to cost or total tokens
-and works with one or more complete model runs.
+Ranking task leaderboards default to the task's mean within-question Spearman
+correlation and can switch `Score` to mean Pearson correlation. The all-task
+view macro-averages the selected correlation across published task profiles for
+model configurations that completed every task; it does not pool questions
+across tasks. The score-efficiency chart follows the selected correlation and
+compares it with cost or total tokens for one or more complete model runs.
 
 The question explorer has one page per task. It selects complete model
 configurations, resolves the matching task run after a question is selected,
 and renders the exact stored prompt alongside the complete response without
-exposing measured reference effects in a comparison table.
+exposing measured reference effects in a comparison table. Ranking-task lists
+show each question's Spearman and Pearson correlations from the compact outcome
+index. The primary `value` remains the Spearman score for compatibility, while
+new outcome indexes also name `spearman_rho` and `pearson_r` explicitly.
 Its compact `question-metadata.json` asset is deterministically derived from
-committed task sources and provenance manifests. satMutMPRA supplies its
-element label as `source_metadata.display_name`. This display-only
-metadata is never added to model-visible prompts and does not change question
-or historical result fingerprints. SGE uses the same display field for its
-gene label.
+committed task sources and reviewed assay-publication metadata. satMutMPRA
+supplies its element label as `source_metadata.display_name`; SGE uses the same
+display field for its gene label. Each question also receives an
+`assay_first_indexed` object with a calendar date, source kind, registry, and
+HTTPS evidence URL. The date is the earliest verified public date among
+indexed records linked from the benchmark's pinned provenance, such as PubMed,
+MaveDB, or Figshare. Arbitrary project URLs and source-control history do not
+qualify, and an unknown date is not inferred. The task question tables expose
+this value as **Assay first indexed**, with a link to its evidence record.
+This display-only metadata is never added to model-visible prompts and does not
+change question or historical result fingerprints.
 
 Only `versions/main/` in the public bucket is official. Named lowercase-slug
 versions are reviewable release candidates or disposable experiments. The
