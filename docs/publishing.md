@@ -41,10 +41,11 @@ Spearman and Pearson correlation; either selection remains sorted from highest
 to lowest. The efficiency chart follows the same selected correlation metric.
 
 When an explorer change starts reading newly published run or outcome fields,
-rebuild, validate, and apply `versions/main` before deploying that explorer.
-Browser-QA fixtures validate the contract but do not migrate the official
-bucket. Keep the website change unmerged until this publication rollout is
-complete.
+rebuild and validate a candidate locally before merging. Deploy the
+backward-compatible explorer against the current official data before applying
+the new `versions/main`; then verify the refreshed bucket with a production
+smoke test. Browser-QA fixtures validate the contract but do not migrate the
+official bucket.
 
 For satMutMPRA, name the question set and curated result staging directory explicitly:
 
