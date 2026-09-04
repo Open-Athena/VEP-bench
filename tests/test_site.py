@@ -86,9 +86,9 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     assert 'element("h2", null, "Prompt given to model")' in component_source
     assert "markdownNode(question.prompt)" in component_source
     assert "Reference effects" not in component_source
-    assert 'npm:@observablehq/plot@0.6.17' in component_source
+    assert "npm:@observablehq/plot@0.6.17" in component_source
     assert 'label: "Measured effect"' in component_source
-    assert 'ariaLabel: (row)' in component_source
+    assert "ariaLabel: (row)" in component_source
     assert 'element("h3", null, "Predictions vs. measurements")' in component_source
     assert "predictionComparisonPlot(comparisonRows)" in component_source
     sge_source = (output / "tasks/sge.md").read_text(encoding="utf-8")
