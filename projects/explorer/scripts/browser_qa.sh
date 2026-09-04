@@ -119,7 +119,6 @@ for check in \
   'tasks.dom.html|>Splicing (OpenSplice)<' \
   'tasks.dom.html|Open task' \
   'task.dom.html|>Expression (satMutMPRA)</a></h1>' \
-  'task.dom.html|>Task version<' \
   'task.dom.html|published element panels' \
   'sge-task.dom.html|>Fitness (SGE)</a></h1>' \
   'sge-task.dom.html|published gene panels' \

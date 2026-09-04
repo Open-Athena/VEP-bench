@@ -77,7 +77,6 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     assert "Valid outputs" not in leaderboard_source
     task_source = (output / "tasks/satmut-mpra.md").read_text(encoding="utf-8")
     assert "# Expression (satMutMPRA)" in task_source
-    assert "## Task description" in task_source
     assert "https://doi.org/10.1038/s41467-019-11526-w" in task_source
     assert "const controls = view(controlsInput);" in task_source
     assert "const selected = view(questionTable);" in task_source
@@ -104,9 +103,14 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     assert "Reference effects" not in sge_source
     for source in (task_source, opensplice_source, sge_source):
         description = source.split("## Questions", maxsplit=1)[0]
+        assert "## Task description" not in description
         assert "## Task design" not in description
         assert "## Interpretation" not in description
         assert '<div class="card">' not in description
+        assert "<dl>" not in description
+        assert "Task version" not in description
+        assert "question schema" not in description
+        assert "Public development set" not in description
 
     tasks_source = (output / "tasks.md").read_text(encoding="utf-8")
     assert (

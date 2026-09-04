@@ -31,7 +31,6 @@ for check in \
   'leaderboard.dom.html|>Model<' \
   'leaderboard.dom.html|>Score<' \
   'task.dom.html|>Expression (satMutMPRA)</a></h1>' \
-  'task.dom.html|>Task version<' \
   'task.dom.html|>Questions<' \
   'task.dom.html|questions match the current filters' \
   'task.dom.html|>Prompt given to model<' \

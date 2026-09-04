@@ -102,8 +102,6 @@ if (metadataState.error) {
 }
 ```
 
-## Task description
-
 Predict signed changes in alternative-exon inclusion for SNVs in complete
 three-exon minigene cassettes, using exact construct sequence and assay context.
 
@@ -117,12 +115,6 @@ reporter; they are not direct estimates of native-tissue splicing or clinical
 pathogenicity.
 
 Source data come from [Quarantani et al. (2026)](https://doi.org/10.64898/2026.05.22.727141) and the [OpenSplice Figshare v5 dataset](https://doi.org/10.6084/m9.figshare.32337414.v5).
-
-<dl>
-  <div><dt>Task version</dt><dd>1.0 · question schema 2.0</dd></div>
-  <div><dt>Output</dt><dd><code>FINAL: {"V01": number, ...}</code></dd></div>
-  <div><dt>Questions</dt><dd>Public development set</dd></div>
-</dl>
 
 ## Questions
 

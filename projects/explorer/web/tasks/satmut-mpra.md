@@ -102,8 +102,6 @@ if (metadataState.error) {
 }
 ```
 
-## Task description
-
 Predict signed reporter-activity effects for variants in saturation-mutagenesis MPRAs using the full assayed regulatory-element sequence in reporter-construct orientation and its assay context.
 
 **${formatInteger(taskQuestions.length)} published element panels** each contain 50 variants sampled as five candidates from each of ten measured-effect quantiles. Every panel uses opaque candidate IDs and contains no measured effect or selection label in its prompt. The primary score is mean within-element Spearman correlation; mean Pearson correlation reports numerical agreement, valid-output rate reports strict JSON compliance, and invalid completed outputs contribute zero while remaining identifiable as format failures.
@@ -111,12 +109,6 @@ Predict signed reporter-activity effects for variants in saturation-mutagenesis 
 Spearman measures ordering within the sampled panel, not absolute calibration. Reporter effects are specific to an assay construct, cell line, and experimental condition and need not transfer to native chromatin or clinical phenotype. Quantile-balanced sampling broadens effect coverage but does not reproduce the natural effect distribution.
 
 Source data come from [Kircher et al. (2019)](https://doi.org/10.1038/s41467-019-11526-w), as distributed in the [CADD v1.7 RegSeq validation collection](https://kircherlab.bihealth.org/download/CADD-development/v1.7/validation/regseq/) and cross-checked against [MaveDB](https://www.mavedb.org/).
-
-<dl>
-  <div><dt>Task version</dt><dd>1.1 · question schema 2.0</dd></div>
-  <div><dt>Output</dt><dd><code>FINAL: {"V01": number, ...}</code></dd></div>
-  <div><dt>Questions</dt><dd>Public development set</dd></div>
-</dl>
 
 ## Questions
 
