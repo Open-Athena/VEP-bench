@@ -54,7 +54,7 @@ export OPENROUTER_API_KEY=...
 uv run --locked vepbench evaluate \
   --task configs/tasks/satmut-mpra/task.yaml \
   --questions .vepbench/questions/satmut-mpra.jsonl \
-  --model-profile configs/models/openai-gpt-5.6-luna-medium.yaml
+  --model-profile configs/models/openai-gpt-5.6-sol-medium.yaml
 ```
 
 By default, `evaluate` submits to OpenRouter's asynchronous Batch API and records
