@@ -1,0 +1,15 @@
+task	cohort	policy	windows	exact_five_by_ten	sparse	invalid
+opensplice_snv	all	minmax	587	400	186	1
+opensplice_snv	all	p01_p99	587	433	153	1
+opensplice_snv	current_selected	minmax	20	19	1	0
+opensplice_snv	current_selected	p01_p99	20	19	1	0
+opensplice_snv	reselected	minmax	20	7	13	0
+opensplice_snv	reselected	p01_p99	20	7	13	0
+satmut_mpra	all	minmax	16	3	13	0
+satmut_mpra	all	p01_p99	16	16	0	0
+sge	all	minmax	142	63	79	0
+sge	all	p01_p99	142	114	28	0
+sge	current_selected	minmax	15	10	5	0
+sge	current_selected	p01_p99	15	15	0	0
+sge	reselected	minmax	16	9	7	0
+sge	reselected	p01_p99	16	13	3	0

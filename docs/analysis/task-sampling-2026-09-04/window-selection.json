@@ -1,0 +1,52 @@
+{
+  "opensplice_snv": {
+    "candidate_genes": 458,
+    "current_keys_retained": 2,
+    "rule": "descending P95-P05, descending eligible count, ascending gene and window identity",
+    "selected_keys": [
+      "opensplice:ENSE00000881885:all_alleles",
+      "opensplice:ENSE00000887777:all_alleles",
+      "opensplice:ENSE00000893365:all_alleles",
+      "opensplice:ENSE00001195421:all_alleles",
+      "opensplice:ENSE00001249603:all_alleles",
+      "opensplice:ENSE00001252892:all_alleles",
+      "opensplice:ENSE00001297552:all_alleles",
+      "opensplice:ENSE00001326528:all_alleles",
+      "opensplice:ENSE00001553046:all_alleles",
+      "opensplice:ENSE00001800119:all_alleles",
+      "opensplice:ENSE00003549031:all_alleles",
+      "opensplice:ENSE00003569509:all_alleles",
+      "opensplice:ENSE00003599940:all_alleles",
+      "opensplice:ENSE00003619475:all_alleles",
+      "opensplice:ENSE00003665469:all_alleles",
+      "opensplice:ENSE00003674190:all_alleles",
+      "opensplice:ENSE00003677325:all_alleles",
+      "opensplice:ENSE00003966134:all_alleles",
+      "opensplice:ENSE00003968444:all_alleles",
+      "opensplice:ENSE00004011556:all_alleles"
+    ]
+  },
+  "sge": {
+    "candidate_genes": 16,
+    "current_keys_retained": 9,
+    "rule": "descending P95-P05, descending eligible count, ascending gene and window identity",
+    "selected_keys": [
+      "sge:BAP1:52409714-52409743:all_alleles",
+      "sge:BARD1:214745067-214745159:all_alleles",
+      "sge:BRCA1:43104868-43104956:all_alleles",
+      "sge:BRCA2:32379750-32379913:all_alleles",
+      "sge:CARD11:2945819-2945956:all_alleles",
+      "sge:CTCF:67621442-67621591:all_alleles",
+      "sge:DDX3X:41344030-41344128:all_alleles",
+      "sge:PALB2:23624009-23624094:all_alleles",
+      "sge:RAD51C:58709859-58709990:all_alleles",
+      "sge:RAD51D:35103254-35103324:all_alleles",
+      "sge:SBDS:66993217-66993417:all_alleles",
+      "sge:SFPQ:35190498-35190593:all_alleles",
+      "sge:TINF2:24241204-24241311:all_alleles",
+      "sge:TP53:7673535-7673608:all_alleles",
+      "sge:VHL:10146514-10146636:all_alleles",
+      "sge:XRCC2:152644776-152649363:all_alleles"
+    ]
+  }
+}

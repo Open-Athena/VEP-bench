@@ -64,3 +64,60 @@ def test_insertion_endpoints_must_be_adjacent():
     spec, transcript, genome = _inputs("+")
     with pytest.raises(ValueError, match="not adjacent"):
         map_allele("NM_000001.1:c.5_7insAC", spec, transcript, genome)
+
+
+@pytest.mark.parametrize("length", [1, 3, 6, 21])
+def test_opensplice_deletion_notation_reconstructs_full_construct(length):
+    reference = "ACGT" * 12
+    row = {
+        "variant_id": "test_deletion",
+        "start": "3",
+        "end": str(2 + length),
+        "length": str(length),
+        "wt": reference[2 : 2 + length].replace("T", "U"),
+        "mut_type": f"∆{length}nt",
+        "mut": f"∆{length}nt",
+        "nt_seq": (reference[:2] + reference[2 + length :]).replace("T", "U"),
+    }
+    assert AUDIT["reconstruct_opensplice_allele"](row, reference) == (
+        3,
+        reference[2 : 2 + length],
+        "",
+    )
+    with pytest.raises(ValueError, match="notation"):
+        AUDIT["reconstruct_opensplice_allele"]({**row, "mut": "∆99nt"}, reference)
+    with pytest.raises(ValueError, match="reconstructed mutant mismatch"):
+        AUDIT["reconstruct_opensplice_allele"]({**row, "nt_seq": reference}, reference)
+
+
+def test_window_reselection_uses_expanded_range_and_distinct_genes():
+    render = runpy.run_path(
+        str(Path(__file__).resolve().parents[1] / "scripts/render_sampling_audit.py")
+    )
+    populations = [
+        {
+            "key": f"window-{i}",
+            "unit": f"exon-{i}",
+            "gene": f"gene-{i}",
+            "eligibility": "all_alleles",
+            "count": 100,
+            "robust_range": float(i),
+            "current_selected": i < 20,
+            "policies": {"p01_p99": {"exact_five_by_ten": False}},
+        }
+        for i in range(21)
+    ]
+    populations.append({**populations[20], "key": "best-exon", "robust_range": 25.0})
+    report = {"task": "opensplice_snv", "populations": populations}
+    selection = render["annotate_window_selection"]([report])["opensplice_snv"]
+    assert len(selection["selected_keys"]) == 20
+    assert "best-exon" in selection["selected_keys"]
+    assert "window-20" not in selection["selected_keys"]
+    assert "window-0" not in selection["selected_keys"]
+    assert selection["current_keys_retained"] == 19
+    assert (
+        render["annotate_window_selection"](
+            [{**report, "populations": list(reversed(populations))}]
+        )["opensplice_snv"]
+        == selection
+    )

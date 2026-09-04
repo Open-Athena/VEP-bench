@@ -1,0 +1,20 @@
+{
+  "gene": {
+    "gene": "CARD11",
+    "mavedb_urn": "urn:mavedb:00001226-a-1",
+    "expected_target_name": "ENST00000396946.9",
+    "transcript": "ENST00000396946.9",
+    "transcript_policy": "declared",
+    "coordinate_mode": "hgvs_transcript",
+    "expected_chrom": "7",
+    "score_direction": -1,
+    "score_direction_evidence": "Pinned MaveDB methods define lower normalized log2 abundance ratios as loss of function; this is the baseline growth assay, without ibrutinib.",
+    "qc": {"field": null, "pass_values": [], "fail_values": []},
+    "assay_context": "Diploid endogenous CARD11 saturation genome editing in TMD8 cells; primary normalized growth scores from the baseline assay. Audit-only candidate for inclusion."
+  },
+  "pins": {
+    "metadata": {"bytes": 34114, "sha256": "7fd177ae3b963c23b915e8193debc0df929a4fc10506e883ba8a1a7abc888456"},
+    "scores": {"bytes": 318881, "sha256": "08404fe7653b35919ba75d81f107702bd780134f52bebc458c802405297ca99c"},
+    "transcript": {"bytes": 1690, "sha256": "6443329022e1328c185c06868b8d32adf696601046abf12fe2ff7d6f59fd700b"}
+  }
+}

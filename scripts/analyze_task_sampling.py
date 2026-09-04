@@ -62,6 +62,28 @@ def variant_kind(ref: str, alt: str) -> str:
     return f"replacement_{len(ref)}to{len(alt)}nt"
 
 
+def reconstruct_opensplice_allele(row: dict, reference: str) -> tuple[int, str, str]:
+    """Decode deposited RNA/deletion notation and verify the complete construct."""
+    from vepbench_opensplice_snv.task import normalize_dna
+
+    start, end, length = int(row["start"]), int(row["end"]), int(row["length"])
+    wt = normalize_dna(row["wt"], label="wt", allow_empty=True)
+    if row["mut_type"] == f"∆{length}nt" and row["mut"] == row["mut_type"]:
+        mut = ""
+    elif row["mut_type"] == "sub":
+        mut = normalize_dna(row["mut"], label="mut")
+    else:
+        raise ValueError(f"{row['variant_id']}: unsupported source allele notation")
+    observed = normalize_dna(row["nt_seq"], label="nt_seq")
+    if not 1 <= start <= end <= len(reference):
+        raise ValueError(f"{row['variant_id']}: source interval outside construct")
+    if end - start + 1 != length or reference[start - 1 : end] != wt:
+        raise ValueError(f"{row['variant_id']}: source REF/interval mismatch")
+    if reference[: start - 1] + mut + reference[end:] != observed:
+        raise ValueError(f"{row['variant_id']}: reconstructed mutant mismatch")
+    return start, wt, mut
+
+
 def compare_population(key: str, rows: list[dict], output: Path, **metadata) -> dict:
     alleles = [ScoredAllele(row["key"], row["score"]) for row in rows]
     if len({a.key for a in alleles}) != len(alleles):
@@ -231,15 +253,8 @@ def analyze_opensplice(inputs: Path, output: Path, download: bool) -> dict:
                 except ValueError:
                     report["exclusions"]["nonfinite_measurement_or_replicate"] += 1
                     continue
-                start, end, length = int(row["start"]), int(row["end"]), int(row["length"])
-                wt = normalize_dna(row["wt"], label="wt", allow_empty=True)
-                # Deletion alternate fields may be empty; nt_seq is the definitive check.
-                mut = normalize_dna(row["mut"], label="mut", allow_empty=True)
+                start, wt, mut = reconstruct_opensplice_allele(row, exon.wt_seq)
                 observed = normalize_dna(row["nt_seq"], label="nt_seq")
-                if end - start + 1 != length or exon.wt_seq[start - 1 : end] != wt:
-                    raise ValueError(f"{row['variant_id']}: source REF/interval mismatch")
-                if exon.wt_seq[: start - 1] + mut + exon.wt_seq[end:] != observed:
-                    raise ValueError(f"{row['variant_id']}: reconstructed mutant mismatch")
                 compact = {
                     "key": hashlib.sha256(observed.encode()).hexdigest(),
                     "source_id": row["variant_id"],
@@ -362,6 +377,7 @@ def analyze_sge(inputs: Path, output: Path, download: bool) -> dict:
     from vepbench_sge.prepare import Genome, _NCGenome
     from vepbench_sge.task import (
         GENE_SPECS,
+        _gene_spec,
         transcript_coding_sequence,
         transcript_from_cdot,
         validate_mavedb_metadata,
@@ -382,10 +398,15 @@ def analyze_sge(inputs: Path, output: Path, download: bool) -> dict:
         "genes": {},
     }
     current = json.loads((ROOT / "data/sources/sge-mavedb-2026-09-03.manifest.json").read_text())
-    for spec in GENE_SPECS:
+    supplemental = json.loads((ROOT / "scripts/task_sampling_audit_inputs.json").read_text())
+    for spec in (*GENE_SPECS, _gene_spec(supplemental["gene"])):
         urn = urllib.parse.quote(spec.mavedb_urn, safe="")
         base = f"https://api.mavedb.org/api/v1/score-sets/{urn}"
-        pins = CONFIG.pins["mavedb"][spec.mavedb_urn]
+        is_supplemental = spec.gene == supplemental["gene"]["gene"]
+        pins = supplemental["pins"] if is_supplemental else CONFIG.pins["mavedb"][spec.mavedb_urn]
+        transcript_pin = (
+            pins["transcript"] if is_supplemental else CONFIG.pins["cdot"][spec.transcript]
+        )
         paths = {
             name: pinned_file(
                 inputs / "sge" / f"{spec.gene}-{name}.{suffix}",
@@ -397,11 +418,11 @@ def analyze_sge(inputs: Path, output: Path, download: bool) -> dict:
         }
         transcript_path = pinned_file(
             inputs / "sge" / f"{spec.gene}-transcript.json",
-            CONFIG.pins["cdot"][spec.transcript],
+            transcript_pin,
             f"https://cdotlib.org/transcript/{spec.transcript}",
             download,
         )
-        report["inputs"][spec.gene] = {**pins, "transcript": CONFIG.pins["cdot"][spec.transcript]}
+        report["inputs"][spec.gene] = {**pins, "transcript": transcript_pin}
         metadata = validate_mavedb_metadata(paths["metadata"].read_bytes(), spec)
         transcript = transcript_from_cdot(transcript_path.read_bytes(), spec)
         build = json.loads(transcript_path.read_text())["genome_builds"]["GRCh38"]
@@ -468,7 +489,7 @@ def analyze_sge(inputs: Path, output: Path, download: bool) -> dict:
             "exclusions": dict(excluded),
             "mapping_examples": errors,
         }
-        old = current["population"][spec.gene]["selected_exon"]
+        old = current["population"].get(spec.gene, {}).get("selected_exon")
         for exon in transcript.exons:
             window = [
                 row
@@ -489,6 +510,7 @@ def analyze_sge(inputs: Path, output: Path, download: bool) -> dict:
                         output,
                         unit=spec.gene,
                         eligibility=pool_name,
+                        proposed_addition=is_supplemental,
                         exon=[exon.start, exon.end],
                         current_selected=old == {"start": exon.start, "end": exon.end},
                         validation="pinned source/QC; HGVS mapping; full normalized REF validation",
@@ -524,7 +546,11 @@ def main() -> None:
         report["python_version"] = platform.python_version()
         report["implementation_sha256"] = {
             name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest()
-            for name in ("scripts/analyze_task_sampling.py", "src/vepbench/sampling.py")
+            for name in (
+                "scripts/analyze_task_sampling.py",
+                "scripts/task_sampling_audit_inputs.json",
+                "src/vepbench/sampling.py",
+            )
         }
         report["sampling"] = {
             "algorithm": "score_space_audit_v1",

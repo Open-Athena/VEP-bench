@@ -59,7 +59,7 @@ jobs:
                 evaluator=true
                 task=true
                 ;;
-              scripts/analyze_task_sampling.py|sky/analyze_task_sampling.yaml|tests/test_sampling_audit.py)
+              scripts/analyze_task_sampling.py|scripts/render_sampling_audit.py|scripts/task_sampling_audit_inputs.json|sky/analyze_task_sampling.yaml|tests/test_sampling_audit.py)
                 task=true
                 ;;
               tests/test_sampling.py)
