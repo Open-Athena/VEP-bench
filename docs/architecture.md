@@ -198,6 +198,11 @@ limits.
 
 Ranking task leaderboards use the task's mean within-question Spearman
 correlation, with Pearson correlation and valid-output rate as diagnostics.
+The default all-task leaderboard macro-averages one primary `Score` from each
+published task profile for model configurations that completed every task. The
+aggregation consumes the task-level score without assuming that its underlying
+metric is accuracy, Spearman correlation, or any other particular metric; it
+does not pool questions across tasks.
 The score-efficiency chart compares the primary score to cost or total tokens
 and works with one or more complete model runs.
 

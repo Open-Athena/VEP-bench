@@ -34,8 +34,9 @@ const publishedTaskFamilies = orderTaskFamilies([
     (aggregation?.evaluation_profiles ?? []).map((profile) => profile.task_family)
   )
 ]);
+const allTasksAvailable = supportsOverallLeaderboard(aggregation);
 const taskOptions = [
-  ...(supportsOverallLeaderboard(aggregation)
+  ...(allTasksAvailable
     ? [null]
     : []),
   ...(
@@ -46,7 +47,7 @@ const taskOptions = [
 ];
 const taskInput = Inputs.select(taskOptions, {
   label: "Task",
-  value: taskOptions[0],
+  value: allTasksAvailable ? null : taskOptions[0],
   format: (taskFamily) => taskFamily === null ? "All tasks" : taskName(taskFamily)
 });
 taskInput.style.maxWidth = "22rem";
@@ -103,7 +104,9 @@ const rows = leaderboardRowsForScope(
 const formatScore = (value) => formatPercent(displayScore(value));
 ```
 
-Showing the primary score for **${selectedTaskLabel}**.
+${selectedTaskFamily === null
+  ? "Showing the macro average of each task's primary Score."
+  : `Showing the primary Score for ${selectedTaskLabel}.`}
 
 ```js
 const tableRows = rows.map((row) => ({
@@ -158,51 +161,6 @@ const leaderboardTable = Inputs.table(tableRows, {
 
 ```js
 display(html`<div class="card">${leaderboardTable}</div>`);
-```
-
-## Unscored model attempts
-
-Provider safeguards can prevent an otherwise valid model configuration from
-producing enough answers for a meaningful benchmark score. These attempts are
-reported separately and are not included in the leaderboard.
-
-```js
-const unscoredAttempts = [
-  {
-    task_family: "satmut_mpra",
-    model: "Claude Fable 5.1 (medium)",
-    status: "Content filtered",
-    evidence: "8/8 panels; zero output tokens; not ranked (Anthropic/OpenRouter Batch, 2026-09-03)"
-  },
-  {
-    task_family: "satmut_mpra",
-    model: "Claude Opus 5 (medium)",
-    status: "Content filtered",
-    evidence: "5/8 panels; run stopped and not ranked (Anthropic/OpenRouter Batch, 2026-09-03)"
-  }
-];
-const visibleUnscoredAttempts = unscoredAttempts.filter((attempt) =>
-  selectedTaskFamily === null || attempt.task_family === selectedTaskFamily
-);
-const unscoredAttemptsTable = Inputs.table(visibleUnscoredAttempts, {
-  columns: ["model", "status", "evidence"],
-  header: {
-    model: "Model",
-    status: "Status",
-    evidence: "Observed evidence"
-  },
-  width: {
-    model: 220,
-    status: 150,
-    evidence: 560
-  },
-  rows: Math.max(2, visibleUnscoredAttempts.length),
-  select: false
-});
-```
-
-```js
-display(html`<div class="card">${unscoredAttemptsTable}</div>`);
 ```
 
 ## Score by cost and token usage
@@ -274,4 +232,45 @@ function scoreEfficiencyPlot(data, {width}) {
 display(html`<div class="card" aria-label=${`${selectedTaskLabel} score versus ${metricLabel}`}>
   ${resize((width) => scoreEfficiencyPlot(efficiencyRows, {width}))}
 </div>`);
+```
+
+## Unscored model attempts
+
+An attempt is reported here benchmark-wide when a refusal or content filter in
+any task prevents a complete, rankable model result. These attempts remain
+visible regardless of the task selected above and are not included in the
+leaderboard.
+
+```js
+const unscoredAttempts = [
+  {
+    model: "Claude Fable 5.1 (medium)",
+    status: "Content filtered",
+    evidence: "8/8 panels; zero output tokens; not ranked (Anthropic/OpenRouter Batch, 2026-09-03)"
+  },
+  {
+    model: "Claude Opus 5 (medium)",
+    status: "Content filtered",
+    evidence: "5/8 panels; run stopped and not ranked (Anthropic/OpenRouter Batch, 2026-09-03)"
+  }
+];
+const unscoredAttemptsTable = Inputs.table(unscoredAttempts, {
+  columns: ["model", "status", "evidence"],
+  header: {
+    model: "Model",
+    status: "Status",
+    evidence: "Observed evidence"
+  },
+  width: {
+    model: 220,
+    status: 150,
+    evidence: 560
+  },
+  rows: Math.max(2, unscoredAttempts.length),
+  select: false
+});
+```
+
+```js
+display(html`<div class="card">${unscoredAttemptsTable}</div>`);
 ```

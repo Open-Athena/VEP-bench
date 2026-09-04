@@ -80,8 +80,8 @@ await send("Runtime.enable");
 await navigate("/index.html");
 await waitFor(
   `document.querySelectorAll(".vepbench-score-cell").length === 2
-    && document.querySelector('.card[aria-label^="satMutMPRA score versus"]') !== null`,
-  "two-model default task leaderboard"
+    && document.querySelector('.card[aria-label^="All tasks score versus"]') !== null`,
+  "two-model default all-task leaderboard"
 );
 assert.equal(
   await evaluate('getComputedStyle(document.querySelector(\'th[title="score"]\')).textAlign'),

@@ -535,7 +535,7 @@ def test_publication_aggregates_ranking_metrics_without_classification_accuracy(
     document = json.loads((version / "runs.json").read_text(encoding="utf-8"))
     run = document["runs"][0]
 
-    assert document["leaderboard"]["aggregation_method"] == ("classification_task_macro_average_v0")
+    assert document["leaderboard"]["aggregation_method"] == "task_score_macro_average_v1"
     assert document["leaderboard"]["evaluation_profiles"] == [
         {
             "evaluation_profile": "synthetic_ranking:satmut-mpra-ranking-v1@1.1",
@@ -580,7 +580,7 @@ def test_publication_combines_task_question_sets_without_rewriting_run_identity(
     )
     assert manifest["question_set_size"] == 2
     assert runs_document["leaderboard"] == {
-        "aggregation_method": "classification_task_macro_average_v0",
+        "aggregation_method": "task_score_macro_average_v1",
         "evaluation_profiles": [
             {
                 "evaluation_profile": "synthetic_clinical:clinical-v1@1.0",
@@ -692,7 +692,6 @@ def test_validate_version_accepts_legacy_raw_archive_without_usage(tmp_path: Pat
 
     runs_path = version / "runs.json"
     runs = json.loads(runs_path.read_text(encoding="utf-8"))
-    runs.pop("leaderboard")
     runs["runs"][0]["raw_archive"] = legacy_raw_descriptor
     runs_content = publication_module._write_json(runs_path, runs)
     manifest["artifacts"]["raw"][0] = legacy_raw_descriptor
@@ -804,6 +803,32 @@ def test_validate_version_rejects_tampered_answer(tmp_path: Path) -> None:
     answer_path.write_bytes(gzip.compress(f"{canonical_json(answer)}\n".encode(), mtime=0))
 
     with pytest.raises(BuildError, match="artifact digest or size mismatch"):
+        validate_version(output, version_name="candidate")
+
+
+@pytest.mark.parametrize("legacy_form", ["missing", "classification"], ids=str)
+def test_validate_version_rejects_legacy_leaderboard_metadata(
+    tmp_path: Path, legacy_form: str
+) -> None:
+    output = tmp_path / "publication"
+    build_synthetic(output)
+    manifest_path = output / "versions/candidate/manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    runs_path = output / "versions/candidate/runs.json"
+    runs = json.loads(runs_path.read_text(encoding="utf-8"))
+    if legacy_form == "missing":
+        runs.pop("leaderboard")
+        expected_error = "missing leaderboard aggregation metadata"
+    else:
+        runs["leaderboard"]["aggregation_method"] = "classification_task_macro_average_v0"
+        expected_error = "invalid leaderboard aggregation metadata"
+    runs_bytes = publication_module._write_json(runs_path, runs)
+    manifest["artifacts"]["runs"] = publication_module._plain_artifact(
+        "versions/candidate/runs.json", runs_bytes, 1
+    )
+    publication_module._write_json(manifest_path, manifest)
+
+    with pytest.raises(BuildError, match=expected_error):
         validate_version(output, version_name="candidate")
 
 
