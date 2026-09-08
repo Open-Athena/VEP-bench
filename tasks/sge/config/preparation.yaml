@@ -9,38 +9,15 @@ manifest_output: ../../../data/sources/sge-mavedb-2026-09-03.manifest.json
 
 sampling:
   panel_size: 50
-  preferred_per_class: 25
-  quantile_bins: 5
-  seed: "2026090300"
-  algorithm: sha256_class_rank_quantile_v1
+  score_bins: 5
+  anchor_policy: p01_p99
+  seed: "2026090400"
+  algorithm: sha256_score_space_v1
 
 sequence:
   flank_bases: 100
   display_orientation: transcript_5_to_3
   line_width: 80
-
-eligibility:
-  exon_proximal_distance: 30
-  excluded_consequences:
-    - transcript_ablation
-    - splice_acceptor_variant
-    - splice_donor_variant
-    - stop_gained
-    - frameshift_variant
-    - stop_lost
-    - start_lost
-    - transcript_amplification
-    - feature_elongation
-    - feature_truncation
-  splicing_consequences:
-    - splice_donor_5th_base_variant
-    - splice_region_variant
-    - splice_donor_region_variant
-    - splice_polypyrimidine_tract_variant
-    - exon_proximal
-  retained_groups:
-    - missense_variant
-    - splicing
 
 upstream:
   mavedb:
@@ -58,24 +35,14 @@ upstream:
     revision: 11b9433582981bb929af333bc6422f10a8fd71b4
     filename: Homo_sapiens.GRCh38.dna_sm.primary_assembly.fa
     assembly: GRCh38
-  annotation:
-    url: https://ftp.ensembl.org/pub/release-107/gtf/homo_sapiens/Homo_sapiens.GRCh38.107.chr.gtf.gz
-    release: 107
-  consequences:
-    dataset: songlab/hg38-variant-consequences
-    revision: eb3022cc6797b9369cca16af72ff3c4197df343a
-    vep_version: "109.1"
-    vep_flags: --most_severe --distance 1000
-
 cache:
   bucket: open-athena/VEP-bench
-  root: data_prep/sge/v1
+  root: data_prep/sge/v2
   data_files:
     - eligible-variants.jsonl.gz
     - genes.json
-  # sha256sum task.py prepare.py | sha256sum, using repository-relative paths.
-  # tests/test_sge.py recalculates this digest so code-only edits cannot stale the cache key.
-  implementation_sha256: c78666980350a12f3349c92d82a1ec0fad3a8d7adbb09b0a1dfe8ecf7ff34d83
+  # Updated by uv run scripts/update_preparation_digests.py.
+  implementation_sha256: 08fe22e635efeec3e3e14d523658fc7fe3ea28bbc830708d04b404b324b6894b
 
 # score_direction multiplies the primary MaveDB score to make larger values mean
 # greater functional damage. Model-visible contexts intentionally omit accessions,
@@ -306,3 +273,18 @@ genes:
       - Editing design: CRISPR-Cas9 homology-directed saturation editing at the endogenous XRCC2 locus, covering coding and local splice-region sequence.
       - Cellular system: near-haploid HAP1 cells in an XRCC2-dependent survival assay.
       - Measurement: variant abundance was measured across sampled time points and replicates and fitted by negative-binomial regression. Reduced XRCC2 function lowers proliferation or survival, causing damaging alleles to deplete.
+  - gene: CARD11
+    mavedb_urn: urn:mavedb:00001226-a-1
+    expected_target_name: ENST00000396946.9
+    transcript: ENST00000396946.9
+    transcript_policy: declared
+    coordinate_mode: hgvs_transcript
+    expected_chrom: "7"
+    score_direction: -1
+    score_direction_evidence: Lower normalized log2 abundance after growth indicates reduced CARD11 function.
+    qc: {field: null, pass_values: [], fail_values: []}
+    assay_context: |-
+      **Gene:** CARD11
+      - Editing design: CRISPR-Cas9 homology-directed saturation editing at the endogenous CARD11 locus.
+      - Cellular system: diploid TMD8 cells, whose growth depends on CARD11 signaling; baseline growth without ibrutinib treatment.
+      - Measurement: normalized log2 edited-allele abundance after 14 days of growth relative to the initial day-2 population. Reduced CARD11 function impairs growth, so damaging alleles deplete.

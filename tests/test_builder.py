@@ -94,7 +94,7 @@ def test_production_prompt_has_minimal_causal_context_and_exact_output_contract(
     )
     prompt = questions[0]["prompt"]
 
-    assert questions[0]["provenance"]["template_version"] == "1.1"
+    assert questions[0]["provenance"]["template_version"] == "2.0"
     assert "Sequence lines contain 80 bases except the final line." in prompt
     assert "Complete mutagenized insert (reporter-construct orientation)" in prompt
     assert 'Example form: `FINAL: {"V01": -0.42, "V02": 0.08}`' in prompt

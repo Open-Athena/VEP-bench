@@ -538,7 +538,7 @@ def test_publication_aggregates_ranking_metrics_without_classification_accuracy(
     assert document["leaderboard"]["aggregation_method"] == "task_score_macro_average_v1"
     assert document["leaderboard"]["evaluation_profiles"] == [
         {
-            "evaluation_profile": "synthetic_ranking:satmut-mpra-ranking-v1@1.1",
+            "evaluation_profile": "synthetic_ranking:satmut-mpra-ranking-v2@2.0",
             "primary_metric": "spearman",
             "task_family": "synthetic_ranking",
             "task_type": "ranking",
@@ -553,7 +553,7 @@ def test_publication_aggregates_ranking_metrics_without_classification_accuracy(
     outcome = json.loads(gzip.decompress((version / run["outcome_index_path"]).read_bytes()))
     assert outcome["outcomes"] == [
         {
-            "question_id": "satmut-mpra-ranking-v1:synthetic-ranking-001",
+            "question_id": "satmut-mpra-ranking-v2:synthetic-ranking-001",
             "pearson_r": pytest.approx(1.0),
             "spearman_rho": pytest.approx(1.0),
             "valid": True,

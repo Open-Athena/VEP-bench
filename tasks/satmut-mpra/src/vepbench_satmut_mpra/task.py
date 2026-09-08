@@ -15,8 +15,15 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from vepbench.alleles import normalize_allele
 from vepbench.artifacts import canonical_json, read_jsonl, sha256_file
 from vepbench.errors import BuildError
+from vepbench.sampling import (
+    ScoredAllele,
+    sample_score_bins,
+    sampling_digest,
+    validate_sampling_provenance,
+)
 
 from .configuration import CONFIG
 
@@ -25,8 +32,7 @@ REFERENCE_CONTIG = CONFIG.values["reference_contig"]
 SOURCE_DATASET = CONFIG.values["source_dataset"]
 REFERENCE_ASSEMBLY = CONFIG.values["upstream"]["reference"]["assembly"]
 PANEL_SIZE = CONFIG.values["sampling"]["panel_size"]
-QUANTILE_BINS = CONFIG.values["sampling"]["quantile_bins"]
-SAMPLES_PER_BIN = CONFIG.values["sampling"]["samples_per_bin"]
+ELIGIBLE_FILTERS = frozenset({"SIGN", "MIN"})
 SAMPLING_SEED = CONFIG.values["sampling"]["seed"]
 SAMPLING_ALGORITHM = CONFIG.values["sampling"]["algorithm"]
 MODEL_VISIBLE_SEQUENCE_POLICY = CONFIG.values["sequence_policy"]["model_visible"]
@@ -177,15 +183,6 @@ def parse_cadd_vcf(payload: bytes, *, label: str) -> tuple[tuple[Variant, ...], 
             or barcode_count < 1
         ):
             raise SatMutPreparationError(f"{label}:{line_number}: invalid variant values")
-        if len(ref) == 2:
-            if len(alt) != 1 or ref[0] != alt:
-                raise SatMutPreparationError(
-                    f"{label}:{line_number}: deletion is not normalized and anchored"
-                )
-        elif len(ref) != 1 or len(alt) != 1:
-            raise SatMutPreparationError(
-                f"{label}:{line_number}: only substitutions and one-base deletions are allowed"
-            )
         variant = Variant(chrom, pos, ref, alt, effect, p_value, barcode_count, source_filter)
         if variant.key in seen:
             raise SatMutPreparationError(f"{label}:{line_number}: duplicate VCF key {variant.key}")
@@ -388,60 +385,49 @@ def select_panel(
     element_label: str,
     seed: str = SAMPLING_SEED,
 ) -> tuple[tuple[Variant, int], ...]:
-    """Select five records per rank quantile and return them in VCF coordinate order."""
-
-    eligible = sorted(
-        (variant for variant in variants if variant.source_filter == "SIGN"),
-        key=lambda variant: (variant.effect, variant.key),
+    """Sample signed effects from the source-QC-eligible allele population."""
+    eligible = [v for v in variants if v.source_filter in ELIGIBLE_FILTERS]
+    sampled = sample_score_bins(
+        [ScoredAllele(v.key_text, v.effect) for v in eligible],
+        question_key=f"satmut_mpra:{element_label}:SIGN_MIN",
+        seed=seed,
     )
-    if len(eligible) < PANEL_SIZE:
-        raise SatMutPreparationError(
-            f"{element_label}: only {len(eligible)} SIGN records; at least {PANEL_SIZE} required"
-        )
-    base, remainder = divmod(len(eligible), QUANTILE_BINS)
-    selected: list[tuple[Variant, int]] = []
-    offset = 0
-    for bin_index in range(QUANTILE_BINS):
-        size = base + (bin_index < remainder)
-        values = eligible[offset : offset + size]
-        offset += size
-        ranked = sorted(
-            values,
-            key=lambda variant: _sample_digest(
-                seed, element_label, "select", str(bin_index + 1), variant.key_text
-            ),
-        )
-        selected.extend((variant, bin_index + 1) for variant in ranked[:SAMPLES_PER_BIN])
-    if offset != len(eligible) or len(selected) != PANEL_SIZE:
-        raise AssertionError("rank quantile construction did not consume the eligible pool")
-    return tuple(sorted(selected, key=lambda item: item[0].key))
+    by_key = {v.key_text: v for v in eligible}
+    return tuple(sorted(((by_key[a.key], b) for a, b in sampled.selected), key=lambda p: p[0].key))
 
 
 def build_source_record(element: PreparedElement) -> dict[str, Any]:
-    panel = select_panel(element.variants, element_label=element.spec.cadd_label)
+    eligible = [v for v in element.variants if v.source_filter in ELIGIBLE_FILTERS]
+    sequence = element.metadata.mavedb_sequence
+    displayed = {
+        v.key_text: normalize_allele(sequence, v.pos - element.metadata.start + 1, v.ref, v.alt)
+        for v in eligible
+    }
+    identities = Counter(displayed.values())
+    pool = [v for v in eligible if identities[displayed[v.key_text]] == 1]
+    panel = sorted(
+        select_panel(pool, element_label=element.spec.cadd_label),
+        key=lambda p: displayed[p[0].key_text],
+    )
+    sampling = sample_score_bins(
+        [ScoredAllele(v.key_text, v.effect) for v in pool],
+        question_key=f"satmut_mpra:{element.spec.cadd_label}:SIGN_MIN",
+        seed=SAMPLING_SEED,
+    )
     candidates = []
     private_candidates = []
-    for display_index, (variant, quantile_bin) in enumerate(panel, start=1):
+    for display_index, (variant, score_bin) in enumerate(panel, start=1):
         candidate_id = f"V{display_index:02d}"
-        local_pos = variant.pos - element.metadata.start + 1
-        reference_start = local_pos - 1
-        reference_end = reference_start + len(variant.ref)
-        if (
-            variant.chrom != element.metadata.chrom
-            or local_pos < 1
-            or element.metadata.mavedb_sequence[reference_start:reference_end] != variant.ref
-        ):
-            raise SatMutPreparationError(
-                f"{element.spec.cadd_label}: selected variant {variant.key_text} does not map "
-                "to the reference element"
-            )
+        if variant.chrom != element.metadata.chrom:
+            raise SatMutPreparationError(f"{element.spec.cadd_label}: selected chromosome mismatch")
+        local_pos, visible_ref, visible_alt = displayed[variant.key_text]
         candidates.append(
             {
                 "candidate_id": candidate_id,
                 "chrom": REFERENCE_CONTIG,
                 "pos": local_pos,
-                "ref": variant.ref,
-                "alt": variant.alt,
+                "ref": visible_ref,
+                "alt": visible_alt,
                 "reference_score": variant.effect,
             }
         )
@@ -453,7 +439,13 @@ def build_source_record(element: PreparedElement) -> dict[str, Any]:
                 "p_value": variant.p_value,
                 "barcode_count": variant.barcode_count,
                 "source_filter": variant.source_filter,
-                "quantile_bin": quantile_bin,
+                "score_bin": score_bin,
+                "sampling_digest": sampling_digest(
+                    SAMPLING_SEED,
+                    f"satmut_mpra:{element.spec.cadd_label}:SIGN_MIN",
+                    score_bin,
+                    variant.key_text,
+                ),
             }
         )
     if element.spec.element_class == "promoter":
@@ -530,7 +522,13 @@ def build_source_record(element: PreparedElement) -> dict[str, Any]:
                 "genomic_mapping_orientation": "forward",
                 "reference_discrepancies": list(element.metadata.reference_discrepancies),
             },
-            "eligible_records": element.filter_counts["SIGN"],
+            "eligible_records": len(pool),
+            "duplicate_normalized_allele_rows_excluded": len(eligible) - len(pool),
+            "sampling": {
+                "algorithm": SAMPLING_ALGORITHM,
+                "seed": SAMPLING_SEED,
+                **sampling.provenance(),
+            },
             "selected_candidates": private_candidates,
         },
     }
@@ -589,13 +587,15 @@ def write_prepared_dataset(
         "task_family": TASK_FAMILY,
         "configuration": {
             "assembly": REFERENCE_ASSEMBLY,
-            "eligible_filter": "SIGN",
+            "eligible_filters": sorted(ELIGIBLE_FILTERS),
             "panel_size": PANEL_SIZE,
-            "quantile_bins": QUANTILE_BINS,
-            "samples_per_bin": SAMPLES_PER_BIN,
+            "score_bins": 5,
+            "anchor_policy": "p01_p99",
             "sampling_seed": SAMPLING_SEED,
             "sampling_algorithm": SAMPLING_ALGORITHM,
-            "quantile_allocation": "ascending EF; first N mod 10 bins receive one extra row",
+            "bin_allocation": (
+                "equal allocation capped by population; redistribute by ascending bin"
+            ),
             "rank_tiebreaker": "CHROM, POS, REF, ALT",
             "candidate_ids": "V01 through V50 after coordinate sorting",
             "display_order": "CHROM, POS, REF, ALT",
@@ -811,14 +811,25 @@ def validate_prepared_artifacts(
         ]
         if len(set(keys)) != PANEL_SIZE:
             raise SatMutPreparationError(f"{label}: candidate VCF keys are not unique")
-        bins = Counter(item.get("quantile_bin") for item in private)
-        if bins != Counter(dict.fromkeys(range(1, QUANTILE_BINS + 1), SAMPLES_PER_BIN)):
-            raise SatMutPreparationError(f"{label}: quantile representation is invalid")
-        if any(item.get("source_filter") != "SIGN" for item in private):
-            raise SatMutPreparationError(f"{label}: non-SIGN candidate was selected")
+        validate_sampling_provenance(
+            metadata.get("sampling"),
+            [(item["effect"], item["score_bin"]) for item in private],
+            seed=SAMPLING_SEED,
+            algorithm=SAMPLING_ALGORITHM,
+        )
+        if any(item.get("source_filter") not in ELIGIBLE_FILTERS for item in private):
+            raise SatMutPreparationError(f"{label}: source-QC-ineligible candidate was selected")
         for candidate, private_candidate in zip(candidates, private, strict=True):
             if candidate.get("reference_score") != private_candidate.get("effect"):
                 raise SatMutPreparationError(f"{label}: candidate effect provenance mismatch")
+            expected_digest = sampling_digest(
+                SAMPLING_SEED,
+                f"satmut_mpra:{label}:SIGN_MIN",
+                private_candidate["score_bin"],
+                private_candidate["vcf_key"],
+            )
+            if private_candidate.get("sampling_digest") != expected_digest:
+                raise SatMutPreparationError(f"{label}: sampling digest mismatch")
             local_pos = candidate.get("pos")
             ref = candidate.get("ref")
             alt = candidate.get("alt")
@@ -832,8 +843,11 @@ def validate_prepared_artifacts(
                 or record["reference_sequence"][local_pos - 1 : local_pos - 1 + len(ref)] != ref
             ):
                 raise SatMutPreparationError(f"{label}: candidate local VCF mapping is invalid")
-            genomic_key = f"{target['chrom']}:{target['start'] + local_pos - 1}:{ref}:{alt}"
-            if private_candidate.get("vcf_key") != genomic_key:
+            chrom, pos, source_ref, source_alt = private_candidate["vcf_key"].split(":")
+            expected = normalize_allele(
+                record["reference_sequence"], int(pos) - target["start"] + 1, source_ref, source_alt
+            )
+            if chrom != target["chrom"] or expected != (local_pos, ref, alt):
                 raise SatMutPreparationError(f"{label}: candidate genomic provenance mismatch")
     if set(labels) != set(SPEC_BY_LABEL) or labels != sorted(labels):
         raise SatMutPreparationError("satMutMPRA source records must be canonical and sorted")
@@ -841,12 +855,12 @@ def validate_prepared_artifacts(
 
 
 def eligible_cache_rows(elements: Iterable[PreparedElement]) -> list[dict[str, Any]]:
-    """Return the complete processed SIGN population for reusable bucket caching."""
+    """Return the complete source-QC-validated SIGN+MIN population for reusable bucket caching."""
 
     rows = []
     for element in elements:
         for variant in element.variants:
-            if variant.source_filter != "SIGN":
+            if variant.source_filter not in ELIGIBLE_FILTERS:
                 continue
             rows.append(
                 {
@@ -862,8 +876,3 @@ def eligible_cache_rows(elements: Iterable[PreparedElement]) -> list[dict[str, A
                 }
             )
     return sorted(rows, key=lambda row: (row["element"], row["pos"], row["ref"], row["alt"]))
-
-
-def _sample_digest(seed: str, *parts: str) -> bytes:
-    payload = "\0".join((SAMPLING_ALGORITHM, seed, *parts)).encode()
-    return hashlib.sha256(payload).digest()

@@ -2,22 +2,21 @@
 
 from __future__ import annotations
 
-import bisect
 import csv
-import gzip
-import hashlib
 import io
 import json
 import math
 import re
 from collections import Counter
-from collections.abc import Callable, Iterable, Mapping, Sequence
-from dataclasses import dataclass, replace
+from collections.abc import Callable, Mapping, Sequence
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from vepbench.alleles import normalize_allele
 from vepbench.artifacts import canonical_json, read_jsonl, sha256_file
 from vepbench.errors import BuildError
+from vepbench.sampling import ScoredAllele, ScorePanel, quantile, sample_score_bins, sampling_digest
 
 from .configuration import CONFIG
 
@@ -25,20 +24,10 @@ TASK_FAMILY = CONFIG.values["task_family"]
 SOURCE_DATASET = CONFIG.values["source_dataset"]
 REFERENCE_CONTIG = CONFIG.values["reference_contig"]
 PANEL_SIZE = CONFIG.values["sampling"]["panel_size"]
-PREFERRED_PER_CLASS = CONFIG.values["sampling"]["preferred_per_class"]
-QUANTILE_BINS = CONFIG.values["sampling"]["quantile_bins"]
 SAMPLING_SEED = CONFIG.values["sampling"]["seed"]
 SAMPLING_ALGORITHM = CONFIG.values["sampling"]["algorithm"]
 FLANK_BASES = CONFIG.values["sequence"]["flank_bases"]
-EXON_PROXIMAL_DISTANCE = CONFIG.values["eligibility"]["exon_proximal_distance"]
-EXCLUDED_CONSEQUENCES = frozenset(CONFIG.values["eligibility"]["excluded_consequences"])
-SPLICING_CONSEQUENCES = frozenset(CONFIG.values["eligibility"]["splicing_consequences"])
-RETAINED_GROUPS = frozenset(CONFIG.values["eligibility"]["retained_groups"])
 NUCLEOTIDES = frozenset("ACGT")
-
-GENOMIC_SNV = re.compile(r"^(NC_0*(\d+)\.\d+):g\.(\d+)([ACGT])>([ACGT])$")
-TRANSCRIPT_SNV = re.compile(r"^[^:]+:c\..*([ACGT])>([ACGT])$")
-TARGET_SNV = re.compile(r"^n\.(.+)([ACGT])>([ACGT])$")
 
 
 class SGEPreparationError(BuildError):
@@ -108,10 +97,6 @@ class Transcript:
     cds_start0: int | None = None
     cds_end0: int | None = None
 
-    @property
-    def stable_key(self) -> str:
-        return f"{self.accession}:{self.chrom}:{self.strand}"
-
 
 @dataclass(frozen=True)
 class Variant:
@@ -125,10 +110,6 @@ class Variant:
     source_score: float
     damage_score: float
     source_fields: dict[str, str]
-    consequence: str | None = None
-    consequence_final: str | None = None
-    consequence_group: str | None = None
-    nearest_exon_distance: int | None = None
 
     @property
     def key(self) -> tuple[str, int, str, str]:
@@ -146,7 +127,7 @@ class PanelCandidate:
     local_pos: int
     visible_ref: str
     visible_alt: str
-    quantile_bin: int
+    score_bin: int
 
 
 @dataclass(frozen=True)
@@ -156,41 +137,8 @@ class Panel:
     window_end: int
     sequence: str
     candidates: tuple[PanelCandidate, ...]
-    missense_allocation: int
-    splicing_allocation: int
+    sampling: ScorePanel
     robust_score_spread: float
-
-
-class ExonIndex:
-    """Bounded nearest-exon lookup over merged 1-based inclusive intervals."""
-
-    def __init__(self, intervals_by_chrom: Mapping[str, Sequence[Exon]]) -> None:
-        merged: dict[str, tuple[Exon, ...]] = {}
-        starts: dict[str, tuple[int, ...]] = {}
-        for chrom, intervals in intervals_by_chrom.items():
-            values: list[Exon] = []
-            for exon in sorted(intervals):
-                if not values or exon.start > values[-1].end + 1:
-                    values.append(exon)
-                else:
-                    values[-1] = Exon(values[-1].start, max(values[-1].end, exon.end))
-            merged[chrom] = tuple(values)
-            starts[chrom] = tuple(exon.start for exon in values)
-        self._intervals = merged
-        self._starts = starts
-
-    def distance(self, chrom: str, pos: int) -> int:
-        intervals = self._intervals.get(chrom)
-        if not intervals:
-            raise SGEPreparationError(f"{chrom}:{pos}: no exon annotation for chromosome")
-        index = bisect.bisect_right(self._starts[chrom], pos)
-        candidates = []
-        if index:
-            previous = intervals[index - 1]
-            candidates.append(0 if pos <= previous.end else pos - previous.end)
-        if index < len(intervals):
-            candidates.append(intervals[index].start - pos)
-        return min(candidates)
 
 
 def transcript_from_cdot(payload: bytes, spec: GeneSpec) -> Transcript:
@@ -372,9 +320,6 @@ def build_catalog_audit(payload: bytes, *, expected_records: int | None = None) 
             decision = "selected"
             reason = "canonical score set selected by the reviewed SGE policy"
             selected.add(urn)
-        elif "CARD11" in genes:
-            decision = "excluded"
-            reason = "CARD11 policy exclusion: predominantly multi-base codon substitutions"
         elif set(genes) & set(SPEC_BY_GENE):
             decision = "excluded"
             reason = (
@@ -412,7 +357,7 @@ def parse_score_csv(
     *,
     mapper: Callable[[str], tuple[str, int, str, str] | None],
 ) -> tuple[tuple[Variant, ...], dict[str, Any]]:
-    """Parse primary MaveDB scores, map SNVs to GRCh38, and apply source-level QC."""
+    """Parse primary MaveDB scores, map complete alleles to GRCh38, and apply source-level QC."""
 
     try:
         text = payload.decode("utf-8-sig")
@@ -458,8 +403,8 @@ def parse_score_csv(
         if chrom != spec.expected_chrom:
             excluded["unexpected_chromosome"] += 1
             continue
-        if pos < 1 or ref not in NUCLEOTIDES or alt not in NUCLEOTIDES or ref == alt:
-            excluded["invalid_snv"] += 1
+        if pos < 1 or not ref or not alt or set(ref + alt) - NUCLEOTIDES or ref == alt:
+            excluded["invalid_allele"] += 1
             continue
         mapped.append(
             Variant(
@@ -481,58 +426,21 @@ def parse_score_csv(
         excluded["duplicate_variant"] += duplicate_count
     return unique, {
         "source_records": sum(excluded.values()) + len(unique),
-        "mapped_unique_snv_records": len(unique),
+        "mapped_unique_allele_records": len(unique),
         "excluded": dict(sorted(excluded.items())),
         "source_columns": columns,
     }
 
 
-def annotate_and_filter_variants(
-    variants: Sequence[Variant],
-    *,
-    consequences: Mapping[tuple[str, int, str, str], str],
-    exon_index: ExonIndex,
-    genome: Callable[[str, int, int], str],
-) -> tuple[tuple[Variant, ...], dict[str, int]]:
-    """Validate REF, apply the pinned consequence policy, and retain two groups."""
-
-    eligible = []
-    excluded: Counter[str] = Counter()
+def validate_reference_variants(
+    variants: Sequence[Variant], *, genome: Callable[[str, int, int], str]
+) -> tuple[Variant, ...]:
+    """Verify the complete normalized REF of every mapped assay allele."""
     for variant in variants:
-        observed_ref = genome(variant.chrom, variant.pos - 1, variant.pos).upper()
-        if observed_ref != variant.ref:
-            excluded["reference_mismatch"] += 1
-            continue
-        consequence = consequences.get(variant.key)
-        if consequence is None:
-            excluded["missing_consequence"] += 1
-            continue
-        if consequence in EXCLUDED_CONSEQUENCES:
-            excluded["excluded_high_impact_consequence"] += 1
-            continue
-        distance = exon_index.distance(variant.chrom, variant.pos)
-        consequence_final = (
-            "exon_proximal"
-            if consequence == "intron_variant" and distance <= EXON_PROXIMAL_DISTANCE
-            else consequence
-        )
-        if consequence_final == "missense_variant":
-            group = "missense_variant"
-        elif consequence_final in SPLICING_CONSEQUENCES:
-            group = "splicing"
-        else:
-            excluded["unretained_consequence"] += 1
-            continue
-        eligible.append(
-            replace(
-                variant,
-                consequence=consequence,
-                consequence_final=consequence_final,
-                consequence_group=group,
-                nearest_exon_distance=distance,
-            )
-        )
-    return tuple(sorted(eligible, key=lambda variant: variant.key)), dict(sorted(excluded.items()))
+        observed = genome(variant.chrom, variant.pos - 1, variant.pos - 1 + len(variant.ref))
+        if observed.upper() != variant.ref:
+            raise SGEPreparationError(f"{variant.key_text}: genomic REF mismatch")
+    return tuple(sorted(variants, key=lambda variant: variant.key))
 
 
 def choose_panel(
@@ -542,113 +450,64 @@ def choose_panel(
     genome: Callable[[str, int, int], str],
     seed: str = SAMPLING_SEED,
 ) -> tuple[Panel | None, list[dict[str, Any]]]:
-    """Choose one exon and a class-balanced, score-quantile-covered 50-SNV panel."""
-
+    """Choose a complete-allele window by robust score range, then sample score bins."""
     windows = []
-    summaries = []
-    for exon in transcript.exons:
-        window_start = exon.start - FLANK_BASES
-        window_end = exon.end + FLANK_BASES
-        pool = tuple(
-            variant
-            for variant in variants
-            if variant.chrom == transcript.chrom and window_start <= variant.pos <= window_end
+    summaries: list[dict[str, Any]] = []
+    for exon in sorted(transcript.exons):
+        start, end = exon.start - FLANK_BASES, exon.end + FLANK_BASES
+        pool = [v for v in variants if start <= v.pos and v.pos + len(v.ref) - 1 <= end]
+        scores = sorted(v.damage_score for v in pool)
+        spread = quantile(scores, 0.95) - quantile(scores, 0.05) if scores else 0.0
+        reason = None
+        if start < 1:
+            reason = "window_outside_reference"
+        elif len(pool) < PANEL_SIZE:
+            reason = "insufficient_alleles"
+        elif quantile(scores, 0.01) >= quantile(scores, 0.99):
+            reason = "collapsed_score_anchors"
+        summaries.append(
+            {
+                "exon_start": exon.start,
+                "exon_end": exon.end,
+                "eligible_records": len(pool),
+                "robust_score_spread_p95_minus_p05": spread,
+                "exclusion_reason": reason,
+            }
         )
-        counts = Counter(variant.consequence_group for variant in pool)
-        missense = counts["missense_variant"]
-        splicing = counts["splicing"]
-        allocation = _class_allocation(missense, splicing)
-        spread = _robust_spread([variant.damage_score for variant in pool]) if pool else 0.0
-        qualifies = allocation is not None
-        summary = {
-            "exon_start": exon.start,
-            "exon_end": exon.end,
-            "eligible_records": len(pool),
-            "missense_records": missense,
-            "splicing_records": splicing,
-            "can_supply_preferred_balance": missense >= PREFERRED_PER_CLASS
-            and splicing >= PREFERRED_PER_CLASS,
-            "achievable_smaller_class": min(PREFERRED_PER_CLASS, missense, splicing),
-            "robust_score_spread_p95_minus_p05": spread,
-            "qualifies": qualifies,
-        }
-        summaries.append(summary)
-        if qualifies:
-            windows.append((exon, pool, allocation, spread, summary))
+        if reason is None:
+            windows.append((exon, pool, spread))
     if not windows:
         return None, summaries
-    windows.sort(
-        key=lambda item: (
-            -int(item[4]["can_supply_preferred_balance"]),
-            -item[4]["achievable_smaller_class"],
-            -item[3],
-            transcript.stable_key,
-            item[0].start,
-            item[0].end,
-        )
+    exon, pool, spread = min(windows, key=lambda w: (-w[2], -len(w[1]), w[0]))
+    start, end = exon.start - FLANK_BASES, exon.end + FLANK_BASES
+    sequence = genome(transcript.chrom, start - 1, end).upper()
+    if len(sequence) != end - start + 1 or set(sequence) - NUCLEOTIDES:
+        raise SGEPreparationError(f"{transcript.gene}: invalid exon-window sequence")
+    if transcript.strand == "-":
+        sequence = reverse_complement(sequence)
+    sampled = sample_score_bins(
+        [ScoredAllele(v.key_text, v.damage_score) for v in pool],
+        question_key=f"sge:{transcript.gene}:{exon.start}-{exon.end}:all_alleles",
+        seed=seed,
     )
-    exon, pool, allocation, spread, chosen_summary = windows[0]
-    chosen_summary["selected"] = True
-    assert allocation is not None
-    missense_allocation, splicing_allocation = allocation
-    selected: list[tuple[Variant, int]] = []
-    for group, count in (
-        ("missense_variant", missense_allocation),
-        ("splicing", splicing_allocation),
-    ):
-        class_pool = [variant for variant in pool if variant.consequence_group == group]
-        selected.extend(
-            _sample_score_quantiles(
-                class_pool,
-                count,
-                seed=seed,
-                gene=transcript.gene,
-                exon=exon,
-                consequence_group=group,
-            )
-        )
-    window_start = exon.start - FLANK_BASES
-    window_end = exon.end + FLANK_BASES
-    genomic_sequence = genome(transcript.chrom, window_start - 1, window_end).upper()
-    if (
-        len(genomic_sequence) != exon.length + 2 * FLANK_BASES
-        or set(genomic_sequence) - NUCLEOTIDES
-    ):
-        raise SGEPreparationError(f"{transcript.gene}: invalid selected exon sequence")
-    display_sequence = (
-        genomic_sequence if transcript.strand == "+" else reverse_complement(genomic_sequence)
-    )
-    visible = []
-    for variant, quantile_bin in selected:
-        if transcript.strand == "+":
-            local_pos = variant.pos - window_start + 1
-            ref, alt = variant.ref, variant.alt
-        else:
-            local_pos = window_end - variant.pos + 1
-            ref, alt = reverse_complement(variant.ref), reverse_complement(variant.alt)
-        if display_sequence[local_pos - 1] != ref:
-            raise SGEPreparationError(f"{variant.key_text}: visible REF does not match sequence")
-        visible.append((local_pos, ref, alt, variant, quantile_bin))
-    visible.sort(key=lambda item: (item[0], item[1], item[2]))
+    by_key = {v.key_text: v for v in pool}
+    display = []
+    for allele, bin_index in sampled.selected:
+        variant = by_key[allele.key]
+        pos, ref, alt = variant.pos - start + 1, variant.ref, variant.alt
+        if transcript.strand == "-":
+            pos = end - (variant.pos + len(variant.ref) - 1) + 1
+            ref, alt = reverse_complement(ref), reverse_complement(alt)
+        pos, ref, alt = normalize_allele(sequence, pos, ref, alt)
+        display.append((pos, ref, alt, variant, bin_index))
+    display.sort(key=lambda item: item[:3])
+    if len({item[:3] for item in display}) != PANEL_SIZE:
+        raise SGEPreparationError(f"{transcript.gene}: duplicate displayed allele")
     candidates = tuple(
-        PanelCandidate(variant, f"V{index:02d}", local_pos, ref, alt, quantile_bin)
-        for index, (local_pos, ref, alt, variant, quantile_bin) in enumerate(visible, start=1)
+        PanelCandidate(v, f"V{i:02d}", pos, ref, alt, b)
+        for i, (pos, ref, alt, v, b) in enumerate(display, 1)
     )
-    if len(candidates) != PANEL_SIZE:
-        raise AssertionError("SGE panel selection did not produce 50 variants")
-    return (
-        Panel(
-            exon,
-            window_start,
-            window_end,
-            display_sequence,
-            candidates,
-            missense_allocation,
-            splicing_allocation,
-            spread,
-        ),
-        summaries,
-    )
+    return Panel(exon, start, end, sequence, candidates, sampled, spread), summaries
 
 
 def build_source_record(
@@ -684,11 +543,13 @@ def build_source_record(
                 "genomic_key": variant.key_text,
                 "source_score": variant.source_score,
                 "damage_score": variant.damage_score,
-                "consequence": variant.consequence,
-                "consequence_final": variant.consequence_final,
-                "consequence_group": variant.consequence_group,
-                "nearest_exon_distance": variant.nearest_exon_distance,
-                "quantile_bin": candidate.quantile_bin,
+                "score_bin": candidate.score_bin,
+                "sampling_digest": sampling_digest(
+                    SAMPLING_SEED,
+                    f"sge:{spec.gene}:{panel.exon.start}-{panel.exon.end}:all_alleles",
+                    candidate.score_bin,
+                    variant.key_text,
+                ),
             }
         )
     return {
@@ -719,17 +580,13 @@ def build_source_record(
                 "flank_bases": FLANK_BASES,
                 "selected_exon": {"start": panel.exon.start, "end": panel.exon.end},
                 "selected_window": {"start": panel.window_start, "end": panel.window_end},
-                "class_allocation": {
-                    "missense_variant": panel.missense_allocation,
-                    "splicing": panel.splicing_allocation,
-                },
                 "robust_score_spread_p95_minus_p05": panel.robust_score_spread,
                 "all_exon_windows": [dict(summary) for summary in exon_summaries],
             },
             "sampling": {
                 "algorithm": SAMPLING_ALGORITHM,
                 "seed": SAMPLING_SEED,
-                "quantile_bins": QUANTILE_BINS,
+                **panel.sampling.provenance(),
             },
             "selected_candidates": selected_provenance,
         },
@@ -835,52 +692,10 @@ def eligible_cache_rows(variants_by_gene: Mapping[str, Sequence[Variant]]) -> li
                     "alt": variant.alt,
                     "source_score": variant.source_score,
                     "damage_score": variant.damage_score,
-                    "consequence": variant.consequence,
-                    "consequence_final": variant.consequence_final,
-                    "consequence_group": variant.consequence_group,
-                    "nearest_exon_distance": variant.nearest_exon_distance,
                     "source_fields": variant.source_fields,
                 }
             )
     return sorted(rows, key=lambda row: (row["gene"], row["pos"], row["ref"], row["alt"]))
-
-
-def parse_gtf_exons(payload: bytes, chromosomes: set[str]) -> ExonIndex:
-    """Parse and merge exon intervals from the pinned compressed Ensembl GTF."""
-
-    try:
-        text = gzip.decompress(payload).decode("utf-8")
-    except (gzip.BadGzipFile, UnicodeDecodeError) as exc:
-        raise SGEPreparationError("invalid Ensembl GTF payload") from exc
-    return _exon_index_from_gtf_lines(text.splitlines(), chromosomes)
-
-
-def parse_gtf_exon_file(path: str | Path, chromosomes: set[str]) -> ExonIndex:
-    """Stream a pinned Ensembl GTF instead of expanding it in memory."""
-
-    try:
-        with gzip.open(path, mode="rt", encoding="utf-8") as source:
-            return _exon_index_from_gtf_lines(source, chromosomes)
-    except (OSError, UnicodeDecodeError) as exc:
-        raise SGEPreparationError("invalid Ensembl GTF file") from exc
-
-
-def _exon_index_from_gtf_lines(lines: Iterable[str], chromosomes: set[str]) -> ExonIndex:
-    intervals: dict[str, list[Exon]] = {chrom: [] for chrom in chromosomes}
-    for line in lines:
-        if not line or line.startswith("#"):
-            continue
-        fields = line.split("\t", 8)
-        if len(fields) != 9 or fields[2] != "exon":
-            continue
-        chrom = fields[0]
-        if chrom not in intervals:
-            continue
-        start, end = int(fields[3]), int(fields[4])
-        intervals[chrom].append(Exon(start, end))
-    if any(not values for values in intervals.values()):
-        raise SGEPreparationError("Ensembl GTF is missing a required chromosome")
-    return ExonIndex(intervals)
 
 
 def transcript_coding_sequence(
@@ -909,24 +724,15 @@ def _map_hgvs(
     spec: GeneSpec,
     mapper: Callable[[str], tuple[str, int, str, str] | None],
 ) -> tuple[str, int, str, str] | None:
-    if spec.coordinate_mode == "hgvs_genomic":
-        match = GENOMIC_SNV.fullmatch(hgvs)
-        if match is None:
+    if spec.coordinate_mode == "target_coding_hgvs":
+        if not hgvs.startswith("n."):
             return None
-        chrom = _nc_contig_to_chrom(match.group(1))
-        return (
-            (chrom, int(match.group(3)), match.group(4), match.group(5))
-            if chrom is not None
-            else None
-        )
-    if spec.coordinate_mode == "hgvs_transcript":
-        if TRANSCRIPT_SNV.fullmatch(hgvs) is None or not hgvs.startswith(f"{spec.transcript}:c."):
-            return None
-        return mapper(hgvs)
-    match = TARGET_SNV.fullmatch(hgvs)
-    if match is None:
+        hgvs = f"{spec.transcript}:c.{hgvs[2:]}"
+    elif (
+        spec.coordinate_mode == "hgvs_transcript" and not hgvs.startswith(f"{spec.transcript}:c.")
+    ) or (spec.coordinate_mode == "hgvs_genomic" and ":g." not in hgvs):
         return None
-    return mapper(f"{spec.transcript}:c.{match.group(1)}{match.group(2)}>{match.group(3)}")
+    return mapper(hgvs)
 
 
 def _nc_contig_to_chrom(contig: Any) -> str | None:
@@ -945,84 +751,6 @@ def _finite_float(value: Any) -> float | None:
     except TypeError, ValueError, OverflowError:
         return None
     return number if math.isfinite(number) else None
-
-
-def _class_allocation(missense: int, splicing: int) -> tuple[int, int] | None:
-    if missense + splicing < PANEL_SIZE:
-        return None
-    if missense >= PREFERRED_PER_CLASS and splicing >= PREFERRED_PER_CLASS:
-        return (PREFERRED_PER_CLASS, PREFERRED_PER_CLASS)
-    smaller = min(missense, splicing)
-    smaller_allocation = min(PREFERRED_PER_CLASS, smaller)
-    if missense <= splicing:
-        allocation = (smaller_allocation, PANEL_SIZE - smaller_allocation)
-    else:
-        allocation = (PANEL_SIZE - smaller_allocation, smaller_allocation)
-    return allocation if allocation[0] <= missense and allocation[1] <= splicing else None
-
-
-def _sample_score_quantiles(
-    variants: Sequence[Variant],
-    count: int,
-    *,
-    seed: str,
-    gene: str,
-    exon: Exon,
-    consequence_group: str,
-) -> list[tuple[Variant, int]]:
-    if count == 0:
-        return []
-    if len(variants) < count:
-        raise SGEPreparationError(f"{gene}: class allocation exceeds eligible pool")
-    ordered = sorted(variants, key=lambda variant: (variant.damage_score, variant.key))
-    bins = min(QUANTILE_BINS, count)
-    pool_base, pool_remainder = divmod(len(ordered), bins)
-    take_base, take_remainder = divmod(count, bins)
-    selected: list[tuple[Variant, int]] = []
-    offset = 0
-    for bin_index in range(bins):
-        size = pool_base + (bin_index < pool_remainder)
-        take = take_base + (bin_index < take_remainder)
-        values = ordered[offset : offset + size]
-        offset += size
-        values.sort(
-            key=lambda variant: _sample_digest(
-                seed,
-                gene,
-                str(exon.start),
-                str(exon.end),
-                consequence_group,
-                str(bin_index + 1),
-                variant.key_text,
-            )
-        )
-        selected.extend((variant, bin_index + 1) for variant in values[:take])
-    if offset != len(ordered) or len(selected) != count:
-        raise AssertionError("rank-quantile sampling did not consume the class pool")
-    return selected
-
-
-def _sample_digest(seed: str, *parts: str) -> bytes:
-    return hashlib.sha256("\0".join((SAMPLING_ALGORITHM, seed, *parts)).encode()).digest()
-
-
-def _robust_spread(values: Sequence[float]) -> float:
-    ordered = sorted(values)
-    return _percentile(ordered, 0.95) - _percentile(ordered, 0.05)
-
-
-def _percentile(ordered: Sequence[float], fraction: float) -> float:
-    """R type-7 linear percentile, specified here to avoid library-dependent behavior."""
-
-    if not ordered:
-        raise ValueError("percentile requires a non-empty sequence")
-    position = (len(ordered) - 1) * fraction
-    lower = math.floor(position)
-    upper = math.ceil(position)
-    if lower == upper:
-        return ordered[lower]
-    weight = position - lower
-    return ordered[lower] * (1 - weight) + ordered[upper] * weight
 
 
 def _validate_source_record(record: Mapping[str, Any]) -> None:
@@ -1077,55 +805,57 @@ def _validate_source_record(record: Mapping[str, Any]) -> None:
             or isinstance(pos, bool)
             or not isinstance(pos, int)
             or pos < 1
-            or ref not in NUCLEOTIDES
-            or alt not in NUCLEOTIDES
+            or not isinstance(ref, str)
+            or not ref
+            or not isinstance(alt, str)
+            or not alt
+            or set(ref + alt) - NUCLEOTIDES
             or ref == alt
-            or sequence[pos - 1] != ref
-            or private.get("consequence") in EXCLUDED_CONSEQUENCES
-            or private.get("consequence_group") not in RETAINED_GROUPS
+            or sequence[pos - 1 : pos - 1 + len(ref)] != ref
+            or normalize_allele(sequence, pos, ref, alt) != (pos, ref, alt)
             or candidate.get("reference_score") != private.get("damage_score")
             or private.get("damage_score") != spec.score_direction * private.get("source_score")
         ):
             raise SGEPreparationError(f"{label}: invalid selected candidate {candidate!r}")
+        expected_digest = sampling_digest(
+            SAMPLING_SEED,
+            f"sge:{spec.gene}:{exon['start']}-{exon['end']}:all_alleles",
+            private["score_bin"],
+            private["genomic_key"],
+        )
+        if private.get("sampling_digest") != expected_digest:
+            raise SGEPreparationError(f"{label}: sampling digest mismatch")
+        chrom, genomic_pos, genomic_ref, genomic_alt = private["genomic_key"].split(":")
+        original_pos = int(genomic_pos)
+        projected_pos = original_pos - window["start"] + 1
+        if transcript["strand"] == "-":
+            projected_pos = window["end"] - (original_pos + len(genomic_ref) - 1) + 1
+            genomic_ref, genomic_alt = (
+                reverse_complement(genomic_ref),
+                reverse_complement(genomic_alt),
+            )
+        if (
+            chrom != transcript["chrom"]
+            or transcript["strand"] not in {"+", "-"}
+            or normalize_allele(sequence, projected_pos, genomic_ref, genomic_alt)
+            != (pos, ref, alt)
+        ):
+            raise SGEPreparationError(f"{label}: genomic allele projection mismatch")
         visible_keys.append((pos, ref, alt))
     if visible_keys != sorted(visible_keys) or len(set(visible_keys)) != PANEL_SIZE:
         raise SGEPreparationError(f"{label}: candidates are not unique in display order")
-    allocations = dict(sorted(Counter(item["consequence_group"] for item in selected).items()))
-    if allocations != exon_selection.get("class_allocation"):
-        raise SGEPreparationError(f"{label}: class allocation provenance mismatch")
+    sampling = metadata.get("sampling", {})
+    from vepbench.sampling import validate_sampling_provenance
+
+    validate_sampling_provenance(
+        sampling,
+        [(item["damage_score"], item["score_bin"]) for item in selected],
+        seed=SAMPLING_SEED,
+        algorithm=SAMPLING_ALGORITHM,
+    )
     prompt_fields = f"{record.get('assay_context', '')}\n{record.get('reporter_context', '')}"
     forbidden = [spec.mavedb_urn, spec.transcript, "urn:mavedb", "reference_score", "quantile"]
     if any(token in prompt_fields for token in forbidden) or re.search(
         r"\bexons?\s+\d", prompt_fields, flags=re.IGNORECASE
     ):
         raise SGEPreparationError(f"{label}: model-visible source contains private leakage")
-
-
-__all__ = [
-    "EXCLUDED_CONSEQUENCES",
-    "EXON_PROXIMAL_DISTANCE",
-    "GENE_SPECS",
-    "PANEL_SIZE",
-    "Exon",
-    "ExonIndex",
-    "GeneSpec",
-    "Panel",
-    "PanelCandidate",
-    "SGEPreparationError",
-    "Transcript",
-    "Variant",
-    "annotate_and_filter_variants",
-    "build_catalog_audit",
-    "build_source_record",
-    "choose_panel",
-    "eligible_cache_rows",
-    "parse_gtf_exon_file",
-    "parse_gtf_exons",
-    "parse_score_csv",
-    "reverse_complement",
-    "transcript_coding_sequence",
-    "transcript_from_cdot",
-    "validate_mavedb_metadata",
-    "validate_prepared_artifacts",
-    "write_prepared_dataset",
-]

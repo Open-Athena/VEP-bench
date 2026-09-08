@@ -72,7 +72,6 @@ def load_preparation_config(path: str | Path = PREPARATION_CONFIG_PATH) -> Prepa
             "population",
             "reporter",
             "assay",
-            "alphagenome",
             "cache",
         },
         config_path,
@@ -89,29 +88,12 @@ def load_preparation_config(path: str | Path = PREPARATION_CONFIG_PATH) -> Prepa
     ):
         _string(values[field], config_path, field)
 
+    from vepbench.sampling import validate_sampling_config
+
     sampling = _mapping(values["sampling"], config_path, "sampling")
-    _exact_fields(
-        sampling,
-        {
-            "exon_count",
-            "panel_size",
-            "quantile_bins",
-            "samples_per_bin",
-            "seed",
-            "algorithm",
-            "quantile",
-        },
-        config_path,
-        "sampling",
-    )
-    for field in ("exon_count", "panel_size", "quantile_bins", "samples_per_bin"):
-        _positive_int(sampling[field], config_path, f"sampling.{field}")
-    if sampling["panel_size"] != sampling["quantile_bins"] * sampling["samples_per_bin"]:
-        raise BuildError(f"{config_path}: panel size must equal bins times samples per bin")
-    for field in ("seed", "algorithm", "quantile"):
-        _string(sampling[field], config_path, f"sampling.{field}")
-    if sampling["quantile"] != "hyndman_fan_type_7":
-        raise BuildError(f"{config_path}: unsupported quantile algorithm")
+    validate_sampling_config({k: v for k, v in sampling.items() if k != "exon_count"})
+    if sampling.get("exon_count") != 20:
+        raise BuildError("OpenSplice requires 20 distinct genes")
 
     population = _mapping(values["population"], config_path, "population")
     _exact_fields(
@@ -147,36 +129,6 @@ def load_preparation_config(path: str | Path = PREPARATION_CONFIG_PATH) -> Prepa
     for field in assay:
         _string(assay[field], config_path, f"assay.{field}")
 
-    alphagenome = _mapping(values["alphagenome"], config_path, "alphagenome")
-    _exact_fields(
-        alphagenome,
-        {
-            "repository",
-            "commit",
-            "minigene_script",
-            "genome_script",
-            "library_design_script",
-            "input_length",
-            "ontology_term",
-            "ontology_label",
-            "organism",
-            "requested_output",
-            "model_loading_identifier",
-            "deposited_minigene_acceptor_pos0",
-        },
-        config_path,
-        "alphagenome",
-    )
-    for field in alphagenome.keys() - {"input_length", "deposited_minigene_acceptor_pos0"}:
-        _string(alphagenome[field], config_path, f"alphagenome.{field}")
-    _positive_int(alphagenome["input_length"], config_path, "alphagenome.input_length")
-    if (
-        isinstance(alphagenome["deposited_minigene_acceptor_pos0"], bool)
-        or not isinstance(alphagenome["deposited_minigene_acceptor_pos0"], int)
-        or alphagenome["deposited_minigene_acceptor_pos0"] < 0
-    ):
-        raise BuildError(f"{config_path}: invalid deposited minigene position")
-
     cache = _mapping(values["cache"], config_path, "cache")
     _exact_fields(
         cache,
@@ -211,7 +163,7 @@ def load_preparation_config(path: str | Path = PREPARATION_CONFIG_PATH) -> Prepa
     _positive_int(dataset["article_id"], pins_path, "dataset.article_id")
     _positive_int(dataset["version"], pins_path, "dataset.version")
     files = _mapping(pins["files"], pins_path, "files")
-    expected_files = {"master", "exon_metadata", "variant_metadata", "alphagenome_genome_inputs"}
+    expected_files = {"master", "exon_metadata"}
     _exact_fields(files, expected_files, pins_path, "files")
     for label, raw_pin in files.items():
         pin = _mapping(raw_pin, pins_path, f"files.{label}")
@@ -247,7 +199,7 @@ def cache_configuration() -> dict[str, Any]:
             "downstream_native_flank": CONFIG.values["reporter"]["downstream_native_flank"],
         },
         "eligibility": {
-            "variant": "mut_type == sub and length == 1",
+            "variant": "complete sequence-validated substitutions and deletions",
             "measurement": "measured and finite delta_psi, psi_r1, psi_r2, psi_r3",
             "mapping": ("construct-oriented REF and ALT reproduce nt_seq against exon wt_seq"),
             "uniqueness": ("unique (ensembl_exon_id, start, wt, mut) and mutant sequence"),

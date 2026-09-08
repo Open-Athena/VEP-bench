@@ -24,6 +24,7 @@ import {
   fetchOutcomeIndex,
   modelSelectionRows,
   orderQuestionsForExplorer,
+  questionDisplayMetadata,
   rankingOutcomeMetrics,
   resultTypeLabel,
   runForTask
@@ -83,10 +84,8 @@ const resultLabel = (outcome) => outcome?.result_type !== undefined
       ? "Format failure"
       : "Not scored";
 const questionEntries = entriesForQuestions(taskQuestions).map((entry) => {
-  const displayMetadata = (
-    metadataState.document.by_task_family
-      ?.[taskFamily]
-      ?.[entry.question.provenance.source_record_id]
+  const displayMetadata = questionDisplayMetadata(
+    entry.question, metadataState.document
   );
   return {
     ...entry,
@@ -111,13 +110,13 @@ if (metadataState.error) {
 }
 ```
 
-Predict signed changes in alternative-exon inclusion for SNVs in complete
+Predict signed changes in alternative-exon inclusion for variants in complete
 three-exon minigene cassettes, using exact construct sequence and assay context.
 
-**${formatInteger(taskQuestions.length)} published exon panels** each contain 50 measured SNVs sampled as five candidates from each of ten effect-rank bins. Every prompt uses opaque candidate IDs and excludes source identity, outcomes, selection labels, genomic coordinates, and specialized predictor outputs. The primary score is mean within-exon Spearman correlation; mean Pearson correlation reports numerical agreement, valid-output rate reports strict JSON compliance, and invalid completed outputs contribute zero while remaining identifiable as format failures.
+**${formatInteger(taskQuestions.length)} published exon panels** each contain 50 measured alleles. Version-2 panels sample five score-space bins, with sparse-bin slots redistributed. Every prompt uses opaque candidate IDs and excludes source identity, outcomes, selection labels, genomic coordinates, and specialized predictor outputs. The primary score is mean within-exon Spearman correlation; mean Pearson correlation reports numerical agreement, valid-output rate reports strict JSON compliance, and invalid completed outputs contribute zero while remaining identifiable as format failures.
 
 Exons were deliberately selected for large measured 5th-to-95th-percentile
-effect range, and each panel is quantile-balanced. The task emphasizes effect
+effect range, and each panel is sampled across score-space bins. The task emphasizes effect
 discrimination rather than the natural distribution of exon architectures or
 effect sizes. Scores describe exon inclusion in a specific HEK293T minigene
 reporter; they are not direct estimates of native-tissue splicing or clinical

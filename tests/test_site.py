@@ -9,6 +9,7 @@ from vepbench_explorer.site import (
     load_assay_publications,
 )
 
+from vepbench.artifacts import read_jsonl, sha256_json
 from vepbench.errors import BuildError
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -46,7 +47,7 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     assert set(metadata["by_task_family"]) == {"opensplice_snv", "satmut_mpra", "sge"}
     assert len(metadata["by_task_family"]["opensplice_snv"]) == 20
     assert len(metadata["by_task_family"]["satmut_mpra"]) == 16
-    assert len(metadata["by_task_family"]["sge"]) == 15
+    assert len(metadata["by_task_family"]["sge"]) == 16
     assert metadata["by_task_family"]["opensplice_snv"]["E01"]["assay_first_indexed"] == {
         "date": "2026-05-24",
         "kind": "dataset",
@@ -54,6 +55,9 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
         "url": "https://doi.org/10.6084/m9.figshare.32337414.v5",
     }
     assert metadata["by_task_family"]["satmut_mpra"]["GP1BA"] == {
+        "source_record_sha256": sha256_json(
+            next(r for r in read_jsonl(SATMUT_SOURCE) if r["source_record_id"] == "GP1BA")
+        ),
         "element": "GP1BB promoter",
         "assay_first_indexed": {
             "date": "2019-08-08",

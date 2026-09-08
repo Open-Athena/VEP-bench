@@ -6,11 +6,9 @@ import gzip
 import hashlib
 import json
 import os
-import shutil
 import tempfile
 import urllib.parse
 import urllib.request
-from collections import Counter
 from pathlib import Path
 from typing import Any
 
@@ -25,17 +23,16 @@ from .task import (
     SGEPreparationError,
     Transcript,
     Variant,
-    annotate_and_filter_variants,
     build_catalog_audit,
     build_source_record,
     choose_panel,
     eligible_cache_rows,
-    parse_gtf_exon_file,
     parse_score_csv,
     reverse_complement,
     transcript_coding_sequence,
     transcript_from_cdot,
     validate_mavedb_metadata,
+    validate_reference_variants,
     write_prepared_dataset,
 )
 
@@ -47,8 +44,6 @@ REFERENCE_URL = (
     f"https://huggingface.co/datasets/{REFERENCE['dataset']}/resolve/"
     f"{REFERENCE['revision']}/{REFERENCE['filename']}"
 )
-ANNOTATION = CONFIG.values["upstream"]["annotation"]
-CONSEQUENCES = CONFIG.values["upstream"]["consequences"]
 OUTPUT = CONFIG.resolve_path("output")
 MANIFEST_OUTPUT = CONFIG.resolve_path("manifest_output")
 CACHE_BUCKET = CONFIG.values["cache"]["bucket"]
@@ -104,12 +99,6 @@ def _download(url: str, *, body: bytes | None = None) -> bytes:
         return response.read()
 
 
-def _download_file(url: str, destination: Path) -> None:
-    request = urllib.request.Request(url, headers={"User-Agent": "VEP-bench/0.1"})
-    with urllib.request.urlopen(request, timeout=900) as response, destination.open("wb") as output:
-        shutil.copyfileobj(response, output, length=1024 * 1024)
-
-
 def _verify_payload(label: str, payload: bytes, expected: dict[str, Any]) -> None:
     observed = {"bytes": len(payload), "sha256": hashlib.sha256(payload).hexdigest()}
     expected_identity = {key: expected[key] for key in observed}
@@ -160,7 +149,6 @@ def _cache_configuration() -> dict[str, Any]:
         "implementation_sha256": CONFIG.values["cache"]["implementation_sha256"],
         "source_pins": CONFIG.pins,
         "genes": genes,
-        "eligibility": CONFIG.values["eligibility"],
         "reference_assembly": REFERENCE["assembly"],
     }
 
@@ -305,10 +293,6 @@ def _load_cache(
                 source_score=row["source_score"],
                 damage_score=row["damage_score"],
                 source_fields=row["source_fields"],
-                consequence=row["consequence"],
-                consequence_final=row["consequence_final"],
-                consequence_group=row["consequence_group"],
-                nearest_exon_distance=row["nearest_exon_distance"],
             )
         )
     return (
@@ -445,71 +429,63 @@ def _pyhgvs_mapper(fasta: Any, transcript_records: dict[str, dict[str, Any]]) ->
         )
 
     def mapper(hgvs: str) -> tuple[str, int, str, str] | None:
+        from pyhgvs.variants import normalize_variant
+
         try:
-            contig, pos, ref, alt = pyhgvs.parse_hgvs_name(
-                hgvs,
-                genome,
-                get_transcript=get_transcript,
-            )
-            chrom = _NCGenome._key(contig)
-            transcript_id = hgvs.split(":", 1)[0]
-            record = transcript_records[transcript_id]
-            strand = record["genome_builds"]["GRCh38"]["strand"]
-            source_ref, source_alt = hgvs.rsplit(">", 1)[0][-1], hgvs.rsplit(">", 1)[1]
-            expected_ref = source_ref if strand == "+" else reverse_complement(source_ref)
-            expected_alt = source_alt if strand == "+" else reverse_complement(source_alt)
-        except Exception:
+            h = pyhgvs.HGVSName(hgvs)
+            if h.kind == "c":
+                transcript = get_transcript(h.transcript)
+                if transcript is None:
+                    return None
+                first = pyhgvs.cdna_to_genomic_coord(transcript, h.cdna_start)
+                last = pyhgvs.cdna_to_genomic_coord(transcript, h.cdna_end)
+                forward = transcript.tx_position.is_forward_strand
+                chrom = transcript.tx_position.chrom
+            elif h.kind == "g":
+                first, last, chrom, forward = h.start, h.end, h.chrom, True
+            else:
+                return None
+            lower, upper = sorted((first, last))
+            reference = str(genome[chrom][lower - 1 : upper]).upper()
+            if lower < 1 or len(reference) != upper - lower + 1:
+                return None
+            source_ref = h.ref_allele.upper()
+            if source_ref and set(source_ref) <= set("ACGT"):
+                expected = source_ref if forward else reverse_complement(source_ref)
+                if expected != reference:
+                    return None
+            alt = h.alt_allele.upper()
+            if not forward:
+                alt = reverse_complement(alt)
+            kind = h.mutation_type
+            if kind in {">", "delins"}:
+                pos, ref = lower, reference
+            elif kind == "del":
+                pos, ref, alt = lower, reference, ""
+            elif kind == "ins":
+                if upper != lower + 1:
+                    return None
+                pos, ref = upper, ""
+            elif kind == "dup":
+                pos, ref, alt = (upper + 1 if forward else lower), "", reference
+            else:
+                return None
+            if set(ref + alt) - set("ACGT") or ref == alt:
+                return None
+            _, pos, ref, alternatives = normalize_variant(chrom, pos, ref, [alt], genome).variant
+            if str(genome[chrom][pos - 1 : pos - 1 + len(ref)]).upper() != ref:
+                return None
+            return _NCGenome._key(chrom), pos, ref, alternatives[0]
+        except ValueError, KeyError, IndexError, NotImplementedError:
             return None
-        if str(ref).upper() != expected_ref or str(alt).upper() != expected_alt:
-            return None
-        if chrom not in {spec.expected_chrom for spec in GENE_SPECS}:
-            return None
-        return chrom, int(pos), str(ref).upper(), str(alt).upper()
 
     return mapper
 
 
-def _join_consequences(
-    variants_by_gene: dict[str, tuple[Variant, ...]],
-    paths: dict[str, Path],
-) -> dict[tuple[str, int, str, str], str]:
-    import polars as pl
-
-    by_chrom: dict[str, set[tuple[str, int, str, str]]] = {}
-    for variants in variants_by_gene.values():
-        for variant in variants:
-            by_chrom.setdefault(variant.chrom, set()).add(variant.key)
-    result = {}
-    for chrom, keys in sorted(by_chrom.items()):
-        wanted = pl.DataFrame(
-            [{"chrom": key[0], "pos": key[1], "ref": key[2], "alt": key[3]} for key in sorted(keys)]
-        )
-        joined = (
-            pl.scan_parquet(paths[chrom])
-            .select("chrom", "pos", "ref", "alt", "consequence")
-            .with_columns(pl.col("pos").cast(pl.Int64))
-            .join(wanted.lazy(), on=["chrom", "pos", "ref", "alt"], how="inner")
-            .collect(engine="streaming")
-        )
-        if joined.height != len(keys):
-            raise SGEPreparationError(
-                f"chromosome {chrom}: consequence join matched {joined.height}/{len(keys)} variants"
-            )
-        for row in joined.iter_rows(named=True):
-            key = (row["chrom"], row["pos"], row["ref"], row["alt"])
-            consequence = row["consequence"]
-            if not isinstance(consequence, str) or key in result:
-                raise SGEPreparationError(f"{key}: invalid or duplicate consequence")
-            result[key] = consequence
-    return result
-
-
 def _build_processed_cache_inputs(
-    temporary: Path,
     *,
     fasta: Any,
     genome: Genome,
-    token: str | None,
 ) -> tuple[
     dict[str, tuple[Variant, ...]],
     dict[str, Transcript],
@@ -580,60 +556,11 @@ def _build_processed_cache_inputs(
                 "sha256": hashlib.sha256(observed.encode()).hexdigest(),
             }
 
-    annotation_path = temporary / "Homo_sapiens.GRCh38.107.chr.gtf.gz"
-    _download_file(ANNOTATION["url"], annotation_path)
-    _verify_file("Ensembl GTF", annotation_path, CONFIG.pins["annotation"])
-    exon_index = parse_gtf_exon_file(annotation_path, {spec.expected_chrom for spec in GENE_SPECS})
-    source_provenance["annotation"] = {
-        "release": ANNOTATION["release"],
-        **_payload_record(ANNOTATION["url"], CONFIG.pins["annotation"]),
-    }
-
-    consequence_paths = {}
-    source_provenance["consequences"] = {
-        "dataset": CONSEQUENCES["dataset"],
-        "revision": CONSEQUENCES["revision"],
-        "vep_version": CONSEQUENCES["vep_version"],
-        "vep_flags": CONSEQUENCES["vep_flags"],
-        "files": {},
-    }
-    for chrom, pin in CONFIG.pins["consequences"].items():
-        filename = f"{chrom}.parquet"
-        path = _download_hf_file(
-            repo_id=CONSEQUENCES["dataset"],
-            revision=CONSEQUENCES["revision"],
-            filename=filename,
-            token=token,
-            expected=pin,
-        )
-        consequence_paths[chrom] = path
-        source_provenance["consequences"]["files"][filename] = _payload_record(
-            f"https://huggingface.co/datasets/{CONSEQUENCES['dataset']}/resolve/"
-            f"{CONSEQUENCES['revision']}/{filename}",
-            pin,
-        )
-    consequences = _join_consequences(mapped_by_gene, consequence_paths)
     eligible_by_gene = {}
     for spec in GENE_SPECS:
-        eligible, excluded = annotate_and_filter_variants(
-            mapped_by_gene[spec.gene],
-            consequences=consequences,
-            exon_index=exon_index,
-            genome=genome,
-        )
+        eligible = validate_reference_variants(mapped_by_gene[spec.gene], genome=genome)
         eligible_by_gene[spec.gene] = eligible
-        class_counts: Counter[str] = Counter()
-        for variant in eligible:
-            if variant.consequence_group is None:
-                raise AssertionError("eligible variant has no consequence group")
-            class_counts[variant.consequence_group] += 1
-        population[spec.gene].update(
-            {
-                "eligibility_excluded": excluded,
-                "eligible_records": len(eligible),
-                "eligible_class_counts": dict(sorted(class_counts.items())),
-            }
-        )
+        population[spec.gene]["eligible_records"] = len(eligible)
     return eligible_by_gene, transcripts, source_provenance, population, catalog_audit
 
 
@@ -695,10 +622,8 @@ def prepare(*, upload_cache: bool) -> tuple[int, str]:
                 population,
                 catalog_audit,
             ) = _build_processed_cache_inputs(
-                temporary,
                 fasta=fasta,
                 genome=genome,
-                token=token,
             )
             source_provenance["reference"] = reference_provenance
             cache_manifest = _write_cache(
@@ -733,10 +658,6 @@ def prepare(*, upload_cache: bool) -> tuple[int, str]:
                 "start": panel.exon.start,
                 "end": panel.exon.end,
             }
-            gene_population["selected_class_allocation"] = {
-                "missense_variant": panel.missense_allocation,
-                "splicing": panel.splicing_allocation,
-            }
             gene_population["exon_windows"] = exon_summaries
             records.append(
                 build_source_record(
@@ -755,18 +676,13 @@ def prepare(*, upload_cache: bool) -> tuple[int, str]:
             "configuration": {
                 "assembly": REFERENCE["assembly"],
                 "panel_size": CONFIG.values["sampling"]["panel_size"],
-                "preferred_class_balance": "25 missense_variant / 25 splicing",
                 "sampling_seed": CONFIG.values["sampling"]["seed"],
                 "sampling_algorithm": CONFIG.values["sampling"]["algorithm"],
                 "score_orientation": "larger means greater functional damage; sign flip only",
                 "exon_flanks": CONFIG.values["sequence"]["flank_bases"],
                 "display_orientation": CONFIG.values["sequence"]["display_orientation"],
-                "exon_tiebreaks": (
-                    "preferred balance, achievable smaller class, P95-P05 damage-score spread, "
-                    "transcript and genomic exon key"
-                ),
+                "exon_tiebreaks": ("P95-P05 damage-score spread, eligible count, genomic exon key"),
                 "percentile_method": "R type-7 linear interpolation",
-                "eligibility": CONFIG.values["eligibility"],
             },
             "sources": source_provenance,
             "catalog_audit": catalog_audit,

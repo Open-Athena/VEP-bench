@@ -14,10 +14,10 @@ element_defaults:
 
 sampling:
   panel_size: 50
-  quantile_bins: 10
-  samples_per_bin: 5
-  seed: "2026090200"
-  algorithm: sha256_rank_quantile_v1
+  score_bins: 5
+  anchor_policy: p01_p99
+  seed: "2026090400"
+  algorithm: sha256_score_space_v1
 
 sequence_policy:
   model_visible: MaveDB target sequence in reporter-construct orientation
@@ -67,12 +67,12 @@ upstream:
 
 cache:
   bucket: open-athena/VEP-bench
-  root: data_prep/satmut-mpra/v1
+  root: data_prep/satmut-mpra/v2
   data_files:
     - eligible-variants.jsonl.gz
     - elements.json
-  legacy_implementation_sha256: 08b759f9fce8b0826fac1b827d04cd5c201f9ef704745ab3f0f07c2fa435f3ff
-  implementation_sha256: 66cd049858dc9bc5d9bb516a0ae3c8bb293254c55b9ecc64dfbfd4dff6795afe
+  # Updated by uv run scripts/update_preparation_digests.py.
+  implementation_sha256: a18d242b05d049a2fdfa97a1e104fcbfbbd35c710b02457bcbea8fdb4802537d
 
 elements:
   - cadd_label: F9

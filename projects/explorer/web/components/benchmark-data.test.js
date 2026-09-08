@@ -21,12 +21,28 @@ import {
   overallLeaderboardRows,
   outcomeIndexPath,
   predictionComparisonRows,
+  questionDisplayMetadata,
   rankingOutcomeMetrics,
   resultTypeForAnswer,
   resultTypeLabel,
   runForTask,
   supportsOverallLeaderboard
 } from "./benchmark-data.js";
+
+test("reselected windows cannot relabel questions from an earlier source", () => {
+  const metadata = {element: "New exon", source_record_sha256: "new-source"};
+  const document = {by_task_family: {opensplice_snv: {E01: metadata}}};
+  const question = {
+    metadata: {task_family: "opensplice_snv"},
+    provenance: {source_record_id: "E01", source_record_sha256: "new-source"}
+  };
+  assert.equal(questionDisplayMetadata(question, document), metadata);
+  question.provenance.source_record_sha256 = "old-source";
+  assert.equal(questionDisplayMetadata(question, document), null);
+  delete question.provenance.source_record_sha256;
+  delete metadata.source_record_sha256;
+  assert.equal(questionDisplayMetadata(question, document), null);
+});
 
 test("display scores use a fixed zero-to-one percentage domain", () => {
   assert.equal(displayScore(-0.22), 0);

@@ -24,6 +24,7 @@ import {
   fetchOutcomeIndex,
   modelSelectionRows,
   orderQuestionsForExplorer,
+  questionDisplayMetadata,
   rankingOutcomeMetrics,
   resultTypeLabel,
   runForTask
@@ -83,10 +84,8 @@ const resultLabel = (outcome) => outcome?.result_type !== undefined
       ? "Format failure"
       : "Not scored";
 const questionEntries = entriesForQuestions(taskQuestions).map((entry) => {
-  const displayMetadata = (
-    metadataState.document.by_task_family
-      ?.[taskFamily]
-      ?.[entry.question.provenance.source_record_id]
+  const displayMetadata = questionDisplayMetadata(
+    entry.question, metadataState.document
   );
   return {
     ...entry,
@@ -111,11 +110,11 @@ if (metadataState.error) {
 }
 ```
 
-Predict continuous functional damage for assayed SNVs in endogenous-locus saturation genome editing screens, using the gene, assay mechanism, and local exon sequence.
+Predict continuous functional damage for assayed variants in endogenous-locus saturation genome editing screens, using the gene, assay mechanism, and local exon sequence.
 
-**${formatInteger(taskQuestions.length)} published gene panels** each contain 50 variants from one exon and exactly 100 unmarked flanking bases on each side. Panels prefer 25 missense and 25 local splicing variants and sample across measured-damage quantiles. The primary score is mean within-gene Spearman correlation; mean Pearson correlation reports numerical agreement, valid-output rate reports strict JSON compliance, and invalid completed outputs contribute zero while remaining identifiable as format failures.
+**${formatInteger(taskQuestions.length)} published gene panels** each contain 50 variants from one exon and exactly 100 unmarked flanking bases on each side. Version-2 panels sample five score-space bins across the full eligible allele population, with sparse-bin slots redistributed. The primary score is mean within-gene Spearman correlation; mean Pearson correlation reports numerical agreement, valid-output rate reports strict JSON compliance, and invalid completed outputs contribute zero while remaining identifiable as format failures.
 
-Spearman measures ordering within each gene, not cross-assay calibration. SGE effects depend on the cellular system, engineered background, selection, timing, and treatment; they are not clinical classifications. One exon window omits distant gene and splice context, while class and quantile sampling do not reproduce the natural variant distribution.
+Spearman measures ordering within each gene, not cross-assay calibration. SGE effects depend on the cellular system, engineered background, selection, timing, and treatment; they are not clinical classifications. One exon window omits distant gene and splice context, while score-space sampling does not reproduce the natural variant distribution.
 
 Source data come from published saturation genome editing score sets in [MaveDB](https://www.mavedb.org/), cited as [Rubin et al. (2025)](https://doi.org/10.1186/s13059-025-03476-y).
 

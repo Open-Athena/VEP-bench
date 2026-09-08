@@ -13,6 +13,7 @@ working on VEP-bench.
   OpenRouter.
 - [Publishing](publishing.md): building, validating, and publishing a static
   benchmark version.
+- [Task construction](task-construction.md): shared allele and sampling protocol.
 - [Task catalog](tasks/README.md): task documentation conventions and the list
   of implemented benchmark tasks.
 

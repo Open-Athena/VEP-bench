@@ -1,5 +1,5 @@
-template_id: satmut-mpra-ranking-v1
-template_version: "1.1"
+template_id: satmut-mpra-ranking-v2
+template_version: "2.0"
 task_type: ranking
 prompt: |-
   Predict the signed regulatory-activity effect of every candidate variant in this saturation-mutagenesis MPRA panel.

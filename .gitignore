@@ -229,7 +229,7 @@ node_modules/
 
 # Production artifacts are published to the HF Bucket, not Git
 benchmark/questions.jsonl
-results/*.jsonl
+/results/*.jsonl
 
 # Streamlit
 .streamlit/secrets.toml
