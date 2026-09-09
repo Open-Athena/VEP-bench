@@ -1,0 +1,11 @@
+# Low-reasoning GLM-5.3 comparison with the exposed reasoning retained.
+# Sampling follows https://huggingface.co/zai-org/GLM-5.3.
+schema_version: "1.0"
+label: glm-5.3-low
+model: z-ai/glm-5.3
+generation:
+  temperature: 1.0
+  top_p: 0.95
+  reasoning:
+    effort: low
+    exclude: false

@@ -14,6 +14,7 @@ from vepbench.resources import RESULT_SCHEMA, SCHEMAS_DIR
 
 from .config import load_publishing_config
 from .publication import build_version, promote_version, validate_version
+from .split import split_results
 
 app = App(
     name="vepbench-publish",
@@ -35,6 +36,18 @@ bucket_app = App(
 )
 app.command(version_app)
 app.command(bucket_app)
+
+
+@app.command(name="split-results")
+def results_split(*, questions: Path, results: Path, output: Path) -> int:
+    """Export a complete combined evaluation into task-specific publication inputs."""
+
+    manifest = split_results(questions=questions, results=results, output=output)
+    print(
+        f"exported {manifest['source_question_set_size']} results "
+        f"into {len(manifest['tasks'])} tasks at {output}"
+    )
+    return 0
 
 
 @version_app.command(name="build")
