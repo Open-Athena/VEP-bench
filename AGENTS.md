@@ -6,11 +6,20 @@ These instructions apply to the entire VEP-bench repository.
 
 - Read the contributor [documentation index](docs/README.md) before changing
   architecture, evaluation, publication, or task behavior.
+- Prefer clear code, names, types, and tests that make implementation behavior
+  understandable.
+- Document information that code cannot readily communicate: scientific
+  rationale, external assumptions, design tradeoffs, and essential operating
+  instructions.
+- Avoid prose walkthroughs of implementation, inventories of validation checks,
+  and duplication of CLI help, configuration, schemas, or generated metadata.
+- Keep explanations close to their subject. Use comments for non-obvious
+  reasoning, shared maintainer documentation under `docs/` for workflows, and
+  `docs/tasks/` for task methodology, with one file per task.
+- Update existing documentation when a change makes it inaccurate. A code
+  change does not automatically require additional documentation.
 - Keep the root `README.md` concise and human-facing.
-- Put shared maintainer documentation under `docs/` and task methodology under
-  `docs/tasks/`, with one file per task.
-- Update the relevant documentation in the same change when behavior or a
-  public contract changes.
+- Keep `AGENTS.md` focused on durable working rules.
 
 ## Product boundaries
 

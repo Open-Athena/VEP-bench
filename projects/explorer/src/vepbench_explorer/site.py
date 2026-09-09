@@ -12,6 +12,8 @@ from vepbench.artifacts import canonical_json, read_jsonl, sha256_json
 from vepbench.config.loader import load_yaml_mapping
 from vepbench.errors import BuildError
 
+from .annotations import source_alleles, variants_for_record
+
 ASSAY_PUBLICATION_KINDS = {"assay_repository", "dataset", "paper"}
 ASSAY_PUBLICATION_FIELDS = {"date", "kind", "registry", "url"}
 
@@ -63,6 +65,7 @@ def build_question_metadata(
     *,
     source_paths: Sequence[str | Path],
     assay_publications: Mapping[str, Any],
+    variant_annotations: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build safe display metadata without changing model-visible questions."""
 
@@ -108,6 +111,13 @@ def build_question_metadata(
                 }
             else:
                 raise BuildError(f"{source_path}: {source_record_id!r} is missing display metadata")
+            if variant_annotations is not None:
+                display_metadata["variants"] = variants_for_record(record, variant_annotations)
+            elif task_family in {"sge", "satmut_mpra", "opensplice_snv"}:
+                display_metadata["variants"] = {
+                    candidate_id: {"genomic": allele}
+                    for candidate_id, allele in source_alleles(record).items()
+                }
             task_records[source_record_id] = display_metadata
 
     unknown_families = set(publication_families) - set(by_task_family)
@@ -121,13 +131,16 @@ def build_question_metadata(
             raise BuildError(
                 f"unused assay publication records for {task_family}: {sorted(unknown_records)}"
             )
-    return {
+    result = {
         "schema_version": "1.0",
         "by_task_family": {
             task_family: dict(sorted(records.items()))
             for task_family, records in sorted(by_task_family.items())
         },
     }
+    if variant_annotations is not None:
+        result["variant_annotation"] = variant_annotations["annotation"]
+    return result
 
 
 def _assay_publication(value: Any, location: str) -> dict[str, str]:

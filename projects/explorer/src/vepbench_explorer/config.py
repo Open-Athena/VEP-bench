@@ -17,6 +17,7 @@ class SiteConfig:
     observable_config: Path
     assay_publications: Path
     question_metadata_sources: tuple[Path, ...]
+    variant_annotations: Path | None = None
 
 
 def load_site_config(path: str | Path) -> SiteConfig:
@@ -32,7 +33,7 @@ def load_site_config(path: str | Path) -> SiteConfig:
         "question_metadata_sources",
     }
     missing = required - raw.keys()
-    unknown = raw.keys() - required
+    unknown = raw.keys() - required - {"variant_annotations"}
     if missing or unknown:
         raise BuildError(
             f"{source_path}: invalid site config fields; "
@@ -51,6 +52,9 @@ def load_site_config(path: str | Path) -> SiteConfig:
     ):
         raise BuildError(f"{source_path}: question_metadata_sources must be a non-empty list")
     config_dir = source_path.resolve().parent
+    annotations = raw.get("variant_annotations")
+    if annotations is not None and (not isinstance(annotations, str) or not annotations):
+        raise BuildError(f"{source_path}: variant_annotations must be a non-empty path")
     return SiteConfig(
         source_path=source_path.resolve(),
         data_base_url=raw["data_base_url"],
@@ -58,4 +62,5 @@ def load_site_config(path: str | Path) -> SiteConfig:
         observable_config=(config_dir / raw["observable_config"]).resolve(),
         assay_publications=(config_dir / raw["assay_publications"]).resolve(),
         question_metadata_sources=tuple((config_dir / item).resolve() for item in metadata_sources),
+        variant_annotations=(config_dir / annotations).resolve() if annotations else None,
     )

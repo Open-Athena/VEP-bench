@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
+import {writeFile} from "node:fs/promises";
+import {join} from "node:path";
 
-const [siteUrl, debugUrl] = process.argv.slice(2);
+const [siteUrl, debugUrl, outputDir] = process.argv.slice(2);
 if (!siteUrl || !debugUrl) {
   throw new Error("usage: node browser_interaction_qa.mjs SITE_URL DEBUG_URL");
 }
@@ -50,12 +52,19 @@ async function waitFor(expression, label, timeoutMs = 10_000) {
     if (await evaluate(expression)) return;
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
+  await saveDom("interaction-failure.dom.html");
   throw new Error(`timed out waiting for ${label}`);
 }
 
 async function navigate(path) {
   await send("Page.navigate", {url: new URL(path, siteUrl).href});
   await waitFor('document.readyState === "complete"', `${path} document load`);
+}
+
+async function saveDom(name) {
+  if (outputDir) {
+    await writeFile(join(outputDir, name), await evaluate('document.documentElement.outerHTML'));
+  }
 }
 
 function chooseOptionContaining(optionText) {
@@ -83,6 +92,7 @@ await waitFor(
     && document.querySelector('.card[aria-label^="All tasks score versus"]') !== null`,
   "two-model default all-task leaderboard"
 );
+await saveDom("leaderboard.dom.html");
 assert.equal(await chooseOptionContaining("Pearson"), true);
 await waitFor(
   `[...document.querySelectorAll("p")].some(
@@ -129,6 +139,57 @@ await waitFor(
     )`,
   "two-model question explorer"
 );
+const plotReady = `document.querySelector(
+  '.vepbench-prediction-plot svg[aria-label="Predicted versus measured variant effects"]'
+) !== null`;
+await waitFor(plotReady, "variant scatter plot");
+await saveDom("question.dom.html");
+for (const width of [1440, 390]) {
+  await send("Emulation.setDeviceMetricsOverride", {
+    width, height: 1100, deviceScaleFactor: 1, mobile: false
+  });
+  await waitFor(`(() => {
+    const container = document.querySelector('.vepbench-prediction-plot');
+    const plot = [...container.querySelectorAll('figure, svg')].find(
+      (node) => typeof node.scale === 'function'
+    );
+    if (!plot) return false;
+    const svg = container.querySelector('svg[aria-label="Predicted versus measured variant effects"]');
+    const x = plot.scale('x').range;
+    const y = plot.scale('y').range;
+    return Math.abs(Math.abs(x[1] - x[0]) - Math.abs(y[1] - y[0])) < 0.1
+      && Math.abs(svg.getBoundingClientRect().width - container.clientWidth) < 1;
+  })()`, `square plotting area at viewport width ${width}`);
+}
+await send("Emulation.setDeviceMetricsOverride", {
+  width: 1440, height: 1100, deviceScaleFactor: 1, mobile: false
+});
+await waitFor(`(() => {
+  const container = document.querySelector('.vepbench-prediction-plot');
+  const svg = container?.querySelector('svg[aria-label="Predicted versus measured variant effects"]');
+  return svg && Math.abs(Number(svg.getAttribute('width')) - container.clientWidth) < 1;
+})()`, "resized variant scatter plot");
+await evaluate('new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))');
+const point = await evaluate(`(() => {
+  const node = document.querySelector('.vepbench-prediction-plot [aria-label^="V01;"]');
+  node.scrollIntoView({block: 'center'});
+  const bounds = node.getBoundingClientRect();
+  return {x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2};
+})()`);
+await send("Input.dispatchMouseEvent", {type: "mouseMoved", ...point});
+await waitFor(`(() => {
+  const text = document.querySelector('.vepbench-prediction-plot')?.textContent ?? '';
+  return text.includes('GRCh38') && text.includes('chrX:139530464') && text.includes('T>G');
+})()`, "native Observable hover with genomic allele");
+if (outputDir) {
+  const clip = await evaluate(`(() => {
+    const bounds = document.querySelector('.vepbench-prediction-plot').getBoundingClientRect();
+    return {x: bounds.x + scrollX, y: bounds.y + scrollY,
+      width: bounds.width, height: bounds.height, scale: 1};
+  })()`);
+  const screenshot = await send("Page.captureScreenshot", {clip, captureBeyondViewport: true});
+  await writeFile(join(outputDir, "variant-scatter.png"), Buffer.from(screenshot.data, "base64"));
+}
 assert.equal(
   await evaluate(`(() => {
     const rows = [...document.querySelectorAll('.vepbench-row-select-table tbody tr')];

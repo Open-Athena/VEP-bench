@@ -99,6 +99,28 @@ common=(
   --dump-dom "http://127.0.0.1:$port/tasks/satmut-mpra.html?run=missing-run" \
   >"$output_dir/question-neutral.dom.html"
 
+debug_port=${VEPBENCH_BROWSER_QA_DEBUG_PORT:-$((port + 1))}
+"$chrome" \
+  --headless \
+  --no-sandbox \
+  --disable-gpu \
+  --hide-scrollbars \
+  --remote-debugging-port="$debug_port" \
+  --remote-allow-origins='*' \
+  --user-data-dir="$qa_root/chrome-profile" \
+  about:blank \
+  >"$output_dir/interaction-browser.log" 2>&1 &
+browser_pid=$!
+curl --fail --retry 20 --retry-all-errors --retry-connrefused --retry-delay 1 \
+  "http://127.0.0.1:$debug_port/json/version" >/dev/null
+node "$project_root/scripts/browser_interaction_qa.mjs" \
+  "http://127.0.0.1:$port" \
+  "http://127.0.0.1:$debug_port" \
+  "$output_dir"
+kill "$browser_pid" 2>/dev/null || true
+wait "$browser_pid" 2>/dev/null || true
+browser_pid=
+
 status=0
 for check in \
   'leaderboard.dom.html|>Leaderboard<' \
@@ -199,27 +221,6 @@ for file in leaderboard.dom.html tasks.dom.html task.dom.html sge-task.dom.html 
     status=1
   fi
 done
-
-debug_port=${VEPBENCH_BROWSER_QA_DEBUG_PORT:-$((port + 1))}
-"$chrome" \
-  --headless \
-  --no-sandbox \
-  --disable-gpu \
-  --hide-scrollbars \
-  --remote-debugging-port="$debug_port" \
-  --remote-allow-origins='*' \
-  --user-data-dir="$qa_root/chrome-profile" \
-  about:blank \
-  >"$output_dir/interaction-browser.log" 2>&1 &
-browser_pid=$!
-curl --fail --retry 20 --retry-all-errors --retry-connrefused --retry-delay 1 \
-  "http://127.0.0.1:$debug_port/json/version" >/dev/null
-node "$project_root/scripts/browser_interaction_qa.mjs" \
-  "http://127.0.0.1:$port" \
-  "http://127.0.0.1:$debug_port"
-kill "$browser_pid" 2>/dev/null || true
-wait "$browser_pid" 2>/dev/null || true
-browser_pid=
 
 "$chrome" "${common[@]}" --window-size=1440,1200 \
   --screenshot="$output_dir/leaderboard-desktop.png" \

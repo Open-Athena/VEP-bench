@@ -371,7 +371,22 @@ export function orderQuestionsForExplorer(questions) {
   });
 }
 
-export function predictionComparisonRows(question, result) {
+export function variantType(ref, alt) {
+  if (typeof ref !== "string" || typeof alt !== "string" || ref === alt
+    || !/^[ACGT]*$/.test(ref + alt)) return "Unknown";
+  while (ref && alt && ref[0] === alt[0]) {
+    ref = ref.slice(1);
+    alt = alt.slice(1);
+  }
+  while (ref && alt && ref.at(-1) === alt.at(-1)) {
+    ref = ref.slice(0, -1);
+    alt = alt.slice(0, -1);
+  }
+  return ref.length !== alt.length ? "Indel"
+    : ref.length === 1 ? "SNV" : "Multibase substitution";
+}
+
+export function predictionComparisonRows(question, result, displayMetadata = null) {
   const predictions = result?.scoring?.parsed_answer;
   if (question?.task_type !== "ranking"
     || result?.scoring?.metric !== "rank_correlation"
@@ -385,9 +400,20 @@ export function predictionComparisonRows(question, result) {
       const predicted = Object.hasOwn(predictions, candidate?.candidate_id)
         ? finiteNumber(predictions[candidate.candidate_id])
         : null;
+      const annotation = displayMetadata?.source_record_sha256
+        && displayMetadata.source_record_sha256 === question.provenance?.source_record_sha256
+        ? displayMetadata.variants?.[candidate.candidate_id]
+        : null;
       return measured === null || predicted === null
         ? []
-        : [{candidate_id: candidate.candidate_id, measured, predicted}];
+        : [{
+            candidate_id: candidate.candidate_id,
+            measured,
+            predicted,
+            variant_type: variantType(candidate.ref, candidate.alt),
+            consequence: annotation?.most_severe_consequence ?? "Not annotated",
+            genomic: annotation?.genomic ?? null
+          }];
     }
   );
 }

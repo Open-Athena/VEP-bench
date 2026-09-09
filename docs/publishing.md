@@ -136,3 +136,22 @@ the [Website workflow](../.github/workflows/website.yml) for deployment.
 The [explorer source](../projects/explorer/web/) defines page behavior; score
 interpretation belongs in [Evaluation](evaluation.md#completion-and-failure-semantics)
 and the [task methodology](tasks/README.md).
+
+### Variant annotations
+
+To refresh the annotations used by the site:
+
+```bash
+uv run --no-sync vepbench-site annotate \
+  --config projects/explorer/config/site.yaml \
+  --ensembl-url https://may2025.rest.ensembl.org \
+  --cache .vepbench/ensembl-may2025
+```
+
+Commit the generated [snapshot](../projects/explorer/data/variant-annotations.json)
+and retain the response cache for offline replay. Use a fresh cache directory
+when refreshing against another Ensembl release. The snapshot records the
+annotation source and parameters.
+
+Genomic VEP consequences provide biological context; they may differ from the
+effect measured in a reporter assay.

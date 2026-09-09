@@ -37,7 +37,7 @@ jobs:
           else
             while IFS= read -r path; do
               case "$path" in
-                .github/workflows/website.yml|.python-version|pyproject.toml|uv.lock|src/vepbench/*|projects/explorer/*|projects/publishing/*|configs/tasks/*|data/sources/*|tests/test_browser_qa_fixture.py|tests/test_site.py)
+                .github/workflows/website.yml|.python-version|pyproject.toml|uv.lock|src/vepbench/*|projects/explorer/*|projects/publishing/*|configs/tasks/*|data/sources/*|tests/test_browser_qa_fixture.py|tests/test_site.py|tests/test_variant_annotations.py)
                   website=true
                   ;;
               esac
@@ -79,7 +79,8 @@ jobs:
 
       - name: Run website unit tests
         run: |
-          uv run --no-sync pytest tests/test_site.py tests/test_browser_qa_fixture.py
+          uv run --no-sync pytest \
+            tests/test_site.py tests/test_browser_qa_fixture.py tests/test_variant_annotations.py
           npm test --prefix projects/explorer
 
       - name: Build validated static site

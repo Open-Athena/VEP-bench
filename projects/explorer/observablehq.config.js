@@ -32,8 +32,8 @@ export default {
       .vepbench-record-card {
         display: flex;
         flex-direction: column;
-        height: min(78vh, 52rem);
-        min-height: 40rem;
+        height: max(54rem, min(90vh, 64rem));
+        min-height: 54rem;
         min-width: 0;
         overflow: hidden;
       }
