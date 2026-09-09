@@ -26,3 +26,9 @@ models:
     release_date: "2026-07-09"
     knowledge_cutoff: "2026-02-16"
     knowledge_cutoff_url: https://developers.openai.com/api/docs/models/gpt-5.6-sol
+  openai/gpt-6-astra:
+    family: GPT 6 Astra
+    # Release: https://developers.openai.com/api/docs/changelog (September 3, 2026).
+    release_date: "2026-09-03"
+    knowledge_cutoff: "2026-04-30"
+    knowledge_cutoff_url: https://developers.openai.com/api/docs/models/gpt-6-astra

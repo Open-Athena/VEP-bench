@@ -1,0 +1,9 @@
+# Submit through OpenRouter's Batch API while keeping the canonical base model ID.
+schema_version: "1.0"
+label: gpt-6-astra-medium
+model: openai/gpt-6-astra
+generation:
+  seed: 20260829
+  reasoning:
+    effort: medium
+    exclude: false
