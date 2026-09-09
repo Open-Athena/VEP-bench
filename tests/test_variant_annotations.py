@@ -181,6 +181,40 @@ def test_resuming_annotation_refuses_to_mix_ensembl_releases(tmp_path: Path) -> 
         resumed.get("lookup/symbol/homo_sapiens/TEST")
 
 
+@pytest.mark.parametrize("failure", ["release_changed", "unavailable"])
+@pytest.mark.parametrize("previous_snapshot", [False, True])
+def test_failed_final_release_check_cannot_be_bypassed_by_cache_replay(
+    tmp_path: Path, failure: str, previous_snapshot: bool
+) -> None:
+    path = tmp_path / "source.jsonl"
+    cache = tmp_path / "cache"
+    if previous_snapshot:
+        path.write_text(json.dumps(source(1)) + "\n")
+        generate_annotations([path], EnsemblCache(cache, fake_response))
+    path.write_text(json.dumps(source(2)) + "\n")
+    release_checks = 0
+
+    def failed_verification(request: dict) -> dict | list:
+        nonlocal release_checks
+        if request["path"] == "info/software":
+            release_checks += 1
+            if release_checks == 2:
+                if failure == "release_changed":
+                    return {"release": 116}
+                raise BuildError("Ensembl unavailable")
+        return fake_response(request)
+
+    with pytest.raises(BuildError, match=r"release changed|unavailable"):
+        generate_annotations([path], EnsemblCache(cache, failed_verification))
+
+    def offline(request: dict) -> None:
+        assert request["path"] == "info/software"
+        raise BuildError("offline: final release verification is still required")
+
+    with pytest.raises(BuildError, match="verification is still required"):
+        generate_annotations([path], EnsemblCache(cache, offline))
+
+
 def test_archive_identity_is_preserved_and_caches_are_separate(tmp_path: Path) -> None:
     path = tmp_path / "source.jsonl"
     path.write_text(json.dumps(source()) + "\n")

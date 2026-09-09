@@ -98,6 +98,22 @@ class EnsemblCache:
         if current != self.software:
             raise BuildError("Ensembl release changed; use a new annotation cache directory")
 
+    def verify_snapshot(self) -> None:
+        """Permit offline replay only for a set that passed its final release check."""
+        snapshot = {
+            "base_url": self.base_url,
+            "software": self.software,
+            "requests": [self.used[key] for key in sorted(self.used)],
+        }
+        verified = self.directory / "verified" / f"{sha256_json(snapshot)}.json"
+        if verified.is_file():
+            if json.loads(verified.read_text(encoding="utf-8")) != snapshot:
+                raise BuildError(f"invalid Ensembl snapshot verification {verified}")
+            if not self.fetched:
+                return
+        self.verify_release()
+        write_annotation_json(verified, snapshot)
+
     def get(self, path: str, *, body: Any = None, params: Mapping[str, Any] | None = None) -> Any:
         request = {
             "base_url": self.base_url,
@@ -310,8 +326,7 @@ def generate_annotations(source_paths: Sequence[Path], client: EnsemblCache) -> 
         for record in task.values():
             for variant in record["variants"].values():
                 variant["most_severe_consequence"] = consequences[variant.pop("allele_sha256")]
-    if client.fetched:
-        client.verify_release()
+    client.verify_snapshot()
     return {
         "schema_version": "1.0",
         "annotation": {
