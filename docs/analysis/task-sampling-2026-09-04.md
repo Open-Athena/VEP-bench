@@ -1,5 +1,9 @@
 # Task sampling analysis: 2026-09-04
 
+The later [MPRA v1-to-v2 result comparison](mpra-v1-v2-2026-09-08.md)
+is archived on this same retained analysis branch, with compact inputs and an
+offline verification script. Both analyses are excluded from `main`.
+
 This report completes the primary-population comparison for
 [issue #62](https://github.com/Open-Athena/VEP-bench/issues/62). Production
 sources and question sets have not yet been regenerated. The user authorized

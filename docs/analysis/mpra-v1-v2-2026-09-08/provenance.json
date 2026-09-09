@@ -1,0 +1,37 @@
+{
+  "description": "Compact inputs for the existing Sol medium MPRA v1/v2 diagnostic; no new evaluations.",
+  "source_commits": {
+    "v1": "0c758ce9ef1bbcb3202e67bf3950240afee05b88",
+    "v2": "bf22715df534977066229c01cc8c5fee6d8baee7"
+  },
+  "source_path": "data/sources/satmut-mpra-cadd-v1.7.jsonl",
+  "source_sha256": {
+    "v1": "7e3570cd5d2ed6cca097d4a816a3897310668ef921cfbeeac9185e5ad04a9126",
+    "v2": "550882be248605a5505be40519e97569d45f1431bd6ea5fb234039499429ae21"
+  },
+  "question_set_sha256": {
+    "v1": "40b4b9796a6a0157ae964e60a907eedee0b01f853509853e4fc3b7e74dcdae7e",
+    "v2": "56ce4af8e11fb5b7b9658adabb14449a36d9f10206407a532793a6ee992c5462"
+  },
+  "run_ids": {
+    "v1": "gpt-5.6-sol-medium-satmut-mpra-20260903T161700Z",
+    "v2": "gpt-5.6-sol-medium-satmut-mpra-v2-20260908"
+  },
+  "original_files_sha256": {
+    "v1_published_raw_decompressed": "5e1d2cdd74507b945e8295de63388f81be9d530d036ce31962d37377b858834a",
+    "v2_local_full_results": "c4176ae8ea35c81350fa0b624aa8c7645de6d375d8a3293ff2b324885140695f"
+  },
+  "generation_parameters": {
+    "max_tokens": 128000,
+    "seed": 20260829,
+    "reasoning": {
+      "effort": "medium",
+      "exclude": false
+    }
+  },
+  "inputs_sha256": "01ea52279b4e29ef2f51040965e772919106fda08dc0291ca87a9f4dc6ba0013",
+  "inputs_gzip_sha256": "b103e01befb5c37acb1becfc805a19d2ce1e4f97210f6cc00eadfc7cd065424e",
+  "comparison_sha256": "a987c7ceb1ea6afa56a9c5344e24ac9563cab2519346983939038d0aa8687712",
+  "elements_per_version": 16,
+  "variants_per_element": 50
+}

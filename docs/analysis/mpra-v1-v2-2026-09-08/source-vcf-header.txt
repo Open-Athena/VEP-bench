@@ -1,0 +1,7 @@
+##fileformat=VCFv4.2
+##FILTER=<ID=SIGN,Description="minimum support 10 and significant 1<e-5">
+##FILTER=<ID=MIN,Description="Minimum of 10 supporting BCs">
+##FILTER=<ID=QUAL,Description="low quality, Not significant and lower than 10 BCs">
+##INFO=<ID=EF,Number=1,Type=Float,Description="Coeficient of the variant, variant effect">
+##INFO=<ID=PV,Number=1,Type=Float,Description="P-value">
+##INFO=<ID=BC,Number=1,Type=Integer,Description="Number of tags/barcode support">
