@@ -258,7 +258,7 @@ function predictionComparisonPlot(rows) {
       domain: consequences,
       range: consequences.map(consequenceColor),
       legend: true,
-      tickFormat: (term) => term.replaceAll("_", " "),
+      tickFormat: (term) => term.replace(/_variant$/, "").replaceAll("_", " "),
       label: "VEP consequence"
     },
     symbol: {
