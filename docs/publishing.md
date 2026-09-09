@@ -30,6 +30,26 @@ directories to contain only intended complete runs, excluding batch chunks and
 superseded runs. Every included task needs a complete run, and each configuration
 may appear only once.
 
+For an existing complete evaluation spanning several task families, export
+task-specific inputs before building the version:
+
+```bash
+uv run --no-sync vepbench-publish split-results \
+  --questions .vepbench/questions/combined.jsonl \
+  --results .vepbench/results/combined.jsonl \
+  --output .vepbench/publication-export
+```
+
+The export validates every source record, requires one completed response per
+question, and preserves completed invalid answers and their zero scores. It
+writes canonical task question files and assigns a task suffix to each run ID.
+Only run identity and question-set membership change; prompts, provider data,
+reasoning, usage, and scores are retained. Namespaced raw metadata and
+`export.json` record the original run, full question-set fingerprint, and source
+record hashes. Source files remain intact. Retry selection must already be
+resolved before export; retain the attempt ledger and original failed attempts
+alongside the evaluation for cost and retry auditing.
+
 The [publishing config](../projects/publishing/config/publishing.yaml) selects
 the bucket and [model catalog](../configs/models/catalog.yaml). Every published
 model needs a reviewed catalog entry. Knowledge-cutoff metadata must have

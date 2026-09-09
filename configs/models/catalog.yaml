@@ -32,3 +32,9 @@ models:
     release_date: "2026-09-03"
     knowledge_cutoff: "2026-04-30"
     knowledge_cutoff_url: https://developers.openai.com/api/docs/models/gpt-6-astra
+  z-ai/glm-5.3:
+    family: GLM 5.3
+    # Release: https://openrouter.ai/z-ai/glm-5.3 (August 18, 2026).
+    release_date: "2026-08-18"
+    knowledge_cutoff: null
+    knowledge_cutoff_url: null

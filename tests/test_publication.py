@@ -19,10 +19,11 @@ from vepbench_publishing.publication import (
     validate_version,
     validate_version_name,
 )
+from vepbench_publishing.split import split_results
 
-from vepbench.artifacts import canonical_json, sha256_json
+from vepbench.artifacts import canonical_json, sha256_file, sha256_json
 from vepbench.errors import BuildError
-from vepbench.evaluation.core import ProviderError, error_result, evaluate_file
+from vepbench.evaluation.core import ProviderError, completed_result, error_result, evaluate_file
 from vepbench.questions.builder import build_file
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -35,6 +36,132 @@ SCHEMAS = ROOT / "src/vepbench/schemas"
 RANKING_SOURCE = ROOT / "tests/fixtures/synthetic-ranking-source.jsonl"
 RANKING_TEMPLATE = ROOT / "configs/tasks/satmut-mpra/prompt.yaml"
 QUESTION_SCHEMA = ROOT / "src/vepbench/schemas/question.schema.json"
+
+
+def combined_run_fixture(tmp_path: Path) -> tuple[Path, Path, list[dict]]:
+    question = json.loads(QUESTIONS.read_text())
+    questions = []
+    for index, family in enumerate(["task_a", "task_b"]):
+        item = deepcopy(question)
+        item["question_id"] = f"combined:{index}"
+        item["metadata"]["task_family"] = family
+        questions.append(item)
+    question_path = tmp_path / "questions.jsonl"
+    question_path.write_text("".join(canonical_json(item) + "\n" for item in questions))
+    records = []
+    for index, item in enumerate(questions):
+        raw = {
+            "id": f"offline-{index}",
+            "provider": "Z.AI",
+            "choices": [
+                {
+                    "message": {
+                        "content": "FINAL: B" if not index else "Invalid answer",
+                        "reasoning": "Exposed reasoning",
+                    },
+                    "finish_reason": "stop",
+                }
+            ],
+            "usage": {"cost": 0.1, "total_tokens": 100},
+        }
+        records.append(
+            completed_result(
+                raw=raw,
+                question=item,
+                question_set_sha256=sha256_file(question_path),
+                question_set_size=2,
+                run_id="combined",
+                model_id="z-ai/glm-5.3",
+                generation_parameters={"reasoning": {"effort": "low", "exclude": False}},
+                evaluated_at=datetime(2026, 9, 9, tzinfo=UTC),
+                latency_seconds=1.0,
+            )
+        )
+    result_path = tmp_path / "results.jsonl"
+    result_path.write_text("".join(canonical_json(item) + "\n" for item in records))
+    return question_path, result_path, records
+
+
+def test_split_results_preserves_responses_and_original_provenance(tmp_path: Path) -> None:
+    questions, results, original = combined_run_fixture(tmp_path)
+    source_bytes = results.read_bytes()
+    first = tmp_path / "first"
+    manifest = split_results(questions=questions, results=results, output=first)
+    second = tmp_path / "second"
+    assert split_results(questions=questions, results=results, output=second) == manifest
+    assert results.read_bytes() == source_bytes
+    for family, task in manifest["tasks"].items():
+        source_record = next(
+            row for row in original if row["question"]["metadata"]["task_family"] == family
+        )
+        exported = json.loads((first / task["results"]).read_text())
+        assert (first / task["results"]).read_bytes() == (second / task["results"]).read_bytes()
+        assert exported["question_set_size"] == 1
+        assert exported["question_set_sha256"] == sha256_file(first / task["questions"])
+        assert exported["scoring"] == source_record["scoring"]
+        provenance = exported["response"]["raw"].pop("_vepbench_task_export")
+        assert provenance["source_raw_sha256"] == sha256_json(source_record["response"]["raw"])
+        assert provenance["source_results_sha256"] == sha256_file(results)
+        assert (
+            provenance["source_record_sha256"]
+            == hashlib.sha256((canonical_json(source_record) + "\n").encode()).hexdigest()
+        )
+        exported.update(
+            {
+                key: source_record[key]
+                for key in ["run_id", "question_set_sha256", "question_set_size"]
+            }
+        )
+        assert exported == source_record
+    # The invalid completed answer must be retained with its zero score.
+    assert original[1]["scoring"]["value"] == 0
+    version = tmp_path / "publication"
+    built = build_version(
+        questions_path=tuple(first / task["questions"] for task in manifest["tasks"].values()),
+        results_dir=tuple(first / "results" / family for family in manifest["tasks"]),
+        result_schema_path=RESULT_SCHEMA,
+        schemas_dir=SCHEMAS,
+        output=version,
+        version_name="candidate",
+    )
+    assert built["artifacts"]["runs"]["records"] == 2
+    assert validate_version(version, version_name="candidate") == built
+    with pytest.raises(BuildError, match="refusing to overwrite"):
+        split_results(questions=questions, results=results, output=first)
+
+
+@pytest.mark.parametrize(
+    "problem", ["missing", "duplicate", "wrong_digest", "mixed_run", "api_error"]
+)
+def test_split_results_rejects_invalid_sources_without_partial_exports(
+    tmp_path: Path, problem: str
+) -> None:
+    questions, results, records = combined_run_fixture(tmp_path)
+    if problem == "missing":
+        records.pop()
+    elif problem == "duplicate":
+        records.append(records[-1])
+    elif problem == "wrong_digest":
+        records[0]["question_set_sha256"] = "f" * 64
+    elif problem == "mixed_run":
+        records[-1]["run_id"] = "different-run"
+    else:
+        records[-1] = error_result(
+            error=ProviderError("offline connection failure"),
+            question=records[-1]["question"],
+            question_set_sha256=sha256_file(questions),
+            question_set_size=2,
+            run_id="combined",
+            model_id="z-ai/glm-5.3",
+            generation_parameters=records[-1]["generation_parameters"],
+            evaluated_at=datetime(2026, 9, 9, tzinfo=UTC),
+            latency_seconds=1.0,
+        )
+    results.write_text("".join(canonical_json(item) + "\n" for item in records))
+    output = tmp_path / "export"
+    with pytest.raises(BuildError):
+        split_results(questions=questions, results=results, output=output)
+    assert not output.exists()
 
 
 def test_version_build_cli_preserves_version_option(
