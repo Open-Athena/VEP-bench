@@ -15,6 +15,13 @@ from cyclopts.exceptions import CycloptsError
 
 from vepbench.errors import BuildError
 
+from .annotations import (
+    ENSEMBL_URL,
+    EnsemblCache,
+    generate_annotations,
+    load_annotations,
+    write_annotation_json,
+)
 from .config import load_site_config
 from .site import build_question_metadata, build_site, load_assay_publications
 
@@ -47,12 +54,20 @@ def build(*, config: Path, output: Path = Path("_site")) -> int:
         raise BuildError(
             f"Observable Framework is not installed; run `npm ci --prefix {project_root}`"
         )
+    annotations = (
+        load_annotations(settings.variant_annotations)
+        if settings.variant_annotations is not None and settings.variant_annotations.is_file()
+        else None
+    )
+    if settings.variant_annotations is not None and annotations is None:
+        print("VEP annotations are unavailable; showing retained genomic provenance only.")
     with tempfile.TemporaryDirectory(prefix="vepbench-observable-") as temporary:
         temporary_project = Path(temporary)
         source = temporary_project / "web"
         question_metadata = build_question_metadata(
             source_paths=settings.question_metadata_sources,
             assay_publications=load_assay_publications(settings.assay_publications),
+            variant_annotations=annotations,
         )
         manifest = build_site(
             assets_dir=settings.assets_dir,
@@ -76,6 +91,27 @@ def build(*, config: Path, output: Path = Path("_site")) -> int:
                 f"Observable Framework build failed with exit code {completed.returncode}"
             )
     print(f"built {output} against {manifest['data_base_url']}")
+    return 0
+
+
+@app.command
+def annotate(
+    *,
+    config: Path,
+    cache: Path = Path(".vepbench/ensembl"),
+    output: Path | None = None,
+    ensembl_url: str = ENSEMBL_URL,
+) -> int:
+    """Fetch and save VEP display annotations; subsequent builds remain offline."""
+    settings = load_site_config(config)
+    destination = output or settings.variant_annotations
+    if destination is None:
+        raise BuildError("provide --output or configure variant_annotations")
+    annotations = generate_annotations(
+        settings.question_metadata_sources, EnsemblCache(cache, base_url=ensembl_url)
+    )
+    write_annotation_json(destination, annotations)
+    print(f"wrote VEP annotations to {destination}")
     return 0
 
 

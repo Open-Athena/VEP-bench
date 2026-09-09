@@ -232,10 +232,20 @@ function markdownNode(source) {
 }
 
 function predictionComparisonPlot(rows) {
-  return resize((width) => Plot.plot({
+  const consequences = [...new Set(rows.map((row) => row.consequence))].sort();
+  const variantTypes = ["SNV", "Indel", "Multibase substitution", "Unknown"];
+  const symbols = ["circle", "triangle", "square", "diamond"];
+  const presentTypes = variantTypes.filter((type) => rows.some((row) => row.variant_type === type));
+  const container = element("div", "vepbench-prediction-plot");
+  container.style.maxWidth = "440px";
+  container.style.marginInline = "auto";
+  container.append(resize((width) => Plot.plot({
     width,
-    height: 220,
+    // Equal inner dimensions after reserving space for the axis labels.
+    height: width - 8,
     marginLeft: 54,
+    marginRight: 20,
+    marginTop: 20,
     marginBottom: 46,
     ariaLabel: "Predicted versus measured variant effects",
     ariaDescription: (
@@ -243,6 +253,21 @@ function predictionComparisonPlot(rows) {
     ),
     x: {grid: true, label: "Measured effect", nice: true},
     y: {grid: true, label: "Predicted effect", nice: true},
+    color: {
+      type: "categorical",
+      domain: consequences,
+      range: consequences.map(consequenceColor),
+      legend: true,
+      tickFormat: (term) => term.replaceAll("_", " "),
+      label: "VEP consequence"
+    },
+    symbol: {
+      domain: presentTypes,
+      range: presentTypes.map((type) => symbols[variantTypes.indexOf(type)]),
+      legend: true,
+      fill: "currentColor",
+      stroke: "none"
+    },
     marks: [
       Plot.linearRegressionY(rows, {
         ci: 0,
@@ -256,23 +281,69 @@ function predictionComparisonPlot(rows) {
       Plot.dot(rows, {
         x: "measured",
         y: "predicted",
-        fill: "#4267d2",
+        fill: "consequence",
+        symbol: "variant_type",
         fillOpacity: 0.82,
         stroke: "var(--theme-background)",
         strokeWidth: 1.25,
         r: 4.5,
         tip: true,
         ariaLabel: (row) => (
-          `${row.candidate_id}; measured ${row.measured}; predicted ${row.predicted}`
+          `${row.candidate_id}; ${row.variant_type}; ${row.consequence}; `
+          + `measured ${row.measured}; predicted ${row.predicted}`
         ),
         title: (row) => [
           row.candidate_id,
+          `Type: ${row.variant_type}`,
+          `VEP consequence: ${row.consequence.replaceAll("_", " ")}`,
+          row.genomic
+            ? `${row.genomic.assembly} · chr${row.genomic.chrom}:${row.genomic.pos} `
+              + `${row.genomic.ref}>${row.genomic.alt}`
+            : "Genomic coordinates unavailable",
           `Measured: ${row.measured}`,
           `Predicted: ${row.predicted}`
         ].join("\n")
       })
     ]
-  }));
+  })));
+  return container;
+}
+
+// Fixed colors keep the same consequence recognizable across panels and models.
+function consequenceColor(term) {
+  const colors = {
+    transcript_ablation: "#7f0000",
+    splice_acceptor_variant: "#d73027",
+    splice_donor_variant: "#f46d43",
+    stop_gained: "#a50026",
+    frameshift_variant: "#b2188b",
+    stop_lost: "#8c510a",
+    start_lost: "#bf812d",
+    inframe_insertion: "#762a83",
+    inframe_deletion: "#9970ab",
+    missense_variant: "#e69f00",
+    protein_altering_variant: "#cc79a7",
+    splice_region_variant: "#009e73",
+    splice_donor_5th_base_variant: "#006d2c",
+    splice_donor_region_variant: "#238b45",
+    splice_polypyrimidine_tract_variant: "#41ab5d",
+    synonymous_variant: "#0072b2",
+    stop_retained_variant: "#3182bd",
+    start_retained_variant: "#6baed6",
+    "5_prime_UTR_variant": "#008b8b",
+    "3_prime_UTR_variant": "#56b4e9",
+    non_coding_transcript_exon_variant: "#66a61e",
+    intron_variant: "#666666",
+    NMD_transcript_variant: "#7570b3",
+    non_coding_transcript_variant: "#a6761d",
+    upstream_gene_variant: "#8c6d31",
+    downstream_gene_variant: "#b15928",
+    regulatory_region_variant: "#1b9e77",
+    TF_binding_site_variant: "#d95f02",
+    intergenic_variant: "#999999",
+    "Not annotated": "#999999"
+  };
+  return colors[term] ?? "#6a51a3";
 }
 
 export function questionRecord(entry) {
@@ -356,7 +427,7 @@ export function questionRecord(entry) {
         "muted",
         `Parsed prediction: ${result?.scoring.parsed_answer ?? "—"} · ${entry.prediction}`
       );
-  const comparisonRows = predictionComparisonRows(question, result);
+  const comparisonRows = predictionComparisonRows(question, result, entry.display_metadata);
   const answerSections = element("div", "vepbench-answer-sections");
   if (question.task_type === "ranking") {
     const plotSection = element("section", "vepbench-prediction-section");
@@ -373,7 +444,8 @@ export function questionRecord(entry) {
       plotSection.append(element(
         "p",
         "muted vepbench-plot-caption",
-        "Each point is one variant; the dashed line shows the fitted linear trend."
+        "Color shows the most severe VEP consequence; shape shows the variant type. "
+        + "The dashed line shows the fitted linear trend."
       ));
     } else {
       plotSection.append(element(

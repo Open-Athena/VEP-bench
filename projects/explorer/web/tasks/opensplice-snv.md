@@ -89,6 +89,7 @@ const questionEntries = entriesForQuestions(taskQuestions).map((entry) => {
   );
   return {
     ...entry,
+    display_metadata: displayMetadata,
     element: displayMetadata?.element ?? "—",
     assay_first_indexed: displayMetadata?.assay_first_indexed ?? null
   };
@@ -332,7 +333,8 @@ const recordEntry = selected
         run,
         rawArchiveUrl
       ),
-      element: selected.element
+      element: selected.element,
+      display_metadata: selected.display_metadata
     }
   : null;
 ```

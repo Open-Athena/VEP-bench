@@ -54,7 +54,11 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
         "registry": "Figshare",
         "url": "https://doi.org/10.6084/m9.figshare.32337414.v5",
     }
-    assert metadata["by_task_family"]["satmut_mpra"]["GP1BA"] == {
+    assert {
+        key: value
+        for key, value in metadata["by_task_family"]["satmut_mpra"]["GP1BA"].items()
+        if key != "variants"
+    } == {
         "source_record_sha256": sha256_json(
             next(r for r in read_jsonl(SATMUT_SOURCE) if r["source_record_id"] == "GP1BA")
         ),
@@ -67,6 +71,10 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
         },
     }
     assert metadata["by_task_family"]["sge"]["BAP1"]["element"] == "BAP1"
+    assert metadata["by_task_family"]["sge"]["BAP1"]["variants"]["V01"] == {
+        "genomic": {"assembly": "GRCh38", "chrom": "3", "pos": 52409842, "ref": "C", "alt": "G"}
+    }
+    assert metadata["by_task_family"]["opensplice_snv"]["E01"]["variants"] == {}
     assert metadata["by_task_family"]["sge"]["BAP1"]["assay_first_indexed"]["date"] == (
         "2024-07-05"
     )

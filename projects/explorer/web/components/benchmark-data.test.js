@@ -26,7 +26,8 @@ import {
   resultTypeForAnswer,
   resultTypeLabel,
   runForTask,
-  supportsOverallLeaderboard
+  supportsOverallLeaderboard,
+  variantType
 } from "./benchmark-data.js";
 
 test("reselected windows cannot relabel questions from an earlier source", () => {
@@ -674,7 +675,9 @@ test("prediction comparison pairs reference effects with parsed ranking values",
     }
   };
 
-  assert.deepEqual(predictionComparisonRows(question, result), [
+  assert.deepEqual(predictionComparisonRows(question, result).map(
+    ({candidate_id, measured, predicted}) => ({candidate_id, measured, predicted})
+  ), [
     {candidate_id: "V01", measured: -1.5, predicted: -0.9},
     {candidate_id: "V02", measured: 0.25, predicted: 0.5},
     {candidate_id: "V03", measured: 2, predicted: 1.75}
@@ -686,6 +689,45 @@ test("prediction comparison pairs reference effects with parsed ranking values",
     {...question, task_type: "multiple_choice"},
     result
   ), []);
+});
+
+test("variant shapes distinguish indels and complete multibase substitutions", () => {
+  assert.equal(variantType("A", "T"), "SNV");
+  assert.equal(variantType("AC", "AT"), "SNV");
+  assert.equal(variantType("AC", "A"), "Indel");
+  assert.equal(variantType("A", "ACT"), "Indel");
+  assert.equal(variantType("AC", "GT"), "Multibase substitution");
+  assert.equal(variantType("ACT", "AGT"), "SNV");
+  assert.equal(variantType(undefined, undefined), "Unknown");
+});
+
+test("variant annotations join by candidate ID and exact source digest", () => {
+  const question = {
+    task_type: "ranking",
+    provenance: {source_record_sha256: "current-source"},
+    candidates: [
+      {candidate_id: "V01", ref: "A", alt: "C", reference_score: 1},
+      {candidate_id: "V02", ref: "ACT", alt: "A", reference_score: -2}
+    ]
+  };
+  const result = {scoring: {metric: "rank_correlation", parsed_answer: {V02: -1, V01: 2}}};
+  const genomic = {assembly: "GRCh38", chrom: "3", pos: 123, ref: "A", alt: "C"};
+  const metadata = {
+    source_record_sha256: "current-source",
+    variants: {
+      V02: {most_severe_consequence: "frameshift_variant"},
+      V01: {most_severe_consequence: "missense_variant", genomic}
+    }
+  };
+  const rows = predictionComparisonRows(question, result, metadata);
+  assert.equal(rows[0].predicted, 2);
+  assert.equal(rows[0].consequence, "missense_variant");
+  assert.deepEqual(rows[0].genomic, genomic);
+  assert.equal(rows[1].variant_type, "Indel");
+  assert.equal(rows[1].consequence, "frameshift_variant");
+  metadata.source_record_sha256 = "old-source";
+  assert.equal(predictionComparisonRows(question, result, metadata)[0].genomic, null);
+  assert.equal(predictionComparisonRows(question, result, metadata)[0].consequence, "Not annotated");
 });
 
 test("result types use stored values and preserve legacy fallbacks", () => {
