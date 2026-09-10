@@ -145,6 +145,8 @@ def resolve_retry(*, original: Path, retry: Path, output: Path) -> None:
             raise BuildError("source already contains retry provenance")
     ids = [record["question_id"] for record in records]
     first = records[0]
+    if len({record["question"]["metadata"]["task_family"] for record in records}) != 1:
+        raise BuildError("retry resolution requires a single task family")
     if len(records) != first["question_set_size"] or ids != sorted(set(ids)):
         raise BuildError("original run must cover its complete ordered question set")
     identity = ("run_id", "question_set_sha256", "question_set_size", "generation_parameters")

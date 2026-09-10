@@ -83,11 +83,12 @@ def combined_run_fixture(tmp_path: Path) -> tuple[Path, Path, list[dict]]:
     return question_path, result_path, records
 
 
-def retry_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
+def retry_fixture(tmp_path: Path, *, combined: bool = False) -> tuple[Path, Path, Path]:
     questions, original, records = combined_run_fixture(tmp_path)
     items = [record["question"] for record in records]
-    for item in items:
-        item["metadata"]["task_family"] = "task_a"
+    if not combined:
+        for item in items:
+            item["metadata"]["task_family"] = "task_a"
     questions.write_text("".join(canonical_json(item) + "\n" for item in items))
     for record in records:
         record["question_sha256"] = sha256_json(record["question"])
@@ -176,6 +177,24 @@ def test_retry_source_digest_detects_tampering(tmp_path: Path) -> None:
     record["usage"]["cost"] += 1
     with pytest.raises(BuildError, match="source digest"):
         validate_retry_record(record)
+
+
+def test_retry_export_rejects_combined_task_runs(tmp_path: Path) -> None:
+    _, original, retry = retry_fixture(tmp_path, combined=True)
+    output = tmp_path / "resolved.jsonl"
+    with pytest.raises(BuildError, match="single task family"):
+        resolve_retry(original=original, retry=retry, output=output)
+    assert not output.exists()
+
+
+def test_split_results_rejects_retry_exports_before_writing(tmp_path: Path) -> None:
+    questions, original, retry = retry_fixture(tmp_path)
+    resolved = tmp_path / "resolved.jsonl"
+    resolve_retry(original=original, retry=retry, output=resolved)
+    output = tmp_path / "split"
+    with pytest.raises(BuildError, match="publish retry-resolved task runs directly"):
+        split_results(questions=questions, results=resolved, output=output)
+    assert not output.exists()
 
 
 def test_split_results_preserves_responses_and_original_provenance(tmp_path: Path) -> None:

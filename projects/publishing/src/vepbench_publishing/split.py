@@ -16,6 +16,8 @@ from vepbench.evaluation.core import validate_result
 from vepbench.questions.validation import validate_question
 from vepbench.resources import QUESTION_SCHEMA, RESULT_SCHEMA
 
+from .retry import retry_metadata
+
 
 def split_results(*, questions: Path, results: Path, output: Path) -> dict[str, Any]:
     """Write task exports atomically; retain original identity inside raw metadata."""
@@ -74,6 +76,10 @@ def split_results(*, questions: Path, results: Path, output: Path) -> dict[str, 
             for line in source:
                 record = json.loads(line)
                 validate_result(record, validator)
+                if retry_metadata(record["usage"]) is not None:
+                    raise BuildError(
+                        "publish retry-resolved task runs directly without split-results"
+                    )
                 question_id = record["question_id"]
                 if previous is not None and question_id <= previous:
                     raise BuildError("source results must have one sorted record per question")
