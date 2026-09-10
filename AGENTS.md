@@ -48,6 +48,10 @@ These instructions apply to the entire VEP-bench repository.
 
 ## Cost and secrets
 
+- Prioritize completing whole tasks and models during evaluation campaigns.
+  Keep launching authorized work when capacity is available; a pending run is
+  not a reason to leave capacity idle. Prefer reporting completed results over
+  intermediate progress counts.
 - Never make paid or live model API calls from tests or CI.
 - Keep evaluation an explicit local action. Tests must use an injected fake or
   offline mock transport.

@@ -19,6 +19,7 @@ from vepbench_publishing.publication import (
     validate_version,
     validate_version_name,
 )
+from vepbench_publishing.retry import resolve_retry, validate_retry_record
 from vepbench_publishing.split import split_results
 
 from vepbench.artifacts import canonical_json, sha256_file, sha256_json
@@ -80,6 +81,101 @@ def combined_run_fixture(tmp_path: Path) -> tuple[Path, Path, list[dict]]:
     result_path = tmp_path / "results.jsonl"
     result_path.write_text("".join(canonical_json(item) + "\n" for item in records))
     return question_path, result_path, records
+
+
+def retry_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
+    questions, original, records = combined_run_fixture(tmp_path)
+    items = [record["question"] for record in records]
+    for item in items:
+        item["metadata"]["task_family"] = "task_a"
+    questions.write_text("".join(canonical_json(item) + "\n" for item in items))
+    for record in records:
+        record["question_sha256"] = sha256_json(record["question"])
+        record["question_set_sha256"] = sha256_file(questions)
+    retried = deepcopy(records[0])
+    retried["run_id"] = "one-retry"
+    records[0] = error_result(
+        error=ProviderError("Gemini blocked the request: SAFETY", raw_response={"error": "SAFETY"}),
+        question=items[0],
+        question_set_sha256=sha256_file(questions),
+        question_set_size=2,
+        run_id="combined",
+        model_id="z-ai/glm-5.3",
+        generation_parameters=retried["generation_parameters"],
+        evaluated_at=datetime(2026, 9, 9, tzinfo=UTC),
+        latency_seconds=None,
+    )
+    provenance = {
+        "batch_id": "original-batch",
+        "batch_question_ids": [item["question_id"] for item in items],
+        "batch_usage": {"cost": 0.4, "total_tokens": 100},
+        "cost_allocation": "equal",
+        "cost_source": "allocated_batch_total",
+    }
+    for record in records:
+        record["usage"].update(cost=0.2, vepbench=deepcopy(provenance))
+    original.write_text("".join(canonical_json(record) + "\n" for record in records))
+    retry = tmp_path / "retry.jsonl"
+    retry.write_text(canonical_json(retried) + "\n")
+    return questions, original, retry
+
+
+def test_retry_export_preserves_failure_costs_and_publishes(tmp_path: Path) -> None:
+    questions, original, retry = retry_fixture(tmp_path)
+    before = original.read_bytes(), retry.read_bytes()
+    output = tmp_path / "resolved" / "run.jsonl"
+    resolve_retry(original=original, retry=retry, output=output)
+    second = tmp_path / "second.jsonl"
+    resolve_retry(original=original, retry=retry, output=second)
+    assert second.read_bytes() == output.read_bytes()
+    assert before == (original.read_bytes(), retry.read_bytes())
+    records = [json.loads(line) for line in output.read_text().splitlines()]
+    assert records[0]["usage"]["vepbench"]["retry"]["prior_attempt"]["error"]["message"].endswith(
+        "SAFETY"
+    )
+    assert records[1]["scoring"]["value"] == 0  # Completed invalid answers are never retried.
+    root = tmp_path / "publication"
+    manifest = build_version(
+        questions_path=questions,
+        results_dir=output.parent,
+        result_schema_path=RESULT_SCHEMA,
+        schemas_dir=SCHEMAS,
+        output=root,
+        version_name="candidate",
+    )
+    assert validate_version(root, version_name="candidate") == manifest
+    run = json.loads((root / "versions/candidate/runs.json").read_text())["runs"][0]
+    assert run["retry_count"] == 1
+    assert run["metrics"]["total_cost_usd"] == pytest.approx(0.5)
+    assert run["metrics"]["total_tokens"] == 200
+    assert run["coverage"]["complete"] is True
+    with pytest.raises(BuildError, match="overwrite"):
+        resolve_retry(original=original, retry=retry, output=output)
+
+
+@pytest.mark.parametrize("field", ["generation_parameters", "model", "question_set_sha256"])
+def test_retry_export_rejects_changed_request(tmp_path: Path, field: str) -> None:
+    _, original, retry = retry_fixture(tmp_path)
+    record = json.loads(retry.read_text())
+    if field == "generation_parameters":
+        record[field]["reasoning"]["effort"] = "high"
+    elif field == "model":
+        record[field]["model_id"] = "different/model"
+    else:
+        record[field] = "f" * 64
+    retry.write_text(canonical_json(record) + "\n")
+    with pytest.raises(BuildError, match="retry changed"):
+        resolve_retry(original=original, retry=retry, output=tmp_path / "output.jsonl")
+
+
+def test_retry_source_digest_detects_tampering(tmp_path: Path) -> None:
+    _, original, retry = retry_fixture(tmp_path)
+    output = tmp_path / "output.jsonl"
+    resolve_retry(original=original, retry=retry, output=output)
+    record = json.loads(output.read_text().splitlines()[0])
+    record["usage"]["cost"] += 1
+    with pytest.raises(BuildError, match="source digest"):
+        validate_retry_record(record)
 
 
 def test_split_results_preserves_responses_and_original_provenance(tmp_path: Path) -> None:

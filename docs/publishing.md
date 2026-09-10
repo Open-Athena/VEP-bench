@@ -50,6 +50,16 @@ record hashes. Source files remain intact. Retry selection must already be
 resolved before export; retain the attempt ledger and original failed attempts
 alongside the evaluation for cost and retry auditing.
 
+For a full task with one API error and one explicitly authorized unchanged retry,
+use `vepbench-publish resolve-retry --original ORIGINAL --retry RETRY --output OUTPUT`.
+This export retains the original failure inside the selected answer's
+`usage.vepbench.retry` metadata, along with the selected source record's digest
+and run ID. It rejects changes to the question, model, and generation parameters,
+and never replaces a completed answer based on its score. Both original inputs
+remain intact. The published run flags the retry and includes both attempts in
+its cost. When a rejected item lacks individual token usage, the complete batch
+receipt supplies the run's token total; unknown usage remains unknown.
+
 The [publishing config](../projects/publishing/config/publishing.yaml) selects
 the bucket and [model catalog](../configs/models/catalog.yaml). Every published
 model needs a reviewed catalog entry. Knowledge-cutoff metadata must have

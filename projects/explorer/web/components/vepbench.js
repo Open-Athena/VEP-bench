@@ -429,6 +429,26 @@ export function questionRecord(entry) {
       );
   const comparisonRows = predictionComparisonRows(question, result, entry.display_metadata);
   const answerSections = element("div", "vepbench-answer-sections");
+  const retry = result?.usage?.vepbench?.retry;
+  if (retry) {
+    const prior = retry.prior_attempt;
+    const note = element("details", "vepbench-retry-note");
+    note.append(element("summary", null, "1 retry — initial API rejection"));
+    note.append(element("p", null,
+      "The initial request was rejected. One unchanged retry completed. "
+      + "The score uses this response; run cost includes both attempts."));
+    note.append(element("p", "muted", `Initial attempt: ${prior.error?.message ?? "API error"}`));
+    const raw = element("pre");
+    raw.textContent = JSON.stringify({
+      evaluated_at: prior.evaluated_at,
+      generation_parameters: prior.generation_parameters,
+      response: prior.response.raw,
+      usage: prior.usage,
+      error: prior.error
+    }, null, 2);
+    note.append(raw);
+    answerSections.append(note);
+  }
   if (question.task_type === "ranking") {
     const plotSection = element("section", "vepbench-prediction-section");
     const plotHeader = element("div", "vepbench-section-heading");

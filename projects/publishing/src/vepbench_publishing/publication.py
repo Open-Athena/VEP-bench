@@ -26,10 +26,16 @@ from vepbench.evaluation.core import (
     result_type_for_record,
     score_completed_response,
     score_ranking,
-    validate_batch_usage_allocations,
     validate_result,
 )
 from vepbench.questions.validation import validate_question
+
+from .retry import (
+    attempt_totals,
+    retry_metadata,
+    validate_attempt_allocations,
+    validate_retry_record,
+)
 
 VERSION_NAME = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,62})?$")
 SCHEMA_FILES = (
@@ -621,9 +627,7 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
         else:
             stats["cost_complete"] = False
 
-    validate_batch_usage_allocations(
-        answer_usage_records, context=f"versions/{version_name} answers"
-    )
+    validate_attempt_allocations(answer_usage_records, context=f"versions/{version_name} answers")
 
     outcome_runs_seen: set[str] = set()
     for descriptor in manifest["artifacts"].get("outcomes", []):
@@ -806,6 +810,33 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
                         f"raw response {raw_key!r} disagrees with its normalized completion"
                     )
                 per_run_providers[envelope["run_id"]].add(snapshot["upstream_provider"])
+                if retry_metadata(normalized_answer["usage"]) is not None:
+                    retry_run = run_by_id[envelope["run_id"]]
+                    validate_retry_record(
+                        {
+                            "schema_version": normalized_answer["schema_version"],
+                            "run_id": envelope["run_id"],
+                            "question_id": envelope["question_id"],
+                            "question_sha256": envelope["question_sha256"],
+                            "question_set_sha256": retry_run["question_set_sha256"],
+                            "question_set_size": retry_run["question_set_size"],
+                            "completion_index": envelope["completion_index"],
+                            "evaluated_at": envelope["evaluated_at"],
+                            "question": question,
+                            "model": {
+                                **_model_identity(retry_run["model"]),
+                                "upstream_provider": snapshot["upstream_provider"],
+                            },
+                            "generation_parameters": retry_run["generation_parameters"],
+                            "response": {
+                                **normalized_answer["response"],
+                                "raw": envelope["response"]["raw"],
+                            },
+                            "scoring": normalized_answer["scoring"],
+                            "usage": normalized_answer["usage"],
+                            "error": None,
+                        }
+                    )
 
         if raw_records != descriptor["records"]:
             raise BuildError(f"{descriptor['path']}: raw record count mismatch")
@@ -881,6 +912,13 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
                     ),
                 }
             )
+        run_usages = [record for record in answer_usage_records if record["run_id"] == run_id]
+        retries = sum(retry_metadata(record["usage"]) is not None for record in run_usages)
+        if run.get("retry_count", 0) != retries:
+            raise BuildError(f"run {run_id!r} retry count does not match answers")
+        if retries:
+            tokens, cost = attempt_totals(run_usages)
+            expected_metrics.update(total_tokens=tokens, total_cost_usd=cost)
         if run["coverage"] != expected_coverage or run["metrics"] != expected_metrics:
             raise BuildError(f"run {run_id!r} aggregate metadata does not match answers")
     if answers_seen != raw_seen:
@@ -1121,6 +1159,7 @@ def _convert_run(
             for record_index, record in enumerate(chain((first_record,), records)):
                 if record_index:
                     validate_result(record, result_validator)
+                validate_retry_record(record)
                 if record["run_id"] != run_id:
                     raise BuildError(f"{result_file}: must contain exactly one run ID")
                 if (
@@ -1283,7 +1322,7 @@ def _convert_run(
                 raw_content_digest.update(envelope_bytes)
                 raw_content_bytes += len(envelope_bytes)
 
-    validate_batch_usage_allocations(usage_records, context=str(result_file))
+    validate_attempt_allocations(usage_records, context=str(result_file))
 
     outcome_document = {
         "schema_version": "1.0",
@@ -1309,6 +1348,9 @@ def _convert_run(
     }
     total_tokens = sum(token_values) if completed and tokens_complete else None
     total_cost_usd = math.fsum(cost_values) if completed and cost_complete else None
+    retry_count = sum(retry_metadata(record["usage"]) is not None for record in usage_records)
+    if retry_count:
+        total_tokens, total_cost_usd = attempt_totals(usage_records)
     if started_at is None or completed_at is None:
         raise BuildError(f"{result_file}: no result records found")
     published_model["upstream_provider"] = _published_upstream_provider(observed_providers)
@@ -1368,6 +1410,8 @@ def _convert_run(
     }
     if task_type == "ranking":
         run_record["task_type"] = "ranking"
+    if retry_count:
+        run_record["retry_count"] = retry_count
     return {
         "record": run_record,
         "answers": answer_descriptors,

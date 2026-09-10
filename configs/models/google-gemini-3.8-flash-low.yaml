@@ -1,0 +1,8 @@
+# The Batch API selects the discounted route using the canonical model ID.
+schema_version: "1.0"
+label: gemini-3.8-flash-low
+model: google/gemini-3.8-flash
+generation:
+  reasoning:
+    effort: low
+    exclude: false

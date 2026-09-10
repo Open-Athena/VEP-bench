@@ -29,6 +29,21 @@ export default {
   head: `
     <meta name="description" content="A public benchmark for native genetic variant effect prediction by language models.">
     <style>
+      .vepbench-model-label {
+        align-items: center;
+        display: inline-flex;
+        gap: 0.5rem;
+      }
+
+      .vepbench-organization-icon {
+        background: currentColor;
+        display: inline-block;
+        flex: 0 0 1.125rem;
+        height: 1.125rem;
+        mask: var(--organization-icon) center / contain no-repeat;
+        width: 1.125rem;
+      }
+
       .vepbench-record-card {
         display: flex;
         flex-direction: column;
@@ -236,40 +251,17 @@ export default {
         box-shadow: inset 3px 0 #4267d2, inset 0 0 0 2px #4267d2;
       }
 
-      .vepbench-score-cell {
-        background: color-mix(in srgb, currentColor 6%, transparent);
-        border-radius: 0.2rem;
-        display: block;
-        min-width: 5rem;
-        overflow: hidden;
-        position: relative;
+      .vepbench-leaderboard-chart {
+        overflow-x: auto;
       }
 
-      th[title="score"] {
-        text-align: center !important;
-      }
-
-      .vepbench-score-bar {
-        background: #4267d2;
-        bottom: 0;
-        left: 0;
-        opacity: 0.25;
-        position: absolute;
-        top: 0;
-        width: var(--vepbench-score-width);
-      }
-
-      .vepbench-score-value {
-        display: block;
-        font-variant-numeric: tabular-nums;
-        padding: 0 0.3rem;
-        position: relative;
-        text-align: center;
+      .vepbench-leaderboard-chart svg {
+        max-width: none;
       }
 
       @media (prefers-color-scheme: dark) {
-        .vepbench-score-bar {
-          opacity: 0.4;
+        .vepbench-leaderboard-chart image {
+          filter: invert(1);
         }
       }
 

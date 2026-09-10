@@ -126,7 +126,7 @@ for check in \
   'leaderboard.dom.html|>Leaderboard<' \
   'leaderboard.dom.html|>Model<' \
   'leaderboard.dom.html|>Task</label>' \
-  'leaderboard.dom.html|class="vepbench-score-cell"' \
+  'leaderboard.dom.html|class="card vepbench-leaderboard-chart"' \
   'leaderboard.dom.html|>Unscored model attempts<' \
   'leaderboard.dom.html|Claude Fable 5.1 (medium)' \
   'leaderboard.dom.html|Claude Opus 5 (medium)' \
@@ -134,7 +134,9 @@ for check in \
   'leaderboard.dom.html|8/8 panels; zero output tokens; not ranked' \
   'leaderboard.dom.html|5/8 panels; run stopped and not ranked' \
   'leaderboard.dom.html|Score by cost and token usage' \
-  'leaderboard.dom.html|>Compare score against</label>' \
+  'leaderboard.dom.html|>Score by cost<' \
+  'leaderboard.dom.html|>Score by token usage<' \
+  'leaderboard.dom.html|aria-label="Model family legend"' \
   'leaderboard.dom.html|https://github.com/Open-Athena/VEP-bench' \
   'tasks.dom.html|>Fitness (SGE)<' \
   'tasks.dom.html|>Expression (satMutMPRA)<' \
@@ -202,17 +204,6 @@ for pattern in 'Reference effects' 'Consequence classification' 'ClinVar' \
     status=1
   fi
 done
-
-header_order=$(
-  { grep -o '<th title="[^"]*"><span>[^<]*</span>[^<]*</th>' "$output_dir/leaderboard.dom.html" || true; } \
-    | head -5 \
-    | sed -E 's/<span>[^<]*<\/span>//; s/<[^>]+>//g' \
-    | paste -sd '|' -
-)
-if [[ "$header_order" != 'Model|Score|Knowledge cutoff|Tokens|Cost' ]]; then
-  echo "unexpected leaderboard column order: $header_order" >&2
-  status=1
-fi
 
 for file in leaderboard.dom.html tasks.dom.html task.dom.html sge-task.dom.html \
   opensplice-task.dom.html question.dom.html sge-question.dom.html; do
