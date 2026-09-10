@@ -226,4 +226,10 @@ done
   --screenshot="$output_dir/task-mobile.png" \
   "http://127.0.0.1:$port/tasks/satmut-mpra.html"
 
+# Exercise the deployment canary against the fixture before publishing the site.
+if ! bash "$project_root/scripts/browser_live_canary.sh" \
+  "http://127.0.0.1:$port" "$output_dir/live-canary"; then
+  status=1
+fi
+
 exit "$status"
