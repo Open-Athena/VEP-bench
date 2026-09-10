@@ -28,8 +28,11 @@ common=(
 status=0
 for check in \
   'leaderboard.dom.html|>Leaderboard<' \
-  'leaderboard.dom.html|>Model<' \
-  'leaderboard.dom.html|>Score<' \
+  'leaderboard.dom.html|vepbench-leaderboard-chart' \
+  'leaderboard.dom.html|aria-label="bar"' \
+  'leaderboard.dom.html|>Score by cost<' \
+  'leaderboard.dom.html|>Score by token usage<' \
+  'leaderboard.dom.html|aria-label="Model family legend"' \
   'task.dom.html|>Expression (satMutMPRA)</a></h1>' \
   'task.dom.html|>Questions<' \
   'task.dom.html|questions match the current filters' \
