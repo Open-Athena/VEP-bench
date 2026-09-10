@@ -1,0 +1,7 @@
+schema_version: "1.0"
+label: muse-spark-1.3-medium
+model: meta/muse-spark-1.3
+generation:
+  reasoning:
+    effort: medium
+    exclude: false

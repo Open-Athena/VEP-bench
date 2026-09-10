@@ -56,8 +56,12 @@ function modelName(modelId, generationParameters) {
     "claude-fable-5.1": "Claude Fable 5.1",
     "claude-opus-5": "Claude Opus 5",
     "deepseek-v4-flash-0731": "DeepSeek V4 Flash 0731",
+    "gemini-3.8-flash": "Gemini 3.8 Flash",
+    "glm-5.3": "GLM 5.3",
     "gpt-5.6-luna": "GPT 5.6 Luna",
-    "gpt-5.6-sol": "GPT 5.6 Sol"
+    "gpt-5.6-sol": "GPT 5.6 Sol",
+    "gpt-6-astra": "GPT 6 Astra",
+    "muse-spark-1.3": "Muse Spark 1.3"
   }[name] ?? name;
   const effort = generationParameters?.reasoning?.effort;
   return effort ? `${displayName} (${effort})` : displayName;
@@ -154,6 +158,7 @@ function rowForRun(run, scoreMetric = null) {
     },
     family,
     family_id: family,
+    retry_count: run.retry_count ?? 0,
     release_date: run.model.release_date ?? null,
     knowledge_cutoff: run.model.knowledge_cutoff ?? null,
     tokens: nonnegativeNumber(run.metrics.total_tokens),
@@ -276,6 +281,7 @@ export function overallLeaderboardRows(runs, leaderboard, scoreMetric = null) {
       (total, run) => total + (nonnegativeNumber(run.metrics.format_failures) ?? 0),
       0
     );
+    row.retry_count = taskRuns.reduce((total, run) => total + (run.retry_count ?? 0), 0);
     row.task_scores = profiles.map((profile, index) => ({
       task_family: profile.task_family,
       evaluation_profile: profile.evaluation_profile,

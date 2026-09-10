@@ -86,12 +86,115 @@ function chooseOptionContaining(optionText) {
 await send("Page.enable");
 await send("Runtime.enable");
 
+async function checkEfficiencyPlots(taskLabel) {
+  const selector = `section[aria-label="${taskLabel} score comparisons"]`;
+  await waitFor(`(() => {
+    const section = document.querySelector(${JSON.stringify(selector)});
+    const plots = [...(section?.querySelectorAll('.card svg') ?? [])];
+    return plots.length === 2 && plots.every((plot) => typeof plot.scale === 'function');
+  })()`, `${taskLabel} cost and token plots`);
+  const scales = await evaluate(`(() => {
+    const section = document.querySelector(${JSON.stringify(selector)});
+    return [...section.querySelectorAll('.card svg')].map((plot) => ({
+      scoreDomain: plot.scale('y').domain,
+      colorDomain: plot.scale('color').domain,
+      colorRange: plot.scale('color').range
+    }));
+  })()`);
+  assert.deepEqual(scales[0], scales[1], "plots must share score and color scales");
+  assert.deepEqual(await evaluate(`(() => {
+    const color = document.querySelector('.vepbench-leaderboard-chart svg').scale('color');
+    return {domain: color.domain, range: color.range};
+  })()`), {domain: scales[0].colorDomain, range: scales[0].colorRange},
+  "ranked bars and efficiency plots must use the same family colors");
+  assert.equal(
+    await evaluate('document.querySelectorAll(\'[aria-label="Model family legend"]\').length'),
+    1,
+    "both plots must use one legend"
+  );
+}
+
 await navigate("/index.html");
 await waitFor(
-  `document.querySelectorAll(".vepbench-score-cell").length === 2
+  `document.querySelectorAll('.vepbench-leaderboard-chart g[aria-label="bar"] rect').length === 2
     && document.querySelector('.card[aria-label^="All tasks score versus"]') !== null`,
   "two-model default all-task leaderboard"
 );
+await checkEfficiencyPlots("All tasks");
+const rankedBars = await evaluate(`(() => {
+  const plot = document.querySelector('.vepbench-leaderboard-chart svg');
+  return {
+    domain: plot.scale('y').domain,
+    bars: [...plot.querySelectorAll('g[aria-label="bar"] rect')].map((bar) => ({
+      x: Number(bar.getAttribute('x')),
+      height: Number(bar.getAttribute('height')),
+      description: bar.getAttribute('aria-label')
+    }))
+  };
+})()`);
+assert.equal(rankedBars.domain[0], 0, "ranked bars must have a zero baseline");
+assert.ok(rankedBars.bars[0].x < rankedBars.bars[1].x);
+assert.ok(rankedBars.bars[0].height >= rankedBars.bars[1].height,
+  "models must be ranked from highest score to lowest");
+assert.ok(rankedBars.bars.every((bar) =>
+  ["Score:", "Cost:", "Tokens:", "Knowledge cutoff:"].every(
+    (label) => bar.description.includes(label)
+  )
+), "each bar must expose the model's supporting metrics");
+assert.equal(
+  await evaluate(`document.querySelectorAll(
+    '.vepbench-model-label [role="img"][aria-label="Anthropic"]'
+  ).length`),
+  2,
+  "unscored models must display their organization icons"
+);
+assert.equal(await evaluate(`(async () => {
+  const icons = [...document.querySelectorAll('.vepbench-organization-icon')];
+  return icons.length > 0 && (await Promise.all(icons.map(async (icon) => {
+    const mask = getComputedStyle(icon).maskImage;
+    if (!mask.startsWith('url("')) return false;
+    const image = new Image();
+    image.src = mask.slice(5, -2);
+    await image.decode();
+    return image.naturalWidth > 0 && icon.getBoundingClientRect().width > 0;
+  }))).every(Boolean);
+})()`), true, "organization icons must load from bundled assets");
+for (const width of [1440, 390]) {
+  await send("Emulation.setDeviceMetricsOverride", {
+    width, height: 1100, deviceScaleFactor: 1, mobile: false
+  });
+  await waitFor(`(() => {
+    const section = document.querySelector('section[aria-label="All tasks score comparisons"]');
+    const cards = [...section.querySelectorAll('.card')];
+    const [left, right] = cards.map((card) => card.getBoundingClientRect());
+    const arranged = ${width} > 640
+      ? Math.abs(left.top - right.top) < 1 && right.left >= left.right
+      : right.top >= left.bottom && Math.abs(left.left - right.left) < 1;
+    return arranged && cards.every((card) => {
+      const plot = card.querySelector('svg');
+      return plot && Number(plot.getAttribute('width')) <= card.clientWidth
+        && card.getBoundingClientRect().right <= innerWidth;
+    });
+  })()`, `comparison layout at viewport width ${width}`);
+  assert.equal(await evaluate(`(() => {
+    const plot = document.querySelector('.vepbench-leaderboard-chart svg');
+    return Math.abs(plot.getBoundingClientRect().width - Number(plot.getAttribute('width'))) < 1
+      && document.body.scrollWidth <= innerWidth;
+  })()`), true, "ranked chart must preserve readable sizing within its scroll container");
+  if (outputDir) {
+    const clip = await evaluate(`(() => {
+      const bounds = document.querySelector('section[aria-label="All tasks score comparisons"]')
+        .getBoundingClientRect();
+      return {x: bounds.x + scrollX, y: bounds.y + scrollY,
+        width: bounds.width, height: bounds.height, scale: 1};
+    })()`);
+    const screenshot = await send("Page.captureScreenshot", {clip, captureBeyondViewport: true});
+    await writeFile(join(outputDir, `efficiency-${width}.png`), Buffer.from(screenshot.data, "base64"));
+  }
+}
+await send("Emulation.setDeviceMetricsOverride", {
+  width: 1440, height: 1100, deviceScaleFactor: 1, mobile: false
+});
 await saveDom("leaderboard.dom.html");
 assert.equal(await chooseOptionContaining("Pearson"), true);
 await waitFor(
@@ -100,6 +203,7 @@ await waitFor(
   )`,
   "Pearson leaderboard metric"
 );
+await checkEfficiencyPlots("All tasks");
 assert.equal(await chooseOptionContaining("Spearman"), true);
 await waitFor(
   `[...document.querySelectorAll("p")].some(
@@ -107,26 +211,18 @@ await waitFor(
   )`,
   "Spearman leaderboard metric"
 );
-assert.equal(
-  await evaluate('getComputedStyle(document.querySelector(\'th[title="score"]\')).textAlign'),
-  "center",
-  "score column header is not centered"
-);
 assert.equal(await chooseOptionContaining("Expression (satMutMPRA)"), true);
 await waitFor(
   `document.querySelector('.card[aria-label^="Expression (satMutMPRA) score versus"]') !== null`,
   "Expression (satMutMPRA) task scope"
 );
-assert.equal(await chooseOptionContaining("Total tokens"), true);
-await waitFor(
-  `document.querySelector('.card[aria-label="Expression (satMutMPRA) score versus Total tokens"]') !== null`,
-  "token plot"
-);
+await checkEfficiencyPlots("Expression (satMutMPRA)");
 assert.equal(await chooseOptionContaining("Fitness (SGE)"), true);
 await waitFor(
   `document.querySelector('.card[aria-label^="Fitness (SGE) score versus"]') !== null`,
   "SGE task scope"
 );
+await checkEfficiencyPlots("Fitness (SGE)");
 
 const initialQuestionId = "satmut-mpra-ranking-v2:F9";
 await navigate(

@@ -1,0 +1,4 @@
+Organization logos from @lobehub/icons-static-svg 1.95.0 (MIT).
+https://github.com/lobehub/lobe-icons
+https://cdn.jsdelivr.net/npm/@lobehub/icons-static-svg@1.95.0/icons/
+SVG geometry is unchanged. Each SVG includes the upstream license as a comment.

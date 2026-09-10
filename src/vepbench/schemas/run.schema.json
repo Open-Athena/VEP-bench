@@ -37,6 +37,7 @@
     "evaluation_profile": {"type": ["string", "null"]},
     "started_at": {"type": "string", "format": "date-time"},
     "completed_at": {"type": "string", "format": "date-time"},
+    "retry_count": {"type": "integer", "minimum": 1, "description": "Questions resolved by one unchanged retry of a prior API error; prior attempts are retained in answer usage provenance."},
     "coverage": {
       "type": "object",
       "additionalProperties": false,

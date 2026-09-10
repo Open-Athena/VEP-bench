@@ -105,6 +105,7 @@ function run({
   provider = "Test provider",
   pearson = null,
   releaseDate = "2026-07-09",
+  retryCount = undefined,
   runId = "test-run",
   spearman = null,
   taskType = null,
@@ -148,6 +149,7 @@ function run({
     run_id: runId
   };
   if (taskType) value.task_type = taskType;
+  if (retryCount !== undefined) value.retry_count = retryCount;
   return value;
 }
 
@@ -335,6 +337,7 @@ test("leaderboard scope switches score, tokens, and cost to one task", () => {
       cost: 0.6,
       evaluationProfile: "synthetic_alpha:synthetic_alpha-snv-v1@1.0",
       runId: "model-synthetic_alpha",
+      retryCount: 1,
       tokens: 600
     }),
     run({
@@ -352,6 +355,7 @@ test("leaderboard scope switches score, tokens, and cost to one task", () => {
   assert.equal(allTasks[0].accuracy, 0.5);
   assert.equal(allTasks[0].tokens, 1000);
   assert.equal(allTasks[0].cost, 1);
+  assert.equal(allTasks[0].retry_count, 1);
 
   const consequence = leaderboardRowsForScope(
     runs,
@@ -362,6 +366,8 @@ test("leaderboard scope switches score, tokens, and cost to one task", () => {
   assert.equal(consequence[0].accuracy, 0.2);
   assert.equal(consequence[0].tokens, 400);
   assert.equal(consequence[0].cost, 0.4);
+  assert.equal(consequence[0].retry_count, 0);
+  assert.equal(leaderboardRowsForScope(runs, leaderboard, "synthetic_alpha")[0].retry_count, 1);
   assert.equal(consequence[0].run.run_id, "model-consequence");
   assert.deepEqual(leaderboardRowsForScope(runs, leaderboard, "unknown"), []);
 });

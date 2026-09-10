@@ -110,11 +110,9 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     assert "? [null]" in leaderboard_source
     assert "value: allTasksAvailable ? null : taskOptions[0]" in leaderboard_source
     assert "macro-average ${scoreMetricLabel} correlation across tasks" in leaderboard_source
-    assert 'columns: ["model", "score", "knowledge_cutoff", "tokens", "cost"]' in (
-        leaderboard_source
-    )
-    assert 'knowledge_cutoff: "Knowledge cutoff"' in leaderboard_source
-    assert "knowledge_cutoff: formatKnowledgeCutoff" in leaderboard_source
+    assert "Plot.barY(data" in leaderboard_source
+    assert "Plot.image(data.filter" in leaderboard_source
+    assert "formatKnowledgeCutoff(row.knowledge_cutoff)" in leaderboard_source
     assert 'return "Not disclosed"' in helper_source
     assert 'release_date: "Release date"' not in leaderboard_source
     assert "Unscored model attempts" in leaderboard_source
@@ -131,10 +129,8 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     assert 'y: {\n      label: "Score"' in leaderboard_source
     assert "displayScore," in leaderboard_source
     assert "score: displayScore(row.score)" in leaderboard_source
-    assert "const width = Math.max(0, Math.min(1, value)) * 100;" in leaderboard_source
     assert "domain: [0, 1]" not in leaderboard_source
     assert "(value + 1) / 2" not in leaderboard_source
-    assert 'score: "Score"' in leaderboard_source
     assert "Valid outputs" not in leaderboard_source
     task_source = (output / "tasks/satmut-mpra.md").read_text(encoding="utf-8")
     assert "# Expression (satMutMPRA)" in task_source

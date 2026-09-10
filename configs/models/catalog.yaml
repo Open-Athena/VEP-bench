@@ -1,6 +1,17 @@
 # Display-only metadata used when publishing leaderboard rows.
 schema_version: "1.1"
 models:
+  google/gemini-3.8-flash:
+    family: Gemini 3.8 Flash
+    release_date: "2026-09-02"
+    knowledge_cutoff: "2026-03"
+    knowledge_cutoff_url: https://deepmind.google/models/model-cards/gemini-3-8-flash/
+  meta/muse-spark-1.3:
+    family: Muse Spark 1.3
+    # Release: https://openrouter.ai/meta/muse-spark-1.3
+    release_date: "2026-09-02"
+    knowledge_cutoff: null
+    knowledge_cutoff_url: null
   anthropic/claude-fable-5.1:
     family: Claude Fable 5.1
     release_date: "2026-09-01"
@@ -36,5 +47,7 @@ models:
     family: GLM 5.3
     # Release: https://openrouter.ai/z-ai/glm-5.3 (August 18, 2026).
     release_date: "2026-08-18"
+    # No cutoff date in Z.ai's model documentation or model card (checked 2026-09-10).
+    # https://docs.z.ai/guides/llm/glm-5.3
     knowledge_cutoff: null
     knowledge_cutoff_url: null

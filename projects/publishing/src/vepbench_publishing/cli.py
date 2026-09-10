@@ -14,6 +14,7 @@ from vepbench.resources import RESULT_SCHEMA, SCHEMAS_DIR
 
 from .config import load_publishing_config
 from .publication import build_version, promote_version, validate_version
+from .retry import resolve_retry
 from .split import split_results
 
 app = App(
@@ -36,6 +37,14 @@ bucket_app = App(
 )
 app.command(version_app)
 app.command(bucket_app)
+
+
+@app.command(name="resolve-retry")
+def results_retry(*, original: Path, retry: Path, output: Path) -> int:
+    """Resolve one unchanged retry of a task's single API error, retaining both attempts."""
+    resolve_retry(original=original, retry=retry, output=output)
+    print(f"exported retry-resolved task at {output}")
+    return 0
 
 
 @app.command(name="split-results")
