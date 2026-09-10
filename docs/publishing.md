@@ -46,9 +46,8 @@ writes canonical task question files and assigns a task suffix to each run ID.
 Only run identity and question-set membership change; prompts, provider data,
 reasoning, usage, and scores are retained. Namespaced raw metadata and
 `export.json` record the original run, full question-set fingerprint, and source
-record hashes. Source files remain intact. Retry selection must already be
-resolved before export; retain the attempt ledger and original failed attempts
-alongside the evaluation for cost and retry auditing.
+record hashes. Source files remain intact. This command accepts complete source
+runs; task runs containing an API error use the retry export below instead.
 
 For a full task with one API error and one explicitly authorized unchanged retry,
 use `vepbench-publish resolve-retry --original ORIGINAL --retry RETRY --output OUTPUT`.
@@ -59,6 +58,10 @@ and never replaces a completed answer based on its score. Both original inputs
 remain intact. The published run flags the retry and includes both attempts in
 its cost. When a rejected item lacks individual token usage, the complete batch
 receipt supplies the run's token total; unknown usage remains unknown.
+Publish this task export directly with `version build`; do not pass it through
+`split-results`, which changes the identities covered by retry provenance.
+Retry resolution requires one task family; combined runs with retries are not
+supported.
 
 The [publishing config](../projects/publishing/config/publishing.yaml) selects
 the bucket and [model catalog](../configs/models/catalog.yaml). Every published
