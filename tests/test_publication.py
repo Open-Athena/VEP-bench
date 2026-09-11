@@ -23,6 +23,7 @@ from vepbench_publishing.retry import resolve_retry, validate_retry_record
 from vepbench_publishing.split import split_results
 
 from vepbench.artifacts import canonical_json, sha256_file, sha256_json
+from vepbench.config.model import load_model_profile
 from vepbench.errors import BuildError
 from vepbench.evaluation.core import ProviderError, completed_result, error_result, evaluate_file
 from vepbench.questions.builder import build_file
@@ -578,6 +579,9 @@ def test_publication_is_deterministic_and_separates_browser_answers(tmp_path: Pa
     runs = json.loads((version / "runs.json").read_text(encoding="utf-8"))["runs"]
     assert runs[0]["metrics"]["total_tokens"] == 98
     assert runs[0]["metrics"]["total_cost_usd"] == 0
+    assert runs[0]["metrics"]["total_output_tokens"] == 18
+    assert runs[0]["metrics"]["max_output_tokens_used"] == 18
+    assert runs[0]["metrics"]["truncated_outputs"] == 0
     assert runs[0]["metrics"]["result_counts"] == {
         "correct": 1,
         "incorrect": 0,
@@ -937,6 +941,8 @@ def test_validate_version_accepts_legacy_raw_archive_without_usage(tmp_path: Pat
     runs_path = version / "runs.json"
     runs = json.loads(runs_path.read_text(encoding="utf-8"))
     runs["runs"][0]["raw_archive"] = legacy_raw_descriptor
+    for key in ("total_output_tokens", "max_output_tokens_used", "truncated_outputs"):
+        runs["runs"][0]["metrics"].pop(key)
     runs_content = publication_module._write_json(runs_path, runs)
     manifest["artifacts"]["raw"][0] = legacy_raw_descriptor
     manifest["artifacts"]["runs"] = publication_module._plain_artifact(
@@ -945,6 +951,27 @@ def test_validate_version_accepts_legacy_raw_archive_without_usage(tmp_path: Pat
     publication_module._write_json(manifest_path, manifest)
 
     validate_version(output, version_name="candidate")
+
+
+@pytest.mark.parametrize(
+    "metric", ["total_output_tokens", "max_output_tokens_used", "truncated_outputs"]
+)
+def test_validate_version_rejects_incorrect_execution_metrics(tmp_path: Path, metric: str) -> None:
+    output = tmp_path / "publication"
+    build_synthetic(output)
+    version = output / "versions/candidate"
+    runs_path = version / "runs.json"
+    runs = json.loads(runs_path.read_text())
+    runs["runs"][0]["metrics"][metric] += 1
+    content = publication_module._write_json(runs_path, runs)
+    manifest_path = version / "manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    manifest["artifacts"]["runs"] = publication_module._plain_artifact(
+        "versions/candidate/runs.json", content, 1
+    )
+    publication_module._write_json(manifest_path, manifest)
+    with pytest.raises(BuildError, match="aggregate metadata does not match answers"):
+        validate_version(output, version_name="candidate")
 
 
 def test_usage_totals_normalizes_gateway_usage() -> None:
@@ -1008,6 +1035,19 @@ def test_production_model_catalog_records_only_verified_knowledge_cutoffs() -> N
     assert catalog["anthropic/claude-fable-5.1"]["knowledge_cutoff"] == "2026-06"
     assert catalog["anthropic/claude-opus-5"]["knowledge_cutoff"] == "2026-05"
     assert catalog["deepseek/deepseek-v4-flash-0731"]["knowledge_cutoff"] is None
+    assert catalog["deepseek/deepseek-v4.1-flash"]["knowledge_cutoff"] is None
+
+
+def test_shipped_model_profiles_are_supported_by_the_publication_catalog() -> None:
+    config = load_publishing_config(ROOT / "projects/publishing/config/publishing.yaml")
+    catalog = publication_module._load_model_catalog(config.model_catalog)
+    for path in sorted((ROOT / "configs/models").glob("*.yaml")):
+        if path == config.model_catalog:
+            continue
+        profile = load_model_profile(path)
+        assert profile.model_id in catalog, (
+            f"{path.name} cannot be published with the default catalog"
+        )
 
 
 def test_publication_accepts_legacy_model_catalog_without_cutoff(tmp_path: Path) -> None:

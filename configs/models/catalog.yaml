@@ -27,6 +27,13 @@ models:
     release_date: "2026-07-31"
     knowledge_cutoff: null
     knowledge_cutoff_url: null
+  deepseek/deepseek-v4.1-flash:
+    family: DeepSeek V4.1 Flash
+    # Release: https://openrouter.ai/deepseek/deepseek-v4.1-flash (September 10, 2026).
+    release_date: "2026-09-10"
+    # No cutoff documented in https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash.
+    knowledge_cutoff: null
+    knowledge_cutoff_url: null
   openai/gpt-5.6-luna:
     family: GPT 5.6 Luna
     release_date: "2026-07-09"

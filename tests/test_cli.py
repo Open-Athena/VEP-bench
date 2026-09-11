@@ -100,9 +100,11 @@ def test_cli_reports_argument_errors_without_system_exit(
     assert "--model" in capsys.readouterr().err
 
 
+@pytest.mark.parametrize("temperature", [None, 0.0, 0.7])
 def test_direct_evaluation_command_runs_with_an_offline_transport(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
+    temperature: float | None,
 ) -> None:
     raw = {
         "id": "generation-test",
@@ -116,6 +118,10 @@ def test_direct_evaluation_command_runs_with_an_offline_transport(
         def complete(self, request_body: dict[str, Any], api_key: str) -> dict[str, Any]:
             assert request_body["model"] == "example/model"
             assert api_key == "offline-key"
+            if temperature is None:
+                assert "temperature" not in request_body
+            else:
+                assert request_body["temperature"] == temperature
             return raw
 
     monkeypatch.setattr("vepbench.evaluation.core.OpenRouterTransport", lambda: OfflineTransport())
@@ -136,6 +142,7 @@ def test_direct_evaluation_command_runs_with_an_offline_transport(
             str(output),
             "--concurrency",
             "1",
+            *([] if temperature is None else ["--temperature", str(temperature)]),
         ]
     )
 

@@ -7,6 +7,7 @@ import {
   assayCutoffRelation,
   defaultQuestionForExplorer,
   displayScore,
+  executionSummaryForRow,
   fetchAnswer,
   fetchAnswerIfAvailable,
   fetchJson,
@@ -169,6 +170,60 @@ test("leaderboard keeps the latest complete run per model configuration", () => 
   assert.equal(rows[0].knowledge_cutoff, "2024-01-01");
   assert.equal(rows[0].tokens, 1200);
   assert.equal(rows[0].cost, 0.25);
+});
+
+test("execution summaries aggregate counts across unequal task sizes and preserve maxima", () => {
+  const first = run({taskType: "ranking", spearman: 0.4});
+  const second = run({taskType: "ranking", spearman: 0.5});
+  Object.assign(first, {question_set_size: 2, generation_parameters: {max_tokens: 128000}});
+  Object.assign(second, {question_set_size: 8, generation_parameters: {max_tokens: 262144}});
+  Object.assign(first.metrics, {valid_outputs: 1, truncated_outputs: 1,
+    total_output_tokens: 140000, max_output_tokens_used: 128000});
+  Object.assign(second.metrics, {valid_outputs: 8, truncated_outputs: 0,
+    total_output_tokens: 80000, max_output_tokens_used: 20000});
+  const row = {runs: [first, second], model_cell: {model: "Test"}, tokens: 221000, cost: 0.4};
+  const summary = executionSummaryForRow(row);
+  assert.equal(summary.questions, 10);
+  assert.equal(summary.valid_answers, 9);
+  assert.equal(summary.valid_rate, 0.9);
+  assert.equal(summary.truncation_rate, 0.1);
+  assert.equal(summary.output_tokens, 220000);
+  assert.equal(summary.max_output_tokens, 128000);
+  assert.deepEqual(summary.output_limits, [128000, 262144]);
+  assert.equal(summary.total_tokens, 221000);
+  assert.equal(summary.cost, 0.4);
+
+  const single = executionSummaryForRow({...row, runs: undefined, run: first});
+  assert.equal(single.questions, 2);
+  assert.equal(single.valid_rate, 0.5);
+  assert.equal(single.truncation_rate, 0.5);
+});
+
+test("execution summaries keep unavailable or partially reported usage unknown", () => {
+  const first = run({taskType: "ranking"});
+  const second = run({taskType: "ranking"});
+  Object.assign(first.metrics, {valid_outputs: 1, total_output_tokens: 0,
+    max_output_tokens_used: 0, truncated_outputs: 0});
+  const row = {runs: [first, second], model_cell: {model: "Test"}, tokens: null, cost: null};
+  const summary = executionSummaryForRow(row);
+  assert.equal(summary.output_tokens, null);
+  assert.equal(summary.max_output_tokens, null);
+  assert.equal(summary.truncation_rate, null);
+  assert.equal(summary.output_limits, null);
+  assert.equal(summary.cost, null);
+  const knownZero = executionSummaryForRow({...row, runs: undefined, run: first});
+  assert.equal(knownZero.output_tokens, 0);
+  assert.equal(knownZero.max_output_tokens, 0);
+  assert.equal(knownZero.truncation_rate, 0);
+});
+
+test("valid multiple-choice answers include incorrect answers but exclude refusals", () => {
+  const classified = run();
+  classified.question_set_size = 4;
+  classified.metrics.result_counts = {correct: 1, incorrect: 1, refusal: 1, format_error: 1};
+  const summary = executionSummaryForRow(leaderboardRows([classified])[0]);
+  assert.equal(summary.valid_answers, 2);
+  assert.equal(summary.valid_rate, 0.5);
 });
 
 test("new comparison models have human-readable labels", () => {

@@ -367,7 +367,6 @@ def evaluate_file(
         raise BuildError("concurrency must be positive")
     if generation_parameters is None:
         resolved_parameters: dict[str, Any] = {
-            "temperature": 0.0,
             "max_tokens": 4096,
         }
     else:
