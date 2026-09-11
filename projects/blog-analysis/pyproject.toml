@@ -1,0 +1,20 @@
+[project]
+name = "vepbench-blog-analysis"
+version = "0.1.0"
+description = "Optional statistical analyses for the VEP-bench blog"
+requires-python = "==3.14.*"
+dependencies = [
+    "numpy>=2,<3",
+    "scipy>=1.15,<2",
+    "vepbench-explorer",
+]
+
+[project.scripts]
+vepbench-blog-sge-cutoff = "vepbench_blog_analysis.sge_cutoff:main"
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.uv.sources]
+vepbench-explorer = { workspace = true }

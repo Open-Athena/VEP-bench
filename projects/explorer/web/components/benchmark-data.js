@@ -190,6 +190,37 @@ export function leaderboardRows(runs, scoreMetric = null) {
   );
 }
 
+export function highestEffortRows(rows) {
+  const efforts = ["none", "minimal", "low", "medium", "high", "xhigh"];
+  const selected = new Map();
+  for (const row of rows) {
+    const runs = row.runs ?? [row.run];
+    const run = runs[0];
+    const effort = run.generation_parameters?.reasoning?.effort;
+    if (effort != null && !efforts.includes(effort)) {
+      throw new Error(`Unrecognized effort: ${effort}`);
+    }
+    const key = JSON.stringify([
+      run.model.gateway, run.model.model_id, run.model.model_revision ?? null
+    ]);
+    const rank = efforts.indexOf(effort);
+    const latest = runs.reduce((left, right) =>
+      Date.parse(right.completed_at) > Date.parse(left.completed_at)
+        || (right.completed_at === left.completed_at && right.run_id > left.run_id)
+        ? right : left
+    );
+    const previous = selected.get(key);
+    // Effort and recency determine selection; scores only order the selected rows.
+    if (!previous || rank > previous.rank || (rank === previous.rank
+      && (Date.parse(latest.completed_at) > Date.parse(previous.latest.completed_at)
+        || (latest.completed_at === previous.latest.completed_at
+          && latest.run_id > previous.latest.run_id)))) {
+      selected.set(key, {row, rank, latest});
+    }
+  }
+  return sortLeaderboardRows([...selected.values()].map(({row}) => row));
+}
+
 function canonicalValue(value) {
   if (Array.isArray(value)) return value.map(canonicalValue);
   if (value && typeof value === "object") {

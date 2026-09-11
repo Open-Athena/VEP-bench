@@ -65,3 +65,61 @@ export function distributionFigure(composition, dimension, width) {
   figure.append(chart);
   return figure;
 }
+
+export function cutoffFigure(summaries, width) {
+  const rows = summaries.filter((row) => row.before_n || row.after_n);
+  const points = rows.flatMap((row) => [
+    {row, relation: "Before cutoff", score: row.before_mean, n: row.before_n, low: row.before_ci_low, high: row.before_ci_high},
+    {row, relation: "After cutoff", score: row.after_mean, n: row.after_n, low: row.after_ci_low, high: row.after_ci_high}
+  ]).filter((point) => point.n > 0);
+  const labels = new Map(rows.map((row) => [row.run_id,
+    `${row.model}\nCutoff ${row.knowledge_cutoff} · n = ${row.before_n} / ${row.after_n}`]));
+  const detail = ({row, relation, score, n, low, high}) =>
+    `${row.model}\n${relation}: ${score.toFixed(3)} Spearman ρ\n95% CI: ${low == null || high == null ? "not estimable" : `${low.toFixed(3)}–${high.toFixed(3)}`}\n${n} gene panels\nKnowledge cutoff: ${row.knowledge_cutoff}`;
+  const plot = Plot.plot({
+    width: Math.max(660, width - 34),
+    height: rows.length * 64 + 90,
+    marginLeft: 225,
+    marginRight: 100,
+    marginTop: 30,
+    marginBottom: 55,
+    style: {fontSize: "12px", background: "white", color: "#222"},
+    ariaLabel: "SGE performance before and after each model's knowledge cutoff, with 95% confidence intervals",
+    x: {label: "Mean within-gene Spearman ρ", labelAnchor: "center", grid: true},
+    y: {domain: rows.map((row) => row.run_id), label: null, tickSize: 0, tickFormat: (id) => labels.get(id)},
+    color: {domain: ["Before cutoff", "After cutoff"], range: ["#4267a8", "#b45f23"]},
+    marks: [
+      Plot.text(rows, {frameAnchor: "right", y: "run_id", dx: 15, textAnchor: "start", text: (row) =>
+        row.p_value === null ? "p —" : `p ${row.p_value < 0.001 ? "<0.001" : row.p_value.toFixed(3)}${row.p_value <= 0.05 ? " *" : ""}`
+      }),
+      ...["Before cutoff", "After cutoff"].flatMap((relation, i) => {
+        const group = points.filter((point) => point.relation === relation);
+        const intervals = group.filter((point) => point.low != null && point.high != null);
+        const dy = i ? 8 : -8;
+        return [
+          Plot.ruleY(intervals, {
+            x1: "low", x2: "high", y: (point) => point.row.run_id, dy,
+            stroke: "relation", strokeWidth: 2, ariaLabel: `${relation}: 95% confidence interval`
+          }),
+          Plot.dot(group, {
+            x: "score", y: (point) => point.row.run_id, dy, fill: "relation", stroke: "white", r: 6,
+            symbol: i ? "diamond" : "circle", tip: true, title: detail, ariaLabel: detail
+          })
+        ];
+      })
+    ]
+  });
+  plot.style.maxWidth = "none";
+  const chart = document.createElement("div");
+  chart.style.overflowX = "auto";
+  chart.tabIndex = 0;
+  chart.setAttribute("role", "region");
+  chart.setAttribute("aria-label", "SGE cutoff comparison; scroll horizontally on narrow screens");
+  chart.append(plot);
+  const figure = document.createElement("div");
+  figure.className = "card";
+  const legend = document.createElement("p");
+  legend.textContent = "● Before cutoff    ◆ After cutoff · bars: 95% CI · n = before / after · p tests before > after · * p ≤ 0.05";
+  figure.append(legend, chart);
+  return figure;
+}

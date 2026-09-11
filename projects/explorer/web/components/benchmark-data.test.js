@@ -14,6 +14,7 @@ import {
   fetchOutcomeIndex,
   groupCurrentRuns,
   formatRunLabel,
+  highestEffortRows,
   leaderboardRows,
   leaderboardRowsForScope,
   modelSelectionRows,
@@ -239,6 +240,76 @@ test("new comparison models have human-readable labels", () => {
     formatRunLabel(run({modelId: "deepseek/deepseek-v4-flash-0731"})),
     /^DeepSeek V4 Flash 0731 \(medium\)/
   );
+});
+
+test("highest-effort selection follows effort order rather than scores", () => {
+  const efforts = [null, "none", "minimal", "low", "medium", "high", "xhigh"];
+  const candidates = efforts.map((effort, i) => run({
+    runId: `effort-${i}`, configurationKey: `effort-${i}`, effort, accuracy: 1 - i / 10
+  }));
+  for (let count = 1; count <= candidates.length; count++) {
+    const rows = leaderboardRows(candidates.slice(0, count));
+    const originalOrder = [...rows];
+    assert.equal(highestEffortRows(rows)[0].run.run_id, `effort-${count - 1}`);
+    assert.deepEqual(rows, originalOrder);
+  }
+  assert.throws(() => highestEffortRows(leaderboardRows([
+    run({effort: "unrecognized"})
+  ])), /Unrecognized effort/);
+  assert.deepEqual(highestEffortRows([]), []);
+});
+
+test("highest effort requires complete results within the selected task scope", () => {
+  const leaderboard = {
+    aggregation_method: "task_score_macro_average_v1",
+    evaluation_profiles: ["alpha", "beta"].map((task) => ({
+      task_family: task, evaluation_profile: `${task}:v1`
+    }))
+  };
+  const runs = [
+    ...["alpha", "beta"].map((task) => run({
+      runId: `low-${task}`, configurationKey: `low-${task}`,
+      effort: "low", evaluationProfile: `${task}:v1`, accuracy: 0.9
+    })),
+    run({runId: "high-alpha", configurationKey: "high-alpha",
+      effort: "high", evaluationProfile: "alpha:v1", accuracy: 0.1}),
+    run({runId: "high-beta", configurationKey: "high-beta",
+      effort: "high", evaluationProfile: "beta:v1", complete: false})
+  ];
+  assert.equal(highestEffortRows(leaderboardRowsForScope(runs, leaderboard))[0]
+    .runs[0].generation_parameters.reasoning.effort, "low");
+  assert.equal(highestEffortRows(leaderboardRowsForScope(runs, leaderboard, "alpha"))[0]
+    .run.run_id, "high-alpha");
+  assert.equal(highestEffortRows(leaderboardRowsForScope(runs, leaderboard, "beta"))[0]
+    .run.run_id, "low-beta");
+  assert.equal(modelSelectionRows(runs, leaderboard).length, 2);
+});
+
+test("equal efforts use the latest constituent run and preserve its retry provenance", () => {
+  const base = leaderboardRows([run({runId: "base", accuracy: 0.9})])[0];
+  const retried = leaderboardRows([{
+    ...run({runId: "retried", accuracy: 0.1}),
+    retry_count: 1, retry_policy: {initial_max_tokens: 100, retry_max_tokens: 200}
+  }])[0];
+  base.runs = [base.run, run({runId: "base-beta", completedAt: "2026-09-01T00:00:00Z"})];
+  retried.runs = [retried.run, run({runId: "retried-beta", completedAt: "2026-09-02T00:00:00Z"})];
+  delete base.run;
+  delete retried.run;
+  assert.deepEqual(highestEffortRows([base, retried]), [retried]);
+  assert.equal(highestEffortRows([retried, base])[0].retry_count, 1);
+  base.runs[1].completed_at = retried.runs[1].completed_at;
+  assert.deepEqual(highestEffortRows([base, retried]), [retried]);
+});
+
+test("highest-effort rows keep distinct models and revisions, including unknown cutoffs", () => {
+  const rows = leaderboardRows([
+    run({runId: "one", configurationKey: "one", modelId: "test/one", effort: "high", accuracy: 0.1}),
+    run({runId: "two", configurationKey: "two", modelId: "test/two", effort: "low",
+      knowledgeCutoff: null, accuracy: 0.8}),
+    {...run({runId: "revision", configurationKey: "revision", effort: "low", accuracy: 0.5}),
+      model: {...run().model, model_id: "test/one", model_revision: "v2"}}
+  ]);
+  assert.deepEqual(highestEffortRows(rows).map((row) => row.run.run_id), ["two", "revision", "one"]);
 });
 
 test("overall leaderboard macro-averages complete task profiles", () => {

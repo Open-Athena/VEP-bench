@@ -37,7 +37,7 @@ jobs:
           else
             while IFS= read -r path; do
               case "$path" in
-                .github/workflows/website.yml|.python-version|pyproject.toml|uv.lock|src/vepbench/*|projects/explorer/*|projects/publishing/*|configs/tasks/*|data/sources/*|tests/test_browser_qa_fixture.py|tests/test_site.py|tests/test_variant_annotations.py)
+                .github/workflows/website.yml|.python-version|pyproject.toml|uv.lock|src/vepbench/*|projects/blog-analysis/*|projects/explorer/*|projects/publishing/*|configs/tasks/*|data/sources/*|tests/test_browser_qa_fixture.py|tests/test_site.py|tests/test_variant_annotations.py)
                   website=true
                   ;;
               esac
@@ -118,10 +118,38 @@ jobs:
         with:
           path: _site
 
+  analysis:
+    name: Blog statistics
+    if: needs.changes.outputs.website == 'true'
+    needs: changes
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: "0.12.5"
+          enable-cache: true
+
+      - name: Install optional blog analysis tests
+        run: uv sync --locked --package vepbench-blog-analysis --group test
+
+      - name: Test and reproduce the saved statistics offline
+        run: |
+          uv run --no-sync pytest projects/blog-analysis/tests
+          uv run --no-sync vepbench-blog-sge-cutoff \
+            --input projects/explorer/web/blog/introducing-vep-bench/cutoff-analysis.json \
+            --output /tmp/sge-cutoff-replay.json
+          cmp projects/explorer/web/blog/introducing-vep-bench/cutoff-analysis.json \
+            /tmp/sge-cutoff-replay.json
+
   deploy:
     name: Deploy
     if: github.event_name != 'pull_request' && needs.changes.outputs.website == 'true'
-    needs: [changes, build]
+    needs: [changes, build, analysis]
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
@@ -138,16 +166,17 @@ jobs:
   website:
     name: Website
     if: always()
-    needs: [changes, build, deploy]
+    needs: [changes, build, analysis, deploy]
     runs-on: ubuntu-24.04
     steps:
       - name: Require selected website jobs to pass
         env:
           BUILD_RESULT: ${{ needs.build.result }}
+          ANALYSIS_RESULT: ${{ needs.analysis.result }}
           DEPLOY_RESULT: ${{ needs.deploy.result }}
           ROUTE_RESULT: ${{ needs.changes.result }}
         run: |
-          for result in "$ROUTE_RESULT" "$BUILD_RESULT" "$DEPLOY_RESULT"; do
+          for result in "$ROUTE_RESULT" "$BUILD_RESULT" "$ANALYSIS_RESULT" "$DEPLOY_RESULT"; do
             if [[ "$result" != "success" && "$result" != "skipped" ]]; then
               exit 1
             fi
