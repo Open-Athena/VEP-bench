@@ -1,0 +1,1566 @@
+[
+  {
+    "result_id": "aa-gpt-6-astra",
+    "model_label": "GPT-6 Astra (max)",
+    "model_id": "openai/gpt-6-astra",
+    "effort": "max",
+    "harness": "Artificial Analysis",
+    "submitter": "Artificial Analysis",
+    "source_id": "aa-gpt-6-astra",
+    "match_status": "No exact effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": []
+  },
+  {
+    "result_id": "aa-claude-fable-5-1",
+    "model_label": "Claude Fable 5.1 (Adaptive Reasoning, Max Effort, Default Fallback)",
+    "model_id": "anthropic/claude-fable-5.1",
+    "effort": "max",
+    "harness": "Artificial Analysis",
+    "submitter": "Artificial Analysis",
+    "source_id": "aa-claude-fable-5-1",
+    "match_status": "Fallback system may use another model; excluded from model-level comparisons",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "aa-gpt-5-6-luna",
+    "model_label": "GPT-5.6 Luna (max)",
+    "model_id": "openai/gpt-5.6-luna",
+    "effort": "max",
+    "harness": "Artificial Analysis",
+    "submitter": "Artificial Analysis",
+    "source_id": "aa-gpt-5-6-luna",
+    "match_status": "No exact effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": []
+  },
+  {
+    "result_id": "aa-gemini-3-8-flash",
+    "model_label": "Gemini 3.8 Flash (high)",
+    "model_id": "google/gemini-3.8-flash",
+    "effort": "high",
+    "harness": "Artificial Analysis",
+    "submitter": "Artificial Analysis",
+    "source_id": "aa-gemini-3-8-flash",
+    "match_status": "Exact version and effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": [
+      "aa-intelligence",
+      "aa-briefcase",
+      "aa-gdpval",
+      "aa-automation",
+      "aa-terminal",
+      "aa-scicode",
+      "aa-omniscience",
+      "aa-gdp-pdf",
+      "aa-lcr",
+      "aa-hle",
+      "aa-critpt"
+    ]
+  },
+  {
+    "result_id": "aa-muse-spark-1-3",
+    "model_label": "Muse Spark 1.3 (max)",
+    "model_id": "meta/muse-spark-1.3",
+    "effort": "max",
+    "harness": "Artificial Analysis",
+    "submitter": "Artificial Analysis",
+    "source_id": "aa-muse-spark-1-3",
+    "match_status": "No exact effort match",
+    "vep_efforts": [
+      "medium"
+    ],
+    "selected_in": []
+  },
+  {
+    "result_id": "aa-claude-opus-5",
+    "model_label": "Claude Opus 5 (Adaptive Reasoning, Max Effort)",
+    "model_id": "anthropic/claude-opus-5",
+    "effort": "max",
+    "harness": "Artificial Analysis",
+    "submitter": "Artificial Analysis",
+    "source_id": "aa-claude-opus-5",
+    "match_status": "No complete VEP-bench overall configuration for this version",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "aa-glm-5-3",
+    "model_label": "GLM-5.3 (max)",
+    "model_id": "z-ai/glm-5.3",
+    "effort": "max",
+    "harness": "Artificial Analysis",
+    "submitter": "Artificial Analysis",
+    "source_id": "aa-glm-5-3",
+    "match_status": "No exact effort match",
+    "vep_efforts": [
+      "low"
+    ],
+    "selected_in": []
+  },
+  {
+    "result_id": "aa-gpt-5-6-sol",
+    "model_label": "GPT-5.6 Sol (max)",
+    "model_id": "openai/gpt-5.6-sol",
+    "effort": "max",
+    "harness": "Artificial Analysis",
+    "submitter": "Artificial Analysis",
+    "source_id": "aa-gpt-5-6-sol",
+    "match_status": "No exact effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": []
+  },
+  {
+    "result_id": "aa-deepseek-v4-1-flash",
+    "model_label": "DeepSeek V4.1 Flash (Reasoning, Max Effort)",
+    "model_id": "deepseek/deepseek-v4.1-flash",
+    "effort": "max",
+    "harness": "Artificial Analysis",
+    "submitter": "Artificial Analysis",
+    "source_id": "aa-deepseek-v4-1-flash",
+    "match_status": "No exact effort match",
+    "vep_efforts": [
+      "low"
+    ],
+    "selected_in": []
+  },
+  {
+    "result_id": "aa-gpt-6-astra-high",
+    "model_label": "GPT-6 Astra (high)",
+    "model_id": "openai/gpt-6-astra",
+    "effort": "high",
+    "harness": "Artificial Analysis",
+    "submitter": "Artificial Analysis",
+    "source_id": "aa-gpt-6-astra-high",
+    "match_status": "Exact version and effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": [
+      "aa-intelligence",
+      "aa-briefcase",
+      "aa-gdpval",
+      "aa-automation",
+      "aa-terminal",
+      "aa-scicode",
+      "aa-omniscience",
+      "aa-gdp-pdf",
+      "aa-lcr",
+      "aa-hle",
+      "aa-critpt"
+    ]
+  },
+  {
+    "result_id": "aa-gpt-5-6-sol-high",
+    "model_label": "GPT-5.6 Sol (high)",
+    "model_id": "openai/gpt-5.6-sol",
+    "effort": "high",
+    "harness": "Artificial Analysis",
+    "submitter": "Artificial Analysis",
+    "source_id": "aa-gpt-5-6-sol-high",
+    "match_status": "Exact version and effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": [
+      "aa-intelligence",
+      "aa-briefcase",
+      "aa-gdpval",
+      "aa-automation",
+      "aa-terminal",
+      "aa-scicode",
+      "aa-omniscience",
+      "aa-gdp-pdf",
+      "aa-lcr",
+      "aa-hle",
+      "aa-critpt"
+    ]
+  },
+  {
+    "result_id": "aa-gpt-5-6-luna-high",
+    "model_label": "GPT-5.6 Luna (high)",
+    "model_id": "openai/gpt-5.6-luna",
+    "effort": "high",
+    "harness": "Artificial Analysis",
+    "submitter": "Artificial Analysis",
+    "source_id": "aa-gpt-5-6-luna-high",
+    "match_status": "Exact version and effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": [
+      "aa-intelligence",
+      "aa-briefcase",
+      "aa-gdpval",
+      "aa-automation",
+      "aa-terminal",
+      "aa-scicode",
+      "aa-omniscience",
+      "aa-gdp-pdf",
+      "aa-lcr",
+      "aa-hle",
+      "aa-critpt"
+    ]
+  },
+  {
+    "result_id": "aa-gpt-6-astra-medium",
+    "model_label": "GPT-6 Astra (medium)",
+    "model_id": "openai/gpt-6-astra",
+    "effort": "medium",
+    "harness": "Artificial Analysis",
+    "submitter": "Artificial Analysis",
+    "source_id": "aa-gpt-6-astra-medium",
+    "match_status": "Exact version and effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": [
+      "aa-intelligence",
+      "aa-briefcase",
+      "aa-gdpval",
+      "aa-automation",
+      "aa-terminal",
+      "aa-scicode",
+      "aa-omniscience",
+      "aa-gdp-pdf",
+      "aa-lcr",
+      "aa-hle",
+      "aa-critpt"
+    ]
+  },
+  {
+    "result_id": "aa-gpt-5-6-sol-medium",
+    "model_label": "GPT-5.6 Sol (medium)",
+    "model_id": "openai/gpt-5.6-sol",
+    "effort": "medium",
+    "harness": "Artificial Analysis",
+    "submitter": "Artificial Analysis",
+    "source_id": "aa-gpt-5-6-sol-medium",
+    "match_status": "Exact version and effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": [
+      "aa-intelligence",
+      "aa-briefcase",
+      "aa-gdpval",
+      "aa-automation",
+      "aa-terminal",
+      "aa-scicode",
+      "aa-omniscience",
+      "aa-gdp-pdf",
+      "aa-lcr",
+      "aa-hle",
+      "aa-critpt"
+    ]
+  },
+  {
+    "result_id": "aa-gpt-5-6-luna-medium",
+    "model_label": "GPT-5.6 Luna (medium)",
+    "model_id": "openai/gpt-5.6-luna",
+    "effort": "medium",
+    "harness": "Artificial Analysis",
+    "submitter": "Artificial Analysis",
+    "source_id": "aa-gpt-5-6-luna-medium",
+    "match_status": "Exact version and effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": [
+      "aa-intelligence",
+      "aa-briefcase",
+      "aa-gdpval",
+      "aa-automation",
+      "aa-terminal",
+      "aa-scicode",
+      "aa-omniscience",
+      "aa-gdp-pdf",
+      "aa-lcr",
+      "aa-hle",
+      "aa-critpt"
+    ]
+  },
+  {
+    "result_id": "aa-gpt-6-astra-low",
+    "model_label": "GPT-6 Astra (low)",
+    "model_id": "openai/gpt-6-astra",
+    "effort": "low",
+    "harness": "Artificial Analysis",
+    "submitter": "Artificial Analysis",
+    "source_id": "aa-gpt-6-astra-low",
+    "match_status": "Exact version and effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": [
+      "aa-intelligence",
+      "aa-briefcase",
+      "aa-gdpval",
+      "aa-automation",
+      "aa-terminal",
+      "aa-scicode",
+      "aa-omniscience",
+      "aa-gdp-pdf",
+      "aa-lcr",
+      "aa-hle",
+      "aa-critpt"
+    ]
+  },
+  {
+    "result_id": "aa-gpt-5-6-sol-low",
+    "model_label": "GPT-5.6 Sol (low)",
+    "model_id": "openai/gpt-5.6-sol",
+    "effort": "low",
+    "harness": "Artificial Analysis",
+    "submitter": "Artificial Analysis",
+    "source_id": "aa-gpt-5-6-sol-low",
+    "match_status": "Exact version and effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": [
+      "aa-intelligence",
+      "aa-briefcase",
+      "aa-gdpval",
+      "aa-automation",
+      "aa-terminal",
+      "aa-scicode",
+      "aa-omniscience",
+      "aa-gdp-pdf",
+      "aa-lcr",
+      "aa-hle",
+      "aa-critpt"
+    ]
+  },
+  {
+    "result_id": "aa-gpt-5-6-luna-low",
+    "model_label": "GPT-5.6 Luna (low)",
+    "model_id": "openai/gpt-5.6-luna",
+    "effort": "low",
+    "harness": "Artificial Analysis",
+    "submitter": "Artificial Analysis",
+    "source_id": "aa-gpt-5-6-luna-low",
+    "match_status": "Exact version and effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": [
+      "aa-intelligence",
+      "aa-briefcase",
+      "aa-gdpval",
+      "aa-automation",
+      "aa-terminal",
+      "aa-scicode",
+      "aa-omniscience",
+      "aa-gdp-pdf",
+      "aa-lcr",
+      "aa-hle",
+      "aa-critpt"
+    ]
+  },
+  {
+    "result_id": "aa-gemini-3-8-flash-medium",
+    "model_label": "Gemini 3.8 Flash (medium)",
+    "model_id": "google/gemini-3.8-flash",
+    "effort": "medium",
+    "harness": "Artificial Analysis",
+    "submitter": "Artificial Analysis",
+    "source_id": "aa-gemini-3-8-flash-medium",
+    "match_status": "Exact version and effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": [
+      "aa-intelligence",
+      "aa-briefcase",
+      "aa-gdpval",
+      "aa-automation",
+      "aa-terminal",
+      "aa-scicode",
+      "aa-omniscience",
+      "aa-gdp-pdf",
+      "aa-lcr",
+      "aa-hle",
+      "aa-critpt"
+    ]
+  },
+  {
+    "result_id": "aa-gemini-3-8-flash-low",
+    "model_label": "Gemini 3.8 Flash (low)",
+    "model_id": "google/gemini-3.8-flash",
+    "effort": "low",
+    "harness": "Artificial Analysis",
+    "submitter": "Artificial Analysis",
+    "source_id": "aa-gemini-3-8-flash-low",
+    "match_status": "Exact version and effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": [
+      "aa-intelligence",
+      "aa-briefcase",
+      "aa-gdpval",
+      "aa-automation",
+      "aa-terminal",
+      "aa-scicode",
+      "aa-omniscience",
+      "aa-gdp-pdf",
+      "aa-lcr",
+      "aa-hle",
+      "aa-critpt"
+    ]
+  },
+  {
+    "result_id": "tbs-bcf50bd8-8555-48a6-8cae-9f697af54051",
+    "model_label": "Opus 5",
+    "model_id": "anthropic/claude-opus-5",
+    "effort": "max",
+    "harness": "Claude Code",
+    "submitter": null,
+    "source_id": "tbs",
+    "match_status": "No complete VEP-bench overall configuration for this version",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "tbs-378f8b49-dbd8-4acf-a065-8c07e1712de2",
+    "model_label": "GPT-5.6 Sol",
+    "model_id": "openai/gpt-5.6-sol",
+    "effort": "max",
+    "harness": "Codex",
+    "submitter": null,
+    "source_id": "tbs",
+    "match_status": "No exact effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": []
+  },
+  {
+    "result_id": "tbs-e3f2861a-97db-4730-a0ff-99f08d8c7299",
+    "model_label": "Fable 5",
+    "model_id": null,
+    "effort": "max",
+    "harness": "Claude Code",
+    "submitter": null,
+    "source_id": "tbs",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "tbs-58d4c48d-791b-4873-ba3e-af1cf997a79c",
+    "model_label": "DeepSeek V4.1 Flash",
+    "model_id": "deepseek/deepseek-v4.1-flash",
+    "effort": "max",
+    "harness": "Codex",
+    "submitter": null,
+    "source_id": "tbs",
+    "match_status": "No exact effort match",
+    "vep_efforts": [
+      "low"
+    ],
+    "selected_in": []
+  },
+  {
+    "result_id": "tbs-409f68a6-d6a4-43c9-adb8-63679dc17a45",
+    "model_label": "Gemini 3.8 Flash",
+    "model_id": "google/gemini-3.8-flash",
+    "effort": "high",
+    "harness": "mini-SWE-agent",
+    "submitter": null,
+    "source_id": "tbs",
+    "match_status": "Exact version and effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": [
+      "tbs-mini-SWE-agent"
+    ]
+  },
+  {
+    "result_id": "tbs-e8bf7739-3c94-46a3-95a5-fa4d4444034e",
+    "model_label": "Opus 4.8",
+    "model_id": null,
+    "effort": "max",
+    "harness": "Claude Code",
+    "submitter": null,
+    "source_id": "tbs",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "tbs-c79d5ef6-b3c6-40da-84b5-946c11099426",
+    "model_label": "GPT-5.6 Terra",
+    "model_id": null,
+    "effort": "max",
+    "harness": "Codex",
+    "submitter": null,
+    "source_id": "tbs",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "tbs-78f18248-3ee9-4eb4-b7af-19019f1fc64f",
+    "model_label": "GLM 5.3",
+    "model_id": "z-ai/glm-5.3",
+    "effort": "max",
+    "harness": "Claude Code",
+    "submitter": null,
+    "source_id": "tbs",
+    "match_status": "No exact effort match",
+    "vep_efforts": [
+      "low"
+    ],
+    "selected_in": []
+  },
+  {
+    "result_id": "tbs-66e64f64-abbd-40a6-a470-2151df25472e",
+    "model_label": "Kimi K3",
+    "model_id": null,
+    "effort": "max",
+    "harness": "Claude Code",
+    "submitter": null,
+    "source_id": "tbs",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "tbs-231bc6c3-8f2b-455e-8c87-5a08ec200b05",
+    "model_label": "Grok 4.6",
+    "model_id": null,
+    "effort": "xhigh",
+    "harness": "Grok Build",
+    "submitter": null,
+    "source_id": "tbs",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "tbs-5a71d088-1bfd-4bbe-a65a-973a4fffd50f",
+    "model_label": "Gemini 3.7 Flash",
+    "model_id": null,
+    "effort": "high",
+    "harness": "mini-SWE-agent",
+    "submitter": null,
+    "source_id": "tbs",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "tbs-00b5eabf-caca-435c-b8a8-458633192aa8",
+    "model_label": "DeepSeek V4 Pro",
+    "model_id": null,
+    "effort": "max",
+    "harness": "Codex",
+    "submitter": null,
+    "source_id": "tbs",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "tbs-7cf10b06-3e5b-4723-b98f-c679e773959b",
+    "model_label": "GPT-5.6 Luna",
+    "model_id": "openai/gpt-5.6-luna",
+    "effort": "max",
+    "harness": "Codex",
+    "submitter": null,
+    "source_id": "tbs",
+    "match_status": "No exact effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-MiniMax M2.7 (xhigh)",
+    "model_label": "MiniMax M2.7 (xhigh)",
+    "model_id": null,
+    "effort": "xhigh",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-Tencent HY 3 Preview (xhigh)",
+    "model_label": "Tencent HY 3 Preview (xhigh)",
+    "model_id": null,
+    "effort": "xhigh",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-MiniMax M3 (xhigh)",
+    "model_label": "MiniMax M3 (xhigh)",
+    "model_id": null,
+    "effort": "xhigh",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-MiMo V2.5 (xhigh)",
+    "model_label": "MiMo V2.5 (xhigh)",
+    "model_id": null,
+    "effort": "xhigh",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GLM 5.1 (xhigh)",
+    "model_label": "GLM 5.1 (xhigh)",
+    "model_id": null,
+    "effort": "xhigh",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-Grok 4.3 (high)",
+    "model_label": "Grok 4.3 (high)",
+    "model_id": null,
+    "effort": "high",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-MiMo V2.5 Pro (xhigh)",
+    "model_label": "MiMo V2.5 Pro (xhigh)",
+    "model_id": null,
+    "effort": "xhigh",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "Pro system is not the corresponding standard model",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-Kimi K2.7 Code (reasoning_enabled)",
+    "model_label": "Kimi K2.7 Code (reasoning_enabled)",
+    "model_id": null,
+    "effort": "reasoning_enabled",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-Qwen 3.7 Plus (xhigh)",
+    "model_label": "Qwen 3.7 Plus (xhigh)",
+    "model_id": null,
+    "effort": "xhigh",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-DeepSeek V4 Flash (xhigh)",
+    "model_label": "DeepSeek V4 Flash (xhigh)",
+    "model_id": null,
+    "effort": "xhigh",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-DeepSeek V4 Pro (xhigh)",
+    "model_label": "DeepSeek V4 Pro (xhigh)",
+    "model_id": null,
+    "effort": "xhigh",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "Pro system is not the corresponding standard model",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-Gemini 3.1 Pro (high)",
+    "model_label": "Gemini 3.1 Pro (high)",
+    "model_id": null,
+    "effort": "high",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "Pro system is not the corresponding standard model",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-Qwen 3.7 Max (xhigh)",
+    "model_label": "Qwen 3.7 Max (xhigh)",
+    "model_id": null,
+    "effort": "xhigh",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-Claude Opus 4.8 (low)",
+    "model_label": "Claude Opus 4.8 (low)",
+    "model_id": null,
+    "effort": "low",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-Claude Opus 4.8 (medium)",
+    "model_label": "Claude Opus 4.8 (medium)",
+    "model_id": null,
+    "effort": "medium",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-Kimi K2.6 (xhigh)",
+    "model_label": "Kimi K2.6 (xhigh)",
+    "model_id": null,
+    "effort": "xhigh",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GLM 5.2 (high)",
+    "model_label": "GLM 5.2 (high)",
+    "model_id": null,
+    "effort": "high",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-Gemini 3.5 Flash (high)",
+    "model_label": "Gemini 3.5 Flash (high)",
+    "model_id": null,
+    "effort": "high",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-Claude Opus 4.8 (high)",
+    "model_label": "Claude Opus 4.8 (high)",
+    "model_id": null,
+    "effort": "high",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-Claude Opus 4.8 (xhigh)",
+    "model_label": "Claude Opus 4.8 (xhigh)",
+    "model_id": null,
+    "effort": "xhigh",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-Claude Opus 4.8 (max)",
+    "model_label": "Claude Opus 4.8 (max)",
+    "model_id": null,
+    "effort": "max",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.2 (none)",
+    "model_label": "GPT-5.2 (none)",
+    "model_id": null,
+    "effort": "none",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.2 (low)",
+    "model_label": "GPT-5.2 (low)",
+    "model_id": null,
+    "effort": "low",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.2 (medium)",
+    "model_label": "GPT-5.2 (medium)",
+    "model_id": null,
+    "effort": "medium",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.2 (high)",
+    "model_label": "GPT-5.2 (high)",
+    "model_id": null,
+    "effort": "high",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.2 (xhigh)",
+    "model_label": "GPT-5.2 (xhigh)",
+    "model_id": null,
+    "effort": "xhigh",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.4 (none)",
+    "model_label": "GPT-5.4 (none)",
+    "model_id": null,
+    "effort": "none",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.4 (low)",
+    "model_label": "GPT-5.4 (low)",
+    "model_id": null,
+    "effort": "low",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.4 (medium)",
+    "model_label": "GPT-5.4 (medium)",
+    "model_id": null,
+    "effort": "medium",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.4 (high)",
+    "model_label": "GPT-5.4 (high)",
+    "model_id": null,
+    "effort": "high",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.4 (xhigh)",
+    "model_label": "GPT-5.4 (xhigh)",
+    "model_id": null,
+    "effort": "xhigh",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.5 (none)",
+    "model_label": "GPT-5.5 (none)",
+    "model_id": null,
+    "effort": "none",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.5 (low)",
+    "model_label": "GPT-5.5 (low)",
+    "model_id": null,
+    "effort": "low",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.5 (medium)",
+    "model_label": "GPT-5.5 (medium)",
+    "model_id": null,
+    "effort": "medium",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.5 (high)",
+    "model_label": "GPT-5.5 (high)",
+    "model_id": null,
+    "effort": "high",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.5 (xhigh)",
+    "model_label": "GPT-5.5 (xhigh)",
+    "model_id": null,
+    "effort": "xhigh",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.6 Luna (none)",
+    "model_label": "GPT-5.6 Luna (none)",
+    "model_id": "openai/gpt-5.6-luna",
+    "effort": "none",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.6 Luna (low)",
+    "model_label": "GPT-5.6 Luna (low)",
+    "model_id": "openai/gpt-5.6-luna",
+    "effort": "low",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "Exact version and effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": [
+      "gene"
+    ]
+  },
+  {
+    "result_id": "gene-GPT-5.6 Luna (medium)",
+    "model_label": "GPT-5.6 Luna (medium)",
+    "model_id": "openai/gpt-5.6-luna",
+    "effort": "medium",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "Exact version and effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": [
+      "gene"
+    ]
+  },
+  {
+    "result_id": "gene-GPT-5.6 Luna (high)",
+    "model_label": "GPT-5.6 Luna (high)",
+    "model_id": "openai/gpt-5.6-luna",
+    "effort": "high",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "Exact version and effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": [
+      "gene"
+    ]
+  },
+  {
+    "result_id": "gene-GPT-5.6 Luna (xhigh)",
+    "model_label": "GPT-5.6 Luna (xhigh)",
+    "model_id": "openai/gpt-5.6-luna",
+    "effort": "xhigh",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.6 Luna (max)",
+    "model_label": "GPT-5.6 Luna (max)",
+    "model_id": "openai/gpt-5.6-luna",
+    "effort": "max",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.6 Terra (none)",
+    "model_label": "GPT-5.6 Terra (none)",
+    "model_id": null,
+    "effort": "none",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.6 Terra (low)",
+    "model_label": "GPT-5.6 Terra (low)",
+    "model_id": null,
+    "effort": "low",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.6 Terra (medium)",
+    "model_label": "GPT-5.6 Terra (medium)",
+    "model_id": null,
+    "effort": "medium",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.6 Terra (high)",
+    "model_label": "GPT-5.6 Terra (high)",
+    "model_id": null,
+    "effort": "high",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.6 Terra (xhigh)",
+    "model_label": "GPT-5.6 Terra (xhigh)",
+    "model_id": null,
+    "effort": "xhigh",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.6 Terra (max)",
+    "model_label": "GPT-5.6 Terra (max)",
+    "model_id": null,
+    "effort": "max",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.6 Sol (none)",
+    "model_label": "GPT-5.6 Sol (none)",
+    "model_id": "openai/gpt-5.6-sol",
+    "effort": "none",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.6 Sol (low)",
+    "model_label": "GPT-5.6 Sol (low)",
+    "model_id": "openai/gpt-5.6-sol",
+    "effort": "low",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "Exact version and effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": [
+      "gene"
+    ]
+  },
+  {
+    "result_id": "gene-GPT-5.6 Sol (medium)",
+    "model_label": "GPT-5.6 Sol (medium)",
+    "model_id": "openai/gpt-5.6-sol",
+    "effort": "medium",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "Exact version and effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": [
+      "gene"
+    ]
+  },
+  {
+    "result_id": "gene-GPT-5.6 Sol (high)",
+    "model_label": "GPT-5.6 Sol (high)",
+    "model_id": "openai/gpt-5.6-sol",
+    "effort": "high",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "Exact version and effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": [
+      "gene"
+    ]
+  },
+  {
+    "result_id": "gene-GPT-5.6 Sol (xhigh)",
+    "model_label": "GPT-5.6 Sol (xhigh)",
+    "model_id": "openai/gpt-5.6-sol",
+    "effort": "xhigh",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.6 Sol (max)",
+    "model_label": "GPT-5.6 Sol (max)",
+    "model_id": "openai/gpt-5.6-sol",
+    "effort": "max",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "No exact effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.2 Pro (Extended)",
+    "model_label": "GPT-5.2 Pro (Extended)",
+    "model_id": null,
+    "effort": "Extended",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "Pro system is not the corresponding standard model",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.4 Pro (Extended)",
+    "model_label": "GPT-5.4 Pro (Extended)",
+    "model_id": null,
+    "effort": "Extended",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "Pro system is not the corresponding standard model",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.5 Pro (Extended)",
+    "model_label": "GPT-5.5 Pro (Extended)",
+    "model_id": null,
+    "effort": "Extended",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "Pro system is not the corresponding standard model",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.6 Luna Pro (Extended)",
+    "model_label": "GPT-5.6 Luna Pro (Extended)",
+    "model_id": null,
+    "effort": "Extended",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "Pro system is not the corresponding standard model",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.6 Terra Pro (Extended)",
+    "model_label": "GPT-5.6 Terra Pro (Extended)",
+    "model_id": null,
+    "effort": "Extended",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "Pro system is not the corresponding standard model",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "gene-GPT-5.6 Sol Pro (Extended)",
+    "model_label": "GPT-5.6 Sol Pro (Extended)",
+    "model_id": null,
+    "effort": "Extended",
+    "harness": "GeneBench Docker analysis harness",
+    "submitter": null,
+    "source_id": "gene",
+    "match_status": "Pro system is not the corresponding standard model",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "bix3-gpt-5.6-sol",
+    "model_label": "gpt-5.6-sol",
+    "model_id": "openai/gpt-5.6-sol",
+    "effort": "max",
+    "harness": "BixBench3 public runner",
+    "submitter": null,
+    "source_id": "bix3",
+    "match_status": "No exact effort match",
+    "vep_efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "selected_in": []
+  },
+  {
+    "result_id": "bix3-kimi-k3",
+    "model_label": "kimi-k3",
+    "model_id": null,
+    "effort": "max",
+    "harness": "BixBench3 public runner",
+    "submitter": null,
+    "source_id": "bix3",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "bix3-glm-5.2",
+    "model_label": "glm-5.2",
+    "model_id": null,
+    "effort": "max",
+    "harness": "BixBench3 public runner",
+    "submitter": null,
+    "source_id": "bix3",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "bix3-claude-opus-4.8",
+    "model_label": "claude-opus-4.8",
+    "model_id": null,
+    "effort": "max",
+    "harness": "BixBench3 public runner",
+    "submitter": null,
+    "source_id": "bix3",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "bix3-gpt-5.5",
+    "model_label": "gpt-5.5",
+    "model_id": null,
+    "effort": "max",
+    "harness": "BixBench3 public runner",
+    "submitter": null,
+    "source_id": "bix3",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "bix3-gemini-3.5-flash",
+    "model_label": "gemini-3.5-flash",
+    "model_id": null,
+    "effort": "max",
+    "harness": "BixBench3 public runner",
+    "submitter": null,
+    "source_id": "bix3",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "bix3-claude-opus-5",
+    "model_label": "claude-opus-5",
+    "model_id": "anthropic/claude-opus-5",
+    "effort": "max",
+    "harness": "BixBench3 public runner",
+    "submitter": null,
+    "source_id": "bix3",
+    "match_status": "No complete VEP-bench overall configuration for this version",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "bix3-gpt-5.4-mini",
+    "model_label": "gpt-5.4-mini",
+    "model_id": null,
+    "effort": "max",
+    "harness": "BixBench3 public runner",
+    "submitter": null,
+    "source_id": "bix3",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "bix3-gpt-5.4-nano",
+    "model_label": "gpt-5.4-nano",
+    "model_id": null,
+    "effort": "max",
+    "harness": "BixBench3 public runner",
+    "submitter": null,
+    "source_id": "bix3",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "bix3-gemini-3.1-pro-preview",
+    "model_label": "gemini-3.1-pro-preview",
+    "model_id": null,
+    "effort": "max",
+    "harness": "BixBench3 public runner",
+    "submitter": null,
+    "source_id": "bix3",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "bix3-claude-sonnet-4.6",
+    "model_label": "claude-sonnet-4.6",
+    "model_id": null,
+    "effort": "max",
+    "harness": "BixBench3 public runner",
+    "submitter": null,
+    "source_id": "bix3",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "bix3-claude-haiku-4.5",
+    "model_label": "claude-haiku-4.5",
+    "model_id": null,
+    "effort": "max",
+    "harness": "BixBench3 public runner",
+    "submitter": null,
+    "source_id": "bix3",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  },
+  {
+    "result_id": "bix3-gemini-3.1-flash-lite",
+    "model_label": "gemini-3.1-flash-lite",
+    "model_id": null,
+    "effort": "max",
+    "harness": "BixBench3 public runner",
+    "submitter": null,
+    "source_id": "bix3",
+    "match_status": "No exact model-version match",
+    "vep_efforts": [],
+    "selected_in": []
+  }
+]

@@ -7,7 +7,7 @@ theme: [air, near-midnight, alt]
 
 VEP-bench v0.1
 
-**Draft — dataset composition and exploratory performance analysis.**
+**Draft — dataset composition, model performance, and external comparisons.**
 
 VEP-bench asks language models to predict the effects of genetic variants from
 DNA sequence and experimental context, without tools or internet access. Its
@@ -501,6 +501,196 @@ if (complete) display(Inputs.table(composition.rows, {
 ```
 
 </details>
+
+## Does variant-effect prediction track other capabilities?
+
+Do models that rank variant effects well also perform well at agentic biology?
+We surveyed published evaluations that require code execution, tool use, or
+multistep biological data analysis. General intelligence scores provide a
+secondary comparison. We selected sources for their scope and identifiable
+evaluation settings, before computing associations.
+
+**The current overlap is too small to summarize a correlation.** Our frozen
+September 11, 2026 snapshot has seven model versions with complete VEP-bench scores
+across all three tasks. After requiring the **same model release and exact
+reasoning effort**, the biology comparisons below contain at most two distinct
+models each. The latest Artificial Analysis Intelligence Index, **v4.3** at
+retrieval, has **12 matched configurations across four models**: GPT-6 Astra,
+GPT-5.6 Sol, GPT-5.6 Luna, and Gemini 3.8 Flash, each at low, medium, and high
+effort. Every exact match appears in the plots. Multiple settings of a model
+do not increase the count of distinct models.
+
+These are descriptive paired scores. Multiple efforts from one model are
+dependent observations, so we do not pool the points into a cross-model
+correlation. The snapshot also falls below our five-distinct-model threshold.
+Sparse overlap does not establish either agreement or disagreement.
+No external benchmark was rerun and no additional model calls were made.
+
+```js
+import {compareScores} from "./introducing-vep-bench/comparisons.js";
+import {comparisonFigure} from "./introducing-vep-bench/plots.js";
+import {modelFamilyScale} from "../components/benchmark-data.js";
+const vepSnapshot = await FileAttachment("./introducing-vep-bench/comparisons-data/vep-runs.json").json();
+const externalSnapshot = await FileAttachment("./introducing-vep-bench/comparisons-data/external.json").json();
+const modelMatches = await FileAttachment("./introducing-vep-bench/comparisons-data/model-matches.json").json();
+const comparisonModelColors = await FileAttachment("../components/model-family-colors.json").json();
+const sourceById = new Map(externalSnapshot.sources.map((source) => [source.id, source]));
+```
+
+### Selection and interpretation
+
+We use only VEP-bench's **Overall score**, the unweighted mean of its three task scores; each
+task score is the mean Spearman correlation across its variant panels. We use
+the original scores, without the leaderboard's display clipping. For each
+external benchmark, metric, harness, and submitter group, we include **every
+effort evaluated on both sides**. Each point represents one model and exact
+effort. We use the latest published submission for that combination,
+independently of its score. Missing or ambiguous efforts are excluded; “max” never
+substitutes for “high”.
+
+Colors identify models, marker shapes identify efforts, and connecting lines
+join the efforts of the same model in order. These lines are guides to the
+evaluated configurations, not fitted trends. Each caption reports both the
+number of matched configurations and the number of distinct models.
+
+The matching table identifies named releases. VEP-bench and these external
+reports do not consistently disclose immutable checkpoint revisions, so we
+cannot establish identity beyond those named releases. An exact effort label
+also does not equalize tokens, tools, prompts, or execution budgets across tasks.
+
+```js
+const externalAnalysis = compareScores(vepSnapshot, externalSnapshot);
+const comparisonColor = modelFamilyScale(externalAnalysis.configurations.map((c) => c.family), comparisonModelColors);
+const visibleComparisons = externalAnalysis.comparisons;
+```
+
+### Published agentic biology results
+
+[GeneBench-Pro](https://cdn.openai.com/pdf/21938268-21af-442f-af93-3b2249afb241/genebench-pro.pdf)
+reports exact efforts in Supplementary Table 1. We use the full 129-problem
+suite, with six matched configurations: GPT-5.6 Sol and GPT-5.6 Luna at low,
+medium, and high effort. Pro systems and the original GeneBench remain separate. Its pass rates
+exclude execution and format errors and average per-problem success over valid
+attempts; this differs from VEP-bench's treatment of completed invalid answers.
+
+For [Terminal-Bench-Science](https://www.terminal-bench-science.ai/?view=domains),
+we use its published **Life Sciences** domain: 19 tasks, three trials per task.
+The official leaderboard snapshot supplies this broader label, which includes
+medical imaging, rather than a separately labeled biology subset. The sole
+exact match is Gemini 3.8 Flash at high effort, using mini-SWE-agent.
+GPT-5.6 Sol and Luna are reported at max effort, while VEP has low, medium,
+and high; DeepSeek V4.1 Flash and GLM 5.3 are also reported at max, while VEP
+has low. Other reported model releases have no complete VEP Overall score.
+Other harnesses remain separate; the all-science aggregate is not used as a
+biology score.
+
+```js
+const biologyComparisons = visibleComparisons.filter((c) => c.tier === "primary" && c.pairs.length);
+for (const comparison of biologyComparisons) {
+  display(resize((width) => comparisonFigure(comparison, comparisonColor, width)));
+}
+```
+
+### General intelligence and its components
+
+Scores below are from [Artificial Analysis](https://artificialanalysis.ai/models),
+using [Intelligence Index v4.3](https://artificialanalysis.ai/methodology/intelligence-benchmarking).
+We retain all ten published component evaluations as secondary comparisons,
+including scientific reasoning and coding. They use different units and
+evaluation procedures; several test knowledge or reasoning without model tool
+access. None is presented as an agentic biology score. Component scores and
+the overall index are related measurements, not independent confirmations.
+We do not construct additional category indices from these values.
+
+AA reports scores for the other three model releases in our VEP snapshot, but
+their published effort settings do not match our completed runs:
+
+| Model | Completed VEP effort | Published AA efforts |
+| --- | --- | --- |
+| [Muse Spark 1.3](https://artificialanalysis.ai/models/muse-spark-1-3) | medium | max, xhigh |
+| [GLM-5.3](https://artificialanalysis.ai/models/glm-5-3) | low | max |
+| [DeepSeek V4.1 Flash](https://artificialanalysis.ai/models/deepseek-v4-1-flash) | low | max |
+
+These settings are excluded under the same exact-effort rule as every other
+model. The paired AAII and component plots therefore contain four model releases.
+
+```js
+const aaComparisons = visibleComparisons.filter((c) => c.tier === "secondary");
+display(resize((width) => comparisonFigure(aaComparisons.find((c) => c.id === "aa-intelligence"), comparisonColor, width)));
+```
+
+The ten component comparisons below use the same matched configurations and
+the same Overall VEP score.
+
+```js
+const componentGrid = document.createElement("div");
+componentGrid.className = "grid grid-cols-2";
+for (const comparison of aaComparisons.filter((c) => c.id !== "aa-intelligence")) {
+  componentGrid.append(resize((width) => comparisonFigure(comparison, comparisonColor, width)));
+}
+display(componentGrid);
+```
+
+Across both sections, a positive association would concern a model together
+with its evaluated harness, tools, effort, and budget. It would not show that
+variant-effect prediction causes, or can replace, agentic biology capability.
+
+### Survey and exact matching audit
+
+The survey records the specific reports inspected; an exclusion does not claim
+that no other evaluation exists. For example, BixBench3 has a shared model
+release but no completed VEP configuration at its reported effort. Unidentified
+models, multi-model systems, undocumented harnesses, and missing settings remain
+visible in the audit rather than receiving inferred matches.
+
+```js
+display(Inputs.table(externalSnapshot.survey, {
+  columns: ["benchmark", "decision", "rationale", "source_id"],
+  header: {benchmark: "Benchmark / report", decision: "Decision", rationale: "Reason and overlap", source_id: "Source"},
+  format: {source_id: (id) => html`<a href=${sourceById.get(id).url}>Official source</a>`},
+  select: false, rows: 10
+}));
+```
+
+<details>
+<summary>Explicit model-version and effort matching table</summary>
+
+```js
+display(Inputs.table(modelMatches, {
+  columns: ["model_label", "model_id", "effort", "vep_efforts", "harness", "submitter", "match_status", "selected_in", "source_id"],
+  header: {model_label: "External model label", model_id: "VEP model ID", effort: "External effort",
+    vep_efforts: "Completed VEP efforts", harness: "Harness", submitter: "Submitter", match_status: "Match / exclusion",
+    selected_in: "Primary comparisons", source_id: "Source"},
+  format: {vep_efforts: (v) => v.join(", "), selected_in: (v) => v.join(", "),
+    source_id: (id) => html`<a href=${sourceById.get(id).url}>Source</a>`},
+  select: false, rows: 15
+}));
+```
+
+</details>
+
+### Frozen comparison data
+
+These plots read only the bundled snapshot; updating a live leaderboard cannot
+silently change this post. Source extracts retain their retrieval times,
+original download digests, model labels, reported settings and scores. VEP run
+metadata is verified against its publication manifest and pins the complete
+52-panel question set. Missing external metadata is recorded as unknown.
+
+```js
+display(html`<p>
+  <a href=${await FileAttachment("./introducing-vep-bench/comparisons-data/paired-scores.csv").url()} download>Paired scores (CSV)</a> ·
+  <a href=${await FileAttachment("./introducing-vep-bench/comparisons-data/model-matches.json").url()} download>Matching table (JSON)</a> ·
+  <a href=${await FileAttachment("./introducing-vep-bench/comparisons-data/external.json").url()} download>Sources, settings, selection rules and survey (JSON)</a> ·
+  <a href=${await FileAttachment("./introducing-vep-bench/comparisons-data/analysis.json").url()} download>Analysis results (JSON)</a> ·
+  <a href=${await FileAttachment("./introducing-vep-bench/comparisons-data/vep-runs.json").url()} download>VEP run snapshot (JSON)</a>
+</p>`);
+```
+
+The [analysis code](https://github.com/Open-Athena/VEP-bench/blob/main/projects/explorer/web/blog/introducing-vep-bench/comparisons.js)
+and [source extraction script](https://github.com/Open-Athena/VEP-bench/blob/main/projects/explorer/scripts/freeze_comparisons.mjs)
+are versioned with the post. Limited published overlap is a valid finding and
+does not call for additional evaluations to complete this comparison.
 
 - [Explore the leaderboard](../index.html)
 - [Task methodology](../tasks.html)

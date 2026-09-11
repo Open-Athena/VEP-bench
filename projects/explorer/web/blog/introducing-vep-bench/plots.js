@@ -123,3 +123,45 @@ export function cutoffFigure(summaries, width) {
   figure.append(legend, chart);
   return figure;
 }
+
+export function comparisonFigure(comparison, color, width) {
+  const figure = document.createElement("div");
+  figure.className = "card";
+  const caption = document.createElement("p");
+  caption.textContent = `${comparison.label} · ${comparison.subset} · ${comparison.summary.points} matched configurations · ${comparison.summary.n} distinct models. `
+    + (comparison.summary.spearman === null ? `${comparison.summary.reason}; descriptive only.`
+      : `Exploratory Spearman ρ = ${comparison.summary.spearman.toFixed(3)}; Pearson r = ${comparison.summary.pearson.toFixed(3)}.`);
+  figure.append(caption);
+  if (!comparison.pairs.length) return figure;
+  const detail = (row) => `${row.label} (${row.effort})\nVEP-bench: ${row.vep_score.toFixed(4)}\n`
+    + `${comparison.metric_label}: ${row.external_score.toFixed(4)}\nHarness: ${comparison.harness}`;
+  const values = comparison.pairs.map((r) => r.vep_score);
+  const midpoint = (Math.min(...values) + Math.max(...values)) / 2;
+  const labels = [...new Map(comparison.pairs.map((row) => [row.model_id, row])).values()];
+  const effortSymbols = {none: "cross", minimal: "star", low: "circle", medium: "square",
+    high: "triangle", xhigh: "diamond", max: "wye"};
+  const shownEfforts = Object.keys(effortSymbols).filter((effort) => comparison.pairs.some((r) => r.effort === effort));
+  const symbol = {domain: shownEfforts, range: shownEfforts.map((effort) => effortSymbols[effort]), label: "Reasoning effort"};
+  const labelOptions = {x: "vep_score", y: "external_score", text: "label",
+    fontSize: 11, dy: -14, lineWidth: 18};
+  const chart = Plot.plot({
+    width: Math.max(320, width - 34), height: 380, marginTop: 50, marginBottom: 55, marginLeft: 72, marginRight: 35,
+    ariaLabel: `Overall VEP-bench versus ${comparison.label}; ${comparison.summary.points} configurations from ${comparison.summary.n} distinct models`,
+    x: {label: "Overall VEP-bench score (mean Spearman)", grid: true, nice: true, ticks: 5},
+    y: {label: comparison.metric_label, grid: true, nice: true, ticks: 5}, color, symbol,
+    marks: [
+      Plot.line(comparison.pairs, {x: "vep_score", y: "external_score", stroke: "family",
+        z: "model_id", strokeOpacity: 0.35, strokeWidth: 1.5}),
+      Plot.dot(comparison.pairs, {x: "vep_score", y: "external_score", fill: "family", symbol: "effort", r: 5,
+        stroke: "white", tip: true, title: detail, ariaLabel: detail}),
+      Plot.text(labels.filter((r) => r.vep_score <= midpoint), {...labelOptions, textAnchor: "start", dx: 7}),
+      Plot.text(labels.filter((r) => r.vep_score > midpoint), {...labelOptions, textAnchor: "end", dx: -7, dy: 16})
+    ]
+  });
+  figure.append(chart);
+  const visibleFamilies = [...new Set(comparison.pairs.map((row) => row.family))].sort();
+  figure.append(Plot.legend({color: {type: "categorical", domain: visibleFamilies,
+    range: visibleFamilies.map((family) => chart.scale("color").apply(family)), label: "Model family"}}));
+  figure.append(Plot.legend({symbol}));
+  return figure;
+}
