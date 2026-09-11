@@ -486,12 +486,14 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
         if errors:
             raise BuildError(_schema_error(run["run_id"], errors))
         if "retry_policy" in run:
-            expected_key = "cfg-" + sha256_json({
-                "model": _model_identity(run["model"]),
-                "generation_parameters": run["generation_parameters"],
-                "evaluation_profile": run["evaluation_profile"],
-                "retry_policy": run["retry_policy"],
-            })
+            expected_key = "cfg-" + sha256_json(
+                {
+                    "model": _model_identity(run["model"]),
+                    "generation_parameters": run["generation_parameters"],
+                    "evaluation_profile": run["evaluation_profile"],
+                    "retry_policy": run["retry_policy"],
+                }
+            )
             if run["configuration_key"] != expected_key:
                 raise BuildError("run configuration key does not match retry policy")
         matching_families = [

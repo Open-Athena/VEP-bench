@@ -191,8 +191,11 @@ def truncation_fixture(tmp_path: Path, *, ranking: bool = False) -> tuple[Path, 
             "usage": {"cost": 0.1, "completion_tokens": tokens, "total_tokens": tokens + 10},
         }
         return completed_result(
-            raw=raw, question=questions[index], question_set_sha256=sha256_file(question_path),
-            question_set_size=3, run_id="retry" if retried else "original",
+            raw=raw,
+            question=questions[index],
+            question_set_sha256=sha256_file(question_path),
+            question_set_size=3,
+            run_id="retry" if retried else "original",
             model_id="deepseek/deepseek-v4.1-flash",
             generation_parameters={"max_tokens": 200 if retried else 100, "temperature": 1},
             evaluated_at=datetime(2026, 9, 11 if retried else 10, tzinfo=UTC),
@@ -227,8 +230,12 @@ def test_truncation_export_retains_all_outcomes_and_actual_requests(tmp_path: Pa
     assert untouched == json.loads(original.read_text().splitlines()[0])
     root = tmp_path / "publication"
     manifest = build_version(
-        questions_path=questions, results_dir=output.parent, result_schema_path=RESULT_SCHEMA,
-        schemas_dir=SCHEMAS, output=root, version_name="candidate",
+        questions_path=questions,
+        results_dir=output.parent,
+        result_schema_path=RESULT_SCHEMA,
+        schemas_dir=SCHEMAS,
+        output=root,
+        version_name="candidate",
     )
     assert validate_version(root, version_name="candidate") == manifest
     run = json.loads((root / "versions/candidate/runs.json").read_text())["runs"][0]
@@ -270,7 +277,9 @@ def test_truncation_export_rejects_selection_and_request_changes(tmp_path: Path,
     output = tmp_path / "resolved.jsonl"
     with pytest.raises(BuildError):
         resolve_truncations(
-            original=original, retry=retry, max_tokens=50 if change == "lower_cap" else 200,
+            original=original,
+            retry=retry,
+            max_tokens=50 if change == "lower_cap" else 200,
             output=output,
         )
     assert not output.exists()
@@ -285,14 +294,28 @@ def test_truncation_policy_can_cover_a_task_without_retries(tmp_path: Path):
         record["usage"] = deepcopy(records[0]["usage"])
     original.write_text("".join(canonical_json(r) + "\n" for r in records))
     output = tmp_path / "resolved/run.jsonl"
-    assert publishing_main([
-        "resolve-truncations", "--original", str(original), "--max-tokens", "200",
-        "--output", str(output),
-    ]) == 0
+    assert (
+        publishing_main(
+            [
+                "resolve-truncations",
+                "--original",
+                str(original),
+                "--max-tokens",
+                "200",
+                "--output",
+                str(output),
+            ]
+        )
+        == 0
+    )
     root = tmp_path / "publication"
     build_version(
-        questions_path=questions, results_dir=output.parent, result_schema_path=RESULT_SCHEMA,
-        schemas_dir=SCHEMAS, output=root, version_name="candidate",
+        questions_path=questions,
+        results_dir=output.parent,
+        result_schema_path=RESULT_SCHEMA,
+        schemas_dir=SCHEMAS,
+        output=root,
+        version_name="candidate",
     )
     run = json.loads((root / "versions/candidate/runs.json").read_text())["runs"][0]
     assert "retry_count" not in run
@@ -307,8 +330,12 @@ def test_validate_version_rejects_retry_configuration_key_tampering(tmp_path: Pa
     resolve_truncations(original=original, retry=retry, max_tokens=200, output=output)
     root = tmp_path / "publication"
     build_version(
-        questions_path=questions, results_dir=output.parent, result_schema_path=RESULT_SCHEMA,
-        schemas_dir=SCHEMAS, output=root, version_name="candidate",
+        questions_path=questions,
+        results_dir=output.parent,
+        result_schema_path=RESULT_SCHEMA,
+        schemas_dir=SCHEMAS,
+        output=root,
+        version_name="candidate",
     )
     version = root / "versions/candidate"
     runs = json.loads((version / "runs.json").read_text())

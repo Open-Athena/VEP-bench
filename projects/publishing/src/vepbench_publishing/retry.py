@@ -269,8 +269,10 @@ def resolve_truncations(
     if any(any(record[field] != first[field] for field in identity) for record in records):
         raise BuildError("original records do not share a run identity")
     if any(
-        any(record["model"].get(key) != first["model"].get(key)
-            for key in ("gateway", "model_id", "model_revision"))
+        any(
+            record["model"].get(key) != first["model"].get(key)
+            for key in ("gateway", "model_id", "model_revision")
+        )
         for record in records
     ):
         raise BuildError("original records do not share a model")
