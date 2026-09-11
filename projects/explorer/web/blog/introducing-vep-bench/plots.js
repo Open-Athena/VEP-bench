@@ -1,5 +1,4 @@
 import * as Plot from "npm:@observablehq/plot@0.6.17";
-import {compositionTasks} from "./analysis.js";
 
 const percent = (value) => `${(value * 100).toFixed(1)}%`;
 const integer = (value) => value.toLocaleString("en-US");
@@ -12,33 +11,47 @@ function consequenceLabel(term) {
 export function distributionFigure(composition, dimension, width) {
   const rows = composition.rows.filter((row) => row.dimension === dimension);
   const categories = dimension === "type" ? composition.types : composition.consequences;
-  const taskLabels = composition.tasks.map((task) => task.label);
   const detail = (row) => `${row.task}\n${row.category}\n${integer(row.count)} / ${integer(row.total)} variants (${percent(row.proportion)})`;
-  const plot = Plot.plot({
-    width: Math.max(760, width - 34),
-    height: categories.length * 29 + 115,
-    marginLeft: dimension === "type" ? 165 : 230,
-    marginRight: 36,
-    marginTop: 60,
-    marginBottom: 55,
-    style: {fontSize: "12px"},
-    ariaLabel: dimension === "type"
-      ? "Variant types by task, as a percentage of selected panel variants"
-      : "Most severe VEP consequences by task, as a percentage of selected panel variants",
-    x: {label: "Variants within task (%)", labelAnchor: "center", grid: true, ticks: 4, insetRight: 30, tickFormat: (value) => `${Math.round(value * 100)}%`},
-    y: {domain: categories, label: null, tickFormat: dimension === "type" ? undefined : consequenceLabel},
-    fx: {
-      domain: taskLabels,
-      label: null,
-      tickFormat: (label) => `${label}\nn = ${integer(composition.tasks.find((task) => task.label === label).total)}`,
-      padding: 0.15
-    },
-    color: {domain: taskLabels, range: compositionTasks.map((task) => task.color)},
-    marks: [
-      Plot.ruleX([0]),
-      Plot.barX(rows, {fx: "task", y: "category", x: "proportion", fill: "task", tip: true, title: detail, ariaLabel: detail}),
-      Plot.text(rows, {fx: "task", y: "category", x: "proportion", text: (row) => percent(row.proportion), textAnchor: "start", dx: 4, fontSize: 10})
-    ]
+  const plotWidth = Math.max(760, width - 34);
+  const height = categories.length * 29 + 115;
+  const labelWidth = dimension === "type" ? 155 : 220;
+  const panelWidth = (plotWidth - labelWidth) / composition.tasks.length;
+  const plot = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  plot.setAttribute("width", plotWidth);
+  plot.setAttribute("height", height);
+  plot.setAttribute("viewBox", `0 0 ${plotWidth} ${height}`);
+  plot.setAttribute("aria-label", dimension === "type"
+    ? "Variant types by task, with independently scaled percentage axes"
+    : "Most severe VEP consequences by task, with independently scaled percentage axes");
+  // Separate Plot instances give each task its own automatic x scale. Nest the
+  // SVGs so the same complete figure can be displayed and exported.
+  composition.tasks.forEach((task, index) => {
+    const data = rows.filter((row) => row.task_family === task.family);
+    const panel = Plot.plot({
+      width: panelWidth + (index === 0 ? labelWidth : 0),
+      height,
+      marginLeft: index === 0 ? labelWidth + 10 : 10,
+      marginRight: 38,
+      marginTop: 60,
+      marginBottom: 55,
+      style: {fontSize: "12px", overflow: "visible"},
+      ariaLabel: `${task.label}: ${dimension} distribution`,
+      x: {label: "Variants (%)", labelAnchor: "center", grid: true, ticks: 4, tickFormat: (value) => `${Math.round(value * 100)}%`},
+      y: {
+        domain: categories,
+        axis: index === 0 ? "left" : null,
+        label: null,
+        tickFormat: dimension === "type" ? undefined : consequenceLabel
+      },
+      marks: [
+        Plot.ruleX([0]),
+        Plot.barX(data, {y: "category", x: "proportion", fill: task.color, tip: true, title: detail, ariaLabel: detail}),
+        Plot.text(data, {y: "category", x: "proportion", text: (row) => percent(row.proportion), textAnchor: "start", dx: 4, fontSize: 10}),
+        Plot.text([task], {frameAnchor: "top", dy: -35, text: (task) => `${task.label}\nn = ${integer(task.total)}`, fontSize: 12})
+      ]
+    });
+    panel.setAttribute("x", index === 0 ? 0 : labelWidth + index * panelWidth);
+    plot.append(panel);
   });
   const exported = plot.cloneNode(true);
   exported.setAttribute("xmlns", "http://www.w3.org/2000/svg");

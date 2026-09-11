@@ -70,9 +70,10 @@ bases without changing length. Each variant belongs to one category.
 if (complete) display(resize((width) => distributionFigure(composition, "type", width)));
 ```
 
-Within each figure, all three tasks share an automatically scaled percentage
-axis. Hover over a bar for its count and denominator; zero labels indicate absent
-categories. On narrow screens, scroll horizontally to compare all three tasks.
+Each task panel has its own automatically scaled percentage axis; compare the
+percentage labels across tasks. Hover over a bar for its count and denominator;
+zero labels indicate absent categories. On narrow screens, scroll horizontally
+to compare all three tasks.
 
 ```js
 if (complete) display(html`<p>
