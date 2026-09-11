@@ -9,9 +9,9 @@
     "source_id": "aa-gpt-6-astra",
     "match_status": "No exact effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -37,9 +37,9 @@
     "source_id": "aa-gpt-5-6-luna",
     "match_status": "No exact effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -53,9 +53,9 @@
     "source_id": "aa-gemini-3-8-flash",
     "match_status": "Exact version and effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": [
       "aa-intelligence",
@@ -121,9 +121,9 @@
     "source_id": "aa-gpt-5-6-sol",
     "match_status": "No exact effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -151,9 +151,9 @@
     "source_id": "aa-gpt-6-astra-high",
     "match_status": "Exact version and effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": [
       "aa-intelligence",
@@ -179,9 +179,9 @@
     "source_id": "aa-gpt-5-6-sol-high",
     "match_status": "Exact version and effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": [
       "aa-intelligence",
@@ -207,9 +207,9 @@
     "source_id": "aa-gpt-5-6-luna-high",
     "match_status": "Exact version and effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": [
       "aa-intelligence",
@@ -235,11 +235,23 @@
     "source_id": "aa-gpt-6-astra-medium",
     "match_status": "Exact version and effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
-    "selected_in": []
+    "selected_in": [
+      "aa-intelligence",
+      "aa-briefcase",
+      "aa-gdpval",
+      "aa-automation",
+      "aa-terminal",
+      "aa-scicode",
+      "aa-omniscience",
+      "aa-gdp-pdf",
+      "aa-lcr",
+      "aa-hle",
+      "aa-critpt"
+    ]
   },
   {
     "result_id": "aa-gpt-5-6-sol-medium",
@@ -251,11 +263,23 @@
     "source_id": "aa-gpt-5-6-sol-medium",
     "match_status": "Exact version and effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
-    "selected_in": []
+    "selected_in": [
+      "aa-intelligence",
+      "aa-briefcase",
+      "aa-gdpval",
+      "aa-automation",
+      "aa-terminal",
+      "aa-scicode",
+      "aa-omniscience",
+      "aa-gdp-pdf",
+      "aa-lcr",
+      "aa-hle",
+      "aa-critpt"
+    ]
   },
   {
     "result_id": "aa-gpt-5-6-luna-medium",
@@ -267,11 +291,23 @@
     "source_id": "aa-gpt-5-6-luna-medium",
     "match_status": "Exact version and effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
-    "selected_in": []
+    "selected_in": [
+      "aa-intelligence",
+      "aa-briefcase",
+      "aa-gdpval",
+      "aa-automation",
+      "aa-terminal",
+      "aa-scicode",
+      "aa-omniscience",
+      "aa-gdp-pdf",
+      "aa-lcr",
+      "aa-hle",
+      "aa-critpt"
+    ]
   },
   {
     "result_id": "aa-gpt-6-astra-low",
@@ -283,11 +319,23 @@
     "source_id": "aa-gpt-6-astra-low",
     "match_status": "Exact version and effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
-    "selected_in": []
+    "selected_in": [
+      "aa-intelligence",
+      "aa-briefcase",
+      "aa-gdpval",
+      "aa-automation",
+      "aa-terminal",
+      "aa-scicode",
+      "aa-omniscience",
+      "aa-gdp-pdf",
+      "aa-lcr",
+      "aa-hle",
+      "aa-critpt"
+    ]
   },
   {
     "result_id": "aa-gpt-5-6-sol-low",
@@ -299,11 +347,23 @@
     "source_id": "aa-gpt-5-6-sol-low",
     "match_status": "Exact version and effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
-    "selected_in": []
+    "selected_in": [
+      "aa-intelligence",
+      "aa-briefcase",
+      "aa-gdpval",
+      "aa-automation",
+      "aa-terminal",
+      "aa-scicode",
+      "aa-omniscience",
+      "aa-gdp-pdf",
+      "aa-lcr",
+      "aa-hle",
+      "aa-critpt"
+    ]
   },
   {
     "result_id": "aa-gpt-5-6-luna-low",
@@ -315,11 +375,23 @@
     "source_id": "aa-gpt-5-6-luna-low",
     "match_status": "Exact version and effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
-    "selected_in": []
+    "selected_in": [
+      "aa-intelligence",
+      "aa-briefcase",
+      "aa-gdpval",
+      "aa-automation",
+      "aa-terminal",
+      "aa-scicode",
+      "aa-omniscience",
+      "aa-gdp-pdf",
+      "aa-lcr",
+      "aa-hle",
+      "aa-critpt"
+    ]
   },
   {
     "result_id": "aa-gemini-3-8-flash-medium",
@@ -331,11 +403,23 @@
     "source_id": "aa-gemini-3-8-flash-medium",
     "match_status": "Exact version and effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
-    "selected_in": []
+    "selected_in": [
+      "aa-intelligence",
+      "aa-briefcase",
+      "aa-gdpval",
+      "aa-automation",
+      "aa-terminal",
+      "aa-scicode",
+      "aa-omniscience",
+      "aa-gdp-pdf",
+      "aa-lcr",
+      "aa-hle",
+      "aa-critpt"
+    ]
   },
   {
     "result_id": "aa-gemini-3-8-flash-low",
@@ -347,11 +431,23 @@
     "source_id": "aa-gemini-3-8-flash-low",
     "match_status": "Exact version and effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
-    "selected_in": []
+    "selected_in": [
+      "aa-intelligence",
+      "aa-briefcase",
+      "aa-gdpval",
+      "aa-automation",
+      "aa-terminal",
+      "aa-scicode",
+      "aa-omniscience",
+      "aa-gdp-pdf",
+      "aa-lcr",
+      "aa-hle",
+      "aa-critpt"
+    ]
   },
   {
     "result_id": "tbs-bcf50bd8-8555-48a6-8cae-9f697af54051",
@@ -375,9 +471,9 @@
     "source_id": "tbs",
     "match_status": "No exact effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -415,9 +511,9 @@
     "source_id": "tbs",
     "match_status": "Exact version and effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": [
       "tbs-mini-SWE-agent"
@@ -519,9 +615,9 @@
     "source_id": "tbs",
     "match_status": "No exact effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -967,9 +1063,9 @@
     "source_id": "gene",
     "match_status": "No exact effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -983,11 +1079,13 @@
     "source_id": "gene",
     "match_status": "Exact version and effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
-    "selected_in": []
+    "selected_in": [
+      "gene"
+    ]
   },
   {
     "result_id": "gene-GPT-5.6 Luna (medium)",
@@ -999,11 +1097,13 @@
     "source_id": "gene",
     "match_status": "Exact version and effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
-    "selected_in": []
+    "selected_in": [
+      "gene"
+    ]
   },
   {
     "result_id": "gene-GPT-5.6 Luna (high)",
@@ -1015,9 +1115,9 @@
     "source_id": "gene",
     "match_status": "Exact version and effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": [
       "gene"
@@ -1033,9 +1133,9 @@
     "source_id": "gene",
     "match_status": "No exact effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -1049,9 +1149,9 @@
     "source_id": "gene",
     "match_status": "No exact effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -1137,9 +1237,9 @@
     "source_id": "gene",
     "match_status": "No exact effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -1153,11 +1253,13 @@
     "source_id": "gene",
     "match_status": "Exact version and effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
-    "selected_in": []
+    "selected_in": [
+      "gene"
+    ]
   },
   {
     "result_id": "gene-GPT-5.6 Sol (medium)",
@@ -1169,11 +1271,13 @@
     "source_id": "gene",
     "match_status": "Exact version and effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
-    "selected_in": []
+    "selected_in": [
+      "gene"
+    ]
   },
   {
     "result_id": "gene-GPT-5.6 Sol (high)",
@@ -1185,9 +1289,9 @@
     "source_id": "gene",
     "match_status": "Exact version and effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": [
       "gene"
@@ -1203,9 +1307,9 @@
     "source_id": "gene",
     "match_status": "No exact effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -1219,9 +1323,9 @@
     "source_id": "gene",
     "match_status": "No exact effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -1319,9 +1423,9 @@
     "source_id": "compbio",
     "match_status": "Harness or ensemble setup insufficiently documented in the inspected source",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -1335,9 +1439,9 @@
     "source_id": "compbio",
     "match_status": "Harness or ensemble setup insufficiently documented in the inspected source",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -1351,9 +1455,9 @@
     "source_id": "compbio",
     "match_status": "Harness or ensemble setup insufficiently documented in the inspected source",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -1379,9 +1483,9 @@
     "source_id": "compbio",
     "match_status": "No exact effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -1395,9 +1499,9 @@
     "source_id": "compbio",
     "match_status": "No exact effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -1411,9 +1515,9 @@
     "source_id": "compbio",
     "match_status": "Harness or ensemble setup insufficiently documented in the inspected source",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -1427,9 +1531,9 @@
     "source_id": "compbio",
     "match_status": "Exact version and effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": [
       "compbio-Codex-qchiuj"
@@ -1445,9 +1549,9 @@
     "source_id": "compbio",
     "match_status": "Harness or ensemble setup insufficiently documented in the inspected source",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -1461,9 +1565,9 @@
     "source_id": "compbio",
     "match_status": "No exact effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -1477,9 +1581,9 @@
     "source_id": "compbio",
     "match_status": "No exact effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -1493,9 +1597,9 @@
     "source_id": "compbio",
     "match_status": "Harness or ensemble setup insufficiently documented in the inspected source",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -1509,9 +1613,9 @@
     "source_id": "compbio",
     "match_status": "Harness or ensemble setup insufficiently documented in the inspected source",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -1525,9 +1629,9 @@
     "source_id": "compbio",
     "match_status": "No exact effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -1541,9 +1645,9 @@
     "source_id": "compbio",
     "match_status": "Harness or ensemble setup insufficiently documented in the inspected source",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -1581,9 +1685,9 @@
     "source_id": "compbio",
     "match_status": "Harness or ensemble setup insufficiently documented in the inspected source",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -1621,9 +1725,9 @@
     "source_id": "compbio",
     "match_status": "No exact effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -1637,9 +1741,9 @@
     "source_id": "compbio",
     "match_status": "Harness or ensemble setup insufficiently documented in the inspected source",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -1713,9 +1817,9 @@
     "source_id": "compbio",
     "match_status": "Exact version and effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -1789,9 +1893,9 @@
     "source_id": "compbio",
     "match_status": "Exact version and effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": [
       "compbio-Codex-yang90"
@@ -1831,9 +1935,9 @@
     "source_id": "compbio",
     "match_status": "Harness or ensemble setup insufficiently documented in the inspected source",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -1859,9 +1963,9 @@
     "source_id": "compbio",
     "match_status": "Exact version and effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -1995,9 +2099,9 @@
     "source_id": "compbio",
     "match_status": "No exact effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -2023,9 +2127,9 @@
     "source_id": "compbio",
     "match_status": "Harness or ensemble setup insufficiently documented in the inspected source",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -2075,9 +2179,9 @@
     "source_id": "compbio",
     "match_status": "No exact effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -2103,9 +2207,9 @@
     "source_id": "compbio",
     "match_status": "No exact effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -2119,9 +2223,9 @@
     "source_id": "compbio",
     "match_status": "Harness or ensemble setup insufficiently documented in the inspected source",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -2207,9 +2311,9 @@
     "source_id": "compbio",
     "match_status": "Harness or ensemble setup insufficiently documented in the inspected source",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },
@@ -2259,9 +2363,9 @@
     "source_id": "compbio",
     "match_status": "Exact version and effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": [
       "compbio-Codex-qchiuj"
@@ -2985,9 +3089,9 @@
     "source_id": "compbio",
     "match_status": "Exact version and effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": [
       "compbio-Codex-yang90"
@@ -3783,9 +3887,9 @@
     "source_id": "bix3",
     "match_status": "No exact effort match",
     "vep_efforts": [
-      "high",
       "low",
-      "medium"
+      "medium",
+      "high"
     ],
     "selected_in": []
   },

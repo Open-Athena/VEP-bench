@@ -515,15 +515,17 @@ September 11, 2026 snapshot has seven model versions with complete VEP-bench sco
 across all three tasks. After requiring the **same model release and exact
 reasoning effort**, the biology comparisons below contain at most two distinct
 models each. The latest Artificial Analysis Intelligence Index, **v4.3** at
-retrieval, has four: GPT-6 Astra, GPT-5.6 Sol, GPT-5.6 Luna, and Gemini 3.8 Flash,
-all at high effort. Multiple settings of a model do not increase that count.
-The low-effort sensitivity now includes all four of these models. DeepSeek V4.1
-Flash has a complete VEP score at low effort, but its published AA evaluation is
-at max effort and is excluded from the paired comparisons.
+retrieval, has **12 matched configurations across four models**: GPT-6 Astra,
+GPT-5.6 Sol, GPT-5.6 Luna, and Gemini 3.8 Flash, each at low, medium, and high
+effort. Every exact match appears in the plots. Multiple settings of a model
+do not increase the count of distinct models. DeepSeek V4.1 Flash has a complete
+VEP score at low effort, but its published AA evaluation is at max effort and
+is excluded from the paired comparisons.
 
-These are descriptive paired scores. We require at least five distinct models
-and nonconstant score vectors to report cross-model Spearman or Pearson
-correlations. Sparse overlap does not establish either agreement or disagreement.
+These are descriptive paired scores. Multiple efforts from one model are
+dependent observations, so we do not pool the points into a cross-model
+correlation. The snapshot also falls below our five-distinct-model threshold.
+Sparse overlap does not establish either agreement or disagreement.
 No external benchmark was rerun and no additional model calls were made.
 
 ```js
@@ -537,51 +539,38 @@ const sourceById = new Map(externalSnapshot.sources.map((source) => [source.id, 
 
 ### Selection and interpretation
 
-VEP-bench's primary score is the unweighted mean of its three task scores; each
+We use only VEP-bench's **Overall score**, the unweighted mean of its three task scores; each
 task score is the mean Spearman correlation across its variant panels. We use
 the original scores, without the leaderboard's display clipping. For each
-external benchmark, metric, harness, and submitter group, we select the highest
-effort evaluated on both sides. Within that effort we use the latest published
-submission, independently of its score. Lower exact efforts and prior
-submissions remain separate sensitivity views. Missing or ambiguous efforts
-are excluded; “max” never substitutes for “high”.
+external benchmark, metric, harness, and submitter group, we include **every
+effort evaluated on both sides**. Each point represents one model and exact
+effort. We use the latest published submission for that combination,
+independently of its score; earlier submissions remain in the downloadable
+sensitivity results. Missing or ambiguous efforts are excluded; “max” never
+substitutes for “high”.
+
+Colors identify models, marker shapes identify efforts, and connecting lines
+join the efforts of the same model in order. These lines are guides to the
+evaluated configurations, not fitted trends. Each caption reports both the
+number of matched configurations and the number of distinct models.
 
 The matching table identifies named releases. VEP-bench and these external
 reports do not consistently disclose immutable checkpoint revisions, so we
 cannot establish identity beyond those named releases. An exact effort label
 also does not equalize tokens, tools, prompts, or execution budgets across tasks.
 
-The scope control exposes task-specific VEP scores as exploratory breakdowns.
-If overlap eventually permits, the frozen analysis code computes Spearman using
-midranks within each shared model set, with Pearson as secondary. With at least
-six models it also recomputes ranks after each single-model omission, flagging
-a sign change or a change of at least 0.2 in Spearman ρ. The present snapshot
-does not meet either threshold. Models from the same family would still be
-dependent observations; these comparisons would remain exploratory.
-
 ```js
-const comparisonScope = view(Inputs.select(new Map([
-  ["Overall (primary)", "overall"], ["Fitness (exploratory)", "sge"],
-  ["Expression (exploratory)", "satmut_mpra"], ["Splicing (exploratory)", "opensplice_snv"]
-]), {label: "VEP-bench score"}));
-const comparisonSelection = view(Inputs.select(new Map([
-  ["Primary: highest exact shared effort", {}], ["Sensitivity: medium effort", {effort: "medium"}],
-  ["Sensitivity: low effort", {effort: "low"}], ["Sensitivity: preceding submission", {repeat: 1}],
-  ["Sensitivity: third-latest submission", {repeat: 2}]
-]), {label: "Configuration selection"}));
-```
-
-```js
-const externalAnalysis = compareScores(vepSnapshot, externalSnapshot, comparisonSelection);
+const externalAnalysis = compareScores(vepSnapshot, externalSnapshot);
 const comparisonFamilies = externalAnalysis.configurations.map((c) => c.family);
-const visibleComparisons = externalAnalysis.comparisons.filter((c) => c.scope === comparisonScope);
+const visibleComparisons = externalAnalysis.comparisons;
 ```
 
 ### Published agentic biology results
 
 [GeneBench-Pro](https://cdn.openai.com/pdf/21938268-21af-442f-af93-3b2249afb241/genebench-pro.pdf)
 reports exact efforts in Supplementary Table 1. We use the full 129-problem
-suite, keeping Pro systems and the original GeneBench separate. Its pass rates
+suite, with six matched configurations: GPT-5.6 Sol and GPT-5.6 Luna at low,
+medium, and high effort. Pro systems and the original GeneBench remain separate. Its pass rates
 exclude execution and format errors and average per-problem success over valid
 attempts; this differs from VEP-bench's treatment of completed invalid answers.
 
@@ -604,7 +593,6 @@ counted as additional models.
 
 ```js
 const biologyComparisons = visibleComparisons.filter((c) => c.tier === "primary" && c.pairs.length);
-if (!biologyComparisons.length) display(html`<p>No exact matched biology results for this selection.</p>`);
 for (const comparison of biologyComparisons) {
   display(resize((width) => comparisonFigure(comparison, comparisonFamilies, width)));
 }
@@ -622,13 +610,20 @@ the overall index are related measurements, not independent confirmations.
 We do not construct additional category indices from these values.
 
 ```js
-const aaComparisonId = view(Inputs.select(new Map(externalSnapshot.comparisons
-  .filter((c) => c.tier === "secondary").map((c) => [c.label, c.id])), {label: "External metric"}));
+const aaComparisons = visibleComparisons.filter((c) => c.tier === "secondary");
+display(resize((width) => comparisonFigure(aaComparisons.find((c) => c.id === "aa-intelligence"), comparisonFamilies, width)));
 ```
 
+The ten component comparisons below use the same matched configurations and
+the same Overall VEP score.
+
 ```js
-const aaComparison = visibleComparisons.find((c) => c.id === aaComparisonId);
-display(resize((width) => comparisonFigure(aaComparison, comparisonFamilies, width)));
+const componentGrid = document.createElement("div");
+componentGrid.className = "grid grid-cols-2";
+for (const comparison of aaComparisons.filter((c) => c.id !== "aa-intelligence")) {
+  componentGrid.append(resize((width) => comparisonFigure(comparison, comparisonFamilies, width)));
+}
+display(componentGrid);
 ```
 
 Across both sections, a positive association would concern a model together

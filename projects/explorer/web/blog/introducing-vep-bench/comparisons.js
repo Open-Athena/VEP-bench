@@ -1,7 +1,6 @@
 import {overallLeaderboardRows} from "../../components/benchmark-data.js";
 
 const efforts = ["none", "minimal", "low", "medium", "high", "xhigh", "max"];
-export const comparisonScopes = ["overall", "sge", "satmut_mpra", "opensplice_snv"];
 
 function ranks(values) {
   const sorted = values.map((value, index) => ({value, index}))
@@ -29,13 +28,15 @@ function pearson(x, y) {
 }
 
 export function summarizePairs(pairs) {
-  const models = pairs.map((row) => row.model_id);
-  if (new Set(models).size !== models.length) throw new Error("Repeated model in comparison");
+  const models = [...new Set(pairs.map((row) => row.model_id))];
+  const configurations = pairs.map((row) => JSON.stringify([row.model_id, row.effort]));
+  if (new Set(configurations).size !== pairs.length) throw new Error("Repeated model and effort in comparison");
   if (pairs.some((row) => !Number.isFinite(row.vep_score) || !Number.isFinite(row.external_score))) {
     throw new Error("Comparison contains a missing or nonfinite score");
   }
-  const summary = {n: models.length, models, spearman: null, pearson: null, leave_one_out: []};
-  if (pairs.length < 5) return {...summary, reason: "Fewer than five distinct matched models"};
+  const summary = {n: models.length, points: pairs.length, models, spearman: null, pearson: null, leave_one_out: []};
+  if (models.length < 5) return {...summary, reason: "Fewer than five distinct matched models"};
+  if (pairs.length > models.length) return {...summary, reason: "Repeated efforts are not independent model observations"};
   const x = pairs.map((row) => row.vep_score), y = pairs.map((row) => row.external_score);
   summary.pearson = pearson(x, y);
   summary.spearman = pearson(ranks(x), ranks(y));
@@ -58,10 +59,10 @@ export function vepConfigurations(snapshot) {
     family: row.family,
     effort: row.runs[0].generation_parameters.reasoning?.effort ?? null,
     generation_parameters: row.runs[0].generation_parameters,
-    scores: {overall: row.score, ...Object.fromEntries(row.task_scores.map((t) => [t.task_family, t.score]))},
+    vep_score: row.score,
     run_ids: row.runs.map((r) => r.run_id),
     question_set_sha256: snapshot.question_set_sha256
-  })).sort((a, b) => a.model_id.localeCompare(b.model_id) || (a.effort ?? "").localeCompare(b.effort ?? ""));
+  })).sort((a, b) => a.model_id.localeCompare(b.model_id) || efforts.indexOf(a.effort) - efforts.indexOf(b.effort));
 }
 
 export function matchStatus(result, configurations) {
@@ -77,20 +78,18 @@ export function matchStatus(result, configurations) {
   return "Exact version and effort match";
 }
 
-export function compareScores(snapshot, external, {effort = null, repeat = 0} = {}) {
+export function compareScores(snapshot, external, {repeat = 0} = {}) {
   const configurations = vepConfigurations(snapshot);
   const matches = external.results.map((result) => ({...result,
     match_status: matchStatus(result, configurations)}));
-  const comparisons = external.comparisons.flatMap((comparison) => {
+  const comparisons = external.comparisons.map((comparison) => {
     const eligible = matches.filter((r) => r.group === comparison.group
       && r.match_status === "Exact version and effort match"
-      && Number.isFinite(r.scores[comparison.metric]) && (!effort || r.effort === effort));
+      && Number.isFinite(r.scores[comparison.metric]));
     const pairs = [];
-    for (const model of [...new Set(eligible.map((r) => r.model_id))].sort()) {
-      const candidates = eligible.filter((r) => r.model_id === model);
-      const selectedEffort = candidates.map((r) => r.effort)
-        .sort((a, b) => efforts.indexOf(b) - efforts.indexOf(a))[0];
-      const sameEffort = candidates.filter((r) => r.effort === selectedEffort)
+    for (const configuration of configurations) {
+      const sameEffort = eligible.filter((r) => r.model_id === configuration.model_id
+        && (r.model_revision ?? null) === configuration.model_revision && r.effort === configuration.effort)
         .sort((a, b) => b.reported_at.localeCompare(a.reported_at) || a.id.localeCompare(b.id));
       const result = sameEffort[repeat];
       if (!result) continue;
@@ -98,20 +97,14 @@ export function compareScores(snapshot, external, {effort = null, repeat = 0} = 
       if (sameEffort.some((r) => r.id !== result.id && r.reported_at === result.reported_at)) {
         throw new Error(`Ambiguous external submission: ${result.id}`);
       }
-      const configuration = configurations.find((c) => c.model_id === model
-        && c.model_revision === (result.model_revision ?? null) && c.effort === result.effort);
-      pairs.push({model_id: model, family: configuration.family, effort: result.effort,
+      pairs.push({model_id: configuration.model_id, family: configuration.family, effort: result.effort,
         label: configuration.family, external_model: result.model_label,
-        external_score: result.scores[comparison.metric], scores: configuration.scores,
+        external_score: result.scores[comparison.metric], vep_score: configuration.vep_score,
         external_result_id: result.id, source_id: result.source_id,
         run_ids: configuration.run_ids, generation_parameters: configuration.generation_parameters});
     }
-    return comparisonScopes.map((scope) => {
-      const scopedPairs = pairs.filter((p) => Number.isFinite(p.scores[scope]))
-        .map(({scores, ...pair}) => ({...pair, vep_score: scores[scope]}));
-      return {...comparison, scope, selection: effort ? `${effort} only` : "Highest exact shared effort",
-        repeat, pairs: scopedPairs, summary: summarizePairs(scopedPairs)};
-    });
+    return {...comparison, scope: "overall", selection: "All exact shared efforts",
+      repeat, pairs, summary: summarizePairs(pairs)};
   });
   return {configurations, matches, comparisons};
 }

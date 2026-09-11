@@ -4,9 +4,9 @@ import {join} from "node:path";
 import {gunzipSync} from "node:zlib";
 import {stratumModelOrder, stratumRows} from "../web/blog/introducing-vep-bench/strata-analysis.js";
 
-const [siteUrl, debugUrl, outputDir] = process.argv.slice(2);
+const [siteUrl, debugUrl, outputDir, mode] = process.argv.slice(2);
 if (!siteUrl || !debugUrl) {
-  throw new Error("usage: node browser_interaction_qa.mjs SITE_URL DEBUG_URL");
+  throw new Error("usage: node browser_interaction_qa.mjs SITE_URL DEBUG_URL OUTPUT_DIR [--canary]");
 }
 
 const targets = await fetch(`${debugUrl}/json/list`).then((response) => response.json());
@@ -94,6 +94,29 @@ const websiteModelColors = JSON.parse(await readFile(
 function checkModelColors(families, colors) {
   assert.deepEqual(colors, families.map((family) => websiteModelColors[family] ?? "#767676"),
     "every model plot uses the fixed website palette");
+}
+
+if (mode === "--canary") {
+  if (!outputDir) throw new Error("Canary capture requires an output directory");
+  const base = siteUrl.endsWith("/") ? siteUrl : `${siteUrl}/`;
+  for (const [path, name, height, ready] of [
+    ["index.html", "leaderboard", 1200, `document.querySelector('.vepbench-leaderboard-chart g[aria-label="bar"] rect')`],
+    ["tasks/satmut-mpra.html", "task", 1600,
+      `document.body.innerText.includes('Reference panel: 50 candidate variants')
+        && document.querySelector('.vepbench-prediction-plot svg[aria-label="Predicted versus measured variant effects"]')`]
+  ]) {
+    await send("Emulation.setDeviceMetricsOverride", {width: 1440, height, deviceScaleFactor: 1, mobile: false});
+    await navigate(new URL(path, base).href);
+    await waitFor(ready, `${name} rendered chart`);
+    if (name === "leaderboard") await checkEfficiencyPlots("All tasks");
+    await saveDom(`${name}.dom.html`);
+    const screenshot = await send("Page.captureScreenshot", {format: "png"});
+    await writeFile(join(outputDir, name === "task" ? "question.png" : "leaderboard.png"),
+      Buffer.from(screenshot.data, "base64"));
+  }
+  socket.close();
+  console.log("live canary captured rendered charts");
+  process.exit(0);
 }
 
 async function checkEfficiencyPlots(taskLabel) {
@@ -569,25 +592,21 @@ await send("Emulation.setDeviceMetricsOverride", {
   width: 1440, height: 1100, deviceScaleFactor: 1, mobile: false
 });
 await saveDom("variant-strata.dom.html");
-// The post must remain independent of the live/fixture leaderboard, and input
-// generators must be consumed in separate reactive cells before filtering data.
+
+// The post shows every exact effort with Overall scores and no selectors.
 await navigate("/blog/introducing-vep-bench.html");
-await waitFor(`document.querySelectorAll('svg[aria-label*="VEP-bench versus"]').length === 5`,
-  "frozen external comparison plots");
-assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="Intelligence Index"] circle').length`), 4);
-assert.equal(await chooseOptionContaining("Sensitivity: medium effort"), true);
-await waitFor(`[...document.querySelectorAll('svg[aria-label*="Intelligence Index"] text')]
-  .some((node) => node.textContent.includes('(medium)'))`, "exact medium effort comparison");
-assert.equal(await chooseOptionContaining("SciCode (AA)"), true);
-await waitFor(`Boolean(document.querySelector('svg[aria-label*="SciCode"]'))`, "AA component selection");
-assert.equal(await chooseOptionContaining("Splicing (exploratory)"), true);
-await waitFor(`Boolean(document.querySelector('svg[aria-label*="Splicing VEP-bench versus SciCode"]'))`,
-  "task-specific external comparison");
-assert.equal(await chooseOptionContaining("Sensitivity: low effort"), true);
-await waitFor(`document.querySelectorAll('svg[aria-label*="VEP-bench versus"]').length === 2
-  && document.querySelectorAll('svg[aria-label*="GeneBench-Pro"] circle').length === 2`,
-  "exact low-effort biology comparison");
-assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="SciCode"] circle').length`), 4);
+await waitFor(`document.querySelectorAll('svg[aria-label*="VEP-bench versus"]').length === 15`,
+  "all static external comparison plots");
+assert.equal(await evaluate('document.querySelectorAll("select").length'), 0);
+assert.ok(await evaluate(`[...document.querySelectorAll('svg[aria-label*="VEP-bench versus"]')]
+  .every((plot) => plot.getAttribute('aria-label').startsWith('Overall VEP-bench versus'))`));
+assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="Intelligence Index"] [aria-label="dot"] > *').length`), 12);
+assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="GeneBench-Pro"] [aria-label="dot"] > *').length`), 6);
+assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="SciCode"] [aria-label="dot"] > *').length`), 12);
+for (const effort of ["low", "medium", "high"]) {
+  assert.equal(await evaluate(`[...document.querySelectorAll('svg[aria-label*="Intelligence Index"] [aria-label="dot"] > *')]
+    .filter((point) => point.getAttribute('aria-label').includes('(${effort})')).length`), 4);
+}
 assert.deepEqual(await evaluate(`[...document.querySelectorAll('.observablehq--error')].map((node) => node.textContent)`), []);
 
 socket.close();

@@ -252,11 +252,11 @@ const external = {schema_version: "1.0", snapshot_date: "2026-09-11", aa_intelli
     "Choose benchmarks for biological relevance, agentic execution, attributable public results and overlap before computing associations.",
     "Exact named model release and exact explicit effort only. No family substitution, inferred defaults, max-to-high conversion, imputation, or fallback efforts. Hidden checkpoint revisions are not disclosed by these sources.",
     "Use only complete VEP configurations spanning all three tasks. Overall is the unweighted mean of task mean Spearman scores, reusing explorer aggregation without display clipping.",
-    "For each benchmark, metric and external harness/submitter group, choose the highest effort present on both sides. Within that effort use the latest published submission; timestamp ties require review. Never select by score.",
-    "Keep harnesses and submitters separate; high and medium Codex submitters are not pooled. Lower shared efforts and earlier submissions are separate sensitivity comparisons, one entry per distinct model.",
+    "For each benchmark, metric and external harness/submitter group, include every exact shared effort as a separate point. Use the latest published submission for each model and effort; timestamp ties require review. Never select by score.",
+    "Keep harnesses and submitters separate; high and medium Codex submitters are not pooled. Earlier submissions are retained as separate sensitivity comparisons, never extra points in the primary plots.",
     "For CompBioBench, qchiuj supplies the primary common-Codex comparison with both shared models at high effort; yang90 supplies a separate submitter sensitivity at medium. Author submissions have no exact release overlap.",
-    "Cross-model Spearman uses midranks within the matched set. Pearson is secondary. Report neither below five distinct versions or with a constant score vector; no p-values or imputation.",
-    "Task-specific comparisons are exploratory. Leave-one-model-out summaries require at least six original models; flag sign changes or absolute rho changes of at least 0.2. Family dependence remains unadjusted.",
+    "Use only the Overall VEP score. Count matched configurations and distinct model versions separately; multiple efforts from one model are dependent observations.",
+    "The all-effort plots are descriptive. Never pool repeated efforts into a cross-model correlation. Correlation summaries require at least five distinct models with one observation each and nonconstant scores; no p-values or imputation.",
     "Use AAII v4.3, the latest methodology at retrieval. Components retain their published metrics. Do not combine index versions or invent unreported subset indices."
   ], sources, survey, comparisons, results};
 write("external.json", external);
@@ -264,8 +264,7 @@ exportAnalysis(vep, external);
 
 function exportAnalysis(vep, external) {
   const primary = compareScores(vep, external);
-  const sensitivity = ["medium", "low"].flatMap((effort) => compareScores(vep, external, {effort}).comparisons)
-    .concat([1, 2].flatMap((repeat) => compareScores(vep, external, {repeat}).comparisons));
+  const sensitivity = [1, 2].flatMap((repeat) => compareScores(vep, external, {repeat}).comparisons);
   const all = [...primary.comparisons, ...sensitivity];
   write("analysis.json", {snapshot_date: external.snapshot_date, primary: primary.comparisons, sensitivity});
   write("model-matches.json", primary.matches.map((r) => ({result_id: r.id, model_label: r.model_label,
@@ -274,5 +273,6 @@ function exportAnalysis(vep, external) {
     vep_efforts: primary.configurations.filter((c) => c.model_id === r.model_id).map((c) => c.effort),
     selected_in: primary.comparisons.filter((c) => c.scope === "overall" && c.pairs.some((p) => p.external_result_id === r.id)).map((c) => c.id)})));
   writeFileSync(new URL("paired-scores.csv", output), pairedScoresCsv(all));
-  console.log(JSON.stringify(primary.comparisons.filter((c) => c.scope === "overall").map((c) => ({comparison: c.id, n: c.summary.n})), null, 2));
+  console.log(JSON.stringify(primary.comparisons.map((c) => ({comparison: c.id,
+    points: c.summary.points, models: c.summary.n})), null, 2));
 }
