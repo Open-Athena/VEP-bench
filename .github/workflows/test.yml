@@ -52,7 +52,7 @@ jobs:
                 evaluator=true
                 publishing=true
                 ;;
-              projects/publishing/*|tests/test_bucket.py|tests/test_publication.py)
+              projects/publishing/*|tests/test_bucket.py|tests/test_publication.py|tests/test_execution_metrics.py)
                 publishing=true
                 ;;
               configs/tasks/*)
@@ -143,7 +143,7 @@ jobs:
           --extra bucket --group test
 
       - name: Run publishing tests
-        run: uv run --no-sync pytest tests/test_publication.py tests/test_bucket.py
+        run: uv run --no-sync pytest tests/test_publication.py tests/test_bucket.py tests/test_execution_metrics.py
 
   task:
     name: Benchmark tasks
