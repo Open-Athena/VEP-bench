@@ -584,9 +584,10 @@ assert.equal(await chooseOptionContaining("Splicing (exploratory)"), true);
 await waitFor(`Boolean(document.querySelector('svg[aria-label*="Splicing VEP-bench versus SciCode"]'))`,
   "task-specific external comparison");
 assert.equal(await chooseOptionContaining("Sensitivity: low effort"), true);
-await waitFor(`document.body.innerText.includes('No exact matched biology results for this selection.')`,
-  "unavailable exact-effort biology comparison");
-assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="SciCode"] circle').length`), 1);
+await waitFor(`document.querySelectorAll('svg[aria-label*="VEP-bench versus"]').length === 2
+  && document.querySelectorAll('svg[aria-label*="GeneBench-Pro"] circle').length === 2`,
+  "exact low-effort biology comparison");
+assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="SciCode"] circle').length`), 4);
 assert.deepEqual(await evaluate(`[...document.querySelectorAll('.observablehq--error')].map((node) => node.textContent)`), []);
 
 socket.close();

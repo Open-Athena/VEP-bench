@@ -511,12 +511,15 @@ secondary comparison. We selected sources for their scope and identifiable
 evaluation settings, before computing associations.
 
 **The current overlap is too small to summarize a correlation.** Our frozen
-September 11, 2026 snapshot has six model versions with complete VEP-bench scores
+September 11, 2026 snapshot has seven model versions with complete VEP-bench scores
 across all three tasks. After requiring the **same model release and exact
 reasoning effort**, the biology comparisons below contain at most two distinct
 models each. The latest Artificial Analysis Intelligence Index, **v4.3** at
 retrieval, has four: GPT-6 Astra, GPT-5.6 Sol, GPT-5.6 Luna, and Gemini 3.8 Flash,
 all at high effort. Multiple settings of a model do not increase that count.
+The low-effort sensitivity now includes all four of these models. DeepSeek V4.1
+Flash has a complete VEP score at low effort, but its published AA evaluation is
+at max effort and is excluded from the paired comparisons.
 
 These are descriptive paired scores. We require at least five distinct models
 and nonconstant score vectors to report cross-model Spearman or Pearson

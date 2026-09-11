@@ -60,6 +60,7 @@ const aaMap = {
   "gpt-6-astra": "openai/gpt-6-astra", "gpt-5-6-sol": "openai/gpt-5.6-sol",
   "gpt-5-6-luna": "openai/gpt-5.6-luna", "gemini-3-8-flash": "google/gemini-3.8-flash",
   "muse-spark-1-3": "meta/muse-spark-1.3", "glm-5-3": "z-ai/glm-5.3",
+  "deepseek-v4-1-flash": "deepseek/deepseek-v4.1-flash",
   "claude-opus-5": "anthropic/claude-opus-5", "claude-fable-5-1": "anthropic/claude-fable-5.1"
 };
 source("aa-catalog", "aa.html", "https://artificialanalysis.ai/models", "Public model selector; exact release and effort labels", aaCatalog);
@@ -107,13 +108,16 @@ function addAa(model, file, url) {
     path.split(".").reduce((v, k) => v?.[k], model) ?? null]));
   const id = `aa-${model.slug}`;
   source(id, file, url, `Public page data object with slug=${model.slug}`, {
-    slug: model.slug, release: model.release, effort: model.effort,
+    slug: model.slug, name: model.name, release: model.release, effort: model.effort,
     intelligenceIndexIsEstimated: model.intelligenceIndexIsEstimated,
     ...Object.fromEntries(aaMetrics.map(([, , path]) => [path,
       path.split(".").reduce((v, k) => v?.[k], model) ?? null]))
   });
   results.push({id, group: "aa", model_label: model.name, model_id: aaMap[model.release.slug] ?? null,
-    model_revision: null, effort: model.effort?.slug ?? null, scores, source_id: id,
+    model_revision: null,
+    // Some entries put an explicit effort only in the published model label.
+    effort: model.effort?.slug ?? model.name.match(/\b(none|minimal|low|medium|high|xhigh|max) effort\b/i)?.[1].toLowerCase() ?? null,
+    scores, source_id: id,
     reported_at: sources.at(-1).retrieved_at, harness: "Artificial Analysis", submitter: "Artificial Analysis",
     exclusion: /fallback/i.test(model.name) ? "Fallback system may use another model; excluded from model-level comparisons"
       : model.intelligenceIndexIsEstimated ? "Estimated AAII score; independent measurement unavailable" : null});
@@ -122,6 +126,7 @@ for (const m of aaModels.filter((m) => aaMap[m.release.slug])) addAa(m, "aa.html
 for (const [file, slug] of [
   ["astra-high", "gpt-6-astra-high"], ["sol-high", "gpt-5-6-sol-high"], ["luna-high", "gpt-5-6-luna-high"],
   ["astra-medium", "gpt-6-astra-medium"], ["sol-medium", "gpt-5-6-sol-medium"], ["luna-medium", "gpt-5-6-luna-medium"],
+  ["astra-low", "gpt-6-astra-low"], ["sol-low", "gpt-5-6-sol-low"], ["luna-low", "gpt-5-6-luna-low"],
   ["gemini-medium", "gemini-3-8-flash-medium"], ["gemini-low", "gemini-3-8-flash-low"]
 ]) {
   const name = `aa-${file}.html`;

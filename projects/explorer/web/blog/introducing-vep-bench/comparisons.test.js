@@ -63,6 +63,12 @@ test("frozen snapshot respects exact efforts, independent models, and separate h
   }
   const lower = compareScores(vep, external, {effort: "medium"});
   assert.ok(lower.comparisons.every((c) => c.pairs.every((p) => p.effort === "medium")));
+  const low = compareScores(vep, external, {effort: "low"});
+  assert.equal(low.comparisons.find((c) => c.id === "aa-intelligence" && c.scope === "overall").pairs.length, 4);
+  assert.equal(low.comparisons.find((c) => c.id === "gene" && c.scope === "overall").pairs.length, 2);
+  const deepseek = analysis.matches.find((r) => r.model_id === "deepseek/deepseek-v4.1-flash");
+  assert.equal(deepseek.effort, "max");
+  assert.equal(deepseek.match_status, "No exact effort match");
   // Perturbing scores must not alter selection; this catches best-score selection.
   const changed = structuredClone(external);
   changed.results.forEach((r) => Object.keys(r.scores).forEach((key) => { r.scores[key] *= -1; }));

@@ -15,7 +15,7 @@ common=(
   --no-sandbox
   --disable-gpu
   --hide-scrollbars
-  --virtual-time-budget=8000
+  --virtual-time-budget=15000
 )
 
 "$chrome" "${common[@]}" --window-size=1440,1200 \

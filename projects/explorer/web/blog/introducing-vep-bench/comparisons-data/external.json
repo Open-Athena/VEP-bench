@@ -17,17 +17,17 @@
     {
       "id": "vep",
       "url": "https://huggingface.co/buckets/open-athena/VEP-bench/resolve/versions/main/manifest.json",
-      "retrieved_at": "2026-09-11T18:37:00.203Z",
-      "downloaded_sha256": "933a3b5fed783a6a3b5a49801d143413cd08ccbc1b19ad25b852783f329596b0",
+      "retrieved_at": "2026-09-11T20:17:50.830Z",
+      "downloaded_sha256": "5b1484485d25d8f0c758b6028745ab829857084a9bc6554a1ded38ccf222630c",
       "locator": "Publication runs entry and question-set identity",
       "evidence": {
         "runs": {
-          "artifact_bytes": 53818,
-          "artifact_sha256": "39587c82fb9e06383b3bc7af716a76419b685a5475287bf8dbcaede18a3cf018",
-          "content_bytes": 53818,
-          "content_sha256": "39587c82fb9e06383b3bc7af716a76419b685a5475287bf8dbcaede18a3cf018",
+          "artifact_bytes": 77750,
+          "artifact_sha256": "338805dd4e1c62b964e326430f266be9cdc814e9506bf6d831f4c90a170c54c4",
+          "content_bytes": 77750,
+          "content_sha256": "338805dd4e1c62b964e326430f266be9cdc814e9506bf6d831f4c90a170c54c4",
           "path": "versions/main/runs.json",
-          "records": 33
+          "records": 45
         },
         "question_set_sha256": "be62fd7b5f06656572a5150904758f04bb998590f63ce31ebbca13852a0bfab7",
         "question_set_size": 52
@@ -6628,6 +6628,7 @@
       "locator": "Public page data object with slug=gpt-6-astra",
       "evidence": {
         "slug": "gpt-6-astra",
+        "name": "GPT-6 Astra (max)",
         "release": {
           "slug": "gpt-6-astra",
           "name": "GPT-6 Astra"
@@ -6659,6 +6660,7 @@
       "locator": "Public page data object with slug=claude-fable-5-1",
       "evidence": {
         "slug": "claude-fable-5-1",
+        "name": "Claude Fable 5.1 (Adaptive Reasoning, Max Effort, Default Fallback)",
         "release": {
           "slug": "claude-fable-5-1",
           "name": "Claude Fable 5.1"
@@ -6690,6 +6692,7 @@
       "locator": "Public page data object with slug=gpt-5-6-luna",
       "evidence": {
         "slug": "gpt-5-6-luna",
+        "name": "GPT-5.6 Luna (max)",
         "release": {
           "slug": "gpt-5-6-luna",
           "name": "GPT-5.6 Luna"
@@ -6721,6 +6724,7 @@
       "locator": "Public page data object with slug=gemini-3-8-flash",
       "evidence": {
         "slug": "gemini-3-8-flash",
+        "name": "Gemini 3.8 Flash (high)",
         "release": {
           "slug": "gemini-3-8-flash",
           "name": "Gemini 3.8 Flash"
@@ -6752,6 +6756,7 @@
       "locator": "Public page data object with slug=muse-spark-1-3",
       "evidence": {
         "slug": "muse-spark-1-3",
+        "name": "Muse Spark 1.3 (max)",
         "release": {
           "slug": "muse-spark-1-3",
           "name": "Muse Spark 1.3"
@@ -6783,6 +6788,7 @@
       "locator": "Public page data object with slug=claude-opus-5",
       "evidence": {
         "slug": "claude-opus-5",
+        "name": "Claude Opus 5 (Adaptive Reasoning, Max Effort)",
         "release": {
           "slug": "claude-opus-5",
           "name": "Claude Opus 5"
@@ -6814,6 +6820,7 @@
       "locator": "Public page data object with slug=glm-5-3",
       "evidence": {
         "slug": "glm-5-3",
+        "name": "GLM-5.3 (max)",
         "release": {
           "slug": "glm-5-3",
           "name": "GLM-5.3"
@@ -6845,6 +6852,7 @@
       "locator": "Public page data object with slug=gpt-5-6-sol",
       "evidence": {
         "slug": "gpt-5-6-sol",
+        "name": "GPT-5.6 Sol (max)",
         "release": {
           "slug": "gpt-5-6-sol",
           "name": "GPT-5.6 Sol"
@@ -6869,6 +6877,33 @@
       }
     },
     {
+      "id": "aa-deepseek-v4-1-flash",
+      "url": "https://artificialanalysis.ai/models",
+      "retrieved_at": "2026-09-11T18:37:00.435Z",
+      "downloaded_sha256": "851f487a3b3849001024a6a71f6866d8ea18c080585f1815bd3bc9bcfb8b0a87",
+      "locator": "Public page data object with slug=deepseek-v4-1-flash",
+      "evidence": {
+        "slug": "deepseek-v4-1-flash",
+        "name": "DeepSeek V4.1 Flash (Reasoning, Max Effort)",
+        "release": {
+          "slug": "deepseek-v4-1-flash",
+          "name": "Deepseek V4.1 Flash"
+        },
+        "intelligenceIndexIsEstimated": false,
+        "intelligenceIndex": 39.545442472527,
+        "briefcaseBreakdown.overall.elo": 1423.72,
+        "gdpval": 1632.06,
+        "automationBenchPartialScore": 0.6889097769674057,
+        "terminalbenchV40": 0.267676767676768,
+        "scicode": 0.518518518518518,
+        "omniscience": -5.3,
+        "gdpPdfAllPass": 0.128,
+        "lcr": 0.84,
+        "hle": 0.392493049119555,
+        "critpt": 0.142857142857143
+      }
+    },
+    {
       "id": "aa-gpt-6-astra-high",
       "url": "https://artificialanalysis.ai/models/gpt-6-astra-high",
       "retrieved_at": "2026-09-11T18:39:47.893Z",
@@ -6876,6 +6911,7 @@
       "locator": "Public page data object with slug=gpt-6-astra-high",
       "evidence": {
         "slug": "gpt-6-astra-high",
+        "name": "GPT-6 Astra (high)",
         "release": {
           "slug": "gpt-6-astra",
           "name": "GPT-6 Astra"
@@ -6907,6 +6943,7 @@
       "locator": "Public page data object with slug=gpt-5-6-sol-high",
       "evidence": {
         "slug": "gpt-5-6-sol-high",
+        "name": "GPT-5.6 Sol (high)",
         "release": {
           "slug": "gpt-5-6-sol",
           "name": "GPT-5.6 Sol"
@@ -6938,6 +6975,7 @@
       "locator": "Public page data object with slug=gpt-5-6-luna-high",
       "evidence": {
         "slug": "gpt-5-6-luna-high",
+        "name": "GPT-5.6 Luna (high)",
         "release": {
           "slug": "gpt-5-6-luna",
           "name": "GPT-5.6 Luna"
@@ -6969,6 +7007,7 @@
       "locator": "Public page data object with slug=gpt-6-astra-medium",
       "evidence": {
         "slug": "gpt-6-astra-medium",
+        "name": "GPT-6 Astra (medium)",
         "release": {
           "slug": "gpt-6-astra",
           "name": "GPT-6 Astra"
@@ -7000,6 +7039,7 @@
       "locator": "Public page data object with slug=gpt-5-6-sol-medium",
       "evidence": {
         "slug": "gpt-5-6-sol-medium",
+        "name": "GPT-5.6 Sol (medium)",
         "release": {
           "slug": "gpt-5-6-sol",
           "name": "GPT-5.6 Sol"
@@ -7031,6 +7071,7 @@
       "locator": "Public page data object with slug=gpt-5-6-luna-medium",
       "evidence": {
         "slug": "gpt-5-6-luna-medium",
+        "name": "GPT-5.6 Luna (medium)",
         "release": {
           "slug": "gpt-5-6-luna",
           "name": "GPT-5.6 Luna"
@@ -7055,6 +7096,102 @@
       }
     },
     {
+      "id": "aa-gpt-6-astra-low",
+      "url": "https://artificialanalysis.ai/models/gpt-6-astra-low",
+      "retrieved_at": "2026-09-11T20:19:21.225Z",
+      "downloaded_sha256": "f551d4483bc12feb8dc55fb6fb4b4feed702d632025061f75dd71813963fb122",
+      "locator": "Public page data object with slug=gpt-6-astra-low",
+      "evidence": {
+        "slug": "gpt-6-astra-low",
+        "name": "GPT-6 Astra (low)",
+        "release": {
+          "slug": "gpt-6-astra",
+          "name": "GPT-6 Astra"
+        },
+        "effort": {
+          "slug": "low",
+          "label": "low",
+          "level": 20
+        },
+        "intelligenceIndexIsEstimated": false,
+        "intelligenceIndex": 45.9944993120341,
+        "briefcaseBreakdown.overall.elo": 1253.1,
+        "gdpval": 1419.29,
+        "automationBenchPartialScore": 0.5909672610445402,
+        "terminalbenchV40": 0.419191919191919,
+        "scicode": 0.540509259259259,
+        "omniscience": 40.55,
+        "gdpPdfAllPass": 0.304,
+        "lcr": 0.8,
+        "hle": 0.492122335495829,
+        "critpt": 0.262857142857143
+      }
+    },
+    {
+      "id": "aa-gpt-5-6-sol-low",
+      "url": "https://artificialanalysis.ai/models/gpt-5-6-sol-low",
+      "retrieved_at": "2026-09-11T20:19:20.169Z",
+      "downloaded_sha256": "feda8dd2d9beaa8937e5b9b1f1b763ded96c71bcc77f8d9fc5a20996f40336a1",
+      "locator": "Public page data object with slug=gpt-5-6-sol-low",
+      "evidence": {
+        "slug": "gpt-5-6-sol-low",
+        "name": "GPT-5.6 Sol (low)",
+        "release": {
+          "slug": "gpt-5-6-sol",
+          "name": "GPT-5.6 Sol"
+        },
+        "effort": {
+          "slug": "low",
+          "label": "low",
+          "level": 20
+        },
+        "intelligenceIndexIsEstimated": false,
+        "intelligenceIndex": 33.7979387646002,
+        "briefcaseBreakdown.overall.elo": 1042.06,
+        "gdpval": 1354.85,
+        "automationBenchPartialScore": 0.4098567011344805,
+        "terminalbenchV40": 0.0101010101010101,
+        "scicode": 0.563657407407407,
+        "omniscience": 18.8666666666667,
+        "gdpPdfAllPass": 0.21,
+        "lcr": 0.78,
+        "hle": 0.393883225208526,
+        "critpt": 0.148571428571429
+      }
+    },
+    {
+      "id": "aa-gpt-5-6-luna-low",
+      "url": "https://artificialanalysis.ai/models/gpt-5-6-luna-low",
+      "retrieved_at": "2026-09-11T20:19:19.373Z",
+      "downloaded_sha256": "9eae1c33fd0eb7b501f355c2c9ebb257edb9669886bc2fcd8f91ceb7caf19bed",
+      "locator": "Public page data object with slug=gpt-5-6-luna-low",
+      "evidence": {
+        "slug": "gpt-5-6-luna-low",
+        "name": "GPT-5.6 Luna (low)",
+        "release": {
+          "slug": "gpt-5-6-luna",
+          "name": "GPT-5.6 Luna"
+        },
+        "effort": {
+          "slug": "low",
+          "label": "low",
+          "level": 20
+        },
+        "intelligenceIndexIsEstimated": false,
+        "intelligenceIndex": 21.5456033424265,
+        "briefcaseBreakdown.overall.elo": 743.81,
+        "gdpval": 1075.16,
+        "automationBenchPartialScore": 0.11692162258271627,
+        "terminalbenchV40": 0,
+        "scicode": 0.460648148148148,
+        "omniscience": -14.65,
+        "gdpPdfAllPass": 0.142,
+        "lcr": 0.7,
+        "hle": 0.198331788693234,
+        "critpt": 0.0257142857142857
+      }
+    },
+    {
       "id": "aa-gemini-3-8-flash-medium",
       "url": "https://artificialanalysis.ai/models/gemini-3-8-flash-medium",
       "retrieved_at": "2026-09-11T18:41:19.379Z",
@@ -7062,6 +7199,7 @@
       "locator": "Public page data object with slug=gemini-3-8-flash-medium",
       "evidence": {
         "slug": "gemini-3-8-flash-medium",
+        "name": "Gemini 3.8 Flash (medium)",
         "release": {
           "slug": "gemini-3-8-flash",
           "name": "Gemini 3.8 Flash"
@@ -7093,6 +7231,7 @@
       "locator": "Public page data object with slug=gemini-3-8-flash-low",
       "evidence": {
         "slug": "gemini-3-8-flash-low",
+        "name": "Gemini 3.8 Flash (low)",
         "release": {
           "slug": "gemini-3-8-flash",
           "name": "Gemini 3.8 Flash"
@@ -11743,6 +11882,32 @@
       "exclusion": null
     },
     {
+      "id": "aa-deepseek-v4-1-flash",
+      "group": "aa",
+      "model_label": "DeepSeek V4.1 Flash (Reasoning, Max Effort)",
+      "model_id": "deepseek/deepseek-v4.1-flash",
+      "model_revision": null,
+      "effort": "max",
+      "scores": {
+        "intelligence": 39.545442472527,
+        "briefcase": 1423.72,
+        "gdpval": 1632.06,
+        "automation": 0.6889097769674057,
+        "terminal": 0.267676767676768,
+        "scicode": 0.518518518518518,
+        "omniscience": -5.3,
+        "gdp-pdf": 0.128,
+        "lcr": 0.84,
+        "hle": 0.392493049119555,
+        "critpt": 0.142857142857143
+      },
+      "source_id": "aa-deepseek-v4-1-flash",
+      "reported_at": "2026-09-11T18:37:00.435Z",
+      "harness": "Artificial Analysis",
+      "submitter": "Artificial Analysis",
+      "exclusion": null
+    },
+    {
       "id": "aa-gpt-6-astra-high",
       "group": "aa",
       "model_label": "GPT-6 Astra (high)",
@@ -11894,6 +12059,84 @@
       },
       "source_id": "aa-gpt-5-6-luna-medium",
       "reported_at": "2026-09-11T18:41:19.095Z",
+      "harness": "Artificial Analysis",
+      "submitter": "Artificial Analysis",
+      "exclusion": null
+    },
+    {
+      "id": "aa-gpt-6-astra-low",
+      "group": "aa",
+      "model_label": "GPT-6 Astra (low)",
+      "model_id": "openai/gpt-6-astra",
+      "model_revision": null,
+      "effort": "low",
+      "scores": {
+        "intelligence": 45.9944993120341,
+        "briefcase": 1253.1,
+        "gdpval": 1419.29,
+        "automation": 0.5909672610445402,
+        "terminal": 0.419191919191919,
+        "scicode": 0.540509259259259,
+        "omniscience": 40.55,
+        "gdp-pdf": 0.304,
+        "lcr": 0.8,
+        "hle": 0.492122335495829,
+        "critpt": 0.262857142857143
+      },
+      "source_id": "aa-gpt-6-astra-low",
+      "reported_at": "2026-09-11T20:19:21.225Z",
+      "harness": "Artificial Analysis",
+      "submitter": "Artificial Analysis",
+      "exclusion": null
+    },
+    {
+      "id": "aa-gpt-5-6-sol-low",
+      "group": "aa",
+      "model_label": "GPT-5.6 Sol (low)",
+      "model_id": "openai/gpt-5.6-sol",
+      "model_revision": null,
+      "effort": "low",
+      "scores": {
+        "intelligence": 33.7979387646002,
+        "briefcase": 1042.06,
+        "gdpval": 1354.85,
+        "automation": 0.4098567011344805,
+        "terminal": 0.0101010101010101,
+        "scicode": 0.563657407407407,
+        "omniscience": 18.8666666666667,
+        "gdp-pdf": 0.21,
+        "lcr": 0.78,
+        "hle": 0.393883225208526,
+        "critpt": 0.148571428571429
+      },
+      "source_id": "aa-gpt-5-6-sol-low",
+      "reported_at": "2026-09-11T20:19:20.169Z",
+      "harness": "Artificial Analysis",
+      "submitter": "Artificial Analysis",
+      "exclusion": null
+    },
+    {
+      "id": "aa-gpt-5-6-luna-low",
+      "group": "aa",
+      "model_label": "GPT-5.6 Luna (low)",
+      "model_id": "openai/gpt-5.6-luna",
+      "model_revision": null,
+      "effort": "low",
+      "scores": {
+        "intelligence": 21.5456033424265,
+        "briefcase": 743.81,
+        "gdpval": 1075.16,
+        "automation": 0.11692162258271627,
+        "terminal": 0,
+        "scicode": 0.460648148148148,
+        "omniscience": -14.65,
+        "gdp-pdf": 0.142,
+        "lcr": 0.7,
+        "hle": 0.198331788693234,
+        "critpt": 0.0257142857142857
+      },
+      "source_id": "aa-gpt-5-6-luna-low",
+      "reported_at": "2026-09-11T20:19:19.373Z",
       "harness": "Artificial Analysis",
       "submitter": "Artificial Analysis",
       "exclusion": null
