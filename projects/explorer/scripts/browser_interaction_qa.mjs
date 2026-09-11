@@ -114,6 +114,7 @@ if (mode === "--canary") {
     await writeFile(join(outputDir, name === "task" ? "question.png" : "leaderboard.png"),
       Buffer.from(screenshot.data, "base64"));
   }
+  await send("Browser.close");
   socket.close();
   console.log("live canary captured rendered charts");
   process.exit(0);

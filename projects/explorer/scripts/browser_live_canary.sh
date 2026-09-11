@@ -44,6 +44,9 @@ fi
 read -r debug_port < "$browser_profile/DevToolsActivePort"
 node "$script_dir/browser_interaction_qa.mjs" \
   "$site_url" "http://127.0.0.1:$debug_port" "$output_dir" --canary
+# CDP closes Chrome gracefully; wait for cache writers before removing its profile.
+wait "$browser_pid"
+browser_pid=
 
 status=0
 for check in \
