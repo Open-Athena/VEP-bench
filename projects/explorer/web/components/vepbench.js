@@ -432,12 +432,17 @@ export function questionRecord(entry) {
   const retry = result?.usage?.vepbench?.retry;
   if (retry) {
     const prior = retry.prior_attempt;
+    const policy = result.usage.vepbench.retry_policy;
     const note = element("details", "vepbench-retry-note");
-    note.append(element("summary", null, "1 retry — initial API rejection"));
+    note.append(element("summary", null, policy
+      ? "1 retry — initial answer truncated" : "1 retry — initial API rejection"));
     note.append(element("p", null,
-      "The initial request was rejected. One unchanged retry completed. "
+      (policy
+        ? `The initial answer was invalid and truncated at a ${policy.initial_max_tokens.toLocaleString("en-US")}-token limit. It was retried once with a ${policy.retry_max_tokens.toLocaleString("en-US")}-token limit and otherwise unchanged settings. `
+        : "The initial request was rejected. One unchanged retry completed. ")
       + "The score uses this response; run cost includes both attempts."));
-    note.append(element("p", "muted", `Initial attempt: ${prior.error?.message ?? "API error"}`));
+    note.append(element("p", "muted", `Initial attempt: ${policy
+      ? prior.scoring.parse_error : prior.error?.message ?? "API error"}`));
     const raw = element("pre");
     raw.textContent = JSON.stringify({
       evaluated_at: prior.evaluated_at,

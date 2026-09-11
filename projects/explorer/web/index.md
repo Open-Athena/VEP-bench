@@ -151,6 +151,7 @@ const leaderboardData = rows.map((row) => ({
   cost: row.cost,
   family: row.family,
   retry_count: row.retry_count,
+  retry_policy: row.retry_policy,
   question_count: (row.runs ?? [row.run]).reduce((total, run) => total + run.question_set_size, 0),
   organization: (row.run ?? row.runs[0]).model.model_id.split("/")[0]
 }));
@@ -167,7 +168,9 @@ function modelDetails(row) {
     `Cost: ${formatCost(row.cost)}`,
     `Tokens: ${row.tokens === null ? "—" : formatInteger(row.tokens)}`,
     `Knowledge cutoff: ${formatKnowledgeCutoff(row.knowledge_cutoff)}`,
-    ...(row.retry_count ? [`${row.retry_count} of ${row.question_count} initial requests had an API error. One unchanged retry succeeded for each; scores use the retry and cost includes both attempts.`] : [])
+    ...(row.retry_policy
+      ? [`${row.retry_count} of ${row.question_count} initial responses were truncated without a valid answer. Each was retried once at ${formatInteger(row.retry_policy.retry_max_tokens)} tokens, up from ${formatInteger(row.retry_policy.initial_max_tokens)}. Scores retain every retry outcome, including failures; cost includes both attempts.`]
+      : row.retry_count ? [`${row.retry_count} of ${row.question_count} initial requests had an API error. One unchanged retry succeeded for each; scores use the retry and cost includes both attempts.`] : [])
   ].join("\n");
 }
 function leaderboardPlot({width}) {
@@ -356,18 +359,21 @@ display(html`<div class="card">${unscoredAttemptsTable}</div>`);
 These figures cover the models and tasks selected above. Output tokens include
 reasoning. Truncation counts responses stopped by the output limit, including
 those that still contained a valid answer. Output figures describe the scored
-responses; total tokens and cost include any recorded earlier API attempts.
+responses; total tokens and cost include all recorded attempts. Selective retries
+replace every initially invalid truncated answer once at the larger listed limit;
+all retry outcomes, including failures, are retained. Other settings stay the same.
 Unavailable measurements appear as “—”.
 
 ```js
 const executionData = rows.map(executionSummaryForRow);
 const formatMeasuredTokens = (value) => value === null ? "—" : formatInteger(value);
 const executionTable = Inputs.table(executionData, {
-  columns: ["model", "questions", "valid_rate", "truncation_rate", "output_limits",
+  columns: ["model", "questions", "retries", "valid_rate", "truncation_rate", "output_limits",
     "output_tokens", "max_output_tokens", "total_tokens", "cost"],
   header: {
     model: "Model",
     questions: "Questions",
+    retries: "Retries",
     valid_rate: "Valid answers",
     truncation_rate: "Truncated",
     output_limits: "Output limit",
@@ -381,6 +387,7 @@ const executionTable = Inputs.table(executionData, {
       model, executionData.find((row) => row.model === model)?.organization
     ),
     questions: formatInteger,
+    retries: formatInteger,
     valid_rate: formatPercent,
     truncation_rate: formatPercent,
     output_limits: (limits) => limits === null ? "—" : limits.map(formatInteger).join(", "),

@@ -14,7 +14,7 @@ from vepbench.resources import RESULT_SCHEMA, SCHEMAS_DIR
 
 from .config import load_publishing_config
 from .publication import build_version, promote_version, validate_version
-from .retry import resolve_retry
+from .retry import resolve_retry, resolve_truncations
 from .split import split_results
 
 app = App(
@@ -56,6 +56,16 @@ def results_split(*, questions: Path, results: Path, output: Path) -> int:
         f"exported {manifest['source_question_set_size']} results "
         f"into {len(manifest['tasks'])} tasks at {output}"
     )
+    return 0
+
+
+@app.command(name="resolve-truncations")
+def results_truncations(
+    *, original: Path, max_tokens: int, output: Path, retry: Path | None = None
+) -> int:
+    """Export one larger-cap retry of every invalid truncated answer, including failures."""
+    resolve_truncations(original=original, retry=retry, max_tokens=max_tokens, output=output)
+    print(f"exported truncation-retry task at {output}")
     return 0
 
 

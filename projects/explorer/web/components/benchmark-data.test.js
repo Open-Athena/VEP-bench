@@ -427,6 +427,43 @@ test("leaderboard scope switches score, tokens, and cost to one task", () => {
   assert.deepEqual(leaderboardRowsForScope(runs, leaderboard, "unknown"), []);
 });
 
+test("selective retry policies group complete tasks without mixing baseline runs", () => {
+  const leaderboard = {
+    aggregation_method: "task_score_macro_average_v1",
+    evaluation_profiles: [
+      {task_family: "alpha", evaluation_profile: "alpha:v1"},
+      {task_family: "beta", evaluation_profile: "beta:v1"}
+    ]
+  };
+  const baseline = ["alpha", "beta"].map((family, index) => ({
+    ...run({
+      runId: family, evaluationProfile: `${family}:v1`, configurationKey: `base-${index}`,
+      accuracy: 0.2, modelId: "deepseek/deepseek-v4.1-flash"
+    }),
+    generation_parameters: {max_tokens: 128000, reasoning: {effort: "low"}}
+  }));
+  const retried = baseline.map((value, index) => ({
+    ...structuredClone(value), run_id: `${value.run_id}-retry`,
+    configuration_key: `retry-${index}`,
+    retry_policy: {
+      kind: "invalid_truncation_once", initial_max_tokens: 128000, retry_max_tokens: 262144
+    },
+    ...(index === 0 ? {retry_count: 1} : {})
+  }));
+  const rows = overallLeaderboardRows([...baseline, ...retried], leaderboard);
+  assert.equal(rows.length, 2);
+  const retryRow = rows.find((row) => row.retry_policy);
+  assert.equal(retryRow.retry_count, 1);
+  assert.equal(retryRow.runs.length, 2);
+  assert.equal(retryRow.model_cell.model, "DeepSeek V4.1 Flash (low) · selective retries");
+  const summary = executionSummaryForRow(retryRow);
+  assert.equal(summary.retries, 1);
+  assert.deepEqual(summary.output_limits, [128000, 262144]);
+  assert.deepEqual(executionSummaryForRow(leaderboardRows([retried[1]])[0]).output_limits,
+    [128000]);
+  assert.equal(overallLeaderboardRows([baseline[0], retried[1]], leaderboard).length, 0);
+});
+
 test("task ordering keeps benchmark ranking tasks before unknown families", () => {
   assert.deepEqual(
     orderTaskFamilies([

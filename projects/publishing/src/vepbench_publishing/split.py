@@ -16,7 +16,7 @@ from vepbench.evaluation.core import validate_result
 from vepbench.questions.validation import validate_question
 from vepbench.resources import QUESTION_SCHEMA, RESULT_SCHEMA
 
-from .retry import retry_metadata
+from .retry import retry_metadata, retry_policy
 
 
 def split_results(*, questions: Path, results: Path, output: Path) -> dict[str, Any]:
@@ -76,7 +76,7 @@ def split_results(*, questions: Path, results: Path, output: Path) -> dict[str, 
             for line in source:
                 record = json.loads(line)
                 validate_result(record, validator)
-                if retry_metadata(record["usage"]) is not None:
+                if retry_metadata(record["usage"]) is not None or retry_policy(record["usage"]):
                     raise BuildError(
                         "publish retry-resolved task runs directly without split-results"
                     )

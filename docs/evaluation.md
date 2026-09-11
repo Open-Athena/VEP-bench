@@ -152,7 +152,8 @@ is only what the provider exposes, not a claim of access to private reasoning.
 The leaderboard's output and usage table distinguishes the configured ceiling
 from observed output, including reasoning. Output totals and maxima describe the
 retained completed responses; run cost and total tokens also include recorded
-earlier API attempts. Truncation counts any completed response with a provider
+earlier attempts, including selective truncation retries. Truncation counts any
+completed response with a provider
 finish reason of `length`, even when its final answer is valid. Missing usage
 remains unknown, and older publications without these summaries display gaps
 until rebuilt from their original responses.

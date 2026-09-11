@@ -37,7 +37,17 @@
     "evaluation_profile": {"type": ["string", "null"]},
     "started_at": {"type": "string", "format": "date-time"},
     "completed_at": {"type": "string", "format": "date-time"},
-    "retry_count": {"type": "integer", "minimum": 1, "description": "Questions resolved by one unchanged retry of a prior API error; prior attempts are retained in answer usage provenance."},
+    "retry_count": {"type": "integer", "minimum": 1, "description": "Questions with one retained retry; prior attempts remain in answer usage provenance. Without retry_policy, retries replace API errors with unchanged requests."},
+    "retry_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "initial_max_tokens", "retry_max_tokens"],
+      "properties": {
+        "kind": {"const": "invalid_truncation_once"},
+        "initial_max_tokens": {"type": "integer", "minimum": 1},
+        "retry_max_tokens": {"type": "integer", "minimum": 1}
+      }
+    },
     "coverage": {
       "type": "object",
       "additionalProperties": false,

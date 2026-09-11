@@ -33,7 +33,10 @@ from vepbench.questions.validation import validate_question
 from .execution import execution_metrics
 from .retry import (
     attempt_totals,
+    initial_parameters,
+    retained_parameters,
     retry_metadata,
+    retry_policy,
     validate_attempt_allocations,
     validate_retry_record,
 )
@@ -482,6 +485,17 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
         errors = list(validators["run.schema.json"].iter_errors(run))
         if errors:
             raise BuildError(_schema_error(run["run_id"], errors))
+        if "retry_policy" in run:
+            expected_key = "cfg-" + sha256_json(
+                {
+                    "model": _model_identity(run["model"]),
+                    "generation_parameters": run["generation_parameters"],
+                    "evaluation_profile": run["evaluation_profile"],
+                    "retry_policy": run["retry_policy"],
+                }
+            )
+            if run["configuration_key"] != expected_key:
+                raise BuildError("run configuration key does not match retry policy")
         matching_families = [
             candidate_family
             for candidate_family, task_set in task_sets.items()
@@ -738,14 +752,17 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
             question = question_by_id[envelope["question_id"]]
             if envelope["question_sha256"] != sha256_json(question):
                 raise BuildError(f"raw response {raw_key!r} has the wrong question digest")
+            normalized_answer = normalized_answer_state[raw_key]
+            parameters = retained_parameters(
+                run_by_id[envelope["run_id"]], normalized_answer["usage"]
+            )
             request_body = {
                 "model": run_by_id[envelope["run_id"]]["model"]["model_id"],
                 "messages": [{"role": "user", "content": question["prompt"]}],
-                **run_by_id[envelope["run_id"]]["generation_parameters"],
+                **parameters,
             }
             if envelope["request"]["body_sha256"] != sha256_json(request_body):
                 raise BuildError(f"raw response {raw_key!r} has the wrong request digest")
-            normalized_answer = normalized_answer_state[raw_key]
             if (
                 envelope["response"]["status"] != normalized_answer["response"]["status"]
                 or envelope["error"] != normalized_answer["error"]
@@ -812,7 +829,10 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
                         f"raw response {raw_key!r} disagrees with its normalized completion"
                     )
                 per_run_providers[envelope["run_id"]].add(snapshot["upstream_provider"])
-                if retry_metadata(normalized_answer["usage"]) is not None:
+                if (
+                    retry_metadata(normalized_answer["usage"]) is not None
+                    or retry_policy(normalized_answer["usage"]) is not None
+                ):
                     retry_run = run_by_id[envelope["run_id"]]
                     validate_retry_record(
                         {
@@ -829,7 +849,7 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
                                 **_model_identity(retry_run["model"]),
                                 "upstream_provider": snapshot["upstream_provider"],
                             },
-                            "generation_parameters": retry_run["generation_parameters"],
+                            "generation_parameters": parameters,
                             "response": {
                                 **normalized_answer["response"],
                                 "raw": envelope["response"]["raw"],
@@ -1120,7 +1140,8 @@ def _convert_run(
     model = json.loads(canonical_json(first_record["model"]))
     model_identity = _model_identity(model)
     observed_providers: set[str | None] = set()
-    generation_parameters = json.loads(canonical_json(first_record["generation_parameters"]))
+    generation_parameters = initial_parameters(first_record)
+    policy = retry_policy(first_record["usage"])
     model_identity_json = canonical_json(model_identity)
     parameters_json = canonical_json(generation_parameters)
     configuration_key = "cfg-" + sha256_json(
@@ -1128,6 +1149,7 @@ def _convert_run(
             "model": model_identity,
             "generation_parameters": generation_parameters,
             "evaluation_profile": evaluation_profile,
+            **({"retry_policy": policy} if policy is not None else {}),
         }
     )
     published_model = dict(model)
@@ -1171,7 +1193,8 @@ def _convert_run(
                     raise BuildError(f"{result_file}: must contain exactly one run ID")
                 if (
                     canonical_json(_model_identity(record["model"])) != model_identity_json
-                    or canonical_json(record["generation_parameters"]) != parameters_json
+                    or canonical_json(initial_parameters(record)) != parameters_json
+                    or retry_policy(record["usage"]) != policy
                 ):
                     raise BuildError(
                         f"{result_file}: model and generation parameters must be constant"
@@ -1313,7 +1336,7 @@ def _convert_run(
                                         "content": record["question"]["prompt"],
                                     }
                                 ],
-                                **generation_parameters,
+                                **record["generation_parameters"],
                             }
                         )
                     },
@@ -1423,6 +1446,8 @@ def _convert_run(
         run_record["task_type"] = "ranking"
     if retry_count:
         run_record["retry_count"] = retry_count
+    if policy is not None:
+        run_record["retry_policy"] = policy
     return {
         "record": run_record,
         "answers": answer_descriptors,
