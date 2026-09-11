@@ -518,9 +518,7 @@ models each. The latest Artificial Analysis Intelligence Index, **v4.3** at
 retrieval, has **12 matched configurations across four models**: GPT-6 Astra,
 GPT-5.6 Sol, GPT-5.6 Luna, and Gemini 3.8 Flash, each at low, medium, and high
 effort. Every exact match appears in the plots. Multiple settings of a model
-do not increase the count of distinct models. DeepSeek V4.1 Flash has a complete
-VEP score at low effort, but its published AA evaluation is at max effort and
-is excluded from the paired comparisons.
+do not increase the count of distinct models.
 
 These are descriptive paired scores. Multiple efforts from one model are
 dependent observations, so we do not pool the points into a cross-model
@@ -545,8 +543,7 @@ the original scores, without the leaderboard's display clipping. For each
 external benchmark, metric, harness, and submitter group, we include **every
 effort evaluated on both sides**. Each point represents one model and exact
 effort. We use the latest published submission for that combination,
-independently of its score; earlier submissions remain in the downloadable
-sensitivity results. Missing or ambiguous efforts are excluded; “max” never
+independently of its score. Missing or ambiguous efforts are excluded; “max” never
 substitutes for “high”.
 
 Colors identify models, marker shapes identify efforts, and connecting lines
@@ -577,19 +574,13 @@ attempts; this differs from VEP-bench's treatment of completed invalid answers.
 For [Terminal-Bench-Science](https://www.terminal-bench-science.ai/?view=domains),
 we use its published **Life Sciences** domain: 19 tasks, three trials per task.
 The official leaderboard snapshot supplies this broader label, which includes
-medical imaging, rather than a separately labeled biology subset. The matched
-Gemini 3.8 Flash result uses mini-SWE-agent. Other harnesses remain separate;
-the all-science aggregate is not used as a biology score.
-
-[CompBioBench](https://huggingface.co/spaces/Genentech/compbiobench-leaderboard-v1)
-provides author and community submissions. The exact-effort matches below are
-**community-reported Codex results**, grouped separately by submitter.
-The primary common-Codex comparison uses qchiuj's high-effort submissions;
-yang90's medium-effort submissions form a separate submitter sensitivity.
-Submission-specific Codex versions, tools, and budgets are not reported in the
-inspected table. Their values describe those submitted systems and should not
-be read as controlled head-to-head evaluations. Repeated submissions are never
-counted as additional models.
+medical imaging, rather than a separately labeled biology subset. The sole
+exact match is Gemini 3.8 Flash at high effort, using mini-SWE-agent.
+GPT-5.6 Sol and Luna are reported at max effort, while VEP has low, medium,
+and high; DeepSeek V4.1 Flash and GLM 5.3 are also reported at max, while VEP
+has low. Other reported model releases have no complete VEP Overall score.
+Other harnesses remain separate; the all-science aggregate is not used as a
+biology score.
 
 ```js
 const biologyComparisons = visibleComparisons.filter((c) => c.tier === "primary" && c.pairs.length);
@@ -608,6 +599,18 @@ evaluation procedures; several test knowledge or reasoning without model tool
 access. None is presented as an agentic biology score. Component scores and
 the overall index are related measurements, not independent confirmations.
 We do not construct additional category indices from these values.
+
+AA reports scores for the other three model releases in our VEP snapshot, but
+their published effort settings do not match our completed runs:
+
+| Model | Completed VEP effort | Published AA efforts |
+| --- | --- | --- |
+| [Muse Spark 1.3](https://artificialanalysis.ai/models/muse-spark-1-3) | medium | max, xhigh |
+| [GLM-5.3](https://artificialanalysis.ai/models/glm-5-3) | low | max |
+| [DeepSeek V4.1 Flash](https://artificialanalysis.ai/models/deepseek-v4-1-flash) | low | max |
+
+These settings are excluded under the same exact-effort rule as every other
+model. The paired AAII and component plots therefore contain four model releases.
 
 ```js
 const aaComparisons = visibleComparisons.filter((c) => c.tier === "secondary");
@@ -677,7 +680,7 @@ display(html`<p>
   <a href=${await FileAttachment("./introducing-vep-bench/comparisons-data/paired-scores.csv").url()} download>Paired scores (CSV)</a> ·
   <a href=${await FileAttachment("./introducing-vep-bench/comparisons-data/model-matches.json").url()} download>Matching table (JSON)</a> ·
   <a href=${await FileAttachment("./introducing-vep-bench/comparisons-data/external.json").url()} download>Sources, settings, selection rules and survey (JSON)</a> ·
-  <a href=${await FileAttachment("./introducing-vep-bench/comparisons-data/analysis.json").url()} download>Primary and sensitivity results (JSON)</a> ·
+  <a href=${await FileAttachment("./introducing-vep-bench/comparisons-data/analysis.json").url()} download>Analysis results (JSON)</a> ·
   <a href=${await FileAttachment("./introducing-vep-bench/comparisons-data/vep-runs.json").url()} download>VEP run snapshot (JSON)</a>
 </p>`);
 ```

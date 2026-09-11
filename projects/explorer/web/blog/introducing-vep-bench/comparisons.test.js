@@ -56,7 +56,7 @@ test("matching never substitutes efforts, revisions, releases, or unknown settin
 
 const readSnapshot = (file) => JSON.parse(readFileSync(new URL(`./comparisons-data/${file}`, import.meta.url)));
 
-test("frozen snapshot includes every exact effort and keeps submissions and harnesses separate", () => {
+test("frozen snapshot includes every exact effort and keeps harnesses separate", () => {
   const vep = readSnapshot("vep-runs.json"), external = readSnapshot("external.json");
   const analysis = compareScores(vep, external);
   assert.deepEqual(analysis.comparisons, readSnapshot("analysis.json").primary);
@@ -79,13 +79,6 @@ test("frozen snapshot includes every exact effort and keeps submissions and harn
   const gene = analysis.comparisons.find((c) => c.id === "gene");
   assert.equal(gene.pairs.length, 6);
   assert.equal(gene.summary.n, 2);
-  const compbio = analysis.comparisons.find((c) => c.id === "compbio-Codex-qchiuj");
-  assert.equal(compbio.pairs.length, 2);
-  const earlier = compareScores(vep, external, {repeat: 1}).comparisons.find((c) => c.id === compbio.id);
-  for (const previous of earlier.pairs) {
-    const latest = compbio.pairs.find((p) => p.model_id === previous.model_id && p.effort === previous.effort);
-    assert.notEqual(previous.external_result_id, latest.external_result_id);
-  }
   const deepseek = analysis.matches.find((r) => r.model_id === "deepseek/deepseek-v4.1-flash");
   assert.equal(deepseek.effort, "max");
   assert.equal(deepseek.match_status, "No exact effort match");

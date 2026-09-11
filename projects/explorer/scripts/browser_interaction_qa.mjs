@@ -595,7 +595,7 @@ await saveDom("variant-strata.dom.html");
 
 // The post shows every exact effort with Overall scores and no selectors.
 await navigate("/blog/introducing-vep-bench.html");
-await waitFor(`document.querySelectorAll('svg[aria-label*="VEP-bench versus"]').length === 15`,
+await waitFor(`document.querySelectorAll('svg[aria-label*="VEP-bench versus"]').length === 13`,
   "all static external comparison plots");
 assert.equal(await evaluate('document.querySelectorAll("select").length'), 0);
 assert.ok(await evaluate(`[...document.querySelectorAll('svg[aria-label*="VEP-bench versus"]')]

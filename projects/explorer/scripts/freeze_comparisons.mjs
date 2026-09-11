@@ -137,7 +137,8 @@ for (const [file, slug] of [
 
 const tbs = json("tbs-results.json");
 const tbsMap = {"Opus 5": "anthropic/claude-opus-5", "GPT-5.6 Sol": "openai/gpt-5.6-sol",
-  "GPT-5.6 Luna": "openai/gpt-5.6-luna", "Gemini 3.8 Flash": "google/gemini-3.8-flash", "GLM 5.3": "z-ai/glm-5.3"};
+  "GPT-5.6 Luna": "openai/gpt-5.6-luna", "Gemini 3.8 Flash": "google/gemini-3.8-flash", "GLM 5.3": "z-ai/glm-5.3",
+  "DeepSeek V4.1 Flash": "deepseek/deepseek-v4.1-flash"};
 source("tbs", "tbs-results.json", "https://www.terminal-bench-science.ai/?view=domains",
   "Official leaderboard payload: domain_metrics.life and task_matrix.tasks", {
     api_url: "https://www.terminal-bench-science.ai/api/leaderboard?package=terminal-bench-science%2Fterminal-bench-science&name=v0-1-eval",
@@ -180,42 +181,6 @@ for (const row of geneRows) {
     exclusion: model.includes(" Pro") ? "Pro system is not the corresponding standard model" : null});
 }
 
-const compbio = JSON.parse(read("compbio-refresh.txt").split("data: ")[1])[1];
-const compbioRows = compbio.data.map((row) => Object.fromEntries(compbio.headers.map((h, i) => [h, row[i]])));
-source("compbio", "compbio-refresh.txt", "https://huggingface.co/spaces/Genentech/compbiobench-leaderboard-v1",
-  "All submissions table from the public read-only refresh API (not the best-score aggregate)", compbioRows);
-source("compbio-harness", "compbio-app.py", "https://huggingface.co/spaces/Genentech/compbiobench-leaderboard-v1/blob/main/app.py",
-  "Public leaderboard source and linked runner", {runner: "https://github.com/Genentech/compbiobench-runner/tree/dc350ed",
-    author_submitter: "surag-genentech", tasks: 100, note: "Third-party submissions are self-reported; harness versions, tools, and budgets may be missing."});
-const compbioMap = {
-  "GPT-5.6-sol-high": ["openai/gpt-5.6-sol", "high"], "GPT-5.6-luna-high": ["openai/gpt-5.6-luna", "high"],
-  "GPT-5.6-Sol-Medium": ["openai/gpt-5.6-sol", "medium"], "gpt-5.6-luna-medium": ["openai/gpt-5.6-luna", "medium"],
-  "gpt-6-astra-medium": ["openai/gpt-6-astra", "medium"], "GPT-5.6-sol-medium": ["openai/gpt-5.6-sol", "medium"],
-  "gpt-6-astra-xhigh": ["openai/gpt-6-astra", "xhigh"], "gpt-5.6-sol-xhigh": ["openai/gpt-5.6-sol", "xhigh"],
-  "GPT-5.6-Sol-xhigh": ["openai/gpt-5.6-sol", "xhigh"], "GPT 5.6 Sol Max": ["openai/gpt-5.6-sol", "max"],
-  "GPT 5.6 Luna Max": ["openai/gpt-5.6-luna", "max"], "GPT-5.6-luna-max": ["openai/gpt-5.6-luna", "max"],
-  "gemini-3.8-flash-xhigh": ["google/gemini-3.8-flash", "xhigh"]
-};
-for (const [i, row] of compbioRows.entries()) {
-  const [model_id, effort] = compbioMap[row.Model] ?? [null, null];
-  const harness = row["Agent Harness"].toLowerCase() === "codex" ? "Codex" : row["Agent Harness"];
-  const documented = harness === "Codex" || harness === "Claude Code" || harness === "Gemini CLI";
-  const group = `compbio-${harness}-${row.Submitter}`;
-  results.push({id: `compbio-row-${i + 1}`, group, model_label: row.Model, model_id, effort,
-    scores: {accuracy: row["Accuracy (%)"] / 100}, source_id: "compbio", reported_at: row.Submitted,
-    harness, submitter: row.Submitter, task_count: row.Total,
-    exclusion: !documented ? "Harness or ensemble setup insufficiently documented in the inspected source" : null});
-  // Separate submitters as well as harnesses; do not pool opaque configurations.
-  if (model_id && documented && !comparisons.some((c) => c.group === group)) {
-    const suffix = row.Submitter === "yang90" ? " (submitter sensitivity)" : "";
-    comparison(group, `CompBioBench · ${harness} · ${row.Submitter}${suffix}`, group, "accuracy", "primary", {
-      benchmark: "CompBioBench", version: "v1", subset: "Full 100 questions", metric_label: "Accuracy (fraction)",
-      task_count: 100, repeats: "One submission; prior submissions retained separately", harness,
-      tools: "Harness named; submission-specific tool access not reported", budget: null,
-      source_ids: ["compbio", "compbio-harness"]});
-  }
-}
-
 const bixRows = JSON.parse(read("bix3.html").match(/const clientRows = (.*?);/s)[1]);
 source("bix3", "bix3.html", "https://advances.edisonscientific.com/benchmarks/bixbench3", "Published clientRows", bixRows);
 source("bix3-harness", "bix3-models.yaml", "https://github.com/EdisonScientific/BixBench3/blob/main/src/bixbench3/reference_models.yaml",
@@ -238,7 +203,6 @@ for (const [id, file, url, evidence] of [
 const survey = [
   ["Terminal-Bench-Science", "tbs", "Primary, descriptive", "Agentic scientific workflows. The official result taxonomy exposes Life Sciences, including medical imaging; no narrower biology label is used. One exact matched model; harnesses kept separate."],
   ["GeneBench-Pro", "gene", "Primary, descriptive", "Multistep quantitative biology in a Docker environment. Two model versions have exact efforts; Pro systems excluded. Original GeneBench scores are not substituted."],
-  ["CompBioBench", "compbio", "Primary, descriptive", "Agentic computational biology, with attributed author and community submissions. Codex has two exact model matches per selected submitter. Unidentified systems and undocumented harnesses excluded."],
   ["BixBench3", "bix3", "No exact effort overlap", "Agentic research-scale computational biology. GPT-5.6 Sol is reported at max; VEP has medium/high. Claude Opus 5 has no complete VEP overall score."],
   ["BixBench (original)", "bix", "No exact version overlap in inspected report", "Agentic data analysis is relevant; original evaluated releases differ from VEP. Zero-shot and revised benchmarks are separate."],
   ["BioAgent Bench", "bioagent", "No exact version overlap in inspected report", "Relevant end-to-end bioinformatics execution. Public January results evaluate older releases."],
@@ -253,8 +217,7 @@ const external = {schema_version: "1.0", snapshot_date: "2026-09-11", aa_intelli
     "Exact named model release and exact explicit effort only. No family substitution, inferred defaults, max-to-high conversion, imputation, or fallback efforts. Hidden checkpoint revisions are not disclosed by these sources.",
     "Use only complete VEP configurations spanning all three tasks. Overall is the unweighted mean of task mean Spearman scores, reusing explorer aggregation without display clipping.",
     "For each benchmark, metric and external harness/submitter group, include every exact shared effort as a separate point. Use the latest published submission for each model and effort; timestamp ties require review. Never select by score.",
-    "Keep harnesses and submitters separate; high and medium Codex submitters are not pooled. Earlier submissions are retained as separate sensitivity comparisons, never extra points in the primary plots.",
-    "For CompBioBench, qchiuj supplies the primary common-Codex comparison with both shared models at high effort; yang90 supplies a separate submitter sensitivity at medium. Author submissions have no exact release overlap.",
+    "Keep harnesses and submitters separate. Earlier submissions, when available, are retained as separate sensitivity comparisons, never extra points in the primary plots.",
     "Use only the Overall VEP score. Count matched configurations and distinct model versions separately; multiple efforts from one model are dependent observations.",
     "The all-effort plots are descriptive. Never pool repeated efforts into a cross-model correlation. Correlation summaries require at least five distinct models with one observation each and nonconstant scores; no p-values or imputation.",
     "Use AAII v4.3, the latest methodology at retrieval. Components retain their published metrics. Do not combine index versions or invent unreported subset indices."
@@ -264,7 +227,8 @@ exportAnalysis(vep, external);
 
 function exportAnalysis(vep, external) {
   const primary = compareScores(vep, external);
-  const sensitivity = [1, 2].flatMap((repeat) => compareScores(vep, external, {repeat}).comparisons);
+  const sensitivity = [1, 2].flatMap((repeat) => compareScores(vep, external, {repeat}).comparisons)
+    .filter((comparison) => comparison.pairs.length);
   const all = [...primary.comparisons, ...sensitivity];
   write("analysis.json", {snapshot_date: external.snapshot_date, primary: primary.comparisons, sensitivity});
   write("model-matches.json", primary.matches.map((r) => ({result_id: r.id, model_label: r.model_label,
