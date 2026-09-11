@@ -578,6 +578,9 @@ def test_publication_is_deterministic_and_separates_browser_answers(tmp_path: Pa
     runs = json.loads((version / "runs.json").read_text(encoding="utf-8"))["runs"]
     assert runs[0]["metrics"]["total_tokens"] == 98
     assert runs[0]["metrics"]["total_cost_usd"] == 0
+    assert runs[0]["metrics"]["total_output_tokens"] == 18
+    assert runs[0]["metrics"]["max_output_tokens_used"] == 18
+    assert runs[0]["metrics"]["truncated_outputs"] == 0
     assert runs[0]["metrics"]["result_counts"] == {
         "correct": 1,
         "incorrect": 0,
@@ -937,6 +940,8 @@ def test_validate_version_accepts_legacy_raw_archive_without_usage(tmp_path: Pat
     runs_path = version / "runs.json"
     runs = json.loads(runs_path.read_text(encoding="utf-8"))
     runs["runs"][0]["raw_archive"] = legacy_raw_descriptor
+    for key in ("total_output_tokens", "max_output_tokens_used", "truncated_outputs"):
+        runs["runs"][0]["metrics"].pop(key)
     runs_content = publication_module._write_json(runs_path, runs)
     manifest["artifacts"]["raw"][0] = legacy_raw_descriptor
     manifest["artifacts"]["runs"] = publication_module._plain_artifact(
@@ -945,6 +950,27 @@ def test_validate_version_accepts_legacy_raw_archive_without_usage(tmp_path: Pat
     publication_module._write_json(manifest_path, manifest)
 
     validate_version(output, version_name="candidate")
+
+
+@pytest.mark.parametrize(
+    "metric", ["total_output_tokens", "max_output_tokens_used", "truncated_outputs"]
+)
+def test_validate_version_rejects_incorrect_execution_metrics(tmp_path: Path, metric: str) -> None:
+    output = tmp_path / "publication"
+    build_synthetic(output)
+    version = output / "versions/candidate"
+    runs_path = version / "runs.json"
+    runs = json.loads(runs_path.read_text())
+    runs["runs"][0]["metrics"][metric] += 1
+    content = publication_module._write_json(runs_path, runs)
+    manifest_path = version / "manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    manifest["artifacts"]["runs"] = publication_module._plain_artifact(
+        "versions/candidate/runs.json", content, 1
+    )
+    publication_module._write_json(manifest_path, manifest)
+    with pytest.raises(BuildError, match="aggregate metadata does not match answers"):
+        validate_version(output, version_name="candidate")
 
 
 def test_usage_totals_normalizes_gateway_usage() -> None:

@@ -1,0 +1,9 @@
+# Low-reasoning GPT-6 Astra comparison through OpenRouter's Batch API.
+schema_version: "1.0"
+label: gpt-6-astra-low
+model: openai/gpt-6-astra
+generation:
+  seed: 20260829
+  reasoning:
+    effort: low
+    exclude: false

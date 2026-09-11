@@ -325,7 +325,8 @@ def test_completed_evaluation_is_valid_and_preserves_response(tmp_path: Path) ->
     assert result["model"]["upstream_provider"] == "ExampleProvider"
     assert result["question_set_size"] == 1
     assert result["evaluated_at"] == "2026-08-28T12:00:00Z"
-    assert result["generation_parameters"] == {"max_tokens": 4096, "temperature": 0.0}
+    assert result["generation_parameters"] == {"max_tokens": 4096}
+    assert "temperature" not in transport.requests[0][0]
     assert "test-secret" not in output.read_text(encoding="utf-8")
     assert transport.requests[0][0]["messages"][0]["content"] == result["question"]["prompt"]
 

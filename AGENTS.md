@@ -48,6 +48,12 @@ These instructions apply to the entire VEP-bench repository.
 
 ## Cost and secrets
 
+- Prefer officially recommended inference settings for the exact model version,
+  provider, and reasoning mode. Verify the source, distinguish general guidance
+  from benchmark-specific recipes, and document the source and any departures
+  beside the model profile. Treat unverified defaults as defaults, not as a
+  verified recommendation. Explicitly requested effort levels and token or cost
+  budgets take precedence. See [evaluation guidance](docs/evaluation.md#profiles).
 - Prioritize completing whole tasks and models during evaluation campaigns.
   Keep launching authorized work when capacity is available; a pending run is
   not a reason to leave capacity idle. Prefer reporting completed results over

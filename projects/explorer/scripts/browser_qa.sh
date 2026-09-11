@@ -128,6 +128,9 @@ for check in \
   'leaderboard.dom.html|>Task</label>' \
   'leaderboard.dom.html|class="card vepbench-leaderboard-chart"' \
   'leaderboard.dom.html|>Unscored model attempts<' \
+  'leaderboard.dom.html|>Output limits and usage<' \
+  'leaderboard.dom.html|>Output tokens<' \
+  'leaderboard.dom.html|>Largest output<' \
   'leaderboard.dom.html|Claude Fable 5.1 (medium)' \
   'leaderboard.dom.html|Claude Opus 5 (medium)' \
   'leaderboard.dom.html|>Content filtered<' \

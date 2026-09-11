@@ -126,6 +126,9 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     assert leaderboard_source.index("## Unscored model attempts") > leaderboard_source.index(
         "## Score by cost and token usage"
     )
+    assert leaderboard_source.index("## Output limits and usage") > leaderboard_source.index(
+        "## Unscored model attempts"
+    )
     assert 'y: {\n      label: "Score"' in leaderboard_source
     assert "displayScore," in leaderboard_source
     assert "score: displayScore(row.score)" in leaderboard_source

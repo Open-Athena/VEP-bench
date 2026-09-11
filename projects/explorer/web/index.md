@@ -12,6 +12,7 @@ import {
 import {
   artifactUrl,
   displayScore,
+  executionSummaryForRow,
   fetchJson,
   leaderboardRowsForScope,
   orderTaskFamilies,
@@ -348,4 +349,50 @@ const unscoredAttemptsTable = Inputs.table(unscoredAttempts, {
 
 ```js
 display(html`<div class="card">${unscoredAttemptsTable}</div>`);
+```
+
+## Output limits and usage
+
+These figures cover the models and tasks selected above. Output tokens include
+reasoning. Truncation counts responses stopped by the output limit, including
+those that still contained a valid answer. Output figures describe the scored
+responses; total tokens and cost include any recorded earlier API attempts.
+Unavailable measurements appear as “—”.
+
+```js
+const executionData = rows.map(executionSummaryForRow);
+const formatMeasuredTokens = (value) => value === null ? "—" : formatInteger(value);
+const executionTable = Inputs.table(executionData, {
+  columns: ["model", "questions", "valid_rate", "truncation_rate", "output_limits",
+    "output_tokens", "max_output_tokens", "total_tokens", "cost"],
+  header: {
+    model: "Model",
+    questions: "Questions",
+    valid_rate: "Valid answers",
+    truncation_rate: "Truncated",
+    output_limits: "Output limit",
+    output_tokens: "Output tokens",
+    max_output_tokens: "Largest output",
+    total_tokens: "Total tokens",
+    cost: "Cost (USD)"
+  },
+  format: {
+    model: (model) => modelLabel(
+      model, executionData.find((row) => row.model === model)?.organization
+    ),
+    questions: formatInteger,
+    valid_rate: formatPercent,
+    truncation_rate: formatPercent,
+    output_limits: (limits) => limits === null ? "—" : limits.map(formatInteger).join(", "),
+    output_tokens: formatMeasuredTokens,
+    max_output_tokens: formatMeasuredTokens,
+    total_tokens: formatMeasuredTokens,
+    cost: formatCost
+  },
+  width: {model: 235, questions: 90, valid_rate: 110, truncation_rate: 100,
+    output_limits: 120, output_tokens: 125, max_output_tokens: 130, total_tokens: 125, cost: 100},
+  rows: Math.max(1, executionData.length),
+  select: false
+});
+display(html`<div class="card" role="region" aria-label="Output limits and usage; scroll horizontally to see all columns">${executionTable}</div>`);
 ```

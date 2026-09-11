@@ -41,6 +41,24 @@ versioned task descriptor; the evaluator rejects overlapping task and model
 settings. Paths, run IDs, and secrets remain run-specific, while resolved
 non-secret request parameters are retained in results.
 
+Prefer official model-developer or serving-provider recommendations when choosing
+sampling and other model-specific inference settings. Check that the guidance
+applies to the exact model version, provider, reasoning mode, and kind of task;
+a recipe for one published benchmark is not necessarily a general recommendation.
+Record the source and the rationale for departures in comments beside the model
+profile. When guidance calls for leaving a control unset, omit it. If no applicable
+recommendation can be verified, identify the choice as a default or an explicit
+assumption rather than claiming it is recommended.
+
+Explicitly requested effort levels and token or cost budgets take precedence over
+provider recommendations. Matching sampling settings does not imply reproducing
+a provider's full evaluation protocol, which may use different reasoning effort,
+output limits, prompts, or repeated samples. Results preserve the parameters sent
+to OpenRouter; omitted controls do not establish the effective sampling values
+used internally by the provider.
+
+Ad hoc evaluation leaves sampling controls unset unless explicitly supplied.
+
 A task profile requires a question file containing only that task family.
 The examples below use the satMutMPRA file generated above.
 
@@ -130,3 +148,11 @@ refusal, token-limit, and format-error classification.
 For either question type, API failures have null scores and make the run
 incomplete; they cannot appear in the official leaderboard. Retained reasoning
 is only what the provider exposes, not a claim of access to private reasoning.
+
+The leaderboard's output and usage table distinguishes the configured ceiling
+from observed output, including reasoning. Output totals and maxima describe the
+retained completed responses; run cost and total tokens also include recorded
+earlier API attempts. Truncation counts any completed response with a provider
+finish reason of `length`, even when its final answer is valid. Missing usage
+remains unknown, and older publications without these summaries display gaps
+until rebuilt from their original responses.

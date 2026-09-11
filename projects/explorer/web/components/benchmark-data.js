@@ -214,6 +214,42 @@ function sumIfComplete(values) {
     : null;
 }
 
+export function executionSummaryForRow(row) {
+  const runs = row.runs ?? [row.run];
+  const questions = runs.reduce((total, run) => total + run.question_set_size, 0);
+  const validAnswers = sumIfComplete(runs.map((run) => {
+    if (run.task_type === "ranking") return nonnegativeNumber(run.metrics.valid_outputs);
+    const counts = run.metrics.result_counts;
+    return counts ? sumIfComplete([
+      nonnegativeNumber(counts.correct), nonnegativeNumber(counts.incorrect)
+    ]) : null;
+  }));
+  const truncated = sumIfComplete(
+    runs.map((run) => nonnegativeNumber(run.metrics.truncated_outputs))
+  );
+  const maxima = runs.map((run) => nonnegativeNumber(run.metrics.max_output_tokens_used));
+  const limits = runs.map((run) => nonnegativeNumber(
+    run.generation_parameters.max_completion_tokens ?? run.generation_parameters.max_tokens
+  ));
+  return {
+    model: row.model_cell.model,
+    organization: runs[0].model.model_id.split("/")[0],
+    questions,
+    valid_answers: validAnswers,
+    valid_rate: validAnswers !== null && questions ? validAnswers / questions : null,
+    truncated_outputs: truncated,
+    truncation_rate: truncated !== null && questions ? truncated / questions : null,
+    output_limits: limits.every((limit) => limit !== null)
+      ? [...new Set(limits)].sort((a, b) => a - b) : null,
+    output_tokens: sumIfComplete(
+      runs.map((run) => nonnegativeNumber(run.metrics.total_output_tokens))
+    ),
+    max_output_tokens: maxima.every((value) => value !== null) ? Math.max(...maxima) : null,
+    total_tokens: row.tokens,
+    cost: row.cost
+  };
+}
+
 function overallProfiles(leaderboard) {
   const profiles = leaderboard?.evaluation_profiles;
   if (!Array.isArray(profiles) || profiles.length === 0) return [];

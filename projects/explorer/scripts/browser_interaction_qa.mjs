@@ -121,6 +121,18 @@ await waitFor(
   "two-model default all-task leaderboard"
 );
 await checkEfficiencyPlots("All tasks");
+await waitFor(
+  `document.querySelectorAll('[aria-label^="Output limits and usage;"] tbody tr').length === 2`,
+  "execution summary for both ranked models"
+);
+assert.equal(await evaluate(`(() => {
+  const table = document.querySelector('[aria-label^="Output limits and usage;"]');
+  const unscored = document.querySelector('#unscored-model-attempts');
+  return Boolean(unscored.compareDocumentPosition(table) & Node.DOCUMENT_POSITION_FOLLOWING)
+    && ["Output limit", "Output tokens", "Largest output", "Truncated"].every(
+      (label) => [...table.querySelectorAll('th')].some((cell) => cell.textContent.trim() === label)
+    );
+})()`), true, "execution summary must follow the refusal section and expose usage columns");
 const rankedBars = await evaluate(`(() => {
   const plot = document.querySelector('.vepbench-leaderboard-chart svg');
   return {
@@ -190,6 +202,16 @@ for (const width of [1440, 390]) {
     })()`);
     const screenshot = await send("Page.captureScreenshot", {clip, captureBeyondViewport: true});
     await writeFile(join(outputDir, `efficiency-${width}.png`), Buffer.from(screenshot.data, "base64"));
+    const executionClip = await evaluate(`(() => {
+      const bounds = document.querySelector('[aria-label^="Output limits and usage;"]')
+        .getBoundingClientRect();
+      return {x: bounds.x + scrollX, y: bounds.y + scrollY,
+        width: bounds.width, height: bounds.height, scale: 1};
+    })()`);
+    const executionScreenshot = await send("Page.captureScreenshot", {
+      clip: executionClip, captureBeyondViewport: true
+    });
+    await writeFile(join(outputDir, `execution-${width}.png`), Buffer.from(executionScreenshot.data, "base64"));
   }
 }
 await send("Emulation.setDeviceMetricsOverride", {

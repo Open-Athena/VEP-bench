@@ -1,0 +1,20 @@
+# Low-reasoning comparison, using DeepSeek's recommended sampling.
+# https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash
+schema_version: "1.0"
+label: deepseek-v4.1-flash-low
+model: deepseek/deepseek-v4.1-flash
+generation:
+  reasoning:
+    effort: low
+    exclude: false
+  temperature: 1.0
+  top_p: 0.95
+  provider:
+    only:
+      - deepseek
+    allow_fallbacks: false
+    require_parameters: true
+    max_price:
+      prompt: 0.30
+      completion: 1.20
+      request: 0

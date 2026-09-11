@@ -30,6 +30,7 @@ from vepbench.evaluation.core import (
 )
 from vepbench.questions.validation import validate_question
 
+from .execution import execution_metrics
 from .retry import (
     attempt_totals,
     retry_metadata,
@@ -574,6 +575,7 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
                 "run_id": answer["run_id"],
                 "question_id": answer["question_id"],
                 "usage": answer["usage"],
+                "response": answer["response"],
             }
         )
         run = run_by_id.get(answer["run_id"])
@@ -913,6 +915,11 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
                 }
             )
         run_usages = [record for record in answer_usage_records if record["run_id"] == run_id]
+        expected_metrics.update(
+            (key, value)
+            for key, value in execution_metrics(run_usages).items()
+            if key in run["metrics"]
+        )
         retries = sum(retry_metadata(record["usage"]) is not None for record in run_usages)
         if run.get("retry_count", 0) != retries:
             raise BuildError(f"run {run_id!r} retry count does not match answers")
@@ -1219,6 +1226,7 @@ def _convert_run(
                         "run_id": run_id,
                         "question_id": question_id,
                         "usage": record["usage"],
+                        "response": record["response"],
                     }
                 )
                 evaluated_at = record["evaluated_at"]
@@ -1375,6 +1383,7 @@ def _convert_run(
             "total_tokens": total_tokens,
             "total_cost_usd": total_cost_usd,
         }
+    metrics.update(execution_metrics(usage_records))
     run_record = {
         "schema_version": "2.0" if task_type == "ranking" else "1.0",
         "run_id": run_id,

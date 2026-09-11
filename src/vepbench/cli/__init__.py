@@ -153,7 +153,7 @@ def evaluate(
             raise AssertionError("model selection disappeared")
         model_id = model
         profile_label = model
-        generation_parameters.update({"temperature": 0.0, "max_tokens": 4096})
+        generation_parameters.update({"max_tokens": 4096})
     if temperature is not None:
         generation_parameters["temperature"] = temperature
     if max_tokens is not None:
