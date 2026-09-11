@@ -50,7 +50,7 @@ function compareTaskFamilies(left, right) {
     || left.localeCompare(right);
 }
 
-function modelName(modelId, generationParameters) {
+export function modelName(modelId, generationParameters) {
   const name = modelId.split("/").at(-1) ?? modelId;
   const displayName = {
     "claude-fable-5.1": "Claude Fable 5.1",
@@ -66,6 +66,15 @@ function modelName(modelId, generationParameters) {
   }[name] ?? name;
   const effort = generationParameters?.reasoning?.effort;
   return effort ? `${displayName} (${effort})` : displayName;
+}
+
+export function modelFamilyScale(families, colors) {
+  const domain = [...new Set(families)].sort();
+  return {
+    type: "categorical", domain,
+    range: domain.map((family) => colors[family] ?? "#767676"),
+    label: "Model family"
+  };
 }
 
 function nonnegativeNumber(value) {
@@ -557,7 +566,7 @@ export function outcomeIndexPath(run) {
   return expected;
 }
 
-async function fetchGzipJson(url, label, fetcher) {
+export async function fetchGzipJson(url, label, fetcher = fetch) {
   const response = await fetcher(url);
   if (!response.ok) throw new Error(`Unable to load ${label}: HTTP ${response.status}`);
   if (typeof DecompressionStream !== "function") {

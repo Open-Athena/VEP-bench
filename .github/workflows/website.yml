@@ -37,7 +37,7 @@ jobs:
           else
             while IFS= read -r path; do
               case "$path" in
-                .github/workflows/website.yml|.python-version|pyproject.toml|uv.lock|src/vepbench/*|projects/blog-analysis/*|projects/explorer/*|projects/publishing/*|configs/tasks/*|data/sources/*|tests/test_browser_qa_fixture.py|tests/test_site.py|tests/test_variant_annotations.py)
+                .github/workflows/website.yml|.python-version|pyproject.toml|uv.lock|src/vepbench/*|projects/blog-analysis/*|projects/explorer/*|projects/publishing/*|configs/tasks/*|data/sources/*|tests/test_browser_qa_fixture.py|tests/test_site.py|tests/test_variant_annotations.py|tests/test_variant_strata.py)
                   website=true
                   ;;
               esac
@@ -80,7 +80,8 @@ jobs:
       - name: Run website unit tests
         run: |
           uv run --no-sync pytest \
-            tests/test_site.py tests/test_browser_qa_fixture.py tests/test_variant_annotations.py
+            tests/test_site.py tests/test_browser_qa_fixture.py tests/test_variant_annotations.py \
+            tests/test_variant_strata.py
           npm test --prefix projects/explorer
 
       - name: Build validated static site
@@ -145,6 +146,11 @@ jobs:
             --output /tmp/sge-cutoff-replay.json
           cmp projects/explorer/web/blog/introducing-vep-bench/cutoff-analysis.json \
             /tmp/sge-cutoff-replay.json
+          uv run --no-sync vepbench-blog-strata-intervals \
+            --input projects/explorer/web/blog/introducing-vep-bench/strata-2026-09-11.json.gz \
+            --output /tmp/strata-intervals-replay.json
+          cmp projects/explorer/web/blog/introducing-vep-bench/strata-2026-09-11.intervals.json \
+            /tmp/strata-intervals-replay.json
 
   deploy:
     name: Deploy

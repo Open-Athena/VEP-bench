@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
-import {writeFile} from "node:fs/promises";
+import {readFile, writeFile} from "node:fs/promises";
 import {join} from "node:path";
+import {gunzipSync} from "node:zlib";
+import {stratumModelOrder, stratumRows} from "../web/blog/introducing-vep-bench/strata-analysis.js";
 
 const [siteUrl, debugUrl, outputDir] = process.argv.slice(2);
 if (!siteUrl || !debugUrl) {
@@ -86,6 +88,14 @@ function chooseOptionContaining(optionText) {
 await send("Page.enable");
 await send("Runtime.enable");
 
+const websiteModelColors = JSON.parse(await readFile(
+  new URL("../web/components/model-family-colors.json", import.meta.url)
+));
+function checkModelColors(families, colors) {
+  assert.deepEqual(colors, families.map((family) => websiteModelColors[family] ?? "#767676"),
+    "every model plot uses the fixed website palette");
+}
+
 async function checkEfficiencyPlots(taskLabel) {
   const selector = `section[aria-label="${taskLabel} score comparisons"]`;
   await waitFor(`(() => {
@@ -102,6 +112,7 @@ async function checkEfficiencyPlots(taskLabel) {
     }));
   })()`);
   assert.deepEqual(scales[0], scales[1], "plots must share score and color scales");
+  checkModelColors(scales[0].colorDomain, scales[0].colorRange);
   assert.deepEqual(await evaluate(`(() => {
     const color = document.querySelector('.vepbench-leaderboard-chart svg').scale('color');
     return {domain: color.domain, range: color.range};
@@ -437,6 +448,107 @@ assert.equal(
   true,
   "model selection did not preserve the highlighted row"
 );
+
+await navigate("/blog/introducing-vep-bench.html");
+const stratumSnapshot = JSON.parse(gunzipSync(await readFile(
+  new URL("../web/blog/introducing-vep-bench/strata-2026-09-11.json.gz", import.meta.url)
+)));
+const expectedStratumModels = stratumModelOrder(stratumSnapshot);
+const stratumIntervals = JSON.parse(await readFile(
+  new URL("../web/blog/introducing-vep-bench/strata-2026-09-11.intervals.json", import.meta.url), "utf8"
+));
+const expectedStratumRows = stratumRows(stratumSnapshot, stratumIntervals);
+const stratumPlot = 'svg[aria-label="Within-panel Spearman correlations by variant stratum and task"]';
+const stratumGroups = [
+  ["sge", "allele_type", 18], ["sge", "consequence", 12],
+  ["satmut_mpra", "allele_type", 6], ["satmut_mpra", "consequence", 18],
+  ["opensplice_snv", "allele_type", 12], ["opensplice_snv", "consequence", 6]
+];
+async function checkStratumPlots() {
+  await waitFor(`document.querySelectorAll(${JSON.stringify(stratumPlot + ' g[aria-label="dot"] circle')})
+    .length === 72 && document.querySelectorAll(${JSON.stringify(stratumPlot)}).length === 2`,
+  "two grouped stratum figures");
+  assert.equal(await evaluate(`document.querySelectorAll('select').length`), 0, "blog has no data selectors");
+  assert.equal(await evaluate(`document.querySelectorAll('figure.vepbench-stratum-figure').length`), 2);
+  for (const axis of ["allele_type", "consequence"]) {
+    const figure = `figure[data-stratum-axis="${axis}"]`;
+    assert.equal(await evaluate(`document.querySelectorAll(${JSON.stringify(figure + ' svg[data-task-family]')}).length`), 3);
+    assert.equal(await evaluate(`document.querySelectorAll(${JSON.stringify(figure + ' [aria-label="Model (reasoning effort) legend"]')}).length`), 1);
+    assert.equal(await evaluate(`document.querySelector(${JSON.stringify(figure)}).textContent.includes('Mean panel Spearman ρ')`), true);
+    assert.equal(await evaluate(`document.querySelector(${JSON.stringify(figure)}).textContent.includes('Insufficient coverage')`), true);
+    assert.deepEqual(await evaluate(`[...document.querySelectorAll(${JSON.stringify(figure + ' [aria-label="Model (reasoning effort) legend"] > span')})]
+      .map((item) => item.textContent)`), expectedStratumModels, "legend follows the overall leaderboard");
+    const scales = await evaluate(`[...document.querySelectorAll(${JSON.stringify(figure + ' svg[data-task-family]')})].map((plot) => ({
+      task: plot.dataset.taskFamily, x: plot.scale('x').domain, y: plot.scale('y').domain,
+      families: plot.scale('color').domain, colors: plot.scale('color').range
+    }))`);
+    const shared = scales.map(({y, families, colors}) => ({y, families, colors}));
+    assert.deepEqual(shared[0], shared[1], "tasks share category positions and model colors");
+    assert.deepEqual(shared[0], shared[2], "tasks share category positions and model colors");
+    assert.equal(new Set(scales.map((scale) => JSON.stringify(scale.x))).size, 3,
+      "each task uses its own data range");
+    for (const scale of scales) {
+      checkModelColors(scale.families, scale.colors);
+      const scores = expectedStratumRows.filter((row) => row.task_family === scale.task && row.axis === axis)
+        .flatMap((row) => [row.mean_spearman_rho, row.spearman_ci_low, row.spearman_ci_high])
+        .filter(Number.isFinite);
+      const minimum = Math.min(...scores), maximum = Math.max(...scores);
+      assert.ok(scale.x[0] <= minimum && scale.x[1] >= maximum, "axis includes every signed score and interval");
+      assert.ok(scale.x[1] - scale.x[0] <= 2 * (maximum - minimum), "axis fits the task data");
+      if (minimum > 0.5) assert.ok(scale.x[0] > 0, "annotation positions must not force a zero baseline");
+    }
+  }
+  for (const [task, axis, dots] of stratumGroups) {
+    const group = `[data-stratum-axis="${axis}"] svg[data-task-family="${task}"]`;
+    assert.equal(await evaluate(`document.querySelectorAll(${JSON.stringify(group)}).length`), 1);
+    assert.equal(await evaluate(`document.querySelectorAll(${JSON.stringify(group + ' g[aria-label="dot"] circle')}).length`), dots);
+    const expectedIntervals = expectedStratumRows.filter((row) => row.task_family === task
+      && row.axis === axis && row.spearman_ci_status === "estimated");
+    assert.equal(await evaluate(`document.querySelectorAll(${JSON.stringify(group + ' g[aria-description="95% confidence intervals"] line')}).length`), expectedIntervals.length);
+    assert.equal(await evaluate(`[...document.querySelectorAll(${JSON.stringify(group + ' g[aria-label="dot"] circle')})]
+      .every((dot) => dot.getAttribute('aria-label').includes('95% t CI:'))`), true);
+    const orders = await evaluate(`(() => {
+      const groups = new Map();
+      for (const dot of document.querySelectorAll(${JSON.stringify(group + ' g[aria-label="dot"] circle')})) {
+        const [model, category] = dot.getAttribute('aria-label').split(String.fromCharCode(10));
+        if (!groups.has(category)) groups.set(category, []);
+        groups.get(category).push({model, y: Number(dot.getAttribute('cy'))});
+      }
+      return [...groups.values()].map((dots) => dots.sort((a, b) => a.y - b.y).map((dot) => dot.model));
+    })()`);
+    for (const order of orders) assert.deepEqual(order, expectedStratumModels,
+      "dots follow the overall leaderboard from top to bottom within each category");
+  }
+  assert.equal(await evaluate(`document.querySelectorAll('.observablehq--error').length`), 0);
+}
+for (const width of [1440, 390]) {
+  await send("Emulation.setDeviceMetricsOverride", {
+    width, height: 1100, deviceScaleFactor: 1, mobile: false
+  });
+  await waitFor(`document.body.scrollWidth <= innerWidth`, `stratum page fits viewport ${width}`);
+  await checkStratumPlots();
+  for (const axis of ["allele_type", "consequence"]) {
+    assert.equal(await evaluate(`(() => {
+      const scroll = document.querySelector('figure[data-stratum-axis="${axis}"] [role="region"]');
+      return scroll.scrollWidth > scroll.clientWidth + 1;
+    })()`), width === 390, "task columns fit desktop and scroll within the figure on mobile");
+  }
+  if (outputDir) {
+    for (const axis of ["allele_type", "consequence"]) {
+      const clip = await evaluate(`(() => {
+        const bounds = document.querySelector('figure[data-stratum-axis="${axis}"]').getBoundingClientRect();
+        return {x: bounds.x + scrollX, y: bounds.y + scrollY,
+          width: bounds.width, height: bounds.height, scale: 1};
+      })()`);
+      const screenshot = await send("Page.captureScreenshot", {clip, captureBeyondViewport: true});
+      await writeFile(join(outputDir, `variant-strata-${axis}-${width}.png`), Buffer.from(screenshot.data, "base64"));
+    }
+  }
+}
+await send("Emulation.setDeviceMetricsOverride", {
+  width: 1440, height: 1100, deviceScaleFactor: 1, mobile: false
+});
+await saveDom("variant-strata.dom.html");
 
 socket.close();
 console.log("browser interaction QA passed");

@@ -16,11 +16,13 @@ import {
   fetchJson,
   highestEffortRows,
   leaderboardRowsForScope,
+  modelFamilyScale,
   orderTaskFamilies,
   supportsOverallLeaderboard
 } from "./components/benchmark-data.js";
 
 const config = await FileAttachment("data/config.json").json();
+const modelFamilyColors = await FileAttachment("components/model-family-colors.json").json();
 const organizationIcons = {
   openai: {name: "OpenAI", url: await FileAttachment("icons/organizations/openai.svg").url()},
   "z-ai": {name: "Z.ai", url: await FileAttachment("icons/organizations/zai.svg").url()},
@@ -161,12 +163,7 @@ const leaderboardData = rows.map((row) => ({
   question_count: (row.runs ?? [row.run]).reduce((total, run) => total + run.question_set_size, 0),
   organization: (row.run ?? row.runs[0]).model.model_id.split("/")[0]
 }));
-const modelFamilyColor = {
-  type: "categorical",
-  domain: [...new Set(leaderboardData.map((row) => row.family))].sort(),
-  scheme: "tableau10",
-  label: "Model family"
-};
+const modelFamilyColor = modelFamilyScale(leaderboardData.map((row) => row.family), modelFamilyColors);
 function modelDetails(row) {
   return [
     row.model,

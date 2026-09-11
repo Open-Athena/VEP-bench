@@ -32,3 +32,9 @@ Use `--input /tmp/sge-cutoff-input.json` to replay the saved collection offline.
 The export records library versions and data provenance. Run the package's
 offline tests with `uv run --locked --all-packages --group test pytest
 projects/blog-analysis/tests`.
+
+For the variant-stratum figures, generate pointwise intervals directly from the
+frozen per-panel scores with `vepbench-blog-strata-intervals`. The sampling unit
+is an eligible original gene or regulatory-element panel, keeping invalid
+answers' zero penalties. The [stratum methodology](../explorer/web/blog/introducing-vep-bench/strata-methods.md#confidence-intervals)
+explains the independence assumptions and gives the offline replay command.

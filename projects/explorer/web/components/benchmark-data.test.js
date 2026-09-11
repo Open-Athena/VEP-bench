@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
 import {gzipSync} from "node:zlib";
 import test from "node:test";
 
@@ -17,6 +18,7 @@ import {
   highestEffortRows,
   leaderboardRows,
   leaderboardRowsForScope,
+  modelFamilyScale,
   modelSelectionRows,
   orderQuestionsForExplorer,
   orderTaskFamilies,
@@ -31,6 +33,19 @@ import {
   supportsOverallLeaderboard,
   variantType
 } from "./benchmark-data.js";
+
+test("model colors stay fixed across rankings, filtered tasks, and new model families", () => {
+  const colors = JSON.parse(readFileSync(new URL("./model-family-colors.json", import.meta.url)));
+  const families = Object.keys(colors);
+  for (const subset of [families, [...families].reverse(), families.slice(3), ["GPT 6 Astra"],
+    ["New model", "GPT 6 Astra", "Claude Opus 5", "GPT 6 Astra"]]) {
+    const scale = modelFamilyScale(subset, colors);
+    assert.equal(scale.scheme, undefined);
+    for (const [index, family] of scale.domain.entries()) {
+      assert.equal(scale.range[index], colors[family] ?? "#767676");
+    }
+  }
+});
 
 test("reselected windows cannot relabel questions from an earlier source", () => {
   const metadata = {element: "New exon", source_record_sha256: "new-source"};
