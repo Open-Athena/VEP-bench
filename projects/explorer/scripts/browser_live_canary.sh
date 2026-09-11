@@ -31,11 +31,16 @@ trap cleanup EXIT
   --user-data-dir="$browser_profile" about:blank \
   >"$output_dir/browser.log" 2>&1 &
 browser_pid=$!
-for _attempt in {1..50}; do
+for _attempt in {1..300}; do
   [[ -s "$browser_profile/DevToolsActivePort" ]] && break
   kill -0 "$browser_pid" 2>/dev/null || { echo "Canary browser exited before startup" >&2; exit 1; }
   sleep 0.1
 done
+if [[ ! -s "$browser_profile/DevToolsActivePort" ]]; then
+  echo "Canary browser did not initialize remote debugging within 30 seconds" >&2
+  tail -n 40 "$output_dir/browser.log" >&2
+  exit 1
+fi
 read -r debug_port < "$browser_profile/DevToolsActivePort"
 node "$script_dir/browser_interaction_qa.mjs" \
   "$site_url" "http://127.0.0.1:$debug_port" "$output_dir" --canary
