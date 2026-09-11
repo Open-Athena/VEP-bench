@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "observable": "observable",
-    "test": "node --test web/components/*.test.js"
+    "test": "node --test web/components/*.test.js web/blog/*/*.test.js"
   },
   "devDependencies": {
     "@observablehq/framework": "1.13.4",
