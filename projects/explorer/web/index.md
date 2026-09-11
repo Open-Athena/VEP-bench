@@ -14,6 +14,7 @@ import {
   displayScore,
   executionSummaryForRow,
   fetchJson,
+  highestEffortRows,
   leaderboardRowsForScope,
   orderTaskFamilies,
   supportsOverallLeaderboard
@@ -128,18 +129,23 @@ if (runsState.error) {
 ```
 
 ```js
-const rows = leaderboardRowsForScope(
+const rows = highestEffortRows(leaderboardRowsForScope(
   runsState.document.runs,
   aggregation,
   selectedTaskFamily,
   scoreMetric
-);
+));
 const formatScore = (value) => formatPercent(displayScore(value));
 ```
 
 ${selectedTaskFamily === null
   ? `Showing the macro-average ${scoreMetricLabel} correlation across tasks.`
   : `Showing the mean ${scoreMetricLabel} correlation for ${selectedTaskLabel}.`}
+
+Each model appears at its highest available reasoning effort with complete
+results for this view. “All tasks” requires the same configuration across every
+task. Equal-effort configurations use the latest results; selection does not
+depend on score.
 
 ```js
 const leaderboardData = rows.map((row) => ({
@@ -228,7 +234,7 @@ display(html`<div class="card vepbench-leaderboard-chart" tabindex="0"
 
 ## Score by cost and token usage
 
-Compare the selected task's score with total run cost and total token usage. Both plots share model colors and the score scale; each line connects evaluated configurations from the same model family. Tokens include input and generated output, including reasoning.
+Compare the selected task's score with total run cost and total token usage. Both plots share model colors and the score scale; each line connects the displayed models from the same family. Tokens include input and generated output, including reasoning.
 
 ```js
 const efficiencyMetrics = [

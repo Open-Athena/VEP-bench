@@ -8,7 +8,7 @@ title: Blog
 
 VEP-bench v0.1
 
-**Draft.** A first look at the variants in our fitness, expression, and splicing
-tasks: how SNVs, indels, and genomic consequences differ across the benchmark.
+**Draft.** Variant composition across fitness, expression, and splicing, plus
+SGE performance before and after each model's knowledge cutoff.
 
 [Read draft](./blog/introducing-vep-bench.html)

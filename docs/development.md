@@ -27,7 +27,7 @@ Explorer work also needs `npm ci --prefix projects/explorer`.
 Keep post-specific browser analysis and plots beside the post under
 `projects/explorer/web/blog/<post-slug>/`, reusing the explorer's plotting runtime.
 Analysis that needs additional Python libraries should live in a separate,
-optional `projects/blog-analysis` workspace package and export figures or compact
+optional [blog-analysis](../projects/blog-analysis/README.md) workspace package and export figures or compact
 data for the blog. Keep those dependencies out of the evaluator, task packages,
 and explorer build requirements.
 

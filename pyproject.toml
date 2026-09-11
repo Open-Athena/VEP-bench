@@ -36,6 +36,7 @@ default-groups = []
 
 [tool.uv.workspace]
 members = [
+    "projects/blog-analysis",
     "projects/explorer",
     "projects/publishing",
     "tasks/opensplice-snv",
@@ -44,6 +45,7 @@ members = [
 ]
 
 [tool.uv.sources]
+vepbench-blog-analysis = { workspace = true }
 vepbench = { workspace = true }
 vepbench-explorer = { workspace = true }
 vepbench-publishing = { workspace = true }
