@@ -23,8 +23,7 @@ export function distributionFigure(composition, dimension, width) {
   plot.setAttribute("aria-label", dimension === "type"
     ? "Variant types by task, with independently scaled percentage axes"
     : "Most severe VEP consequences by task, with independently scaled percentage axes");
-  // Separate Plot instances give each task its own automatic x scale. Nest the
-  // SVGs so the same complete figure can be displayed and exported.
+  // Separate Plot instances give each task its own automatic x scale.
   composition.tasks.forEach((task, index) => {
     const data = rows.filter((row) => row.task_family === task.family);
     const panel = Plot.plot({
@@ -53,14 +52,6 @@ export function distributionFigure(composition, dimension, width) {
     panel.setAttribute("x", index === 0 ? 0 : labelWidth + index * panelWidth);
     plot.append(panel);
   });
-  const exported = plot.cloneNode(true);
-  exported.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-  exported.style.color = "#202124";
-  exported.style.background = "white";
-  const link = document.createElement("a");
-  link.download = `vepbench-${dimension}-distribution.svg`;
-  link.textContent = "Download SVG";
-  link.href = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(new XMLSerializer().serializeToString(exported))}`;
   const chart = document.createElement("div");
   chart.style.overflowX = "auto";
   chart.tabIndex = 0;
@@ -69,11 +60,8 @@ export function distributionFigure(composition, dimension, width) {
   // Preserve legible labels on mobile instead of shrinking the entire SVG.
   plot.style.maxWidth = "none";
   chart.append(plot);
-  const caption = document.createElement("p");
-  caption.style.cssText = "font-size: 0.85rem; margin-bottom: 0";
-  caption.append(link);
   const figure = document.createElement("div");
   figure.className = "card";
-  figure.append(chart, caption);
+  figure.append(chart);
   return figure;
 }
