@@ -24,6 +24,16 @@ export default {
           path: "/tasks/opensplice-snv"
         }
       ]
+    },
+    {
+      name: "Blog",
+      path: "/blog",
+      pages: [
+        {
+          name: "Introducing VEP-bench",
+          path: "/blog/introducing-vep-bench"
+        }
+      ]
     }
   ],
   head: `
