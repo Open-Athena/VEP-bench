@@ -7,7 +7,7 @@ theme: [air, near-midnight, alt]
 
 VEP-bench v0.1
 
-**Draft — dataset composition and model performance.**
+**Draft — dataset composition and exploratory performance analysis.**
 
 VEP-bench asks language models to predict the effects of genetic variants from
 DNA sequence and experimental context, without tools or internet access. Its
@@ -166,6 +166,183 @@ a regulatory feature and a transcript can receive a higher-priority transcript
 consequence in this single-label view. “Regulatory” and “intronic,” for example,
 can describe different aspects of the same allele.
 
+## Performance within variant classes
+
+**Analysis snapshot: 11 September 2026.** We reused the saved answers from six
+models across 52 panels, selecting the highest available reasoning effort for
+each model: high for Gemini and the GPT models, medium for Muse, and low for GLM.
+Selection uses complete runs and does not depend on score; ties at the same
+effort use the latest run. Before examining stratum performance,
+we fixed two coverage cutoffs: **at least 10 variants within an original panel**
+and **at least 5 eligible panels within a task**. These are pragmatic coverage
+requirements, not a claim of statistical significance.
+
+Allele type and functional consequence are separate axes: an SNV can also be
+missense. For this finer allele breakdown, we trim shared REF/ALT flanks and
+distinguish SNVs, pure insertions, pure deletions, and other/complex edits.
+Other/complex includes multibase substitutions and unequal-length replacements.
+Unknown alleles and unknown or ambiguous consequences remain explicit categories.
+Consequences use the saved VEP release 114 annotation described above: the most
+severe consequence across all Ensembl transcripts and returned regulatory
+features, with no canonical-transcript selection. We do not infer missense from
+exon membership.
+
+```js
+import {fetchGzipJson} from "../components/benchmark-data.js";
+import {stratumCorrelationPlot} from "../components/correlation-plot.js";
+import {stratumRows, stratumCsv, stratumModelOrder} from "./introducing-vep-bench/strata-analysis.js";
+
+const strataSnapshot = await fetchGzipJson(
+  await FileAttachment("./introducing-vep-bench/strata-2026-09-11.json.gz").url(),
+  "frozen variant-stratum analysis"
+);
+const strataModelOrder = stratumModelOrder(strataSnapshot);
+const strataIntervals = await FileAttachment("./introducing-vep-bench/strata-2026-09-11.intervals.json").json();
+const strataScores = stratumRows(strataSnapshot, strataIntervals)
+  .sort((a, b) => strataModelOrder.indexOf(a.model) - strataModelOrder.indexOf(b.model));
+const strataTaskLabel = (family) => composition.tasks.find((task) => task.family === family)?.label ?? family;
+const strataAxisLabel = (axis) => axis === "allele_type" ? "Allele type" : "Functional consequence";
+function stratumFigure(axis) {
+  return resize((width) => stratumCorrelationPlot(strataScores.filter((row) => row.axis === axis), {
+    width, colors: strataSnapshot.family_colors, tasks: composition.tasks,
+    axis, coverage: strataSnapshot.coverage, modelOrder: strataModelOrder
+  }));
+}
+```
+
+Each dot is the unweighted mean of Spearman correlations recomputed **within the eligible
+original panels**, using the same candidate IDs and panel membership for every
+configuration in that stratum. We recompute ranks within each subset; raw assay
+values are never pooled across panels. Invalid original full-panel answers
+retain their zero penalty, even when their missing IDs fall outside the subset.
+Average ranks handle ties, and constant reference or prediction vectors score
+zero under the existing scorer. Both figures show signed Spearman correlations, including
+negative values. There is no combined score across these task-specific strata.
+
+Horizontal bars are **95% Student's t confidence intervals** for the mean across
+eligible panels: mean ± t(0.975, n − 1) × s / √n, using the sample standard
+deviation of panel scores. The unit is a gene panel in SGE and OpenSplice, or a
+regulatory-element panel in satMutMPRA. These are approximate, exploratory
+intervals: panel scores are bounded, some groups contain only five panels, and
+panels can share assay conditions. They are conditional on the saved answers
+and do not measure variability across repeated model runs. The intervals are
+pointwise; their overlap does not test differences between models or classes.
+We retain the full bounds without clipping to −1 or 1. Constant panel scores
+leave the interval unestimated. See the
+[interval methodology](./introducing-vep-bench/strata-methods.html#confidence-intervals)
+for assumptions and reproduction.
+
+Each figure aligns categories across the three task subplots. Models appear in
+the overall VEP-bench Spearman ranking order from the same saved publication,
+highest first, in both the dots and the legend. Each task subplot has an
+automatically scaled correlation axis; compare the tick values across tasks.
+Categories appear when at least one task clears
+both cutoffs; other task/category combinations are marked as insufficient
+coverage. Hover over a dot for its model, score, interval, and counts. On narrow screens,
+scroll horizontally to compare the task columns.
+
+### Allele type
+
+```js
+display(stratumFigure("allele_type"));
+```
+
+In **SGE**, all six selected configurations have higher mean Spearman correlation for SNVs
+than deletions. The SNV analysis includes 478 variants in 15 panels; the
+deletion analysis includes 170 variants in 10 panels. Differences can reflect
+the different panel composition as well as variant class. Insertions lack
+enough eligible panels to report a score.
+
+In **satMutMPRA**, only SNVs clear both cutoffs. The 60 expression deletions are too dispersed:
+no panel has 10, so no deletion summary score is reported.
+
+In **OpenSplice**, deletions have higher mean Spearman correlation than SNVs for all six selected
+configurations. Both strata retain all 20 panels, with 590 deletions and 410 SNVs.
+This still compares different selected variants and effect distributions within
+those panels.
+
+### Functional consequence
+
+```js
+display(stratumFigure("consequence"));
+```
+
+In **SGE**, missense variants and in-frame deletions clear both cutoffs. In
+**satMutMPRA**, the eligible consequences are 5′ UTR, intronic, and upstream-gene
+variants; each category covers a different selection of reporter panels. In
+**OpenSplice**, only in-frame deletions clear both cutoffs for this axis.
+
+Missense clears the cutoffs only in SGE; synonymous and stop-gained groups do
+not clear them in any task.
+
+These are exploratory observations about the selected panels and saved
+configurations. The coverage cutoffs do not remove differences in assay context,
+effect range, or panel composition, and these observations do not establish a
+general advantage for one variant class.
+
+### Coverage and exclusions
+
+```js
+display(Inputs.table(strataSnapshot.coverage, {
+  columns: ["task_family", "axis", "category", "variant_count", "eligible_variants", "eligible_panels", "total_panels", "excluded_panels", "below_cutoff_variants", "unsupported_variants", "status"],
+  header: {task_family: "Task", axis: "Group", category: "Category", variant_count: "All variants", eligible_variants: "Variants in eligible panels",
+    eligible_panels: "Eligible panels", total_panels: "All panels", excluded_panels: "Excluded panels",
+    below_cutoff_variants: "Variants below panel cutoff", unsupported_variants: "Unsupported variants", status: "Coverage"},
+  format: {task_family: strataTaskLabel, axis: strataAxisLabel},
+  select: false, rows: 10
+}));
+```
+
+Counts are panel appearances, as in the composition figures. A group can have
+eligible panels yet fail the five-panel cutoff; its counts remain visible but
+it receives no summary score. Excluded panels contain fewer than 10 supported
+variants of that class, including panels with none. Missing or stale
+source-linked consequences are retained as unknown.
+
+No specialist comparison is included in this snapshot. The precomputed-score
+work in [issue #78](https://github.com/Open-Athena/VEP-bench/issues/78) is still
+pending. The analysis accepts a versioned specialist score file tied to exact
+question and candidate IDs, intersects its supported variants with each class
+**before applying either cutoff**, and rescores every LLM on that same subset.
+The output records unsupported IDs and any resulting loss of eligible panels.
+Each specialist requires a separate coverage plan and comparison.
+
+```js
+display(html`<p>
+  <a download="vepbench-variant-strata-2026-09-11.csv"
+    href=${`data:text/csv;charset=utf-8,${encodeURIComponent(stratumCsv(strataSnapshot, strataIntervals))}`}>Download scores, 95% intervals, coverage, and exclusions (CSV)</a>
+  · <a href=${await FileAttachment("./introducing-vep-bench/strata-2026-09-11.json.gz").url()} download>Download frozen analysis, panel membership, model settings, and provenance (JSON.gz)</a>
+  · <a href=${await FileAttachment("./introducing-vep-bench/strata-2026-09-11.intervals.json").url()} download>Download confidence intervals and method (JSON)</a>
+</p>`);
+```
+
+The performance figures read only the bundled snapshot, never the live
+leaderboard. It retains annotation provenance, question and input-artifact
+hashes, evaluated model settings, exact candidate membership, per-panel scores,
+invalid-answer counts, and the model-family color mapping. The
+[reproduction instructions](./introducing-vep-bench/strata-methods.html)
+describe the saved coverage plan and offline scoring command. This draft
+snapshot will accompany the dated analysis and immutable dataset release tracked
+in [issue #79](https://github.com/Open-Athena/VEP-bench/issues/79); it does not
+change the full benchmark leaderboard.
+
+<details>
+<summary>View exact stratum scores and invalid-answer counts</summary>
+
+```js
+display(Inputs.table(strataScores, {
+  columns: ["task_family", "axis", "model", "category", "eligible_variants", "eligible_panels", "mean_spearman_rho", "spearman_ci_low", "spearman_ci_high", "invalid_panels"],
+  header: {task_family: "Task", axis: "Group", model: "Configuration", category: "Category", eligible_variants: "Variants", eligible_panels: "Panels",
+    mean_spearman_rho: "Mean Spearman ρ", spearman_ci_low: "95% CI lower", spearman_ci_high: "95% CI upper", invalid_panels: "Invalid panels (zero)"},
+  format: {task_family: strataTaskLabel, axis: strataAxisLabel, mean_spearman_rho: (value) => value.toFixed(3),
+    spearman_ci_low: (value) => value == null ? "—" : value.toFixed(3),
+    spearman_ci_high: (value) => value == null ? "—" : value.toFixed(3)},
+  select: false, rows: 12
+}));
+```
+
+</details>
+
 ## SGE performance before and after the knowledge cutoff
 
 SGE's gene panels have different recorded public dates, so we can split them
@@ -274,14 +451,10 @@ if (cutoffAnalysis.summaries.length) display(html`<p>
 <summary>Inspect the gene panels in each group</summary>
 
 ```js
-const cutoffModel = view(Inputs.select(cutoffAnalysis.summaries, {label: "Model", format: (row) => row.model}));
-```
-
-```js
-const cutoffPanels = cutoffAnalysis.scores.filter((row) => row.run_id === cutoffModel?.run_id);
+const cutoffPanels = cutoffAnalysis.scores;
 display(Inputs.table(cutoffPanels, {
-  columns: ["gene", "assay_date", "relation", "spearman_rho", "valid"],
-  header: {gene: "Gene", assay_date: "Recorded public date", relation: "Group", spearman_rho: "Spearman ρ", valid: "Valid output"},
+  columns: ["model", "gene", "assay_date", "relation", "spearman_rho", "valid"],
+  header: {model: "Model", gene: "Gene", assay_date: "Recorded public date", relation: "Group", spearman_rho: "Spearman ρ", valid: "Valid output"},
   format: {spearman_rho: correlation,
     assay_date: (value, i) => value ? html`<a href=${cutoffPanels[i].assay_url}>${value}</a>` : "Unknown"},
   select: false,
@@ -291,7 +464,7 @@ display(Inputs.table(cutoffPanels, {
 
 </details>
 
-## Counts and provenance
+## Composition counts and provenance
 
 ```js
 const csv = compositionCsv(composition.rows);

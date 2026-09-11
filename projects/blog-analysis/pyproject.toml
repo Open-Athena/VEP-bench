@@ -11,6 +11,7 @@ dependencies = [
 
 [project.scripts]
 vepbench-blog-sge-cutoff = "vepbench_blog_analysis.sge_cutoff:main"
+vepbench-blog-strata-intervals = "vepbench_blog_analysis.strata_intervals:main"
 
 [build-system]
 requires = ["hatchling>=1.27"]
