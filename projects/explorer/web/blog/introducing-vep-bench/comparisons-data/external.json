@@ -9031,7 +9031,7 @@
       "benchmark": "BixBench3",
       "source_id": "bix3",
       "decision": "No exact effort overlap",
-      "rationale": "Agentic research-scale computational biology. GPT-5.6 Sol is reported at max; VEP has medium/high. Claude Opus 5 has no complete VEP overall score."
+      "rationale": "Agentic research-scale computational biology. GPT-5.6 Sol is reported at max; VEP has low/medium/high. Claude Opus 5 has no complete VEP overall score."
     },
     {
       "benchmark": "BixBench (original)",
@@ -9061,7 +9061,7 @@
       "benchmark": "Artificial Analysis Intelligence Index and components",
       "source_id": "aa-method",
       "decision": "Secondary, descriptive",
-      "rationale": "General intelligence comparison using latest v4.3 at retrieval. Four exact release/effort matches. All ten published component metrics retained independently of their association; none is labeled an agentic biology score."
+      "rationale": "General intelligence comparison using latest v4.3 at retrieval. Twelve exact matched configurations across four model releases. All ten published component metrics retained independently of their association; none is labeled an agentic biology score."
     },
     {
       "benchmark": "Standalone biology Q&A / BixBench zero-shot",

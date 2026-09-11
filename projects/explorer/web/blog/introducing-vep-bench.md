@@ -529,9 +529,11 @@ No external benchmark was rerun and no additional model calls were made.
 ```js
 import {compareScores} from "./introducing-vep-bench/comparisons.js";
 import {comparisonFigure} from "./introducing-vep-bench/plots.js";
+import {modelFamilyScale} from "../components/benchmark-data.js";
 const vepSnapshot = await FileAttachment("./introducing-vep-bench/comparisons-data/vep-runs.json").json();
 const externalSnapshot = await FileAttachment("./introducing-vep-bench/comparisons-data/external.json").json();
 const modelMatches = await FileAttachment("./introducing-vep-bench/comparisons-data/model-matches.json").json();
+const comparisonModelColors = await FileAttachment("../components/model-family-colors.json").json();
 const sourceById = new Map(externalSnapshot.sources.map((source) => [source.id, source]));
 ```
 
@@ -558,7 +560,7 @@ also does not equalize tokens, tools, prompts, or execution budgets across tasks
 
 ```js
 const externalAnalysis = compareScores(vepSnapshot, externalSnapshot);
-const comparisonFamilies = externalAnalysis.configurations.map((c) => c.family);
+const comparisonColor = modelFamilyScale(externalAnalysis.configurations.map((c) => c.family), comparisonModelColors);
 const visibleComparisons = externalAnalysis.comparisons;
 ```
 
@@ -585,7 +587,7 @@ biology score.
 ```js
 const biologyComparisons = visibleComparisons.filter((c) => c.tier === "primary" && c.pairs.length);
 for (const comparison of biologyComparisons) {
-  display(resize((width) => comparisonFigure(comparison, comparisonFamilies, width)));
+  display(resize((width) => comparisonFigure(comparison, comparisonColor, width)));
 }
 ```
 
@@ -614,7 +616,7 @@ model. The paired AAII and component plots therefore contain four model releases
 
 ```js
 const aaComparisons = visibleComparisons.filter((c) => c.tier === "secondary");
-display(resize((width) => comparisonFigure(aaComparisons.find((c) => c.id === "aa-intelligence"), comparisonFamilies, width)));
+display(resize((width) => comparisonFigure(aaComparisons.find((c) => c.id === "aa-intelligence"), comparisonColor, width)));
 ```
 
 The ten component comparisons below use the same matched configurations and
@@ -624,7 +626,7 @@ the same Overall VEP score.
 const componentGrid = document.createElement("div");
 componentGrid.className = "grid grid-cols-2";
 for (const comparison of aaComparisons.filter((c) => c.id !== "aa-intelligence")) {
-  componentGrid.append(resize((width) => comparisonFigure(comparison, comparisonFamilies, width)));
+  componentGrid.append(resize((width) => comparisonFigure(comparison, comparisonColor, width)));
 }
 display(componentGrid);
 ```

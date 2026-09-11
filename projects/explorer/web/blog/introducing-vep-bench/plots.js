@@ -1,5 +1,4 @@
 import * as Plot from "npm:@observablehq/plot@0.6.17";
-import {modelFamilyColors} from "../../components/model-colors.js";
 
 const percent = (value) => `${(value * 100).toFixed(1)}%`;
 const integer = (value) => value.toLocaleString("en-US");
@@ -125,8 +124,7 @@ export function cutoffFigure(summaries, width) {
   return figure;
 }
 
-export function comparisonFigure(comparison, families, width) {
-  const color = modelFamilyColors(families);
+export function comparisonFigure(comparison, color, width) {
   const figure = document.createElement("div");
   figure.className = "card";
   const caption = document.createElement("p");

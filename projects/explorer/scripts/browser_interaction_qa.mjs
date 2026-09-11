@@ -108,7 +108,7 @@ if (mode === "--canary") {
     await send("Emulation.setDeviceMetricsOverride", {width: 1440, height, deviceScaleFactor: 1, mobile: false});
     await navigate(new URL(path, base).href);
     await waitFor(ready, `${name} rendered chart`);
-    if (name === "leaderboard") await checkEfficiencyPlots("All tasks");
+    if (name === "leaderboard") await checkEfficiencyPlots("All tasks", {expectedConfigurations: null});
     await saveDom(`${name}.dom.html`);
     const screenshot = await send("Page.captureScreenshot", {format: "png"});
     await writeFile(join(outputDir, name === "task" ? "question.png" : "leaderboard.png"),
@@ -119,7 +119,7 @@ if (mode === "--canary") {
   process.exit(0);
 }
 
-async function checkEfficiencyPlots(taskLabel) {
+async function checkEfficiencyPlots(taskLabel, {expectedConfigurations = 3} = {}) {
   const selector = `section[aria-label="${taskLabel} score comparisons"]`;
   await waitFor(`(() => {
     const section = document.querySelector(${JSON.stringify(selector)});
@@ -136,12 +136,18 @@ async function checkEfficiencyPlots(taskLabel) {
   })()`);
   assert.deepEqual(scales[0], scales[1], "plots must share score and color scales");
   checkModelColors(scales[0].colorDomain, scales[0].colorRange);
-  assert.deepEqual(await evaluate(`(() => {
+  const configurationCounts = await evaluate(`(() => {
     const section = document.querySelector(${JSON.stringify(selector)});
     return [...section.querySelectorAll('.card svg')].map((plot) =>
       plot.querySelectorAll('g[aria-label="dot"] circle').length
     );
-  })()`), [3, 3], "cost and token plots must retain every effort configuration");
+  })()`);
+  if (expectedConfigurations === null) {
+    assert.ok(configurationCounts.every((count) => count > 0), "live cost and token plots must contain data");
+  } else {
+    assert.deepEqual(configurationCounts, [expectedConfigurations, expectedConfigurations],
+      "cost and token plots must retain every effort configuration");
+  }
   assert.deepEqual(await evaluate(`(() => {
     const color = document.querySelector('.vepbench-leaderboard-chart svg').scale('color');
     return {domain: color.domain, range: color.range};
@@ -600,6 +606,10 @@ await waitFor(`document.querySelectorAll('svg[aria-label*="VEP-bench versus"]').
 assert.equal(await evaluate('document.querySelectorAll("select").length'), 0);
 assert.ok(await evaluate(`[...document.querySelectorAll('svg[aria-label*="VEP-bench versus"]')]
   .every((plot) => plot.getAttribute('aria-label').startsWith('Overall VEP-bench versus'))`));
+for (const {domain, range} of await evaluate(`[...document.querySelectorAll('svg[aria-label*="VEP-bench versus"]')]
+  .map((plot) => ({domain: plot.scale('color').domain, range: plot.scale('color').range}))`)) {
+  checkModelColors(domain, range);
+}
 assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="Intelligence Index"] [aria-label="dot"] > *').length`), 12);
 assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="GeneBench-Pro"] [aria-label="dot"] > *').length`), 6);
 assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="SciCode"] [aria-label="dot"] > *').length`), 12);
