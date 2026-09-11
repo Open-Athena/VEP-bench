@@ -1,4 +1,4 @@
-"""Resolve one unchanged retry while retaining the original failure and receipts."""
+"""Resolve explicit retries while retaining original attempts and receipts."""
 
 import json
 import math
@@ -30,20 +30,77 @@ def retry_metadata(usage: Mapping[str, Any]) -> dict[str, Any] | None:
     return metadata
 
 
+def retry_policy(usage: Mapping[str, Any]) -> dict[str, Any] | None:
+    retry_metadata(usage)  # Also validate the provenance container.
+    policy = usage.get("vepbench", {}).get("retry_policy")
+    if policy is not None and (
+        not isinstance(policy, dict)
+        or set(policy) != {"kind", "initial_max_tokens", "retry_max_tokens"}
+        or policy["kind"] != "invalid_truncation_once"
+        or type(policy["initial_max_tokens"]) is not int
+        or type(policy["retry_max_tokens"]) is not int
+        or not 0 < policy["initial_max_tokens"] < policy["retry_max_tokens"]
+    ):
+        raise BuildError("invalid truncation retry policy")
+    return policy
+
+
+def initial_parameters(record: Mapping[str, Any]) -> dict[str, Any]:
+    parameters = dict(record["generation_parameters"])
+    policy = retry_policy(record["usage"])
+    if policy is not None:
+        retried = retry_metadata(record["usage"]) is not None
+        expected = policy["retry_max_tokens" if retried else "initial_max_tokens"]
+        if parameters.get("max_tokens") != expected or "max_completion_tokens" in parameters:
+            raise BuildError("request token limit does not match retry policy")
+        parameters["max_tokens"] = policy["initial_max_tokens"]
+    return parameters
+
+
+def retained_parameters(run: Mapping[str, Any], usage: Mapping[str, Any]) -> dict[str, Any]:
+    policy = retry_policy(usage)
+    if policy != run.get("retry_policy"):
+        raise BuildError("answer retry policy does not match run")
+    parameters = dict(run["generation_parameters"])
+    if policy is not None:
+        if parameters.get("max_tokens") != policy["initial_max_tokens"]:
+            raise BuildError("run token limit does not match retry policy")
+        if retry_metadata(usage) is not None:
+            parameters["max_tokens"] = policy["retry_max_tokens"]
+    return parameters
+
+
+def invalid_truncation(record: Mapping[str, Any]) -> bool:
+    return (
+        record["response"]["status"] == "completed"
+        and record["response"]["finish_reason"] == "length"
+        and record["scoring"]["parse_error"] is not None
+    )
+
+
 def validate_retry_record(record: Mapping[str, Any]) -> None:
+    policy = retry_policy(record["usage"])
+    parameters = initial_parameters(record)
     metadata = retry_metadata(record["usage"])
     if metadata is None:
+        if policy is not None and invalid_truncation(record):
+            raise BuildError("retry policy requires every initial invalid truncation to be retried")
         return
     prior = metadata["prior_attempt"]
-    if retry_metadata(prior.get("usage", {})) is not None:
+    if retry_metadata(prior.get("usage", {})) is not None or retry_policy(prior["usage"]):
         raise BuildError("nested retries are not supported")
     validator = Draft202012Validator(
         json.loads(RESULT_SCHEMA.read_text()), format_checker=FormatChecker()
     )
     validate_result(prior, validator)
-    if prior["response"]["status"] != "api_error" or record["response"]["status"] != "completed":
+    if policy is not None:
+        if not invalid_truncation(prior) or record["response"]["status"] != "completed":
+            raise BuildError("truncation retry must replace an invalid truncated completion")
+    elif prior["response"]["status"] != "api_error" or record["response"]["status"] != "completed":
         raise BuildError("retry must replace an API error with a completed response")
-    for field in ("question", "question_set_sha256", "question_set_size", "generation_parameters"):
+    if parameters != prior["generation_parameters"]:
+        raise BuildError("retry changed generation_parameters beyond the declared token limit")
+    for field in ("question", "question_set_sha256", "question_set_size"):
         if record[field] != prior[field]:
             raise BuildError(f"retry changed {field}")
     for field in ("gateway", "model_id", "model_revision"):
@@ -56,6 +113,8 @@ def validate_retry_record(record: Mapping[str, Any]) -> None:
     source = deepcopy(dict(record))
     source["run_id"] = metadata["source_run_id"]
     del source["usage"]["vepbench"]["retry"]
+    if policy is not None:
+        del source["usage"]["vepbench"]["retry_policy"]
     if not source["usage"]["vepbench"]:
         del source["usage"]["vepbench"]
     if sha256_json(source) != metadata["source_record_sha256"]:
@@ -141,7 +200,7 @@ def resolve_retry(*, original: Path, retry: Path, output: Path) -> None:
     )
     for record in [*records, *retried]:
         validate_result(record, validator)
-        if retry_metadata(record["usage"]) is not None:
+        if retry_metadata(record["usage"]) is not None or retry_policy(record["usage"]):
             raise BuildError("source already contains retry provenance")
     ids = [record["question_id"] for record in records]
     first = records[0]
@@ -170,6 +229,79 @@ def resolve_retry(*, original: Path, retry: Path, output: Path) -> None:
         selected if record["question_id"] == selected["question_id"] else record
         for record in records
     ]
+    validate_attempt_allocations(resolved, context=str(output))
+    output.parent.mkdir(parents=True, exist_ok=True)
+    with output.open("x", encoding="utf-8", newline="\n") as target:
+        for record in resolved:
+            target.write(canonical_json(record) + "\n")
+
+
+def resolve_truncations(
+    *, original: Path, retry: Path | None, max_tokens: int, output: Path
+) -> None:
+    """Retain exactly one larger-cap retry of every invalid truncated answer.
+
+    Apply the same policy to tasks with no eligible answers, so aggregation does
+    not mix the selective-retry experiment with a uniform single-attempt run.
+    """
+    if output.exists():
+        raise BuildError(f"refusing to overwrite {output}")
+    records = read_jsonl(original)
+    retried = read_jsonl(retry) if retry is not None else []
+    if not records:
+        raise BuildError("provide a full original task run")
+    validator = Draft202012Validator(
+        json.loads(RESULT_SCHEMA.read_text()), format_checker=FormatChecker()
+    )
+    for record in [*records, *retried]:
+        validate_result(record, validator)
+        if retry_metadata(record["usage"]) is not None or retry_policy(record["usage"]):
+            raise BuildError("source already contains retry provenance")
+        if record["response"]["status"] != "completed":
+            raise BuildError("truncation resolution requires completed responses")
+    first = records[0]
+    ids = [record["question_id"] for record in records]
+    if len(records) != first["question_set_size"] or ids != sorted(set(ids)):
+        raise BuildError("original run must cover its complete ordered question set")
+    if len({record["question"]["metadata"]["task_family"] for record in records}) != 1:
+        raise BuildError("retry resolution requires a single task family")
+    identity = ("run_id", "question_set_sha256", "question_set_size", "generation_parameters")
+    if any(any(record[field] != first[field] for field in identity) for record in records):
+        raise BuildError("original records do not share a run identity")
+    if any(
+        any(record["model"].get(key) != first["model"].get(key)
+            for key in ("gateway", "model_id", "model_revision"))
+        for record in records
+    ):
+        raise BuildError("original records do not share a model")
+    eligible = {record["question_id"] for record in records if invalid_truncation(record)}
+    replacements = {record["question_id"]: record for record in retried}
+    if set(replacements) != eligible or len(replacements) != len(retried):
+        raise BuildError("provide exactly one retry for every initial invalid truncation")
+    policy = {
+        "kind": "invalid_truncation_once",
+        "initial_max_tokens": first["generation_parameters"].get("max_tokens"),
+        "retry_max_tokens": max_tokens,
+    }
+    retry_policy({"vepbench": {"retry_policy": policy}})
+    validate_batch_usage_allocations(records, context=str(original))
+    validate_batch_usage_allocations(retried, context=str(retry))
+    resolved = []
+    for record in records:
+        source = replacements.get(record["question_id"], record)
+        selected = deepcopy(source)
+        selected["run_id"] = first["run_id"] + "-truncation-retry"
+        provenance = selected["usage"].setdefault("vepbench", {})
+        provenance["retry_policy"] = policy
+        if record["question_id"] in replacements:
+            provenance["retry"] = {
+                "prior_attempt": record,
+                "source_run_id": source["run_id"],
+                "source_record_sha256": sha256_json(source),
+            }
+        validate_result(selected, validator)
+        validate_retry_record(selected)
+        resolved.append(selected)
     validate_attempt_allocations(resolved, context=str(output))
     output.parent.mkdir(parents=True, exist_ok=True)
     with output.open("x", encoding="utf-8", newline="\n") as target:

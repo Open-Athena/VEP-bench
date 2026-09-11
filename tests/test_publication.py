@@ -19,7 +19,7 @@ from vepbench_publishing.publication import (
     validate_version,
     validate_version_name,
 )
-from vepbench_publishing.retry import resolve_retry, validate_retry_record
+from vepbench_publishing.retry import resolve_retry, resolve_truncations, validate_retry_record
 from vepbench_publishing.split import split_results
 
 from vepbench.artifacts import canonical_json, sha256_file, sha256_json
@@ -168,6 +168,159 @@ def test_retry_export_rejects_changed_request(tmp_path: Path, field: str) -> Non
     retry.write_text(canonical_json(record) + "\n")
     with pytest.raises(BuildError, match="retry changed"):
         resolve_retry(original=original, retry=retry, output=tmp_path / "output.jsonl")
+
+
+def truncation_fixture(tmp_path: Path, *, ranking: bool = False) -> tuple[Path, Path, Path]:
+    question = json.loads(QUESTIONS.read_text())
+    final = "FINAL: B"
+    if ranking:
+        template = tmp_path / "ranking-template.jsonl"
+        build_file(RANKING_SOURCE, RANKING_TEMPLATE, QUESTION_SCHEMA, template)
+        question = json.loads(template.read_text().splitlines()[0])
+        final = 'FINAL: {"V01":-2,"V02":-1,"V03":0,"V04":1,"V05":2}'
+    questions = [dict(deepcopy(question), question_id=f"truncation:{i}") for i in range(3)]
+    question_path = tmp_path / "questions.jsonl"
+    question_path.write_text("".join(canonical_json(q) + "\n" for q in questions))
+
+    def response(index: int, *, retried: bool) -> dict:
+        content = final if index == 0 or (retried and index == 1) else "unfinished"
+        tokens = 20 if content == final else (200 if retried else 100)
+        raw = {
+            "provider": "Test provider",
+            "choices": [{"message": {"content": content}, "finish_reason": "length"}],
+            "usage": {"cost": 0.1, "completion_tokens": tokens, "total_tokens": tokens + 10},
+        }
+        return completed_result(
+            raw=raw, question=questions[index], question_set_sha256=sha256_file(question_path),
+            question_set_size=3, run_id="retry" if retried else "original",
+            model_id="deepseek/deepseek-v4.1-flash",
+            generation_parameters={"max_tokens": 200 if retried else 100, "temperature": 1},
+            evaluated_at=datetime(2026, 9, 11 if retried else 10, tzinfo=UTC),
+            latency_seconds=1.0,
+        )
+
+    original = tmp_path / "original.jsonl"
+    retry = tmp_path / "retry.jsonl"
+    original.write_text(
+        "".join(canonical_json(response(i, retried=False)) + "\n" for i in range(3))
+    )
+    retry.write_text("".join(canonical_json(response(i, retried=True)) + "\n" for i in (1, 2)))
+    return question_path, original, retry
+
+
+@pytest.mark.parametrize("ranking", [False, True])
+def test_truncation_export_retains_all_outcomes_and_actual_requests(tmp_path: Path, ranking: bool):
+    questions, original, retry = truncation_fixture(tmp_path, ranking=ranking)
+    before = original.read_bytes(), retry.read_bytes()
+    output = tmp_path / "resolved/run.jsonl"
+    resolve_truncations(original=original, retry=retry, max_tokens=200, output=output)
+    second = tmp_path / "second.jsonl"
+    resolve_truncations(original=original, retry=retry, max_tokens=200, output=second)
+    assert output.read_bytes() == second.read_bytes()
+    assert before == (original.read_bytes(), retry.read_bytes())
+    records = [json.loads(line) for line in output.read_text().splitlines()]
+    assert [r["generation_parameters"]["max_tokens"] for r in records] == [100, 200, 200]
+    assert records[2]["scoring"]["parse_error"] is not None  # Failed retry stays selected.
+    untouched = deepcopy(records[0])
+    untouched["run_id"] = "original"
+    del untouched["usage"]["vepbench"]
+    assert untouched == json.loads(original.read_text().splitlines()[0])
+    root = tmp_path / "publication"
+    manifest = build_version(
+        questions_path=questions, results_dir=output.parent, result_schema_path=RESULT_SCHEMA,
+        schemas_dir=SCHEMAS, output=root, version_name="candidate",
+    )
+    assert validate_version(root, version_name="candidate") == manifest
+    run = json.loads((root / "versions/candidate/runs.json").read_text())["runs"][0]
+    assert run["retry_count"] == 2
+    assert run["generation_parameters"]["max_tokens"] == 100
+    assert run["retry_policy"]["retry_max_tokens"] == 200
+    assert run["metrics"]["total_cost_usd"] == pytest.approx(0.5)
+    assert run["metrics"]["total_tokens"] == 490
+    assert run["metrics"]["total_output_tokens"] == 240
+    assert run["metrics"]["format_failures"] == 1
+    assert run["metrics"]["truncated_outputs"] == 3  # Valid answers can also end at length.
+    assert run["coverage"]["complete"]
+    for record in records[1:]:
+        prior = record["usage"]["vepbench"]["retry"]["prior_attempt"]
+        assert prior["generation_parameters"]["max_tokens"] == 100
+    tampered = deepcopy(records[1])
+    tampered["generation_parameters"]["temperature"] = 0
+    with pytest.raises(BuildError, match="generation_parameters"):
+        validate_retry_record(tampered)
+    tampered = deepcopy(records[1])
+    tampered["usage"]["cost"] += 1
+    with pytest.raises(BuildError, match="source digest"):
+        validate_retry_record(tampered)
+
+
+@pytest.mark.parametrize("change", ["missing", "duplicate", "sampling", "lower_cap", "model"])
+def test_truncation_export_rejects_selection_and_request_changes(tmp_path: Path, change: str):
+    _, original, retry = truncation_fixture(tmp_path)
+    records = [json.loads(line) for line in retry.read_text().splitlines()]
+    if change == "missing":
+        records.pop()
+    elif change == "duplicate":
+        records.append(records[0])
+    elif change == "sampling":
+        records[0]["generation_parameters"]["temperature"] = 0
+    elif change == "model":
+        records[0]["model"]["model_id"] = "different/model"
+    retry.write_text("".join(canonical_json(r) + "\n" for r in records))
+    output = tmp_path / "resolved.jsonl"
+    with pytest.raises(BuildError):
+        resolve_truncations(
+            original=original, retry=retry, max_tokens=50 if change == "lower_cap" else 200,
+            output=output,
+        )
+    assert not output.exists()
+
+
+def test_truncation_policy_can_cover_a_task_without_retries(tmp_path: Path):
+    questions, original, _ = truncation_fixture(tmp_path)
+    records = [json.loads(line) for line in original.read_text().splitlines()]
+    for record in records[1:]:
+        record["response"] = deepcopy(records[0]["response"])
+        record["scoring"] = deepcopy(records[0]["scoring"])
+        record["usage"] = deepcopy(records[0]["usage"])
+    original.write_text("".join(canonical_json(r) + "\n" for r in records))
+    output = tmp_path / "resolved/run.jsonl"
+    assert publishing_main([
+        "resolve-truncations", "--original", str(original), "--max-tokens", "200",
+        "--output", str(output),
+    ]) == 0
+    root = tmp_path / "publication"
+    build_version(
+        questions_path=questions, results_dir=output.parent, result_schema_path=RESULT_SCHEMA,
+        schemas_dir=SCHEMAS, output=root, version_name="candidate",
+    )
+    run = json.loads((root / "versions/candidate/runs.json").read_text())["runs"][0]
+    assert "retry_count" not in run
+    assert run["retry_policy"]["retry_max_tokens"] == 200
+    with pytest.raises(BuildError, match="publish retry-resolved task runs directly"):
+        split_results(questions=questions, results=output, output=tmp_path / "split")
+
+
+def test_validate_version_rejects_retry_configuration_key_tampering(tmp_path: Path):
+    questions, original, retry = truncation_fixture(tmp_path)
+    output = tmp_path / "resolved/run.jsonl"
+    resolve_truncations(original=original, retry=retry, max_tokens=200, output=output)
+    root = tmp_path / "publication"
+    build_version(
+        questions_path=questions, results_dir=output.parent, result_schema_path=RESULT_SCHEMA,
+        schemas_dir=SCHEMAS, output=root, version_name="candidate",
+    )
+    version = root / "versions/candidate"
+    runs = json.loads((version / "runs.json").read_text())
+    runs["runs"][0]["configuration_key"] = "cfg-" + "0" * 64
+    content = publication_module._write_json(version / "runs.json", runs)
+    manifest = json.loads((version / "manifest.json").read_text())
+    manifest["artifacts"]["runs"] = publication_module._plain_artifact(
+        "versions/candidate/runs.json", content, 1
+    )
+    publication_module._write_json(version / "manifest.json", manifest)
+    with pytest.raises(BuildError, match="configuration key does not match retry policy"):
+        validate_version(root, version_name="candidate")
 
 
 def test_retry_source_digest_detects_tampering(tmp_path: Path) -> None:

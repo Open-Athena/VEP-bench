@@ -56,6 +56,7 @@ function modelName(modelId, generationParameters) {
     "claude-fable-5.1": "Claude Fable 5.1",
     "claude-opus-5": "Claude Opus 5",
     "deepseek-v4-flash-0731": "DeepSeek V4 Flash 0731",
+    "deepseek-v4.1-flash": "DeepSeek V4.1 Flash",
     "gemini-3.8-flash": "Gemini 3.8 Flash",
     "glm-5.3": "GLM 5.3",
     "gpt-5.6-luna": "GPT 5.6 Luna",
@@ -132,7 +133,7 @@ function leaderboardScore(run, scoreMetric) {
 export function formatRunLabel(run) {
   const model = modelName(run?.model?.model_id ?? "unknown model", run?.generation_parameters);
   const provider = run?.model?.upstream_provider ?? "provider not reported";
-  return `${model} · ${provider}`;
+  return `${model}${run?.retry_policy ? " · selective retries" : ""} · ${provider}`;
 }
 
 function latestCompleteRuns(runs) {
@@ -153,12 +154,14 @@ function rowForRun(run, scoreMetric = null) {
   return {
     run,
     model_cell: {
-      model: modelName(run.model.model_id, run.generation_parameters),
+      model: modelName(run.model.model_id, run.generation_parameters)
+        + (run.retry_policy ? " · selective retries" : ""),
       provider: run.model.upstream_provider ?? "not reported"
     },
     family,
     family_id: family,
     retry_count: run.retry_count ?? 0,
+    retry_policy: run.retry_policy ?? null,
     release_date: run.model.release_date ?? null,
     knowledge_cutoff: run.model.knowledge_cutoff ?? null,
     tokens: nonnegativeNumber(run.metrics.total_tokens),
@@ -204,7 +207,8 @@ function overallConfigurationKey(run) {
       model_id: run.model.model_id,
       model_revision: run.model.model_revision ?? null
     },
-    generation_parameters: run.generation_parameters
+    generation_parameters: run.generation_parameters,
+    ...(run.retry_policy ? {retry_policy: run.retry_policy} : {})
   }));
 }
 
@@ -228,13 +232,18 @@ export function executionSummaryForRow(row) {
     runs.map((run) => nonnegativeNumber(run.metrics.truncated_outputs))
   );
   const maxima = runs.map((run) => nonnegativeNumber(run.metrics.max_output_tokens_used));
-  const limits = runs.map((run) => nonnegativeNumber(
-    run.generation_parameters.max_completion_tokens ?? run.generation_parameters.max_tokens
-  ));
+  const limits = runs.flatMap((run) => [
+    nonnegativeNumber(
+      run.generation_parameters.max_completion_tokens ?? run.generation_parameters.max_tokens
+    ),
+    ...(run.retry_policy && run.retry_count
+      ? [nonnegativeNumber(run.retry_policy.retry_max_tokens)] : [])
+  ]);
   return {
     model: row.model_cell.model,
     organization: runs[0].model.model_id.split("/")[0],
     questions,
+    retries: row.retry_count ?? 0,
     valid_answers: validAnswers,
     valid_rate: validAnswers !== null && questions ? validAnswers / questions : null,
     truncated_outputs: truncated,

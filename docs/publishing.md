@@ -63,6 +63,26 @@ Publish this task export directly with `version build`; do not pass it through
 Retry resolution requires one task family; combined runs with retries are not
 supported.
 
+To publish an explicitly authorized selective retry experiment, use
+`vepbench-publish resolve-truncations --original ORIGINAL --retry RETRIES --max-tokens LIMIT --output OUTPUT`.
+Supply exactly one completed retry for **every** original answer that ended at
+the token limit without a valid final answer. Only `max_tokens` may change, and
+it must increase; sampling, reasoning effort, routing, model, and questions stay
+fixed. The export retains every retry outcome, including another truncation or
+an invalid answer, rather than selecting by score. It makes no model calls.
+Omit `--retry` for a task with no eligible answers to attach the same experiment
+policy across tasks. Publish these task exports directly without `split-results`.
+
+The leaderboard identifies selective retries separately from single-attempt
+runs. Its run parameters describe the initial requests; `retry_policy` records
+both caps, including for tasks that needed no retries. Each result retains its
+actual request parameters, and each replaced answer retains its original full
+result and selected source digest in usage provenance. Cost and total tokens
+include both attempts; output usage and truncation rates describe retained
+responses. This measures a recovery protocol with extra inference spend, not
+single-attempt performance. A successful retry does not establish that the
+higher cap caused recovery, since sampled responses may differ.
+
 The [publishing config](../projects/publishing/config/publishing.yaml) selects
 the bucket and [model catalog](../configs/models/catalog.yaml). Every published
 model needs a reviewed catalog entry. Knowledge-cutoff metadata must have
