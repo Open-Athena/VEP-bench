@@ -31,6 +31,14 @@ optional [blog-analysis](../projects/blog-analysis/README.md) workspace package 
 data for the blog. Keep those dependencies out of the evaluator, task packages,
 and explorer build requirements.
 
+Reproduce the introduction post's external benchmark comparison tables from
+its committed source extracts with
+`node projects/explorer/scripts/freeze_comparisons.mjs --replay`.
+Refreshing upstream evidence is a separate, reviewed snapshot change: retain
+exact model releases and effort labels, and review the dated AAII methodology
+before replacing scores. The extraction script accepts a directory of saved
+public source downloads and does not execute benchmarks.
+
 ## Checks
 
 After installing the development environment:

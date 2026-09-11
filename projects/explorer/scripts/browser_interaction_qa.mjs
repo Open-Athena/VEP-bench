@@ -569,6 +569,25 @@ await send("Emulation.setDeviceMetricsOverride", {
   width: 1440, height: 1100, deviceScaleFactor: 1, mobile: false
 });
 await saveDom("variant-strata.dom.html");
+// The post must remain independent of the live/fixture leaderboard, and input
+// generators must be consumed in separate reactive cells before filtering data.
+await navigate("/blog/introducing-vep-bench.html");
+await waitFor(`document.querySelectorAll('svg[aria-label*="VEP-bench versus"]').length === 5`,
+  "frozen external comparison plots");
+assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="Intelligence Index"] circle').length`), 4);
+assert.equal(await chooseOptionContaining("Sensitivity: medium effort"), true);
+await waitFor(`[...document.querySelectorAll('svg[aria-label*="Intelligence Index"] text')]
+  .some((node) => node.textContent.includes('(medium)'))`, "exact medium effort comparison");
+assert.equal(await chooseOptionContaining("SciCode (AA)"), true);
+await waitFor(`Boolean(document.querySelector('svg[aria-label*="SciCode"]'))`, "AA component selection");
+assert.equal(await chooseOptionContaining("Splicing (exploratory)"), true);
+await waitFor(`Boolean(document.querySelector('svg[aria-label*="Splicing VEP-bench versus SciCode"]'))`,
+  "task-specific external comparison");
+assert.equal(await chooseOptionContaining("Sensitivity: low effort"), true);
+await waitFor(`document.body.innerText.includes('No exact matched biology results for this selection.')`,
+  "unavailable exact-effort biology comparison");
+assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="SciCode"] circle').length`), 1);
+assert.deepEqual(await evaluate(`[...document.querySelectorAll('.observablehq--error')].map((node) => node.textContent)`), []);
 
 socket.close();
 console.log("browser interaction QA passed");

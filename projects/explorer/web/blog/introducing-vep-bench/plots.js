@@ -1,4 +1,5 @@
 import * as Plot from "npm:@observablehq/plot@0.6.17";
+import {modelFamilyColors} from "../../components/model-colors.js";
 
 const percent = (value) => `${(value * 100).toFixed(1)}%`;
 const integer = (value) => value.toLocaleString("en-US");
@@ -121,5 +122,38 @@ export function cutoffFigure(summaries, width) {
   const legend = document.createElement("p");
   legend.textContent = "● Before cutoff    ◆ After cutoff · bars: 95% CI · n = before / after · p tests before > after · * p ≤ 0.05";
   figure.append(legend, chart);
+  return figure;
+}
+
+export function comparisonFigure(comparison, families, width) {
+  const color = modelFamilyColors(families);
+  const figure = document.createElement("div");
+  figure.className = "card";
+  const caption = document.createElement("p");
+  caption.textContent = `${comparison.label} · ${comparison.subset} · n = ${comparison.summary.n} distinct models. `
+    + (comparison.summary.spearman === null ? `${comparison.summary.reason}; descriptive only.`
+      : `Exploratory Spearman ρ = ${comparison.summary.spearman.toFixed(3)}; Pearson r = ${comparison.summary.pearson.toFixed(3)}.`);
+  figure.append(caption);
+  if (!comparison.pairs.length) return figure;
+  const scope = {overall: "Overall", sge: "Fitness", satmut_mpra: "Expression", opensplice_snv: "Splicing"}[comparison.scope];
+  const detail = (row) => `${row.label} (${row.effort})\nVEP-bench: ${row.vep_score.toFixed(4)}\n`
+    + `${comparison.metric_label}: ${row.external_score.toFixed(4)}\nHarness: ${comparison.harness}`;
+  const values = comparison.pairs.map((r) => r.vep_score);
+  const midpoint = (Math.min(...values) + Math.max(...values)) / 2;
+  const labelOptions = {x: "vep_score", y: "external_score", text: (r) => `${r.label} (${r.effort})`,
+    fontSize: 11, dy: -14, lineWidth: 18};
+  figure.append(Plot.plot({
+    width: Math.max(320, width - 34), height: 380, marginTop: 50, marginBottom: 55, marginLeft: 72, marginRight: 35,
+    ariaLabel: `${scope} VEP-bench versus ${comparison.label}; ${comparison.summary.n} distinct matched models`,
+    x: {label: `${scope} VEP-bench score (mean Spearman)`, grid: true, nice: true, ticks: 5},
+    y: {label: comparison.metric_label, grid: true, nice: true, ticks: 5}, color,
+    marks: [
+      Plot.dot(comparison.pairs, {x: "vep_score", y: "external_score", fill: "family", r: 6,
+        stroke: "white", tip: true, title: detail, ariaLabel: detail}),
+      Plot.text(comparison.pairs.filter((r) => r.vep_score <= midpoint), {...labelOptions, textAnchor: "start", dx: 7}),
+      Plot.text(comparison.pairs.filter((r) => r.vep_score > midpoint), {...labelOptions, textAnchor: "end", dx: -7, dy: 16})
+    ]
+  }));
+  figure.append(Plot.legend({color}));
   return figure;
 }
