@@ -15,6 +15,7 @@ import {
   fetchOutcomeIndex,
   groupCurrentRuns,
   formatRunLabel,
+  hasExecutionFailures,
   highestEffortRows,
   leaderboardRows,
   leaderboardRowsForScope,
@@ -193,15 +194,17 @@ test("execution summaries aggregate counts across unequal task sizes and preserv
   const second = run({taskType: "ranking", spearman: 0.5});
   Object.assign(first, {question_set_size: 2, generation_parameters: {max_tokens: 128000}});
   Object.assign(second, {question_set_size: 8, generation_parameters: {max_tokens: 262144}});
-  Object.assign(first.metrics, {valid_outputs: 1, truncated_outputs: 1,
+  Object.assign(first.metrics, {valid_outputs: 1, format_failures: 1, truncated_outputs: 1,
     total_output_tokens: 140000, max_output_tokens_used: 128000});
-  Object.assign(second.metrics, {valid_outputs: 8, truncated_outputs: 0,
+  Object.assign(second.metrics, {valid_outputs: 8, format_failures: 0, truncated_outputs: 0,
     total_output_tokens: 80000, max_output_tokens_used: 20000});
   const row = {runs: [first, second], model_cell: {model: "Test"}, tokens: 221000, cost: 0.4};
   const summary = executionSummaryForRow(row);
   assert.equal(summary.questions, 10);
   assert.equal(summary.valid_answers, 9);
   assert.equal(summary.valid_rate, 0.9);
+  assert.equal(summary.format_failures, 1);
+  assert.equal(summary.format_failure_rate, 0.1);
   assert.equal(summary.truncation_rate, 0.1);
   assert.equal(summary.output_tokens, 220000);
   assert.equal(summary.max_output_tokens, 128000);
@@ -212,25 +215,56 @@ test("execution summaries aggregate counts across unequal task sizes and preserv
   const single = executionSummaryForRow({...row, runs: undefined, run: first});
   assert.equal(single.questions, 2);
   assert.equal(single.valid_rate, 0.5);
+  assert.equal(single.format_failure_rate, 0.5);
   assert.equal(single.truncation_rate, 0.5);
 });
 
 test("execution summaries keep unavailable or partially reported usage unknown", () => {
   const first = run({taskType: "ranking"});
   const second = run({taskType: "ranking"});
-  Object.assign(first.metrics, {valid_outputs: 1, total_output_tokens: 0,
+  Object.assign(first.metrics, {valid_outputs: 1, format_failures: 0, total_output_tokens: 0,
     max_output_tokens_used: 0, truncated_outputs: 0});
+  delete second.metrics.format_failures;
   const row = {runs: [first, second], model_cell: {model: "Test"}, tokens: null, cost: null};
   const summary = executionSummaryForRow(row);
   assert.equal(summary.output_tokens, null);
   assert.equal(summary.max_output_tokens, null);
   assert.equal(summary.truncation_rate, null);
+  assert.equal(summary.format_failure_rate, null);
   assert.equal(summary.output_limits, null);
   assert.equal(summary.cost, null);
   const knownZero = executionSummaryForRow({...row, runs: undefined, run: first});
   assert.equal(knownZero.output_tokens, 0);
   assert.equal(knownZero.max_output_tokens, 0);
   assert.equal(knownZero.truncation_rate, 0);
+  assert.equal(knownZero.format_failure_rate, 0);
+});
+
+test("failure sections omit clean models but retain formatting, refusal, limit and retry failures", () => {
+  const clean = run({taskType: "ranking", validOutputRate: 1});
+  Object.assign(clean.metrics, {valid_outputs: 1, truncated_outputs: 0});
+  const formatted = structuredClone(clean);
+  Object.assign(formatted.metrics, {valid_outputs: 0, format_failures: 1});
+  const truncated = structuredClone(clean);
+  truncated.metrics.truncated_outputs = 1; // A valid answer can still stop at the limit.
+  const recovered = structuredClone(clean);
+  recovered.retry_count = 1;
+  const refused = run();
+  refused.metrics.result_counts = {correct: 0, incorrect: 0, refusal: 1};
+  const incorrect = run({accuracy: 0});
+  incorrect.metrics.result_counts = {correct: 0, incorrect: 1, refusal: 0};
+  const unknown = run();
+  delete unknown.metrics.format_failures;
+
+  const candidates = [clean, formatted, truncated, recovered, refused, incorrect, unknown]
+    .map((run) => ({run}));
+  assert.deepEqual(candidates.filter(hasExecutionFailures).map((row) => row.run),
+    [formatted, truncated, recovered, refused]);
+  assert.equal(hasExecutionFailures({runs: [clean, unknown]}), false);
+  // A missing summary on another task must not hide a known failure.
+  assert.equal(hasExecutionFailures({runs: [unknown, formatted]}), true);
+  assert.equal(hasExecutionFailures({runs: [clean, recovered]}), true);
+  assert.equal(hasExecutionFailures({run: clean}), false);
 });
 
 test("valid multiple-choice answers include incorrect answers but exclude refusals", () => {

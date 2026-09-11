@@ -114,6 +114,12 @@ async function checkEfficiencyPlots(taskLabel) {
   assert.deepEqual(scales[0], scales[1], "plots must share score and color scales");
   checkModelColors(scales[0].colorDomain, scales[0].colorRange);
   assert.deepEqual(await evaluate(`(() => {
+    const section = document.querySelector(${JSON.stringify(selector)});
+    return [...section.querySelectorAll('.card svg')].map((plot) =>
+      plot.querySelectorAll('g[aria-label="dot"] circle').length
+    );
+  })()`), [3, 3], "cost and token plots must retain every effort configuration");
+  assert.deepEqual(await evaluate(`(() => {
     const color = document.querySelector('.vepbench-leaderboard-chart svg').scale('color');
     return {domain: color.domain, range: color.range};
   })()`), {domain: scales[0].colorDomain, range: scales[0].colorRange},
@@ -132,18 +138,24 @@ await waitFor(
   "two-model default all-task leaderboard"
 );
 await checkEfficiencyPlots("All tasks");
+assert.equal(await evaluate(`(() => {
+  const bars = [...document.querySelectorAll('.vepbench-leaderboard-chart g[aria-label="bar"] rect')];
+  return bars.some((bar) => bar.getAttribute('aria-label').includes('browser-qa (high)'))
+    && !bars.some((bar) => bar.getAttribute('aria-label').includes('browser-qa (low)'));
+})()`), true, "only the bar chart must select each model's highest effort");
 await waitFor(
-  `document.querySelectorAll('[aria-label^="Output limits and usage;"] tbody tr').length === 2`,
-  "execution summary for both ranked models"
+  `document.querySelectorAll('[aria-label^="Output limits and usage;"] tbody tr').length === 1`,
+  "execution summary for only the model with a recorded output-limit stop"
 );
 assert.equal(await evaluate(`(() => {
   const table = document.querySelector('[aria-label^="Output limits and usage;"]');
   const unscored = document.querySelector('#unscored-model-attempts');
   return Boolean(unscored.compareDocumentPosition(table) & Node.DOCUMENT_POSITION_FOLLOWING)
-    && ["Output limit", "Output tokens", "Largest output", "Truncated"].every(
+    && table.textContent.includes("browser-qa-alternate")
+    && ["Output limit", "Output tokens", "Largest output", "Formatting failures", "Truncated"].every(
       (label) => [...table.querySelectorAll('th')].some((cell) => cell.textContent.trim() === label)
     );
-})()`), true, "execution summary must follow the refusal section and expose usage columns");
+})()`), true, "execution summary must omit clean models and expose failure and usage columns");
 const rankedBars = await evaluate(`(() => {
   const plot = document.querySelector('.vepbench-leaderboard-chart svg');
   return {
@@ -256,6 +268,14 @@ await waitFor(
   "SGE task scope"
 );
 await checkEfficiencyPlots("Fitness (SGE)");
+await waitFor(
+  `document.querySelector('[aria-label^="Output limits and usage;"]')?.textContent
+    .includes("No recorded failures for the selected models and tasks.")`,
+  "failure section clears when the selected task has no failures"
+);
+assert.equal(await evaluate(
+  `document.querySelectorAll('[aria-label^="Output limits and usage;"] tbody tr').length`
+), 0, "models with no failures in the selected task must be omitted");
 
 const initialQuestionId = "satmut-mpra-ranking-v2:F9";
 await navigate(

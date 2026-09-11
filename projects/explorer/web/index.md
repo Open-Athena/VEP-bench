@@ -14,6 +14,7 @@ import {
   displayScore,
   executionSummaryForRow,
   fetchJson,
+  hasExecutionFailures,
   highestEffortRows,
   leaderboardRowsForScope,
   modelFamilyScale,
@@ -131,12 +132,13 @@ if (runsState.error) {
 ```
 
 ```js
-const rows = highestEffortRows(leaderboardRowsForScope(
+const rows = leaderboardRowsForScope(
   runsState.document.runs,
   aggregation,
   selectedTaskFamily,
   scoreMetric
-));
+);
+const barRows = highestEffortRows(rows);
 const formatScore = (value) => formatPercent(displayScore(value));
 ```
 
@@ -144,13 +146,13 @@ ${selectedTaskFamily === null
   ? `Showing the macro-average ${scoreMetricLabel} correlation across tasks.`
   : `Showing the mean ${scoreMetricLabel} correlation for ${selectedTaskLabel}.`}
 
-Each model appears at its highest available reasoning effort with complete
-results for this view. “All tasks” requires the same configuration across every
-task. Equal-effort configurations use the latest results; selection does not
-depend on score.
+Each model appears in the bar chart at its highest available reasoning effort
+with complete results for this view. “All tasks” requires the same configuration
+across every task. Equal-effort configurations use the latest results; selection
+does not depend on score.
 
 ```js
-const leaderboardData = rows.map((row) => ({
+const plotRow = (row) => ({
   key: (row.run ?? row.runs[0]).configuration_key,
   model: row.model_cell.model,
   score: displayScore(row.score),
@@ -162,8 +164,12 @@ const leaderboardData = rows.map((row) => ({
   retry_policy: row.retry_policy,
   question_count: (row.runs ?? [row.run]).reduce((total, run) => total + run.question_set_size, 0),
   organization: (row.run ?? row.runs[0]).model.model_id.split("/")[0]
-}));
-const modelFamilyColor = modelFamilyScale(leaderboardData.map((row) => row.family), modelFamilyColors);
+});
+const leaderboardData = barRows.map(plotRow);
+const allConfigurationData = rows.map(plotRow);
+const modelFamilyColor = modelFamilyScale(
+  allConfigurationData.map((row) => row.family), modelFamilyColors
+);
 function modelDetails(row) {
   return [
     row.model,
@@ -231,14 +237,17 @@ display(html`<div class="card vepbench-leaderboard-chart" tabindex="0"
 
 ## Score by cost and token usage
 
-Compare the selected task's score with total run cost and total token usage. Both plots share model colors and the score scale; each line connects the displayed models from the same family. Tokens include input and generated output, including reasoning.
+Compare the selected task's score with total run cost and total token usage across
+all available reasoning efforts and configurations. Both plots share model colors
+and the score scale; each line connects configurations from the same family.
+Tokens include input and generated output, including reasoning.
 
 ```js
 const efficiencyMetrics = [
   {key: "cost", title: "Score by cost", label: "Total cost (USD)"},
   {key: "tokens", title: "Score by token usage", label: "Total tokens"}
 ];
-const efficiencyRows = leaderboardData
+const efficiencyRows = allConfigurationData
   .filter((row) => row.score !== null && (row.cost !== null || row.tokens !== null));
 const efficiencyScoreDomain = efficiencyRows.length
   ? [
@@ -359,25 +368,44 @@ display(html`<div class="card">${unscoredAttemptsTable}</div>`);
 
 ## Output limits and usage
 
-These figures cover the models and tasks selected above. Output tokens include
-reasoning. Truncation counts responses stopped by the output limit, including
-those that still contained a valid answer. Output figures describe the scored
-responses; total tokens and cost include all recorded attempts. Selective retries
-replace every initially invalid truncated answer once at the larger listed limit;
-all retry outcomes, including failures, are retained. Other settings stay the same.
+Across all reasoning efforts, only configurations with recorded formatting
+failures, refusals, output-limit stops, or retried failures in the selected tasks
+appear below. Configurations with no recorded failures are omitted; incomplete
+attempts remain in the section above.
+
+- **Valid answers** follow the required answer format, regardless of prediction
+  accuracy. For ranking tasks, the last well-formed `FINAL: {JSON object}` line
+  must contain every candidate ID exactly once, with finite numeric predictions.
+- **Formatting failures** have no usable final answer: for example, a missing
+  `FINAL:` line, JSON split across lines, missing or duplicate candidate IDs, or
+  nonnumeric predictions. These responses receive zero for both correlations
+  and remain in the score average. A refusal or output-limit stop can also leave
+  no usable answer, so this rate does not identify the underlying cause.
+- **Truncated** counts responses the provider reports as stopped at an output
+  limit, even when they contain a valid final answer. It is based on the reported
+  stop reason, not a comparison of token usage with the configured ceiling.
+  A model can therefore have 100% valid answers and a nonzero truncation rate;
+  formatting failures and truncation can also overlap.
+
+Output tokens include reasoning. Answer rates and output figures describe the
+scored responses; total tokens and cost include all recorded attempts. Retries
+keep recovered failures visible here. Selective retries replace every initially
+invalid truncated answer once at the larger listed limit; all retry outcomes,
+including failures, are retained. Other settings stay the same.
 Unavailable measurements appear as “—”.
 
 ```js
-const executionData = rows.map(executionSummaryForRow);
+const executionData = rows.filter(hasExecutionFailures).map(executionSummaryForRow);
 const formatMeasuredTokens = (value) => value === null ? "—" : formatInteger(value);
 const executionTable = Inputs.table(executionData, {
-  columns: ["model", "questions", "retries", "valid_rate", "truncation_rate", "output_limits",
-    "output_tokens", "max_output_tokens", "total_tokens", "cost"],
+  columns: ["model", "questions", "retries", "valid_rate", "format_failure_rate",
+    "truncation_rate", "output_limits", "output_tokens", "max_output_tokens", "total_tokens", "cost"],
   header: {
     model: "Model",
     questions: "Questions",
     retries: "Retries",
     valid_rate: "Valid answers",
+    format_failure_rate: "Formatting failures",
     truncation_rate: "Truncated",
     output_limits: "Output limit",
     output_tokens: "Output tokens",
@@ -392,6 +420,7 @@ const executionTable = Inputs.table(executionData, {
     questions: formatInteger,
     retries: formatInteger,
     valid_rate: formatPercent,
+    format_failure_rate: formatPercent,
     truncation_rate: formatPercent,
     output_limits: (limits) => limits === null ? "—" : limits.map(formatInteger).join(", "),
     output_tokens: formatMeasuredTokens,
@@ -399,10 +428,12 @@ const executionTable = Inputs.table(executionData, {
     total_tokens: formatMeasuredTokens,
     cost: formatCost
   },
-  width: {model: 235, questions: 90, valid_rate: 110, truncation_rate: 100,
+  width: {model: 235, questions: 90, valid_rate: 110, format_failure_rate: 150, truncation_rate: 100,
     output_limits: 120, output_tokens: 125, max_output_tokens: 130, total_tokens: 125, cost: 100},
   rows: Math.max(1, executionData.length),
   select: false
 });
-display(html`<div class="card" role="region" aria-label="Output limits and usage; scroll horizontally to see all columns">${executionTable}</div>`);
+display(html`<div class="card" role="region" aria-label="Output limits and usage; scroll horizontally to see all columns">${executionData.length
+  ? executionTable
+  : html`<p>No recorded failures for the selected models and tasks.</p>`}</div>`);
 ```
