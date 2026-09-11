@@ -23,8 +23,11 @@ DEFAULT_PREDICTION = "unused-for-ranking"
 class OfflineBrowserTransport:
     """Return one deterministic, schema-compatible response without network access."""
 
-    def __init__(self, prediction: str | Mapping[str, float]) -> None:
+    def __init__(
+        self, prediction: str | Mapping[str, float], *, finish_reason: str = "stop"
+    ) -> None:
         self.prediction = prediction
+        self.finish_reason = finish_reason
 
     def complete(self, request_body: Mapping[str, Any], api_key: str) -> dict[str, Any]:
         del request_body, api_key
@@ -37,7 +40,7 @@ class OfflineBrowserTransport:
             "provider": "Offline fixture",
             "choices": [
                 {
-                    "finish_reason": "stop",
+                    "finish_reason": self.finish_reason,
                     "message": {
                         "role": "assistant",
                         "content": (
@@ -89,10 +92,12 @@ def prepare_fixture(
         work = Path(temporary)
         results = work / "results"
         results.mkdir()
-        model_ids = ["synthetic/browser-qa"]
+        model_configs = [("synthetic/browser-qa", "low", 0)]
         if include_alternate_model:
-            model_ids.append("synthetic/browser-qa-alternate")
-        for model_index, model_id in enumerate(model_ids):
+            model_configs.extend(
+                [("synthetic/browser-qa-alternate", "low", 1), ("synthetic/browser-qa", "high", 0)]
+            )
+        for model_id, effort, model_index in model_configs:
             for task_index, (question_file, task_questions) in enumerate(question_sets):
                 task_type = task_questions[0]["task_type"]
                 if any(question["task_type"] != task_type for question in task_questions):
@@ -142,6 +147,8 @@ def prepare_fixture(
                         f"browser QA prediction is not valid for {invalid_questions[0]!r}"
                     )
                 run_prefix = "browser-qa" if model_index == 0 else "browser-qa-alternate"
+                if effort == "high":
+                    run_prefix += "-high"
                 run_id = run_prefix if task_index == 0 else f"{run_prefix}-task-{task_index + 1}"
                 evaluate_file(
                     questions_path=question_file,
@@ -153,10 +160,13 @@ def prepare_fixture(
                     api_key="offline-browser-qa",
                     generation_parameters={
                         "max_tokens": 256,
-                        "reasoning": {"effort": "low"},
+                        "reasoning": {"effort": effort},
                         "temperature": 0.0,
                     },
-                    transport=OfflineBrowserTransport(task_prediction),
+                    transport=OfflineBrowserTransport(
+                        task_prediction,
+                        finish_reason="length" if model_index == 1 and task_index == 0 else "stop",
+                    ),
                     now=lambda: FIXED_TIME,
                     monotonic=lambda: 0.0,
                     concurrency=8,

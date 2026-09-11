@@ -258,6 +258,17 @@ function sumIfComplete(values) {
     : null;
 }
 
+export function hasExecutionFailures(row) {
+  return (row.runs ?? [row.run]).some((run) =>
+    run.retry_count > 0
+    || run.metrics.format_failures > 0
+    || run.metrics.truncated_outputs > 0
+    || ["refusal", "token_limit", "format_error"].some(
+      (type) => run.metrics.result_counts?.[type] > 0
+    )
+  );
+}
+
 export function executionSummaryForRow(row) {
   const runs = row.runs ?? [row.run];
   const questions = runs.reduce((total, run) => total + run.question_set_size, 0);
@@ -270,6 +281,9 @@ export function executionSummaryForRow(row) {
   }));
   const truncated = sumIfComplete(
     runs.map((run) => nonnegativeNumber(run.metrics.truncated_outputs))
+  );
+  const formatFailures = sumIfComplete(
+    runs.map((run) => nonnegativeNumber(run.metrics.format_failures))
   );
   const maxima = runs.map((run) => nonnegativeNumber(run.metrics.max_output_tokens_used));
   const limits = runs.flatMap((run) => [
@@ -286,6 +300,8 @@ export function executionSummaryForRow(row) {
     retries: row.retry_count ?? 0,
     valid_answers: validAnswers,
     valid_rate: validAnswers !== null && questions ? validAnswers / questions : null,
+    format_failures: formatFailures,
+    format_failure_rate: formatFailures !== null && questions ? formatFailures / questions : null,
     truncated_outputs: truncated,
     truncation_rate: truncated !== null && questions ? truncated / questions : null,
     output_limits: limits.every((limit) => limit !== null)

@@ -107,7 +107,15 @@ def test_browser_qa_fixture_supports_multiple_task_runs(tmp_path: Path) -> None:
     )
 
     runs_document = json.loads((output / "versions/main/runs.json").read_text(encoding="utf-8"))
-    assert len(runs_document["runs"]) == 4
+    assert len(runs_document["runs"]) == 6
+    assert {
+        run["generation_parameters"]["reasoning"]["effort"]
+        for run in runs_document["runs"]
+        if run["model"]["model_id"] == "synthetic/browser-qa"
+    } == {"low", "high"}
+    assert {
+        run["run_id"] for run in runs_document["runs"] if run["metrics"]["truncated_outputs"] > 0
+    } == {"browser-qa-alternate"}
     assert {
         profile["task_family"] for profile in runs_document["leaderboard"]["evaluation_profiles"]
     } == {"synthetic_effect", "secondary_task"}

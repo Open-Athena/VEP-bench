@@ -149,11 +149,15 @@ For either question type, API failures have null scores and make the run
 incomplete; they cannot appear in the official leaderboard. Retained reasoning
 is only what the provider exposes, not a claim of access to private reasoning.
 
-The leaderboard's output and usage table distinguishes the configured ceiling
-from observed output, including reasoning. Output totals and maxima describe the
+The leaderboard's output and usage table shows only configurations with recorded
+formatting failures, refusals, output-limit stops, or retried failures in the
+selected tasks. Formatting failures count completed responses without a parseable
+answer, including refusals or output-limit stops that leave no usable answer;
+this is not a diagnosis of the cause. The table distinguishes the configured
+ceiling from observed output, including reasoning. Output totals and maxima describe the
 retained completed responses; run cost and total tokens also include recorded
 earlier attempts, including selective truncation retries. Truncation counts any
-completed response with a provider
-finish reason of `length`, even when its final answer is valid. Missing usage
+completed response with a provider finish reason of `length`, even when its final
+answer is valid or reported usage is below the configured ceiling. Missing usage
 remains unknown, and older publications without these summaries display gaps
 until rebuilt from their original responses.
