@@ -575,7 +575,7 @@ def validate_version(root: str | Path, *, version_name: str) -> dict[str, Any]:
                 "run_id": answer["run_id"],
                 "question_id": answer["question_id"],
                 "usage": answer["usage"],
-                "response": answer["response"],
+                "response": {key: answer["response"][key] for key in ("status", "finish_reason")},
             }
         )
         run = run_by_id.get(answer["run_id"])
@@ -1226,7 +1226,9 @@ def _convert_run(
                         "run_id": run_id,
                         "question_id": question_id,
                         "usage": record["usage"],
-                        "response": record["response"],
+                        "response": {
+                            key: record["response"][key] for key in ("status", "finish_reason")
+                        },
                     }
                 )
                 evaluated_at = record["evaluated_at"]

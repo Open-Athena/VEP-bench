@@ -1,5 +1,7 @@
 # Low-reasoning comparison, using DeepSeek's recommended sampling.
 # https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash
+# Low effort and the task's output ceiling are explicit benchmark choices;
+# the model card evaluates at max effort and recommends >=256K output tokens.
 schema_version: "1.0"
 label: deepseek-v4.1-flash-low
 model: deepseek/deepseek-v4.1-flash

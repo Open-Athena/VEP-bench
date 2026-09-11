@@ -23,6 +23,7 @@ from vepbench_publishing.retry import resolve_retry, validate_retry_record
 from vepbench_publishing.split import split_results
 
 from vepbench.artifacts import canonical_json, sha256_file, sha256_json
+from vepbench.config.model import load_model_profile
 from vepbench.errors import BuildError
 from vepbench.evaluation.core import ProviderError, completed_result, error_result, evaluate_file
 from vepbench.questions.builder import build_file
@@ -1034,6 +1035,19 @@ def test_production_model_catalog_records_only_verified_knowledge_cutoffs() -> N
     assert catalog["anthropic/claude-fable-5.1"]["knowledge_cutoff"] == "2026-06"
     assert catalog["anthropic/claude-opus-5"]["knowledge_cutoff"] == "2026-05"
     assert catalog["deepseek/deepseek-v4-flash-0731"]["knowledge_cutoff"] is None
+    assert catalog["deepseek/deepseek-v4.1-flash"]["knowledge_cutoff"] is None
+
+
+def test_shipped_model_profiles_are_supported_by_the_publication_catalog() -> None:
+    config = load_publishing_config(ROOT / "projects/publishing/config/publishing.yaml")
+    catalog = publication_module._load_model_catalog(config.model_catalog)
+    for path in sorted((ROOT / "configs/models").glob("*.yaml")):
+        if path == config.model_catalog:
+            continue
+        profile = load_model_profile(path)
+        assert profile.model_id in catalog, (
+            f"{path.name} cannot be published with the default catalog"
+        )
 
 
 def test_publication_accepts_legacy_model_catalog_without_cutoff(tmp_path: Path) -> None:
