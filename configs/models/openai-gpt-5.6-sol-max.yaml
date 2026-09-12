@@ -1,0 +1,12 @@
+# User-requested maximum reasoning; supported effort and output ceiling verified:
+# https://developers.openai.com/api/docs/models/gpt-5.6-sol (2026-09-11).
+# Sampling controls remain unset; these are provider defaults, not a benchmark recipe.
+# Seed matches the existing comparison profiles.
+schema_version: "1.0"
+label: gpt-5.6-sol-max
+model: openai/gpt-5.6-sol
+generation:
+  seed: 20260829
+  reasoning:
+    effort: max
+    exclude: false

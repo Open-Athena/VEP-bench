@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import test from "node:test";
-import {compareScores, matchStatus, summarizePairs} from "./comparisons.js";
+import {compareScores, matchStatus, selectHarness, summarizePairs} from "./comparisons.js";
 
 const pairs = (x, y) => x.map((v, i) => ({model_id: `model-${i}`, vep_score: v, external_score: y[i]}));
 
@@ -56,29 +56,64 @@ test("matching never substitutes efforts, revisions, releases, or unknown settin
 
 const readSnapshot = (file) => JSON.parse(readFileSync(new URL(`./comparisons-data/${file}`, import.meta.url)));
 
-test("frozen snapshot includes every exact effort and keeps harnesses separate", () => {
+test("harness selection follows a fixed preference without looking at scores", () => {
+  const rows = [{id: "mini", harness: "mini-SWE-agent", scores: {life: 1}},
+    {id: "codex-old", harness: "Codex", scores: {life: 0.1}},
+    {id: "codex-new", harness: "Codex", scores: {life: 0.2}}];
+  assert.deepEqual(selectHarness(rows, ["Codex", "mini-SWE-agent"]).map((r) => r.id), ["codex-old", "codex-new"]);
+  assert.deepEqual(selectHarness(rows.slice(0, 1), ["Codex", "mini-SWE-agent"]), rows.slice(0, 1));
+  assert.deepEqual(selectHarness([...rows].reverse()).map((r) => r.id), ["codex-new", "codex-old"]);
+  assert.deepEqual(selectHarness([], ["Codex"]), []);
+});
+
+test("one comparison chooses the latest submission within the preferred available harness", () => {
+  const vep = readSnapshot("vep-runs.json");
+  const base = {group: "fixture", model_id: "openai/gpt-5.6-sol", effort: "high",
+    scores: {score: 0.1}, harness: "Codex", reported_at: "2026-08-01"};
+  const external = {
+    comparisons: [{id: "fixture", group: "fixture", metric: "score", harness_preference: ["Codex", "mini-SWE-agent"]}],
+    results: [
+      {...base, id: "codex-old"},
+      {...base, id: "codex-latest", reported_at: "2026-08-02"},
+      {...base, id: "mini-newer-higher", harness: "mini-SWE-agent", reported_at: "2026-09-01", scores: {score: 1}},
+      {...base, id: "fallback", model_id: "openai/gpt-5.6-luna", harness: "mini-SWE-agent"}
+    ]
+  };
+  const [comparison] = compareScores(vep, external).comparisons;
+  assert.deepEqual(comparison.pairs.map((p) => p.external_result_id), ["fallback", "codex-latest"]);
+  assert.deepEqual(comparison.pairs.map((p) => p.harness), ["mini-SWE-agent", "Codex"]);
+});
+
+test("frozen snapshot includes every exact effort and documents the chosen harness", () => {
   const vep = readSnapshot("vep-runs.json"), external = readSnapshot("external.json");
   const analysis = compareScores(vep, external);
   assert.deepEqual(analysis.comparisons, readSnapshot("analysis.json").primary);
   const aa = analysis.comparisons.find((c) => c.id === "aa-intelligence" && c.scope === "overall");
-  assert.equal(aa.pairs.length, 12);
-  assert.equal(aa.summary.n, 4);
+  assert.equal(aa.pairs.length, 15);
+  assert.equal(aa.summary.n, 5);
   assert.equal(aa.summary.spearman, null);
   for (const effort of ["low", "medium", "high"]) {
     assert.equal(aa.pairs.filter((p) => p.effort === effort).length, 4);
   }
+  assert.equal(aa.pairs.filter((p) => p.effort === "max").length, 3);
   for (const c of analysis.comparisons) {
     assert.equal(c.scope, "overall");
     assert.equal(new Set(c.pairs.map((p) => `${p.model_id}:${p.effort}`)).size, c.pairs.length);
     for (const p of c.pairs) {
       const result = external.results.find((r) => r.id === p.external_result_id);
       assert.equal(result.group, c.group);
+      assert.equal(p.harness, result.harness);
       assert.equal(result.effort, p.generation_parameters.reasoning.effort);
     }
   }
   const gene = analysis.comparisons.find((c) => c.id === "gene");
-  assert.equal(gene.pairs.length, 6);
-  assert.equal(gene.summary.n, 2);
+  assert.equal(gene.pairs.length, 9);
+  assert.equal(gene.summary.n, 3);
+  const tbs = analysis.comparisons.filter((c) => c.benchmark === "Terminal-Bench-Science");
+  assert.equal(tbs.length, 1);
+  assert.equal(tbs[0].pairs.length, 4);
+  assert.equal(tbs[0].pairs.filter((p) => p.harness === "Codex").length, 3);
+  assert.equal(analysis.comparisons.find((c) => c.id === "bix3").pairs.length, 1);
   const deepseek = analysis.matches.find((r) => r.model_id === "deepseek/deepseek-v4.1-flash");
   assert.equal(deepseek.effort, "max");
   assert.equal(deepseek.match_status, "No exact effort match");

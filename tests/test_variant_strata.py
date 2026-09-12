@@ -265,6 +265,10 @@ def test_selects_highest_available_effort_per_model_without_using_scores():
         {"run_id": "high-old", "reason": "superseded_same_effort"},
         {"run_id": "medium-newest", "reason": "lower_reasoning_effort"},
     ]
+    maximum = run("max-older", "model-a", "max", "2026-08-31", -1)
+    extra_high = run("xhigh-newest", "model-a", "xhigh", "2026-09-04", 1)
+    selected, _ = strata.select_runs([q], [*runs, maximum, extra_high])
+    assert {r["run_id"] for r in selected} == {"max-older", "low-only"}
     unknown = run("implicit", "model-c", None, "2026-09-03", 1)
     with pytest.raises(ValueError, match="unrecognized reasoning effort"):
         strata.select_runs([q], [unknown])

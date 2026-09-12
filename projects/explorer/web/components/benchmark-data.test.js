@@ -292,7 +292,7 @@ test("new comparison models have human-readable labels", () => {
 });
 
 test("highest-effort selection follows effort order rather than scores", () => {
-  const efforts = [null, "none", "minimal", "low", "medium", "high", "xhigh"];
+  const efforts = [null, "none", "minimal", "low", "medium", "high", "xhigh", "max"];
   const candidates = efforts.map((effort, i) => run({
     runId: `effort-${i}`, configurationKey: `effort-${i}`, effort, accuracy: 1 - i / 10
   }));
@@ -306,6 +306,25 @@ test("highest-effort selection follows effort order rather than scores", () => {
     run({effort: "unrecognized"})
   ])), /Unrecognized effort/);
   assert.deepEqual(highestEffortRows([]), []);
+});
+
+test("the refreshed publication selects Luna, Terra and Sol max in every leaderboard view", () => {
+  const snapshot = JSON.parse(readFileSync(new URL("../blog/introducing-vep-bench/comparisons-data/vep-runs.json", import.meta.url)));
+  for (const scope of [null, "sge", "satmut_mpra", "opensplice_snv"]) {
+    const rows = highestEffortRows(leaderboardRowsForScope(snapshot.runs, snapshot.leaderboard, scope, "spearman"));
+    assert.equal(rows.length, 8);
+    for (const name of ["luna", "terra", "sol"]) {
+      const matched = rows.filter((row) => (row.runs?.[0] ?? row.run).model.model_id === `openai/gpt-5.6-${name}`);
+      assert.equal(matched.length, 1);
+      const row = matched[0], runs = row.runs ?? [row.run];
+      assert.ok(runs.every((run) => run.coverage.complete && run.generation_parameters.reasoning.effort === "max"));
+      assert.equal(runs.reduce((n, run) => n + run.question_set_size, 0), scope === null ? 52 : scope === "opensplice_snv" ? 20 : 16);
+      assert.match(row.model_cell.model, /^GPT 5\.6 (Luna|Terra|Sol) \(max\)$/);
+      if (scope === null) {
+        assert.equal(row.score, runs.reduce((n, run) => n + run.metrics.mean_spearman_rho, 0) / 3);
+      }
+    }
+  }
 });
 
 test("highest effort requires complete results within the selected task scope", () => {

@@ -61,6 +61,7 @@ export function modelName(modelId, generationParameters) {
     "glm-5.3": "GLM 5.3",
     "gpt-5.6-luna": "GPT 5.6 Luna",
     "gpt-5.6-sol": "GPT 5.6 Sol",
+    "gpt-5.6-terra": "GPT 5.6 Terra",
     "gpt-6-astra": "GPT 6 Astra",
     "muse-spark-1.3": "Muse Spark 1.3"
   }[name] ?? name;
@@ -200,7 +201,7 @@ export function leaderboardRows(runs, scoreMetric = null) {
 }
 
 export function highestEffortRows(rows) {
-  const efforts = ["none", "minimal", "low", "medium", "high", "xhigh"];
+  const efforts = ["none", "minimal", "low", "medium", "high", "xhigh", "max"];
   const selected = new Map();
   for (const row of rows) {
     const runs = row.runs ?? [row.run];

@@ -49,7 +49,7 @@ if (manifest.artifacts.runs.artifact_sha256 !== sha(readFileSync(resolve(input, 
 }
 writeFileSync(new URL("vep-runs.json", output), readFileSync(resolve(input, "vep-runs.json")));
 source("vep", "vep-manifest.json", "https://huggingface.co/buckets/open-athena/VEP-bench/resolve/versions/main/manifest.json",
-  "Publication runs entry and question-set identity", {runs: manifest.artifacts.runs,
+  "Validated local publication candidate; URL identifies the intended publication destination", {runs: manifest.artifacts.runs,
     question_set_sha256: manifest.question_set_sha256, question_set_size: manifest.question_set_size});
 
 const aaModels = collect(nextObjects(read("aa.html")), (v) => Array.isArray(v.initialModels))[0].initialModels;
@@ -59,6 +59,7 @@ const aaCatalog = [...new Map(collect(nextObjects(read("aa.html")),
 const aaMap = {
   "gpt-6-astra": "openai/gpt-6-astra", "gpt-5-6-sol": "openai/gpt-5.6-sol",
   "gpt-5-6-luna": "openai/gpt-5.6-luna", "gemini-3-8-flash": "google/gemini-3.8-flash",
+  "gpt-5-6-terra": "openai/gpt-5.6-terra",
   "muse-spark-1-3": "meta/muse-spark-1.3", "glm-5-3": "z-ai/glm-5.3",
   "deepseek-v4-1-flash": "deepseek/deepseek-v4.1-flash",
   "claude-opus-5": "anthropic/claude-opus-5", "claude-fable-5-1": "anthropic/claude-fable-5.1"
@@ -137,6 +138,7 @@ for (const [file, slug] of [
 
 const tbs = json("tbs-results.json");
 const tbsMap = {"Opus 5": "anthropic/claude-opus-5", "GPT-5.6 Sol": "openai/gpt-5.6-sol",
+  "GPT-5.6 Terra": "openai/gpt-5.6-terra",
   "GPT-5.6 Luna": "openai/gpt-5.6-luna", "Gemini 3.8 Flash": "google/gemini-3.8-flash", "GLM 5.3": "z-ai/glm-5.3",
   "DeepSeek V4.1 Flash": "deepseek/deepseek-v4.1-flash"};
 source("tbs", "tbs-results.json", "https://www.terminal-bench-science.ai/?view=domains",
@@ -145,17 +147,18 @@ source("tbs", "tbs-results.json", "https://www.terminal-bench-science.ai/?view=d
     tasks: tbs.task_matrix.tasks, rows: tbs.rows.map((r) => ({id: r.id, metadata: r.metadata,
       life: r.metrics.domain_metrics.life, updated_at: r.updated_at, n_trials: r.n_trials}))});
 for (const row of tbs.rows) {
-  const group = `tbs-${row.metadata.agent_display.label}`;
+  const group = "tbs";
   results.push({id: `tbs-${row.id}`, group, model_label: row.metadata.model_display.label,
     model_id: tbsMap[row.metadata.model_display.label] ?? null, effort: row.metadata.reasoning_effort,
     scores: {life: row.metrics.domain_metrics.life.accuracy / 100}, source_id: "tbs",
     reported_at: row.updated_at, harness: row.metadata.agent_display.label,
     budget: {total_cost_usd: row.metrics.domain_metrics.life.total_cost_usd,
       total_tokens: row.metrics.domain_metrics.life.total_tokens, time_limit: null}});
-  if (!comparisons.some((c) => c.group === group)) comparison(group, `Terminal-Bench-Science · ${row.metadata.agent_display.label}`,
+  if (!comparisons.some((c) => c.group === group)) comparison(group, "Terminal-Bench-Science",
     group, "life", "primary", {benchmark: "Terminal-Bench-Science", version: "0.1", subset: "Life Sciences (broader than biology)",
       metric_label: "Resolution rate (fraction)", task_count: 19, repeats: 3, tools: "Terminal and task environment",
-      harness: row.metadata.agent_display.label, budget: "Task-specific; recorded life-domain cost and tokens retained per result",
+      harness: "Codex where available, otherwise mini-SWE-agent", harness_preference: ["Codex", "mini-SWE-agent"],
+      budget: "Task-specific; recorded life-domain cost and tokens retained per result",
       source_ids: ["tbs"]});
 }
 
@@ -175,7 +178,8 @@ for (const row of geneRows) {
   const [, model, effort] = row.model.match(/^(.*) \((.*)\)$/);
   const id = `gene-${row.model}`;
   results.push({id, group: "gene", model_label: row.model,
-    model_id: {"GPT-5.6 Sol": "openai/gpt-5.6-sol", "GPT-5.6 Luna": "openai/gpt-5.6-luna"}[model] ?? null,
+    model_id: {"GPT-5.6 Sol": "openai/gpt-5.6-sol", "GPT-5.6 Luna": "openai/gpt-5.6-luna",
+      "GPT-5.6 Terra": "openai/gpt-5.6-terra"}[model] ?? null,
     effort, scores: {pass_rate: row.mean_percent / 100}, source_id: "gene", reported_at: "2026-06-30",
     harness: "GeneBench Docker analysis harness", valid_attempts: row,
     exclusion: model.includes(" Pro") ? "Pro system is not the corresponding standard model" : null});
@@ -201,23 +205,23 @@ for (const [id, file, url, evidence] of [
 ]) source(id, file, url, "Survey evidence from official documentation or evaluation report", evidence);
 
 const survey = [
-  ["Terminal-Bench-Science", "tbs", "Primary, descriptive", "Agentic scientific workflows. The official result taxonomy exposes Life Sciences, including medical imaging; no narrower biology label is used. One exact matched model; harnesses kept separate."],
-  ["GeneBench-Pro", "gene", "Primary, descriptive", "Multistep quantitative biology in a Docker environment. Two model versions have exact efforts; Pro systems excluded. Original GeneBench scores are not substituted."],
-  ["BixBench3", "bix3", "No exact effort overlap", "Agentic research-scale computational biology. GPT-5.6 Sol is reported at max; VEP has low/medium/high. Claude Opus 5 has no complete VEP overall score."],
+  ["Terminal-Bench-Science", "tbs", "Primary, descriptive", "Agentic scientific workflows. The official result taxonomy exposes Life Sciences, including medical imaging; no narrower biology label is used. Choose Codex where available, otherwise mini-SWE-agent, for each exact model and effort; document the harness in each paired score."],
+  ["GeneBench-Pro", "gene", "Primary, descriptive", "Multistep quantitative biology in the published GeneBench Docker harness. Exact model and effort matches only; Pro systems excluded. Original GeneBench scores are not substituted."],
+  ["BixBench3", "bix3", "Primary when exactly matched", "Agentic research-scale computational biology using the published BixBench3 runner. Include only complete VEP configurations with an exact model and effort match."],
   ["BixBench (original)", "bix", "No exact version overlap in inspected report", "Agentic data analysis is relevant; original evaluated releases differ from VEP. Zero-shot and revised benchmarks are separate."],
   ["BioAgent Bench", "bioagent", "No exact version overlap in inspected report", "Relevant end-to-end bioinformatics execution. Public January results evaluate older releases."],
   ["ScienceAgentBench", "scienceagent", "No exact version overlap established", "Relevant bioinformatics subset of a broader execution benchmark; inspected original report provides no current VEP release match. All-science scores would not be a biology score."],
   ["AstaBench (April 2026 report)", "asta", "No exact version overlap in inspected report", "Relevant data-analysis and execution tasks within broader science. All named base models in this report differ from VEP; composite Asta systems are not single models."],
-  ["Artificial Analysis Intelligence Index and components", "aa-method", "Secondary, descriptive", "General intelligence comparison using latest v4.3 at retrieval. Twelve exact matched configurations across four model releases. All ten published component metrics retained independently of their association; none is labeled an agentic biology score."],
+  ["Artificial Analysis Intelligence Index and components", "aa-method", "Secondary, descriptive", "General intelligence comparison using latest v4.3 at retrieval and Artificial Analysis's published harnesses. All exact model and effort matches and all ten published component metrics are retained independently of their association; none is labeled an agentic biology score."],
   ["Standalone biology Q&A / BixBench zero-shot", "bix", "Outside primary agentic scope", "Knowledge-only or multiple-choice answers without an executed analysis do not meet the primary inclusion criterion; this does not exclude multiple-choice endpoints reached through genuine tool use."]
 ].map(([benchmark, source_id, decision, rationale]) => ({benchmark, source_id, decision, rationale}));
-const external = {schema_version: "1.0", snapshot_date: "2026-09-11", aa_intelligence_index_version: "4.3",
+const external = {schema_version: "1.0", snapshot_date: "2026-09-12", aa_intelligence_index_version: "4.3",
   rules: [
     "Choose benchmarks for biological relevance, agentic execution, attributable public results and overlap before computing associations.",
     "Exact named model release and exact explicit effort only. No family substitution, inferred defaults, max-to-high conversion, imputation, or fallback efforts. Hidden checkpoint revisions are not disclosed by these sources.",
     "Use only complete VEP configurations spanning all three tasks. Overall is the unweighted mean of task mean Spearman scores, reusing explorer aggregation without display clipping.",
-    "For each benchmark, metric and external harness/submitter group, include every exact shared effort as a separate point. Use the latest published submission for each model and effort; timestamp ties require review. Never select by score.",
-    "Keep harnesses and submitters separate. Earlier submissions, when available, are retained as separate sensitivity comparisons, never extra points in the primary plots.",
+    "For each benchmark and metric, include every exact shared effort as a separate point. Choose one harness per model and effort by the comparison's fixed harness preference, falling back to alphabetical harness name. Use the latest published submission within that harness; timestamp ties require review. Never select by score.",
+    "Use one comparison per benchmark metric and record the chosen harness for each paired score. These are model-plus-harness results, not a controlled model-only comparison. Other submissions remain in the source audit, never extra comparison points.",
     "Use only the Overall VEP score. Count matched configurations and distinct model versions separately; multiple efforts from one model are dependent observations.",
     "The all-effort plots are descriptive. Never pool repeated efforts into a cross-model correlation. Correlation summaries require at least five distinct models with one observation each and nonconstant scores; no p-values or imputation.",
     "Use AAII v4.3, the latest methodology at retrieval. Components retain their published metrics. Do not combine index versions or invent unreported subset indices."
@@ -227,16 +231,13 @@ exportAnalysis(vep, external);
 
 function exportAnalysis(vep, external) {
   const primary = compareScores(vep, external);
-  const sensitivity = [1, 2].flatMap((repeat) => compareScores(vep, external, {repeat}).comparisons)
-    .filter((comparison) => comparison.pairs.length);
-  const all = [...primary.comparisons, ...sensitivity];
-  write("analysis.json", {snapshot_date: external.snapshot_date, primary: primary.comparisons, sensitivity});
+  write("analysis.json", {snapshot_date: external.snapshot_date, primary: primary.comparisons});
   write("model-matches.json", primary.matches.map((r) => ({result_id: r.id, model_label: r.model_label,
     model_id: r.model_id, effort: r.effort, harness: r.harness, submitter: r.submitter ?? null,
     source_id: r.source_id, match_status: r.match_status,
     vep_efforts: primary.configurations.filter((c) => c.model_id === r.model_id).map((c) => c.effort),
     selected_in: primary.comparisons.filter((c) => c.scope === "overall" && c.pairs.some((p) => p.external_result_id === r.id)).map((c) => c.id)})));
-  writeFileSync(new URL("paired-scores.csv", output), pairedScoresCsv(all));
+  writeFileSync(new URL("paired-scores.csv", output), pairedScoresCsv(primary.comparisons));
   console.log(JSON.stringify(primary.comparisons.map((c) => ({comparison: c.id,
     points: c.summary.points, models: c.summary.n})), null, 2));
 }

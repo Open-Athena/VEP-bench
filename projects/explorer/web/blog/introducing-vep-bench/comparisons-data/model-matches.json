@@ -35,13 +35,26 @@
     "harness": "Artificial Analysis",
     "submitter": "Artificial Analysis",
     "source_id": "aa-gpt-5-6-luna",
-    "match_status": "No exact effort match",
+    "match_status": "Exact version and effort match",
     "vep_efforts": [
       "low",
       "medium",
-      "high"
+      "high",
+      "max"
     ],
-    "selected_in": []
+    "selected_in": [
+      "aa-intelligence",
+      "aa-briefcase",
+      "aa-gdpval",
+      "aa-automation",
+      "aa-terminal",
+      "aa-scicode",
+      "aa-omniscience",
+      "aa-gdp-pdf",
+      "aa-lcr",
+      "aa-hle",
+      "aa-critpt"
+    ]
   },
   {
     "result_id": "aa-gemini-3-8-flash",
@@ -98,6 +111,32 @@
     "selected_in": []
   },
   {
+    "result_id": "aa-gpt-5-6-terra",
+    "model_label": "GPT-5.6 Terra (max)",
+    "model_id": "openai/gpt-5.6-terra",
+    "effort": "max",
+    "harness": "Artificial Analysis",
+    "submitter": "Artificial Analysis",
+    "source_id": "aa-gpt-5-6-terra",
+    "match_status": "Exact version and effort match",
+    "vep_efforts": [
+      "max"
+    ],
+    "selected_in": [
+      "aa-intelligence",
+      "aa-briefcase",
+      "aa-gdpval",
+      "aa-automation",
+      "aa-terminal",
+      "aa-scicode",
+      "aa-omniscience",
+      "aa-gdp-pdf",
+      "aa-lcr",
+      "aa-hle",
+      "aa-critpt"
+    ]
+  },
+  {
     "result_id": "aa-glm-5-3",
     "model_label": "GLM-5.3 (max)",
     "model_id": "z-ai/glm-5.3",
@@ -119,13 +158,26 @@
     "harness": "Artificial Analysis",
     "submitter": "Artificial Analysis",
     "source_id": "aa-gpt-5-6-sol",
-    "match_status": "No exact effort match",
+    "match_status": "Exact version and effort match",
     "vep_efforts": [
       "low",
       "medium",
-      "high"
+      "high",
+      "max"
     ],
-    "selected_in": []
+    "selected_in": [
+      "aa-intelligence",
+      "aa-briefcase",
+      "aa-gdpval",
+      "aa-automation",
+      "aa-terminal",
+      "aa-scicode",
+      "aa-omniscience",
+      "aa-gdp-pdf",
+      "aa-lcr",
+      "aa-hle",
+      "aa-critpt"
+    ]
   },
   {
     "result_id": "aa-deepseek-v4-1-flash",
@@ -181,7 +233,8 @@
     "vep_efforts": [
       "low",
       "medium",
-      "high"
+      "high",
+      "max"
     ],
     "selected_in": [
       "aa-intelligence",
@@ -209,7 +262,8 @@
     "vep_efforts": [
       "low",
       "medium",
-      "high"
+      "high",
+      "max"
     ],
     "selected_in": [
       "aa-intelligence",
@@ -265,7 +319,8 @@
     "vep_efforts": [
       "low",
       "medium",
-      "high"
+      "high",
+      "max"
     ],
     "selected_in": [
       "aa-intelligence",
@@ -293,7 +348,8 @@
     "vep_efforts": [
       "low",
       "medium",
-      "high"
+      "high",
+      "max"
     ],
     "selected_in": [
       "aa-intelligence",
@@ -349,7 +405,8 @@
     "vep_efforts": [
       "low",
       "medium",
-      "high"
+      "high",
+      "max"
     ],
     "selected_in": [
       "aa-intelligence",
@@ -377,7 +434,8 @@
     "vep_efforts": [
       "low",
       "medium",
-      "high"
+      "high",
+      "max"
     ],
     "selected_in": [
       "aa-intelligence",
@@ -469,13 +527,16 @@
     "harness": "Codex",
     "submitter": null,
     "source_id": "tbs",
-    "match_status": "No exact effort match",
+    "match_status": "Exact version and effort match",
     "vep_efforts": [
       "low",
       "medium",
-      "high"
+      "high",
+      "max"
     ],
-    "selected_in": []
+    "selected_in": [
+      "tbs"
+    ]
   },
   {
     "result_id": "tbs-e3f2861a-97db-4730-a0ff-99f08d8c7299",
@@ -518,7 +579,7 @@
       "high"
     ],
     "selected_in": [
-      "tbs-mini-SWE-agent"
+      "tbs"
     ]
   },
   {
@@ -536,14 +597,18 @@
   {
     "result_id": "tbs-c79d5ef6-b3c6-40da-84b5-946c11099426",
     "model_label": "GPT-5.6 Terra",
-    "model_id": null,
+    "model_id": "openai/gpt-5.6-terra",
     "effort": "max",
     "harness": "Codex",
     "submitter": null,
     "source_id": "tbs",
-    "match_status": "No exact model-version match",
-    "vep_efforts": [],
-    "selected_in": []
+    "match_status": "Exact version and effort match",
+    "vep_efforts": [
+      "max"
+    ],
+    "selected_in": [
+      "tbs"
+    ]
   },
   {
     "result_id": "tbs-78f18248-3ee9-4eb4-b7af-19019f1fc64f",
@@ -615,13 +680,16 @@
     "harness": "Codex",
     "submitter": null,
     "source_id": "tbs",
-    "match_status": "No exact effort match",
+    "match_status": "Exact version and effort match",
     "vep_efforts": [
       "low",
       "medium",
-      "high"
+      "high",
+      "max"
     ],
-    "selected_in": []
+    "selected_in": [
+      "tbs"
+    ]
   },
   {
     "result_id": "gene-MiniMax M2.7 (xhigh)",
@@ -1067,7 +1135,8 @@
     "vep_efforts": [
       "low",
       "medium",
-      "high"
+      "high",
+      "max"
     ],
     "selected_in": []
   },
@@ -1083,7 +1152,8 @@
     "vep_efforts": [
       "low",
       "medium",
-      "high"
+      "high",
+      "max"
     ],
     "selected_in": [
       "gene"
@@ -1101,7 +1171,8 @@
     "vep_efforts": [
       "low",
       "medium",
-      "high"
+      "high",
+      "max"
     ],
     "selected_in": [
       "gene"
@@ -1119,7 +1190,8 @@
     "vep_efforts": [
       "low",
       "medium",
-      "high"
+      "high",
+      "max"
     ],
     "selected_in": [
       "gene"
@@ -1137,7 +1209,8 @@
     "vep_efforts": [
       "low",
       "medium",
-      "high"
+      "high",
+      "max"
     ],
     "selected_in": []
   },
@@ -1149,85 +1222,102 @@
     "harness": "GeneBench Docker analysis harness",
     "submitter": null,
     "source_id": "gene",
-    "match_status": "No exact effort match",
+    "match_status": "Exact version and effort match",
     "vep_efforts": [
       "low",
       "medium",
-      "high"
+      "high",
+      "max"
     ],
-    "selected_in": []
+    "selected_in": [
+      "gene"
+    ]
   },
   {
     "result_id": "gene-GPT-5.6 Terra (none)",
     "model_label": "GPT-5.6 Terra (none)",
-    "model_id": null,
+    "model_id": "openai/gpt-5.6-terra",
     "effort": "none",
     "harness": "GeneBench Docker analysis harness",
     "submitter": null,
     "source_id": "gene",
-    "match_status": "No exact model-version match",
-    "vep_efforts": [],
+    "match_status": "No exact effort match",
+    "vep_efforts": [
+      "max"
+    ],
     "selected_in": []
   },
   {
     "result_id": "gene-GPT-5.6 Terra (low)",
     "model_label": "GPT-5.6 Terra (low)",
-    "model_id": null,
+    "model_id": "openai/gpt-5.6-terra",
     "effort": "low",
     "harness": "GeneBench Docker analysis harness",
     "submitter": null,
     "source_id": "gene",
-    "match_status": "No exact model-version match",
-    "vep_efforts": [],
+    "match_status": "No exact effort match",
+    "vep_efforts": [
+      "max"
+    ],
     "selected_in": []
   },
   {
     "result_id": "gene-GPT-5.6 Terra (medium)",
     "model_label": "GPT-5.6 Terra (medium)",
-    "model_id": null,
+    "model_id": "openai/gpt-5.6-terra",
     "effort": "medium",
     "harness": "GeneBench Docker analysis harness",
     "submitter": null,
     "source_id": "gene",
-    "match_status": "No exact model-version match",
-    "vep_efforts": [],
+    "match_status": "No exact effort match",
+    "vep_efforts": [
+      "max"
+    ],
     "selected_in": []
   },
   {
     "result_id": "gene-GPT-5.6 Terra (high)",
     "model_label": "GPT-5.6 Terra (high)",
-    "model_id": null,
+    "model_id": "openai/gpt-5.6-terra",
     "effort": "high",
     "harness": "GeneBench Docker analysis harness",
     "submitter": null,
     "source_id": "gene",
-    "match_status": "No exact model-version match",
-    "vep_efforts": [],
+    "match_status": "No exact effort match",
+    "vep_efforts": [
+      "max"
+    ],
     "selected_in": []
   },
   {
     "result_id": "gene-GPT-5.6 Terra (xhigh)",
     "model_label": "GPT-5.6 Terra (xhigh)",
-    "model_id": null,
+    "model_id": "openai/gpt-5.6-terra",
     "effort": "xhigh",
     "harness": "GeneBench Docker analysis harness",
     "submitter": null,
     "source_id": "gene",
-    "match_status": "No exact model-version match",
-    "vep_efforts": [],
+    "match_status": "No exact effort match",
+    "vep_efforts": [
+      "max"
+    ],
     "selected_in": []
   },
   {
     "result_id": "gene-GPT-5.6 Terra (max)",
     "model_label": "GPT-5.6 Terra (max)",
-    "model_id": null,
+    "model_id": "openai/gpt-5.6-terra",
     "effort": "max",
     "harness": "GeneBench Docker analysis harness",
     "submitter": null,
     "source_id": "gene",
-    "match_status": "No exact model-version match",
-    "vep_efforts": [],
-    "selected_in": []
+    "match_status": "Exact version and effort match",
+    "vep_efforts": [
+      "max"
+    ],
+    "selected_in": [
+      "gene"
+    ]
   },
   {
     "result_id": "gene-GPT-5.6 Sol (none)",
@@ -1241,7 +1331,8 @@
     "vep_efforts": [
       "low",
       "medium",
-      "high"
+      "high",
+      "max"
     ],
     "selected_in": []
   },
@@ -1257,7 +1348,8 @@
     "vep_efforts": [
       "low",
       "medium",
-      "high"
+      "high",
+      "max"
     ],
     "selected_in": [
       "gene"
@@ -1275,7 +1367,8 @@
     "vep_efforts": [
       "low",
       "medium",
-      "high"
+      "high",
+      "max"
     ],
     "selected_in": [
       "gene"
@@ -1293,7 +1386,8 @@
     "vep_efforts": [
       "low",
       "medium",
-      "high"
+      "high",
+      "max"
     ],
     "selected_in": [
       "gene"
@@ -1311,7 +1405,8 @@
     "vep_efforts": [
       "low",
       "medium",
-      "high"
+      "high",
+      "max"
     ],
     "selected_in": []
   },
@@ -1323,13 +1418,16 @@
     "harness": "GeneBench Docker analysis harness",
     "submitter": null,
     "source_id": "gene",
-    "match_status": "No exact effort match",
+    "match_status": "Exact version and effort match",
     "vep_efforts": [
       "low",
       "medium",
-      "high"
+      "high",
+      "max"
     ],
-    "selected_in": []
+    "selected_in": [
+      "gene"
+    ]
   },
   {
     "result_id": "gene-GPT-5.2 Pro (Extended)",
@@ -1411,13 +1509,16 @@
     "harness": "BixBench3 public runner",
     "submitter": null,
     "source_id": "bix3",
-    "match_status": "No exact effort match",
+    "match_status": "Exact version and effort match",
     "vep_efforts": [
       "low",
       "medium",
-      "high"
+      "high",
+      "max"
     ],
-    "selected_in": []
+    "selected_in": [
+      "bix3"
+    ]
   },
   {
     "result_id": "bix3-kimi-k3",
