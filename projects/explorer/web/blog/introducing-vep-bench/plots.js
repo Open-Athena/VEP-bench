@@ -134,7 +134,7 @@ export function comparisonFigure(comparison, color, width) {
   figure.append(caption);
   if (!comparison.pairs.length) return figure;
   const detail = (row) => `${row.label} (${row.effort})\nVEP-bench: ${row.vep_score.toFixed(4)}\n`
-    + `${comparison.metric_label}: ${row.external_score.toFixed(4)}\nHarness: ${comparison.harness}`;
+    + `${comparison.metric_label}: ${row.external_score.toFixed(4)}\nHarness: ${row.harness ?? comparison.harness}`;
   const values = comparison.pairs.map((r) => r.vep_score);
   const midpoint = (Math.min(...values) + Math.max(...values)) / 2;
   const labels = [...new Map(comparison.pairs.map((row) => [row.model_id, row])).values()];

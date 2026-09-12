@@ -5,7 +5,7 @@ export function stratumModelOrder(snapshot) {
   const selectedModels = new Set(snapshot.runs.map((run) => modelName(run.model.model_id, run.generation_parameters)));
   const models = overallLeaderboardRows(snapshot.leaderboard.runs, snapshot.leaderboard.leaderboard, "spearman")
     .filter((row) => row.runs.every((run) => selectedRuns.has(run.run_id)))
-    .map((row) => row.model_cell.model);
+    .map((row) => modelName(row.runs[0].model.model_id, row.runs[0].generation_parameters));
   if (models.length !== selectedModels.size || models.some((model) => !selectedModels.has(model))) {
     throw new Error("Selected models lack a complete overall leaderboard ranking");
   }

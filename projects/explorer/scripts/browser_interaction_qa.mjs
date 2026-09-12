@@ -114,7 +114,9 @@ if (mode === "--canary") {
     await writeFile(join(outputDir, name === "task" ? "question.png" : "leaderboard.png"),
       Buffer.from(screenshot.data, "base64"));
   }
-  await send("Browser.close");
+  // Chrome can close the socket before acknowledging Browser.close.
+  const closed = new Promise((resolve) => socket.addEventListener("close", resolve, {once: true}));
+  await Promise.race([send("Browser.close"), closed]);
   socket.close();
   console.log("live canary captured rendered charts");
   process.exit(0);
@@ -501,22 +503,22 @@ assert.equal(
 
 await navigate("/blog/introducing-vep-bench.html");
 const stratumSnapshot = JSON.parse(gunzipSync(await readFile(
-  new URL("../web/blog/introducing-vep-bench/strata-2026-09-11.json.gz", import.meta.url)
+  new URL("../web/blog/introducing-vep-bench/strata-2026-09-12.json.gz", import.meta.url)
 )));
 const expectedStratumModels = stratumModelOrder(stratumSnapshot);
 const stratumIntervals = JSON.parse(await readFile(
-  new URL("../web/blog/introducing-vep-bench/strata-2026-09-11.intervals.json", import.meta.url), "utf8"
+  new URL("../web/blog/introducing-vep-bench/strata-2026-09-12.intervals.json", import.meta.url), "utf8"
 ));
 const expectedStratumRows = stratumRows(stratumSnapshot, stratumIntervals);
 const stratumPlot = 'svg[aria-label="Within-panel Spearman correlations by variant stratum and task"]';
 const stratumGroups = [
-  ["sge", "allele_type", 18], ["sge", "consequence", 12],
-  ["satmut_mpra", "allele_type", 6], ["satmut_mpra", "consequence", 18],
-  ["opensplice_snv", "allele_type", 12], ["opensplice_snv", "consequence", 6]
+  ["sge", "allele_type", 24], ["sge", "consequence", 16],
+  ["satmut_mpra", "allele_type", 8], ["satmut_mpra", "consequence", 24],
+  ["opensplice_snv", "allele_type", 16], ["opensplice_snv", "consequence", 8]
 ];
 async function checkStratumPlots() {
   await waitFor(`document.querySelectorAll(${JSON.stringify(stratumPlot + ' g[aria-label="dot"] circle')})
-    .length === 72 && document.querySelectorAll(${JSON.stringify(stratumPlot)}).length === 2`,
+    .length === 96 && document.querySelectorAll(${JSON.stringify(stratumPlot)}).length === 2`,
   "two grouped stratum figures");
   assert.equal(await evaluate(`document.querySelectorAll('select').length`), 0, "blog has no data selectors");
   assert.equal(await evaluate(`document.querySelectorAll('figure.vepbench-stratum-figure').length`), 2);
@@ -602,7 +604,7 @@ await saveDom("variant-strata.dom.html");
 
 // The post shows every exact effort with Overall scores and no selectors.
 await navigate("/blog/introducing-vep-bench.html");
-await waitFor(`document.querySelectorAll('svg[aria-label*="VEP-bench versus"]').length === 13`,
+await waitFor(`document.querySelectorAll('svg[aria-label*="VEP-bench versus"]').length === 14`,
   "all static external comparison plots");
 assert.equal(await evaluate('document.querySelectorAll("select").length'), 0);
 assert.ok(await evaluate(`[...document.querySelectorAll('svg[aria-label*="VEP-bench versus"]')]
@@ -611,13 +613,24 @@ for (const {domain, range} of await evaluate(`[...document.querySelectorAll('svg
   .map((plot) => ({domain: plot.scale('color').domain, range: plot.scale('color').range}))`)) {
   checkModelColors(domain, range);
 }
-assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="Intelligence Index"] [aria-label="dot"] > *').length`), 12);
-assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="GeneBench-Pro"] [aria-label="dot"] > *').length`), 6);
-assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="SciCode"] [aria-label="dot"] > *').length`), 12);
+assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="Intelligence Index"] [aria-label="dot"] > *').length`), 15);
+assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="GeneBench-Pro"] [aria-label="dot"] > *').length`), 9);
+assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="SciCode"] [aria-label="dot"] > *').length`), 15);
+assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="Terminal-Bench-Science"]').length`), 1);
+assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="Terminal-Bench-Science"] [aria-label="dot"] > *').length`), 4);
+assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="BixBench3"] [aria-label="dot"] > *').length`), 1);
+for (const [label, harness] of [["Terminal-Bench v4.0 (AA)", "mini-SWE-agent v2.4.6"], ["AA-Briefcase", "Stirrup"], ["GDPval-AA v2", "Stirrup"]]) {
+  const labels = await evaluate(`[...document.querySelectorAll('svg[aria-label*="${label}"] [aria-label="dot"] > *')]
+    .map((point) => point.getAttribute('aria-label'))`);
+  assert.equal(labels.length, 15);
+  assert.ok(labels.every((label) => label.includes(`Harness: ${harness}`)));
+}
 for (const effort of ["low", "medium", "high"]) {
   assert.equal(await evaluate(`[...document.querySelectorAll('svg[aria-label*="Intelligence Index"] [aria-label="dot"] > *')]
     .filter((point) => point.getAttribute('aria-label').includes('(${effort})')).length`), 4);
 }
+assert.equal(await evaluate(`[...document.querySelectorAll('svg[aria-label*="Intelligence Index"] [aria-label="dot"] > *')]
+  .filter((point) => point.getAttribute('aria-label').includes('(max)')).length`), 3);
 assert.deepEqual(await evaluate(`[...document.querySelectorAll('.observablehq--error')].map((node) => node.textContent)`), []);
 
 socket.close();

@@ -6,16 +6,16 @@ import test from "node:test";
 import {stratumRows, stratumCsv, stratumModelOrder} from "./strata-analysis.js";
 import {modelFamilyScale} from "../../components/benchmark-data.js";
 
-const snapshot = JSON.parse(gunzipSync(readFileSync(new URL("./strata-2026-09-11.json.gz", import.meta.url))));
-const intervals = JSON.parse(readFileSync(new URL("./strata-2026-09-11.intervals.json", import.meta.url)));
+const snapshot = JSON.parse(gunzipSync(readFileSync(new URL("./strata-2026-09-12.json.gz", import.meta.url))));
+const intervals = JSON.parse(readFileSync(new URL("./strata-2026-09-12.intervals.json", import.meta.url)));
 
 test("intervals are tied to the exact frozen scores and remain available in downloads", () => {
-  const raw = readFileSync(new URL("./strata-2026-09-11.json.gz", import.meta.url));
+  const raw = readFileSync(new URL("./strata-2026-09-12.json.gz", import.meta.url));
   assert.equal(intervals.snapshot_sha256, createHash("sha256").update(raw).digest("hex"));
   assert.equal(intervals.statistics.method, "Student's t");
   assert.equal(intervals.statistics.confidence_level, 0.95);
   const rows = stratumRows(snapshot, intervals);
-  assert.equal(rows.length, 72);
+  assert.equal(rows.length, 96);
   for (const row of rows) {
     if (row.spearman_ci_status === "estimated") {
       assert.ok(row.spearman_ci_low < row.mean_spearman_rho);
@@ -42,8 +42,9 @@ test("missing, duplicate or mismatched intervals fail instead of being silently 
 });
 
 test("model order follows the frozen overall leaderboard, independently of stratum scores", () => {
-  const expected = ["GPT 6 Astra (high)", "Gemini 3.8 Flash (high)", "GPT 5.6 Sol (high)",
-    "Muse Spark 1.3 (medium)", "GPT 5.6 Luna (high)", "GLM 5.3 (low)"];
+  const expected = ["GPT 6 Astra (high)", "Gemini 3.8 Flash (high)", "GPT 5.6 Sol (max)",
+    "GPT 5.6 Terra (max)", "GPT 5.6 Luna (max)", "Muse Spark 1.3 (medium)",
+    "GLM 5.3 (low)", "DeepSeek V4.1 Flash (low)"];
   assert.deepEqual(stratumModelOrder(snapshot), expected);
   const changed = structuredClone(snapshot);
   changed.results.reverse().forEach((row) => {row.mean_spearman_rho = -row.mean_spearman_rho;});
@@ -63,7 +64,7 @@ test("the frozen blog palette matches the shared website palette", () => {
 test("frozen snapshot contains only scores on the predeclared shared panel memberships", () => {
   assert.deepEqual(snapshot.policy, {minimum_variants_per_panel: 10, minimum_panels_per_task: 5});
   assert.equal(snapshot.coverage.filter((row) => row.status === "eligible").length, 12);
-  assert.equal(snapshot.results.length, 72);
+  assert.equal(snapshot.results.length, 96);
   const rows = stratumRows(snapshot);
   assert.equal(rows.length, snapshot.results.length);
   for (const coverage of snapshot.coverage) {
@@ -74,7 +75,7 @@ test("frozen snapshot contains only scores on the predeclared shared panel membe
       assert.equal(scores.length, 0);
       continue;
     }
-    assert.equal(scores.length, 6);
+    assert.equal(scores.length, 8);
     const panels = coverage.panels.filter((panel) => panel.status === "eligible");
     assert.ok(panels.every((panel) => panel.candidate_ids.length >= 10));
     for (const score of scores) {

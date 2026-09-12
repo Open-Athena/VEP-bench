@@ -78,6 +78,16 @@ export function matchStatus(result, configurations) {
   return "Exact version and effort match";
 }
 
+export function selectHarness(results, preference = []) {
+  const harnesses = [...new Set(results.map((result) => result.harness ?? ""))];
+  const rank = (harness) => {
+    const index = preference.indexOf(harness);
+    return index < 0 ? preference.length : index;
+  };
+  harnesses.sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
+  return results.filter((result) => (result.harness ?? "") === harnesses[0]);
+}
+
 export function compareScores(snapshot, external, {repeat = 0} = {}) {
   const configurations = vepConfigurations(snapshot);
   const matches = external.results.map((result) => ({...result,
@@ -85,11 +95,13 @@ export function compareScores(snapshot, external, {repeat = 0} = {}) {
   const comparisons = external.comparisons.map((comparison) => {
     const eligible = matches.filter((r) => r.group === comparison.group
       && r.match_status === "Exact version and effort match"
-      && Number.isFinite(r.scores[comparison.metric]));
+      && Number.isFinite(r.scores[comparison.metric]))
+      .map((r) => ({...r, harness: r.harness_by_metric?.[comparison.metric] ?? r.harness}));
     const pairs = [];
     for (const configuration of configurations) {
-      const sameEffort = eligible.filter((r) => r.model_id === configuration.model_id
-        && (r.model_revision ?? null) === configuration.model_revision && r.effort === configuration.effort)
+      const sameEffort = selectHarness(eligible.filter((r) => r.model_id === configuration.model_id
+        && (r.model_revision ?? null) === configuration.model_revision && r.effort === configuration.effort),
+      comparison.harness_preference)
         .sort((a, b) => b.reported_at.localeCompare(a.reported_at) || a.id.localeCompare(b.id));
       const result = sameEffort[repeat];
       if (!result) continue;
@@ -100,7 +112,7 @@ export function compareScores(snapshot, external, {repeat = 0} = {}) {
       pairs.push({model_id: configuration.model_id, family: configuration.family, effort: result.effort,
         label: configuration.family, external_model: result.model_label,
         external_score: result.scores[comparison.metric], vep_score: configuration.vep_score,
-        external_result_id: result.id, source_id: result.source_id,
+        external_result_id: result.id, source_id: result.source_id, harness: result.harness ?? null,
         run_ids: configuration.run_ids, generation_parameters: configuration.generation_parameters});
     }
     return {...comparison, scope: "overall", selection: "All exact shared efforts",
@@ -111,7 +123,7 @@ export function compareScores(snapshot, external, {repeat = 0} = {}) {
 
 export function pairedScoresCsv(comparisons) {
   const columns = ["comparison", "scope", "selection", "repeat", "model_id", "effort", "vep_score",
-    "external_score", "external_result_id", "source_id", "run_ids"];
+    "external_score", "external_result_id", "source_id", "harness", "run_ids"];
   const rows = comparisons.flatMap((c) => c.pairs.map((p) => ({...p, comparison: c.id,
     scope: c.scope, selection: c.selection, repeat: c.repeat, run_ids: p.run_ids.join(";")})));
   const quote = (value) => `"${String(value).replaceAll('"', '""')}"`;

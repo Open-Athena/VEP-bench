@@ -168,14 +168,20 @@ can describe different aspects of the same allele.
 
 ## Performance within variant classes
 
-**Analysis snapshot: 11 September 2026.** We reused the saved answers from six
+**Analysis snapshot: 12 September 2026.** We reused the saved answers from eight
 models across 52 panels, selecting the highest available reasoning effort for
-each model: high for Gemini and the GPT models, medium for Muse, and low for GLM.
+each model: max for GPT-5.6 Luna, Terra, and Sol; high for Gemini and GPT-6 Astra;
+medium for Muse; and low for GLM and DeepSeek.
 Selection uses complete runs and does not depend on score; ties at the same
 effort use the latest run. Before examining stratum performance,
 we fixed two coverage cutoffs: **at least 10 variants within an original panel**
 and **at least 5 eligible panels within a task**. These are pragmatic coverage
 requirements, not a claim of statistical significance.
+
+The snapshot includes the published DeepSeek configuration with selective
+token-limit retries. Luna's MPRA run and Terra's OpenSplice run each retain
+one API-failure retry. Luna's completed invalid SGE answer retains its zero
+score. The saved results preserve these distinctions and the original attempts.
 
 Allele type and functional consequence are separate axes: an SNV can also be
 missense. For this finer allele breakdown, we trim shared REF/ALT flanks and
@@ -193,11 +199,11 @@ import {stratumCorrelationPlot} from "../components/correlation-plot.js";
 import {stratumRows, stratumCsv, stratumModelOrder} from "./introducing-vep-bench/strata-analysis.js";
 
 const strataSnapshot = await fetchGzipJson(
-  await FileAttachment("./introducing-vep-bench/strata-2026-09-11.json.gz").url(),
+  await FileAttachment("./introducing-vep-bench/strata-2026-09-12.json.gz").url(),
   "frozen variant-stratum analysis"
 );
 const strataModelOrder = stratumModelOrder(strataSnapshot);
-const strataIntervals = await FileAttachment("./introducing-vep-bench/strata-2026-09-11.intervals.json").json();
+const strataIntervals = await FileAttachment("./introducing-vep-bench/strata-2026-09-12.intervals.json").json();
 const strataScores = stratumRows(strataSnapshot, strataIntervals)
   .sort((a, b) => strataModelOrder.indexOf(a.model) - strataModelOrder.indexOf(b.model));
 const strataTaskLabel = (family) => composition.tasks.find((task) => task.family === family)?.label ?? family;
@@ -247,7 +253,7 @@ scroll horizontally to compare the task columns.
 display(stratumFigure("allele_type"));
 ```
 
-In **SGE**, all six selected configurations have higher mean Spearman correlation for SNVs
+In **SGE**, all eight selected configurations have higher mean Spearman correlation for SNVs
 than deletions. The SNV analysis includes 478 variants in 15 panels; the
 deletion analysis includes 170 variants in 10 panels. Differences can reflect
 the different panel composition as well as variant class. Insertions lack
@@ -256,7 +262,7 @@ enough eligible panels to report a score.
 In **satMutMPRA**, only SNVs clear both cutoffs. The 60 expression deletions are too dispersed:
 no panel has 10, so no deletion summary score is reported.
 
-In **OpenSplice**, deletions have higher mean Spearman correlation than SNVs for all six selected
+In **OpenSplice**, deletions have higher mean Spearman correlation than SNVs for all eight selected
 configurations. Both strata retain all 20 panels, with 590 deletions and 410 SNVs.
 This still compares different selected variants and effect distributions within
 those panels.
@@ -309,10 +315,10 @@ Each specialist requires a separate coverage plan and comparison.
 
 ```js
 display(html`<p>
-  <a download="vepbench-variant-strata-2026-09-11.csv"
+  <a download="vepbench-variant-strata-2026-09-12.csv"
     href=${`data:text/csv;charset=utf-8,${encodeURIComponent(stratumCsv(strataSnapshot, strataIntervals))}`}>Download scores, 95% intervals, coverage, and exclusions (CSV)</a>
-  · <a href=${await FileAttachment("./introducing-vep-bench/strata-2026-09-11.json.gz").url()} download>Download frozen analysis, panel membership, model settings, and provenance (JSON.gz)</a>
-  · <a href=${await FileAttachment("./introducing-vep-bench/strata-2026-09-11.intervals.json").url()} download>Download confidence intervals and method (JSON)</a>
+  · <a href=${await FileAttachment("./introducing-vep-bench/strata-2026-09-12.json.gz").url()} download>Download frozen analysis, panel membership, model settings, and provenance (JSON.gz)</a>
+  · <a href=${await FileAttachment("./introducing-vep-bench/strata-2026-09-12.intervals.json").url()} download>Download confidence intervals and method (JSON)</a>
 </p>`);
 ```
 
@@ -375,7 +381,7 @@ if (cutoffAnalysis.summaries.length) {
 }
 ```
 
-All four models in this snapshot have the same **9 before / 7 after** split.
+All five models with known cutoffs in this snapshot have the same **9 before / 7 after** split.
 Their cutoffs (February 16, March, and April 30, 2026) fall in the same gap
 between recorded assay dates: PALB2 on January 19 and the next four panels on
 June 8. No panel falls between those dates, so each cutoff selects the same
@@ -430,6 +436,10 @@ model**, with a per-model threshold of 0.05. A detected before-cutoff advantage
 would be consistent with source exposure, but would not prove overfitting.
 With only 16 panels, a nonsignificant result cannot rule out overfitting or
 establish equivalence. Groups with fewer than two genes are not tested.
+
+The refreshed highest-effort runs show no before-cutoff advantage at the
+per-model 0.05 threshold. For the new max-effort configurations, the one-sided
+p-values are 0.307 for Luna, 0.154 for Terra, and 0.560 for Sol.
 
 ```js
 if (cutoffAnalysis.summaries.length) display(Inputs.table(cutoffAnalysis.summaries, {
@@ -510,21 +520,24 @@ multistep biological data analysis. General intelligence scores provide a
 secondary comparison. We selected sources for their scope and identifiable
 evaluation settings, before computing associations.
 
-**The current overlap is too small to summarize a correlation.** Our frozen
-September 11, 2026 snapshot has seven model versions with complete VEP-bench scores
+**The comparisons remain descriptive.** Our frozen
+September 12, 2026 VEP snapshot has eight model versions with complete scores
 across all three tasks. After requiring the **same model release and exact
-reasoning effort**, the biology comparisons below contain at most two distinct
+reasoning effort**, the biology comparisons below contain at most four distinct
 models each. The latest Artificial Analysis Intelligence Index, **v4.3** at
-retrieval, has **12 matched configurations across four models**: GPT-6 Astra,
-GPT-5.6 Sol, GPT-5.6 Luna, and Gemini 3.8 Flash, each at low, medium, and high
-effort. Every exact match appears in the plots. Multiple settings of a model
+source retrieval on September 11, has **15 matched configurations across five models**:
+GPT-6 Astra and Gemini 3.8 Flash at low, medium, and high; GPT-5.6 Sol and Luna
+at low, medium, high, and max; and GPT-5.6 Terra at max.
+Every exact match appears in the plots. Multiple settings of a model
 do not increase the count of distinct models.
 
 These are descriptive paired scores. Multiple efforts from one model are
 dependent observations, so we do not pool the points into a cross-model
-correlation. The snapshot also falls below our five-distinct-model threshold.
+correlation. Each biology comparison falls below our five-distinct-model
+threshold; AA has five models but repeated efforts.
 Sparse overlap does not establish either agreement or disagreement.
-No external benchmark was rerun and no additional model calls were made.
+The refresh adds VEP-bench evaluations of Luna, Terra, and Sol at max effort.
+The external benchmark results are reused from the September 11 source snapshot.
 
 ```js
 import {compareScores} from "./introducing-vep-bench/comparisons.js";
@@ -542,11 +555,15 @@ const sourceById = new Map(externalSnapshot.sources.map((source) => [source.id, 
 We use only VEP-bench's **Overall score**, the unweighted mean of its three task scores; each
 task score is the mean Spearman correlation across its variant panels. We use
 the original scores, without the leaderboard's display clipping. For each
-external benchmark, metric, harness, and submitter group, we include **every
+external benchmark and metric, we show **one comparison**, including **every
 effort evaluated on both sides**. Each point represents one model and exact
-effort. We use the latest published submission for that combination,
-independently of its score. Missing or ambiguous efforts are excluded; “max” never
-substitutes for “high”.
+effort. We choose one harness for that combination using a fixed preference,
+then use its latest published submission, independently of score.
+Terminal-Bench-Science prefers Codex, then mini-SWE-agent; GeneBench-Pro,
+BixBench3, and Artificial Analysis use their respective published evaluation
+harnesses. Any additional harness names fall back to alphabetical order.
+The tooltips and downloadable paired scores record the chosen harness.
+Missing or ambiguous efforts are excluded; “max” never substitutes for “high”.
 
 Colors identify models, marker shapes identify efforts, and connecting lines
 join the efforts of the same model in order. These lines are guides to the
@@ -568,21 +585,27 @@ const visibleComparisons = externalAnalysis.comparisons;
 
 [GeneBench-Pro](https://cdn.openai.com/pdf/21938268-21af-442f-af93-3b2249afb241/genebench-pro.pdf)
 reports exact efforts in Supplementary Table 1. We use the full 129-problem
-suite, with six matched configurations: GPT-5.6 Sol and GPT-5.6 Luna at low,
-medium, and high effort. Pro systems and the original GeneBench remain separate. Its pass rates
+suite, with nine matched configurations: GPT-5.6 Sol and GPT-5.6 Luna at low,
+medium, high, and max, plus GPT-5.6 Terra at max.
+Pro systems and the original GeneBench remain separate. Its pass rates
 exclude execution and format errors and average per-problem success over valid
 attempts; this differs from VEP-bench's treatment of completed invalid answers.
 
 For [Terminal-Bench-Science](https://www.terminal-bench-science.ai/?view=domains),
 we use its published **Life Sciences** domain: 19 tasks, three trials per task.
 The official leaderboard snapshot supplies this broader label, which includes
-medical imaging, rather than a separately labeled biology subset. The sole
-exact match is Gemini 3.8 Flash at high effort, using mini-SWE-agent.
-GPT-5.6 Sol and Luna are reported at max effort, while VEP has low, medium,
-and high; DeepSeek V4.1 Flash and GLM 5.3 are also reported at max, while VEP
-has low. Other reported model releases have no complete VEP Overall score.
-Other harnesses remain separate; the all-science aggregate is not used as a
-biology score.
+medical imaging, rather than a separately labeled biology subset. Four models
+match: GPT-5.6 Luna, Terra, and Sol at max effort using Codex, and Gemini 3.8
+Flash at high effort using mini-SWE-agent. DeepSeek V4.1 Flash and GLM 5.3 are
+reported at max, while VEP has low. Other reported model releases have no
+complete VEP Overall score.
+The selected harnesses appear together in one comparison; the all-science
+aggregate is not used as a biology score.
+
+[BixBench3](https://github.com/EdisonScientific/BixBench3) now contributes one
+exact match: GPT-5.6 Sol at max effort in its published runner. Its mean artifact
+paper score summarizes 20 research workflows; one matched model cannot support
+a correlation.
 
 ```js
 const biologyComparisons = visibleComparisons.filter((c) => c.tier === "primary" && c.pairs.length);
@@ -612,7 +635,7 @@ their published effort settings do not match our completed runs:
 | [DeepSeek V4.1 Flash](https://artificialanalysis.ai/models/deepseek-v4-1-flash) | low | max |
 
 These settings are excluded under the same exact-effort rule as every other
-model. The paired AAII and component plots therefore contain four model releases.
+model. The paired AAII and component plots therefore contain five model releases.
 
 ```js
 const aaComparisons = visibleComparisons.filter((c) => c.tier === "secondary");
@@ -638,9 +661,8 @@ variant-effect prediction causes, or can replace, agentic biology capability.
 ### Survey and exact matching audit
 
 The survey records the specific reports inspected; an exclusion does not claim
-that no other evaluation exists. For example, BixBench3 has a shared model
-release but no completed VEP configuration at its reported effort. Unidentified
-models, multi-model systems, undocumented harnesses, and missing settings remain
+that no other evaluation exists. Unidentified models, multi-model systems,
+undocumented harnesses, and missing settings remain
 visible in the audit rather than receiving inferred matches.
 
 ```js
@@ -689,8 +711,8 @@ display(html`<p>
 
 The [analysis code](https://github.com/Open-Athena/VEP-bench/blob/main/projects/explorer/web/blog/introducing-vep-bench/comparisons.js)
 and [source extraction script](https://github.com/Open-Athena/VEP-bench/blob/main/projects/explorer/scripts/freeze_comparisons.mjs)
-are versioned with the post. Limited published overlap is a valid finding and
-does not call for additional evaluations to complete this comparison.
+are versioned with the post. The saved comparisons retain the new max-effort
+results, the chosen harness for each point, and the remaining gaps in overlap.
 
 - [Explore the leaderboard](../index.html)
 - [Task methodology](../tasks.html)

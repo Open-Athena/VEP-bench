@@ -1,13 +1,13 @@
 {
   "schema_version": "1.0",
-  "snapshot_date": "2026-09-11",
+  "snapshot_date": "2026-09-12",
   "aa_intelligence_index_version": "4.3",
   "rules": [
     "Choose benchmarks for biological relevance, agentic execution, attributable public results and overlap before computing associations.",
     "Exact named model release and exact explicit effort only. No family substitution, inferred defaults, max-to-high conversion, imputation, or fallback efforts. Hidden checkpoint revisions are not disclosed by these sources.",
     "Use only complete VEP configurations spanning all three tasks. Overall is the unweighted mean of task mean Spearman scores, reusing explorer aggregation without display clipping.",
-    "For each benchmark, metric and external harness/submitter group, include every exact shared effort as a separate point. Use the latest published submission for each model and effort; timestamp ties require review. Never select by score.",
-    "Keep harnesses and submitters separate. Earlier submissions, when available, are retained as separate sensitivity comparisons, never extra points in the primary plots.",
+    "For each benchmark and metric, include every exact shared effort as a separate point. Choose one harness per model and effort by the comparison's fixed harness preference, falling back to alphabetical harness name. Use the latest published submission within that harness; timestamp ties require review. Never select by score.",
+    "Use one comparison per benchmark metric and record the chosen harness for each paired score. These are model-plus-harness results, not a controlled model-only comparison. Other submissions remain in the source audit, never extra comparison points.",
     "Use only the Overall VEP score. Count matched configurations and distinct model versions separately; multiple efforts from one model are dependent observations.",
     "The all-effort plots are descriptive. Never pool repeated efforts into a cross-model correlation. Correlation summaries require at least five distinct models with one observation each and nonconstant scores; no p-values or imputation.",
     "Use AAII v4.3, the latest methodology at retrieval. Components retain their published metrics. Do not combine index versions or invent unreported subset indices."
@@ -16,17 +16,17 @@
     {
       "id": "vep",
       "url": "https://huggingface.co/buckets/open-athena/VEP-bench/resolve/versions/main/manifest.json",
-      "retrieved_at": "2026-09-11T20:17:50.830Z",
-      "downloaded_sha256": "5b1484485d25d8f0c758b6028745ab829857084a9bc6554a1ded38ccf222630c",
-      "locator": "Publication runs entry and question-set identity",
+      "retrieved_at": "2026-09-12T14:52:19.538Z",
+      "downloaded_sha256": "8f32cc23b70c79799470faf5a053b5d659ffa9cec5d1a62db7cbe26d5ddd7987",
+      "locator": "Validated local publication candidate; URL identifies the intended publication destination",
       "evidence": {
         "runs": {
-          "artifact_bytes": 77750,
-          "artifact_sha256": "338805dd4e1c62b964e326430f266be9cdc814e9506bf6d831f4c90a170c54c4",
-          "content_bytes": 77750,
-          "content_sha256": "338805dd4e1c62b964e326430f266be9cdc814e9506bf6d831f4c90a170c54c4",
+          "artifact_bytes": 92781,
+          "artifact_sha256": "293d208b7c6e112007332eadb7f4f49e009f13c1df4c1e453ad88fef5b7494eb",
+          "content_bytes": 92781,
+          "content_sha256": "293d208b7c6e112007332eadb7f4f49e009f13c1df4c1e453ad88fef5b7494eb",
           "path": "versions/main/runs.json",
-          "records": 45
+          "records": 54
         },
         "question_set_sha256": "be62fd7b5f06656572a5150904758f04bb998590f63ce31ebbca13852a0bfab7",
         "question_set_size": 52
@@ -6812,6 +6812,38 @@
       }
     },
     {
+      "id": "aa-gpt-5-6-terra",
+      "url": "https://artificialanalysis.ai/models",
+      "retrieved_at": "2026-09-11T18:37:00.435Z",
+      "downloaded_sha256": "851f487a3b3849001024a6a71f6866d8ea18c080585f1815bd3bc9bcfb8b0a87",
+      "locator": "Public page data object with slug=gpt-5-6-terra",
+      "evidence": {
+        "slug": "gpt-5-6-terra",
+        "name": "GPT-5.6 Terra (max)",
+        "release": {
+          "slug": "gpt-5-6-terra",
+          "name": "GPT-5.6 Terra"
+        },
+        "effort": {
+          "slug": "max",
+          "label": "max",
+          "level": 60
+        },
+        "intelligenceIndexIsEstimated": false,
+        "intelligenceIndex": 42.2514998239494,
+        "briefcaseBreakdown.overall.elo": 1330,
+        "gdpval": 1476.96,
+        "automationBenchPartialScore": 0.5964995802534495,
+        "terminalbenchV40": 0.353535353535354,
+        "scicode": 0.549768518518518,
+        "omniscience": 0.05,
+        "gdpPdfAllPass": 0.24,
+        "lcr": 0.83,
+        "hle": 0.429101019462465,
+        "critpt": 0.3
+      }
+    },
+    {
       "id": "aa-glm-5-3",
       "url": "https://artificialanalysis.ai/models",
       "retrieved_at": "2026-09-11T18:37:00.435Z",
@@ -9019,19 +9051,19 @@
       "benchmark": "Terminal-Bench-Science",
       "source_id": "tbs",
       "decision": "Primary, descriptive",
-      "rationale": "Agentic scientific workflows. The official result taxonomy exposes Life Sciences, including medical imaging; no narrower biology label is used. One exact matched model; harnesses kept separate."
+      "rationale": "Agentic scientific workflows. The official result taxonomy exposes Life Sciences, including medical imaging; no narrower biology label is used. Choose Codex where available, otherwise mini-SWE-agent, for each exact model and effort; document the harness in each paired score."
     },
     {
       "benchmark": "GeneBench-Pro",
       "source_id": "gene",
       "decision": "Primary, descriptive",
-      "rationale": "Multistep quantitative biology in a Docker environment. Two model versions have exact efforts; Pro systems excluded. Original GeneBench scores are not substituted."
+      "rationale": "Multistep quantitative biology in the published GeneBench Docker harness. Exact model and effort matches only; Pro systems excluded. Original GeneBench scores are not substituted."
     },
     {
       "benchmark": "BixBench3",
       "source_id": "bix3",
-      "decision": "No exact effort overlap",
-      "rationale": "Agentic research-scale computational biology. GPT-5.6 Sol is reported at max; VEP has low/medium/high. Claude Opus 5 has no complete VEP overall score."
+      "decision": "Primary when exactly matched",
+      "rationale": "Agentic research-scale computational biology using the published BixBench3 runner. Include only complete VEP configurations with an exact model and effort match."
     },
     {
       "benchmark": "BixBench (original)",
@@ -9061,7 +9093,7 @@
       "benchmark": "Artificial Analysis Intelligence Index and components",
       "source_id": "aa-method",
       "decision": "Secondary, descriptive",
-      "rationale": "General intelligence comparison using latest v4.3 at retrieval. Twelve exact matched configurations across four model releases. All ten published component metrics retained independently of their association; none is labeled an agentic biology score."
+      "rationale": "General intelligence comparison using latest v4.3 at retrieval and Artificial Analysis's published harnesses. All exact model and effort matches and all ten published component metrics are retained independently of their association; none is labeled an agentic biology score."
     },
     {
       "benchmark": "Standalone biology Q&A / BixBench zero-shot",
@@ -9292,9 +9324,9 @@
       "aa_index_weight": 0.1
     },
     {
-      "id": "tbs-Claude Code",
-      "label": "Terminal-Bench-Science · Claude Code",
-      "group": "tbs-Claude Code",
+      "id": "tbs",
+      "label": "Terminal-Bench-Science",
+      "group": "tbs",
       "metric": "life",
       "tier": "primary",
       "benchmark": "Terminal-Bench-Science",
@@ -9304,64 +9336,11 @@
       "task_count": 19,
       "repeats": 3,
       "tools": "Terminal and task environment",
-      "harness": "Claude Code",
-      "budget": "Task-specific; recorded life-domain cost and tokens retained per result",
-      "source_ids": [
-        "tbs"
-      ]
-    },
-    {
-      "id": "tbs-Codex",
-      "label": "Terminal-Bench-Science · Codex",
-      "group": "tbs-Codex",
-      "metric": "life",
-      "tier": "primary",
-      "benchmark": "Terminal-Bench-Science",
-      "version": "0.1",
-      "subset": "Life Sciences (broader than biology)",
-      "metric_label": "Resolution rate (fraction)",
-      "task_count": 19,
-      "repeats": 3,
-      "tools": "Terminal and task environment",
-      "harness": "Codex",
-      "budget": "Task-specific; recorded life-domain cost and tokens retained per result",
-      "source_ids": [
-        "tbs"
-      ]
-    },
-    {
-      "id": "tbs-mini-SWE-agent",
-      "label": "Terminal-Bench-Science · mini-SWE-agent",
-      "group": "tbs-mini-SWE-agent",
-      "metric": "life",
-      "tier": "primary",
-      "benchmark": "Terminal-Bench-Science",
-      "version": "0.1",
-      "subset": "Life Sciences (broader than biology)",
-      "metric_label": "Resolution rate (fraction)",
-      "task_count": 19,
-      "repeats": 3,
-      "tools": "Terminal and task environment",
-      "harness": "mini-SWE-agent",
-      "budget": "Task-specific; recorded life-domain cost and tokens retained per result",
-      "source_ids": [
-        "tbs"
-      ]
-    },
-    {
-      "id": "tbs-Grok Build",
-      "label": "Terminal-Bench-Science · Grok Build",
-      "group": "tbs-Grok Build",
-      "metric": "life",
-      "tier": "primary",
-      "benchmark": "Terminal-Bench-Science",
-      "version": "0.1",
-      "subset": "Life Sciences (broader than biology)",
-      "metric_label": "Resolution rate (fraction)",
-      "task_count": 19,
-      "repeats": 3,
-      "tools": "Terminal and task environment",
-      "harness": "Grok Build",
+      "harness": "Codex where available, otherwise mini-SWE-agent",
+      "harness_preference": [
+        "Codex",
+        "mini-SWE-agent"
+      ],
       "budget": "Task-specific; recorded life-domain cost and tokens retained per result",
       "source_ids": [
         "tbs"
@@ -9430,7 +9409,20 @@
       },
       "source_id": "aa-gpt-6-astra",
       "reported_at": "2026-09-11T18:37:00.435Z",
-      "harness": "Artificial Analysis",
+      "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+      "harness_by_metric": {
+        "intelligence": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "briefcase": "Stirrup",
+        "gdpval": "Stirrup",
+        "automation": "AutomationBench multi-turn environment, dataset 1.0.6",
+        "terminal": "mini-SWE-agent v2.4.6",
+        "scicode": "AA scientist-background prompting; SciCode dataset 1.0.1",
+        "omniscience": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "gdp-pdf": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "lcr": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "hle": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "critpt": "AA two-step reasoning/formatting; official CritPt grader"
+      },
       "submitter": "Artificial Analysis",
       "exclusion": null
     },
@@ -9456,7 +9448,20 @@
       },
       "source_id": "aa-claude-fable-5-1",
       "reported_at": "2026-09-11T18:37:00.435Z",
-      "harness": "Artificial Analysis",
+      "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+      "harness_by_metric": {
+        "intelligence": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "briefcase": "Stirrup",
+        "gdpval": "Stirrup",
+        "automation": "AutomationBench multi-turn environment, dataset 1.0.6",
+        "terminal": "mini-SWE-agent v2.4.6",
+        "scicode": "AA scientist-background prompting; SciCode dataset 1.0.1",
+        "omniscience": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "gdp-pdf": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "lcr": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "hle": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "critpt": "AA two-step reasoning/formatting; official CritPt grader"
+      },
       "submitter": "Artificial Analysis",
       "exclusion": "Fallback system may use another model; excluded from model-level comparisons"
     },
@@ -9482,7 +9487,20 @@
       },
       "source_id": "aa-gpt-5-6-luna",
       "reported_at": "2026-09-11T18:37:00.435Z",
-      "harness": "Artificial Analysis",
+      "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+      "harness_by_metric": {
+        "intelligence": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "briefcase": "Stirrup",
+        "gdpval": "Stirrup",
+        "automation": "AutomationBench multi-turn environment, dataset 1.0.6",
+        "terminal": "mini-SWE-agent v2.4.6",
+        "scicode": "AA scientist-background prompting; SciCode dataset 1.0.1",
+        "omniscience": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "gdp-pdf": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "lcr": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "hle": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "critpt": "AA two-step reasoning/formatting; official CritPt grader"
+      },
       "submitter": "Artificial Analysis",
       "exclusion": null
     },
@@ -9508,7 +9526,20 @@
       },
       "source_id": "aa-gemini-3-8-flash",
       "reported_at": "2026-09-11T18:37:00.435Z",
-      "harness": "Artificial Analysis",
+      "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+      "harness_by_metric": {
+        "intelligence": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "briefcase": "Stirrup",
+        "gdpval": "Stirrup",
+        "automation": "AutomationBench multi-turn environment, dataset 1.0.6",
+        "terminal": "mini-SWE-agent v2.4.6",
+        "scicode": "AA scientist-background prompting; SciCode dataset 1.0.1",
+        "omniscience": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "gdp-pdf": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "lcr": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "hle": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "critpt": "AA two-step reasoning/formatting; official CritPt grader"
+      },
       "submitter": "Artificial Analysis",
       "exclusion": null
     },
@@ -9534,7 +9565,20 @@
       },
       "source_id": "aa-muse-spark-1-3",
       "reported_at": "2026-09-11T18:37:00.435Z",
-      "harness": "Artificial Analysis",
+      "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+      "harness_by_metric": {
+        "intelligence": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "briefcase": "Stirrup",
+        "gdpval": "Stirrup",
+        "automation": "AutomationBench multi-turn environment, dataset 1.0.6",
+        "terminal": "mini-SWE-agent v2.4.6",
+        "scicode": "AA scientist-background prompting; SciCode dataset 1.0.1",
+        "omniscience": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "gdp-pdf": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "lcr": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "hle": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "critpt": "AA two-step reasoning/formatting; official CritPt grader"
+      },
       "submitter": "Artificial Analysis",
       "exclusion": null
     },
@@ -9560,7 +9604,59 @@
       },
       "source_id": "aa-claude-opus-5",
       "reported_at": "2026-09-11T18:37:00.435Z",
-      "harness": "Artificial Analysis",
+      "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+      "harness_by_metric": {
+        "intelligence": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "briefcase": "Stirrup",
+        "gdpval": "Stirrup",
+        "automation": "AutomationBench multi-turn environment, dataset 1.0.6",
+        "terminal": "mini-SWE-agent v2.4.6",
+        "scicode": "AA scientist-background prompting; SciCode dataset 1.0.1",
+        "omniscience": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "gdp-pdf": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "lcr": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "hle": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "critpt": "AA two-step reasoning/formatting; official CritPt grader"
+      },
+      "submitter": "Artificial Analysis",
+      "exclusion": null
+    },
+    {
+      "id": "aa-gpt-5-6-terra",
+      "group": "aa",
+      "model_label": "GPT-5.6 Terra (max)",
+      "model_id": "openai/gpt-5.6-terra",
+      "model_revision": null,
+      "effort": "max",
+      "scores": {
+        "intelligence": 42.2514998239494,
+        "briefcase": 1330,
+        "gdpval": 1476.96,
+        "automation": 0.5964995802534495,
+        "terminal": 0.353535353535354,
+        "scicode": 0.549768518518518,
+        "omniscience": 0.05,
+        "gdp-pdf": 0.24,
+        "lcr": 0.83,
+        "hle": 0.429101019462465,
+        "critpt": 0.3
+      },
+      "source_id": "aa-gpt-5-6-terra",
+      "reported_at": "2026-09-11T18:37:00.435Z",
+      "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+      "harness_by_metric": {
+        "intelligence": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "briefcase": "Stirrup",
+        "gdpval": "Stirrup",
+        "automation": "AutomationBench multi-turn environment, dataset 1.0.6",
+        "terminal": "mini-SWE-agent v2.4.6",
+        "scicode": "AA scientist-background prompting; SciCode dataset 1.0.1",
+        "omniscience": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "gdp-pdf": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "lcr": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "hle": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "critpt": "AA two-step reasoning/formatting; official CritPt grader"
+      },
       "submitter": "Artificial Analysis",
       "exclusion": null
     },
@@ -9586,7 +9682,20 @@
       },
       "source_id": "aa-glm-5-3",
       "reported_at": "2026-09-11T18:37:00.435Z",
-      "harness": "Artificial Analysis",
+      "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+      "harness_by_metric": {
+        "intelligence": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "briefcase": "Stirrup",
+        "gdpval": "Stirrup",
+        "automation": "AutomationBench multi-turn environment, dataset 1.0.6",
+        "terminal": "mini-SWE-agent v2.4.6",
+        "scicode": "AA scientist-background prompting; SciCode dataset 1.0.1",
+        "omniscience": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "gdp-pdf": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "lcr": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "hle": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "critpt": "AA two-step reasoning/formatting; official CritPt grader"
+      },
       "submitter": "Artificial Analysis",
       "exclusion": null
     },
@@ -9612,7 +9721,20 @@
       },
       "source_id": "aa-gpt-5-6-sol",
       "reported_at": "2026-09-11T18:37:00.435Z",
-      "harness": "Artificial Analysis",
+      "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+      "harness_by_metric": {
+        "intelligence": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "briefcase": "Stirrup",
+        "gdpval": "Stirrup",
+        "automation": "AutomationBench multi-turn environment, dataset 1.0.6",
+        "terminal": "mini-SWE-agent v2.4.6",
+        "scicode": "AA scientist-background prompting; SciCode dataset 1.0.1",
+        "omniscience": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "gdp-pdf": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "lcr": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "hle": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "critpt": "AA two-step reasoning/formatting; official CritPt grader"
+      },
       "submitter": "Artificial Analysis",
       "exclusion": null
     },
@@ -9638,7 +9760,20 @@
       },
       "source_id": "aa-deepseek-v4-1-flash",
       "reported_at": "2026-09-11T18:37:00.435Z",
-      "harness": "Artificial Analysis",
+      "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+      "harness_by_metric": {
+        "intelligence": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "briefcase": "Stirrup",
+        "gdpval": "Stirrup",
+        "automation": "AutomationBench multi-turn environment, dataset 1.0.6",
+        "terminal": "mini-SWE-agent v2.4.6",
+        "scicode": "AA scientist-background prompting; SciCode dataset 1.0.1",
+        "omniscience": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "gdp-pdf": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "lcr": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "hle": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "critpt": "AA two-step reasoning/formatting; official CritPt grader"
+      },
       "submitter": "Artificial Analysis",
       "exclusion": null
     },
@@ -9664,7 +9799,20 @@
       },
       "source_id": "aa-gpt-6-astra-high",
       "reported_at": "2026-09-11T18:39:47.893Z",
-      "harness": "Artificial Analysis",
+      "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+      "harness_by_metric": {
+        "intelligence": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "briefcase": "Stirrup",
+        "gdpval": "Stirrup",
+        "automation": "AutomationBench multi-turn environment, dataset 1.0.6",
+        "terminal": "mini-SWE-agent v2.4.6",
+        "scicode": "AA scientist-background prompting; SciCode dataset 1.0.1",
+        "omniscience": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "gdp-pdf": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "lcr": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "hle": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "critpt": "AA two-step reasoning/formatting; official CritPt grader"
+      },
       "submitter": "Artificial Analysis",
       "exclusion": null
     },
@@ -9690,7 +9838,20 @@
       },
       "source_id": "aa-gpt-5-6-sol-high",
       "reported_at": "2026-09-11T18:39:48.545Z",
-      "harness": "Artificial Analysis",
+      "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+      "harness_by_metric": {
+        "intelligence": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "briefcase": "Stirrup",
+        "gdpval": "Stirrup",
+        "automation": "AutomationBench multi-turn environment, dataset 1.0.6",
+        "terminal": "mini-SWE-agent v2.4.6",
+        "scicode": "AA scientist-background prompting; SciCode dataset 1.0.1",
+        "omniscience": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "gdp-pdf": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "lcr": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "hle": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "critpt": "AA two-step reasoning/formatting; official CritPt grader"
+      },
       "submitter": "Artificial Analysis",
       "exclusion": null
     },
@@ -9716,7 +9877,20 @@
       },
       "source_id": "aa-gpt-5-6-luna-high",
       "reported_at": "2026-09-11T18:39:50.057Z",
-      "harness": "Artificial Analysis",
+      "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+      "harness_by_metric": {
+        "intelligence": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "briefcase": "Stirrup",
+        "gdpval": "Stirrup",
+        "automation": "AutomationBench multi-turn environment, dataset 1.0.6",
+        "terminal": "mini-SWE-agent v2.4.6",
+        "scicode": "AA scientist-background prompting; SciCode dataset 1.0.1",
+        "omniscience": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "gdp-pdf": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "lcr": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "hle": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "critpt": "AA two-step reasoning/formatting; official CritPt grader"
+      },
       "submitter": "Artificial Analysis",
       "exclusion": null
     },
@@ -9742,7 +9916,20 @@
       },
       "source_id": "aa-gpt-6-astra-medium",
       "reported_at": "2026-09-11T18:41:18.455Z",
-      "harness": "Artificial Analysis",
+      "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+      "harness_by_metric": {
+        "intelligence": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "briefcase": "Stirrup",
+        "gdpval": "Stirrup",
+        "automation": "AutomationBench multi-turn environment, dataset 1.0.6",
+        "terminal": "mini-SWE-agent v2.4.6",
+        "scicode": "AA scientist-background prompting; SciCode dataset 1.0.1",
+        "omniscience": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "gdp-pdf": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "lcr": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "hle": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "critpt": "AA two-step reasoning/formatting; official CritPt grader"
+      },
       "submitter": "Artificial Analysis",
       "exclusion": null
     },
@@ -9768,7 +9955,20 @@
       },
       "source_id": "aa-gpt-5-6-sol-medium",
       "reported_at": "2026-09-11T18:41:18.795Z",
-      "harness": "Artificial Analysis",
+      "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+      "harness_by_metric": {
+        "intelligence": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "briefcase": "Stirrup",
+        "gdpval": "Stirrup",
+        "automation": "AutomationBench multi-turn environment, dataset 1.0.6",
+        "terminal": "mini-SWE-agent v2.4.6",
+        "scicode": "AA scientist-background prompting; SciCode dataset 1.0.1",
+        "omniscience": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "gdp-pdf": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "lcr": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "hle": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "critpt": "AA two-step reasoning/formatting; official CritPt grader"
+      },
       "submitter": "Artificial Analysis",
       "exclusion": null
     },
@@ -9794,7 +9994,20 @@
       },
       "source_id": "aa-gpt-5-6-luna-medium",
       "reported_at": "2026-09-11T18:41:19.095Z",
-      "harness": "Artificial Analysis",
+      "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+      "harness_by_metric": {
+        "intelligence": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "briefcase": "Stirrup",
+        "gdpval": "Stirrup",
+        "automation": "AutomationBench multi-turn environment, dataset 1.0.6",
+        "terminal": "mini-SWE-agent v2.4.6",
+        "scicode": "AA scientist-background prompting; SciCode dataset 1.0.1",
+        "omniscience": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "gdp-pdf": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "lcr": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "hle": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "critpt": "AA two-step reasoning/formatting; official CritPt grader"
+      },
       "submitter": "Artificial Analysis",
       "exclusion": null
     },
@@ -9820,7 +10033,20 @@
       },
       "source_id": "aa-gpt-6-astra-low",
       "reported_at": "2026-09-11T20:19:21.225Z",
-      "harness": "Artificial Analysis",
+      "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+      "harness_by_metric": {
+        "intelligence": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "briefcase": "Stirrup",
+        "gdpval": "Stirrup",
+        "automation": "AutomationBench multi-turn environment, dataset 1.0.6",
+        "terminal": "mini-SWE-agent v2.4.6",
+        "scicode": "AA scientist-background prompting; SciCode dataset 1.0.1",
+        "omniscience": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "gdp-pdf": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "lcr": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "hle": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "critpt": "AA two-step reasoning/formatting; official CritPt grader"
+      },
       "submitter": "Artificial Analysis",
       "exclusion": null
     },
@@ -9846,7 +10072,20 @@
       },
       "source_id": "aa-gpt-5-6-sol-low",
       "reported_at": "2026-09-11T20:19:20.169Z",
-      "harness": "Artificial Analysis",
+      "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+      "harness_by_metric": {
+        "intelligence": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "briefcase": "Stirrup",
+        "gdpval": "Stirrup",
+        "automation": "AutomationBench multi-turn environment, dataset 1.0.6",
+        "terminal": "mini-SWE-agent v2.4.6",
+        "scicode": "AA scientist-background prompting; SciCode dataset 1.0.1",
+        "omniscience": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "gdp-pdf": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "lcr": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "hle": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "critpt": "AA two-step reasoning/formatting; official CritPt grader"
+      },
       "submitter": "Artificial Analysis",
       "exclusion": null
     },
@@ -9872,7 +10111,20 @@
       },
       "source_id": "aa-gpt-5-6-luna-low",
       "reported_at": "2026-09-11T20:19:19.373Z",
-      "harness": "Artificial Analysis",
+      "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+      "harness_by_metric": {
+        "intelligence": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "briefcase": "Stirrup",
+        "gdpval": "Stirrup",
+        "automation": "AutomationBench multi-turn environment, dataset 1.0.6",
+        "terminal": "mini-SWE-agent v2.4.6",
+        "scicode": "AA scientist-background prompting; SciCode dataset 1.0.1",
+        "omniscience": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "gdp-pdf": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "lcr": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "hle": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "critpt": "AA two-step reasoning/formatting; official CritPt grader"
+      },
       "submitter": "Artificial Analysis",
       "exclusion": null
     },
@@ -9898,7 +10150,20 @@
       },
       "source_id": "aa-gemini-3-8-flash-medium",
       "reported_at": "2026-09-11T18:41:19.379Z",
-      "harness": "Artificial Analysis",
+      "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+      "harness_by_metric": {
+        "intelligence": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "briefcase": "Stirrup",
+        "gdpval": "Stirrup",
+        "automation": "AutomationBench multi-turn environment, dataset 1.0.6",
+        "terminal": "mini-SWE-agent v2.4.6",
+        "scicode": "AA scientist-background prompting; SciCode dataset 1.0.1",
+        "omniscience": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "gdp-pdf": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "lcr": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "hle": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "critpt": "AA two-step reasoning/formatting; official CritPt grader"
+      },
       "submitter": "Artificial Analysis",
       "exclusion": null
     },
@@ -9924,13 +10189,26 @@
       },
       "source_id": "aa-gemini-3-8-flash-low",
       "reported_at": "2026-09-11T18:41:19.659Z",
-      "harness": "Artificial Analysis",
+      "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+      "harness_by_metric": {
+        "intelligence": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "briefcase": "Stirrup",
+        "gdpval": "Stirrup",
+        "automation": "AutomationBench multi-turn environment, dataset 1.0.6",
+        "terminal": "mini-SWE-agent v2.4.6",
+        "scicode": "AA scientist-background prompting; SciCode dataset 1.0.1",
+        "omniscience": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "gdp-pdf": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "lcr": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "hle": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+        "critpt": "AA two-step reasoning/formatting; official CritPt grader"
+      },
       "submitter": "Artificial Analysis",
       "exclusion": null
     },
     {
       "id": "tbs-bcf50bd8-8555-48a6-8cae-9f697af54051",
-      "group": "tbs-Claude Code",
+      "group": "tbs",
       "model_label": "Opus 5",
       "model_id": "anthropic/claude-opus-5",
       "effort": "max",
@@ -9948,7 +10226,7 @@
     },
     {
       "id": "tbs-378f8b49-dbd8-4acf-a065-8c07e1712de2",
-      "group": "tbs-Codex",
+      "group": "tbs",
       "model_label": "GPT-5.6 Sol",
       "model_id": "openai/gpt-5.6-sol",
       "effort": "max",
@@ -9966,7 +10244,7 @@
     },
     {
       "id": "tbs-e3f2861a-97db-4730-a0ff-99f08d8c7299",
-      "group": "tbs-Claude Code",
+      "group": "tbs",
       "model_label": "Fable 5",
       "model_id": null,
       "effort": "max",
@@ -9984,7 +10262,7 @@
     },
     {
       "id": "tbs-58d4c48d-791b-4873-ba3e-af1cf997a79c",
-      "group": "tbs-Codex",
+      "group": "tbs",
       "model_label": "DeepSeek V4.1 Flash",
       "model_id": "deepseek/deepseek-v4.1-flash",
       "effort": "max",
@@ -10002,7 +10280,7 @@
     },
     {
       "id": "tbs-409f68a6-d6a4-43c9-adb8-63679dc17a45",
-      "group": "tbs-mini-SWE-agent",
+      "group": "tbs",
       "model_label": "Gemini 3.8 Flash",
       "model_id": "google/gemini-3.8-flash",
       "effort": "high",
@@ -10020,7 +10298,7 @@
     },
     {
       "id": "tbs-e8bf7739-3c94-46a3-95a5-fa4d4444034e",
-      "group": "tbs-Claude Code",
+      "group": "tbs",
       "model_label": "Opus 4.8",
       "model_id": null,
       "effort": "max",
@@ -10038,9 +10316,9 @@
     },
     {
       "id": "tbs-c79d5ef6-b3c6-40da-84b5-946c11099426",
-      "group": "tbs-Codex",
+      "group": "tbs",
       "model_label": "GPT-5.6 Terra",
-      "model_id": null,
+      "model_id": "openai/gpt-5.6-terra",
       "effort": "max",
       "scores": {
         "life": 0.07017543859649122
@@ -10056,7 +10334,7 @@
     },
     {
       "id": "tbs-78f18248-3ee9-4eb4-b7af-19019f1fc64f",
-      "group": "tbs-Claude Code",
+      "group": "tbs",
       "model_label": "GLM 5.3",
       "model_id": "z-ai/glm-5.3",
       "effort": "max",
@@ -10074,7 +10352,7 @@
     },
     {
       "id": "tbs-66e64f64-abbd-40a6-a470-2151df25472e",
-      "group": "tbs-Claude Code",
+      "group": "tbs",
       "model_label": "Kimi K3",
       "model_id": null,
       "effort": "max",
@@ -10092,7 +10370,7 @@
     },
     {
       "id": "tbs-231bc6c3-8f2b-455e-8c87-5a08ec200b05",
-      "group": "tbs-Grok Build",
+      "group": "tbs",
       "model_label": "Grok 4.6",
       "model_id": null,
       "effort": "xhigh",
@@ -10110,7 +10388,7 @@
     },
     {
       "id": "tbs-5a71d088-1bfd-4bbe-a65a-973a4fffd50f",
-      "group": "tbs-mini-SWE-agent",
+      "group": "tbs",
       "model_label": "Gemini 3.7 Flash",
       "model_id": null,
       "effort": "high",
@@ -10128,7 +10406,7 @@
     },
     {
       "id": "tbs-00b5eabf-caca-435c-b8a8-458633192aa8",
-      "group": "tbs-Codex",
+      "group": "tbs",
       "model_label": "DeepSeek V4 Pro",
       "model_id": null,
       "effort": "max",
@@ -10146,7 +10424,7 @@
     },
     {
       "id": "tbs-7cf10b06-3e5b-4723-b98f-c679e773959b",
-      "group": "tbs-Codex",
+      "group": "tbs",
       "model_label": "GPT-5.6 Luna",
       "model_id": "openai/gpt-5.6-luna",
       "effort": "max",
@@ -11048,7 +11326,7 @@
       "id": "gene-GPT-5.6 Terra (none)",
       "group": "gene",
       "model_label": "GPT-5.6 Terra (none)",
-      "model_id": null,
+      "model_id": "openai/gpt-5.6-terra",
       "effort": "none",
       "scores": {
         "pass_rate": 0.01
@@ -11069,7 +11347,7 @@
       "id": "gene-GPT-5.6 Terra (low)",
       "group": "gene",
       "model_label": "GPT-5.6 Terra (low)",
-      "model_id": null,
+      "model_id": "openai/gpt-5.6-terra",
       "effort": "low",
       "scores": {
         "pass_rate": 0.065
@@ -11090,7 +11368,7 @@
       "id": "gene-GPT-5.6 Terra (medium)",
       "group": "gene",
       "model_label": "GPT-5.6 Terra (medium)",
-      "model_id": null,
+      "model_id": "openai/gpt-5.6-terra",
       "effort": "medium",
       "scores": {
         "pass_rate": 0.136
@@ -11111,7 +11389,7 @@
       "id": "gene-GPT-5.6 Terra (high)",
       "group": "gene",
       "model_label": "GPT-5.6 Terra (high)",
-      "model_id": null,
+      "model_id": "openai/gpt-5.6-terra",
       "effort": "high",
       "scores": {
         "pass_rate": 0.162
@@ -11132,7 +11410,7 @@
       "id": "gene-GPT-5.6 Terra (xhigh)",
       "group": "gene",
       "model_label": "GPT-5.6 Terra (xhigh)",
-      "model_id": null,
+      "model_id": "openai/gpt-5.6-terra",
       "effort": "xhigh",
       "scores": {
         "pass_rate": 0.188
@@ -11153,7 +11431,7 @@
       "id": "gene-GPT-5.6 Terra (max)",
       "group": "gene",
       "model_label": "GPT-5.6 Terra (max)",
-      "model_id": null,
+      "model_id": "openai/gpt-5.6-terra",
       "effort": "max",
       "scores": {
         "pass_rate": 0.233

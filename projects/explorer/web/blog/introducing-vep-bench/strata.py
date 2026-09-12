@@ -19,7 +19,7 @@ from vepbench.evaluation.core import score_ranking
 ALLELE_TYPES = ["SNV", "Insertion", "Deletion", "Other/complex", "Unknown"]
 UNKNOWN = "Unknown"
 AMBIGUOUS = "Ambiguous"
-EFFORT_ORDER = ["none", "minimal", "low", "medium", "high", "xhigh"]
+EFFORT_ORDER = ["none", "minimal", "low", "medium", "high", "xhigh", "max"]
 
 
 def allele_type(ref: Any, alt: Any) -> str:
