@@ -34,7 +34,7 @@
           "vep_score": 0.48167113582042687,
           "external_result_id": "aa-gemini-3-8-flash-low",
           "source_id": "aa-gemini-3-8-flash-low",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gemini-3.8-flash-low-opensplice-snv-20260910T161559Z",
             "gemini-3.8-flash-low-satmut-mpra-20260910T161559Z",
@@ -58,7 +58,7 @@
           "vep_score": 0.5630149387834527,
           "external_result_id": "aa-gemini-3-8-flash-medium",
           "source_id": "aa-gemini-3-8-flash-medium",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gemini-3.8-flash-medium-opensplice-snv-20260910T151518Z",
             "gemini-3.8-flash-medium-satmut-mpra-20260910T151518Z",
@@ -82,7 +82,7 @@
           "vep_score": 0.5594124367572899,
           "external_result_id": "aa-gemini-3-8-flash",
           "source_id": "aa-gemini-3-8-flash",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gemini-3.8-flash-high-opensplice-snv-20260910T161559Z",
             "gemini-3.8-flash-high-satmut-mpra-20260910T161559Z",
@@ -106,7 +106,7 @@
           "vep_score": 0.21781045280565162,
           "external_result_id": "aa-gpt-5-6-luna-low",
           "source_id": "aa-gpt-5-6-luna-low",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-luna-low-opensplice-snv-20260911T150230Z",
             "gpt-5.6-luna-low-satmut-mpra-20260911T150230Z",
@@ -131,7 +131,7 @@
           "vep_score": 0.31822468661146774,
           "external_result_id": "aa-gpt-5-6-luna-medium",
           "source_id": "aa-gpt-5-6-luna-medium",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-luna-medium-opensplice-snv-v2-20260908",
             "gpt-5.6-luna-medium-satmut-mpra-v2-20260908",
@@ -156,7 +156,7 @@
           "vep_score": 0.4152805345914568,
           "external_result_id": "aa-gpt-5-6-luna-high",
           "source_id": "aa-gpt-5-6-luna-high",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-luna-high-opensplice-snv-v2-20260908",
             "gpt-5.6-luna-high-satmut-mpra-v2-20260908",
@@ -181,7 +181,7 @@
           "vep_score": 0.4457585492793694,
           "external_result_id": "aa-gpt-5-6-luna",
           "source_id": "aa-gpt-5-6-luna",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-luna-max-opensplice_snv-20260911",
             "gpt-5.6-luna-max-satmut_mpra-20260911",
@@ -206,7 +206,7 @@
           "vep_score": 0.4089072724487925,
           "external_result_id": "aa-gpt-5-6-sol-low",
           "source_id": "aa-gpt-5-6-sol-low",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-sol-low-opensplice-snv-20260911T150230Z",
             "gpt-5.6-sol-low-satmut-mpra-20260911T150230Z",
@@ -231,7 +231,7 @@
           "vep_score": 0.4301571384011158,
           "external_result_id": "aa-gpt-5-6-sol-medium",
           "source_id": "aa-gpt-5-6-sol-medium",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-sol-medium-opensplice-snv-v2-20260908",
             "gpt-5.6-sol-medium-satmut-mpra-v2-20260908",
@@ -256,7 +256,7 @@
           "vep_score": 0.4977817344978461,
           "external_result_id": "aa-gpt-5-6-sol-high",
           "source_id": "aa-gpt-5-6-sol-high",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-sol-high-opensplice-snv-v2-20260908",
             "gpt-5.6-sol-high-satmut-mpra-v2-20260908",
@@ -281,7 +281,7 @@
           "vep_score": 0.552434925383204,
           "external_result_id": "aa-gpt-5-6-sol",
           "source_id": "aa-gpt-5-6-sol",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-sol-max-opensplice_snv-20260911",
             "gpt-5.6-sol-max-satmut_mpra-20260911",
@@ -306,7 +306,7 @@
           "vep_score": 0.45469586790654115,
           "external_result_id": "aa-gpt-5-6-terra",
           "source_id": "aa-gpt-5-6-terra",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-terra-max-opensplice_snv-20260911",
             "gpt-5.6-terra-max-satmut_mpra-20260911",
@@ -331,7 +331,7 @@
           "vep_score": 0.5421959376090383,
           "external_result_id": "aa-gpt-6-astra-low",
           "source_id": "aa-gpt-6-astra-low",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-6-astra-low-opensplice-snv-20260911T150230Z",
             "gpt-6-astra-low-satmut-mpra-20260911T150230Z",
@@ -356,7 +356,7 @@
           "vep_score": 0.5877608112325787,
           "external_result_id": "aa-gpt-6-astra-medium",
           "source_id": "aa-gpt-6-astra-medium",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-6-astra-medium-opensplice-snv-v2-20260908",
             "gpt-6-astra-medium-satmut-mpra-v2-20260908",
@@ -381,7 +381,7 @@
           "vep_score": 0.5989761123535243,
           "external_result_id": "aa-gpt-6-astra-high",
           "source_id": "aa-gpt-6-astra-high",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-6-astra-high-opensplice-snv-v2-20260908",
             "gpt-6-astra-high-satmut-mpra-v2-20260908",
@@ -446,7 +446,7 @@
           "vep_score": 0.48167113582042687,
           "external_result_id": "aa-gemini-3-8-flash-low",
           "source_id": "aa-gemini-3-8-flash-low",
-          "harness": "Artificial Analysis",
+          "harness": "Stirrup",
           "run_ids": [
             "gemini-3.8-flash-low-opensplice-snv-20260910T161559Z",
             "gemini-3.8-flash-low-satmut-mpra-20260910T161559Z",
@@ -470,7 +470,7 @@
           "vep_score": 0.5630149387834527,
           "external_result_id": "aa-gemini-3-8-flash-medium",
           "source_id": "aa-gemini-3-8-flash-medium",
-          "harness": "Artificial Analysis",
+          "harness": "Stirrup",
           "run_ids": [
             "gemini-3.8-flash-medium-opensplice-snv-20260910T151518Z",
             "gemini-3.8-flash-medium-satmut-mpra-20260910T151518Z",
@@ -494,7 +494,7 @@
           "vep_score": 0.5594124367572899,
           "external_result_id": "aa-gemini-3-8-flash",
           "source_id": "aa-gemini-3-8-flash",
-          "harness": "Artificial Analysis",
+          "harness": "Stirrup",
           "run_ids": [
             "gemini-3.8-flash-high-opensplice-snv-20260910T161559Z",
             "gemini-3.8-flash-high-satmut-mpra-20260910T161559Z",
@@ -518,7 +518,7 @@
           "vep_score": 0.21781045280565162,
           "external_result_id": "aa-gpt-5-6-luna-low",
           "source_id": "aa-gpt-5-6-luna-low",
-          "harness": "Artificial Analysis",
+          "harness": "Stirrup",
           "run_ids": [
             "gpt-5.6-luna-low-opensplice-snv-20260911T150230Z",
             "gpt-5.6-luna-low-satmut-mpra-20260911T150230Z",
@@ -543,7 +543,7 @@
           "vep_score": 0.31822468661146774,
           "external_result_id": "aa-gpt-5-6-luna-medium",
           "source_id": "aa-gpt-5-6-luna-medium",
-          "harness": "Artificial Analysis",
+          "harness": "Stirrup",
           "run_ids": [
             "gpt-5.6-luna-medium-opensplice-snv-v2-20260908",
             "gpt-5.6-luna-medium-satmut-mpra-v2-20260908",
@@ -568,7 +568,7 @@
           "vep_score": 0.4152805345914568,
           "external_result_id": "aa-gpt-5-6-luna-high",
           "source_id": "aa-gpt-5-6-luna-high",
-          "harness": "Artificial Analysis",
+          "harness": "Stirrup",
           "run_ids": [
             "gpt-5.6-luna-high-opensplice-snv-v2-20260908",
             "gpt-5.6-luna-high-satmut-mpra-v2-20260908",
@@ -593,7 +593,7 @@
           "vep_score": 0.4457585492793694,
           "external_result_id": "aa-gpt-5-6-luna",
           "source_id": "aa-gpt-5-6-luna",
-          "harness": "Artificial Analysis",
+          "harness": "Stirrup",
           "run_ids": [
             "gpt-5.6-luna-max-opensplice_snv-20260911",
             "gpt-5.6-luna-max-satmut_mpra-20260911",
@@ -618,7 +618,7 @@
           "vep_score": 0.4089072724487925,
           "external_result_id": "aa-gpt-5-6-sol-low",
           "source_id": "aa-gpt-5-6-sol-low",
-          "harness": "Artificial Analysis",
+          "harness": "Stirrup",
           "run_ids": [
             "gpt-5.6-sol-low-opensplice-snv-20260911T150230Z",
             "gpt-5.6-sol-low-satmut-mpra-20260911T150230Z",
@@ -643,7 +643,7 @@
           "vep_score": 0.4301571384011158,
           "external_result_id": "aa-gpt-5-6-sol-medium",
           "source_id": "aa-gpt-5-6-sol-medium",
-          "harness": "Artificial Analysis",
+          "harness": "Stirrup",
           "run_ids": [
             "gpt-5.6-sol-medium-opensplice-snv-v2-20260908",
             "gpt-5.6-sol-medium-satmut-mpra-v2-20260908",
@@ -668,7 +668,7 @@
           "vep_score": 0.4977817344978461,
           "external_result_id": "aa-gpt-5-6-sol-high",
           "source_id": "aa-gpt-5-6-sol-high",
-          "harness": "Artificial Analysis",
+          "harness": "Stirrup",
           "run_ids": [
             "gpt-5.6-sol-high-opensplice-snv-v2-20260908",
             "gpt-5.6-sol-high-satmut-mpra-v2-20260908",
@@ -693,7 +693,7 @@
           "vep_score": 0.552434925383204,
           "external_result_id": "aa-gpt-5-6-sol",
           "source_id": "aa-gpt-5-6-sol",
-          "harness": "Artificial Analysis",
+          "harness": "Stirrup",
           "run_ids": [
             "gpt-5.6-sol-max-opensplice_snv-20260911",
             "gpt-5.6-sol-max-satmut_mpra-20260911",
@@ -718,7 +718,7 @@
           "vep_score": 0.45469586790654115,
           "external_result_id": "aa-gpt-5-6-terra",
           "source_id": "aa-gpt-5-6-terra",
-          "harness": "Artificial Analysis",
+          "harness": "Stirrup",
           "run_ids": [
             "gpt-5.6-terra-max-opensplice_snv-20260911",
             "gpt-5.6-terra-max-satmut_mpra-20260911",
@@ -743,7 +743,7 @@
           "vep_score": 0.5421959376090383,
           "external_result_id": "aa-gpt-6-astra-low",
           "source_id": "aa-gpt-6-astra-low",
-          "harness": "Artificial Analysis",
+          "harness": "Stirrup",
           "run_ids": [
             "gpt-6-astra-low-opensplice-snv-20260911T150230Z",
             "gpt-6-astra-low-satmut-mpra-20260911T150230Z",
@@ -768,7 +768,7 @@
           "vep_score": 0.5877608112325787,
           "external_result_id": "aa-gpt-6-astra-medium",
           "source_id": "aa-gpt-6-astra-medium",
-          "harness": "Artificial Analysis",
+          "harness": "Stirrup",
           "run_ids": [
             "gpt-6-astra-medium-opensplice-snv-v2-20260908",
             "gpt-6-astra-medium-satmut-mpra-v2-20260908",
@@ -793,7 +793,7 @@
           "vep_score": 0.5989761123535243,
           "external_result_id": "aa-gpt-6-astra-high",
           "source_id": "aa-gpt-6-astra-high",
-          "harness": "Artificial Analysis",
+          "harness": "Stirrup",
           "run_ids": [
             "gpt-6-astra-high-opensplice-snv-v2-20260908",
             "gpt-6-astra-high-satmut-mpra-v2-20260908",
@@ -858,7 +858,7 @@
           "vep_score": 0.48167113582042687,
           "external_result_id": "aa-gemini-3-8-flash-low",
           "source_id": "aa-gemini-3-8-flash-low",
-          "harness": "Artificial Analysis",
+          "harness": "Stirrup",
           "run_ids": [
             "gemini-3.8-flash-low-opensplice-snv-20260910T161559Z",
             "gemini-3.8-flash-low-satmut-mpra-20260910T161559Z",
@@ -882,7 +882,7 @@
           "vep_score": 0.5630149387834527,
           "external_result_id": "aa-gemini-3-8-flash-medium",
           "source_id": "aa-gemini-3-8-flash-medium",
-          "harness": "Artificial Analysis",
+          "harness": "Stirrup",
           "run_ids": [
             "gemini-3.8-flash-medium-opensplice-snv-20260910T151518Z",
             "gemini-3.8-flash-medium-satmut-mpra-20260910T151518Z",
@@ -906,7 +906,7 @@
           "vep_score": 0.5594124367572899,
           "external_result_id": "aa-gemini-3-8-flash",
           "source_id": "aa-gemini-3-8-flash",
-          "harness": "Artificial Analysis",
+          "harness": "Stirrup",
           "run_ids": [
             "gemini-3.8-flash-high-opensplice-snv-20260910T161559Z",
             "gemini-3.8-flash-high-satmut-mpra-20260910T161559Z",
@@ -930,7 +930,7 @@
           "vep_score": 0.21781045280565162,
           "external_result_id": "aa-gpt-5-6-luna-low",
           "source_id": "aa-gpt-5-6-luna-low",
-          "harness": "Artificial Analysis",
+          "harness": "Stirrup",
           "run_ids": [
             "gpt-5.6-luna-low-opensplice-snv-20260911T150230Z",
             "gpt-5.6-luna-low-satmut-mpra-20260911T150230Z",
@@ -955,7 +955,7 @@
           "vep_score": 0.31822468661146774,
           "external_result_id": "aa-gpt-5-6-luna-medium",
           "source_id": "aa-gpt-5-6-luna-medium",
-          "harness": "Artificial Analysis",
+          "harness": "Stirrup",
           "run_ids": [
             "gpt-5.6-luna-medium-opensplice-snv-v2-20260908",
             "gpt-5.6-luna-medium-satmut-mpra-v2-20260908",
@@ -980,7 +980,7 @@
           "vep_score": 0.4152805345914568,
           "external_result_id": "aa-gpt-5-6-luna-high",
           "source_id": "aa-gpt-5-6-luna-high",
-          "harness": "Artificial Analysis",
+          "harness": "Stirrup",
           "run_ids": [
             "gpt-5.6-luna-high-opensplice-snv-v2-20260908",
             "gpt-5.6-luna-high-satmut-mpra-v2-20260908",
@@ -1005,7 +1005,7 @@
           "vep_score": 0.4457585492793694,
           "external_result_id": "aa-gpt-5-6-luna",
           "source_id": "aa-gpt-5-6-luna",
-          "harness": "Artificial Analysis",
+          "harness": "Stirrup",
           "run_ids": [
             "gpt-5.6-luna-max-opensplice_snv-20260911",
             "gpt-5.6-luna-max-satmut_mpra-20260911",
@@ -1030,7 +1030,7 @@
           "vep_score": 0.4089072724487925,
           "external_result_id": "aa-gpt-5-6-sol-low",
           "source_id": "aa-gpt-5-6-sol-low",
-          "harness": "Artificial Analysis",
+          "harness": "Stirrup",
           "run_ids": [
             "gpt-5.6-sol-low-opensplice-snv-20260911T150230Z",
             "gpt-5.6-sol-low-satmut-mpra-20260911T150230Z",
@@ -1055,7 +1055,7 @@
           "vep_score": 0.4301571384011158,
           "external_result_id": "aa-gpt-5-6-sol-medium",
           "source_id": "aa-gpt-5-6-sol-medium",
-          "harness": "Artificial Analysis",
+          "harness": "Stirrup",
           "run_ids": [
             "gpt-5.6-sol-medium-opensplice-snv-v2-20260908",
             "gpt-5.6-sol-medium-satmut-mpra-v2-20260908",
@@ -1080,7 +1080,7 @@
           "vep_score": 0.4977817344978461,
           "external_result_id": "aa-gpt-5-6-sol-high",
           "source_id": "aa-gpt-5-6-sol-high",
-          "harness": "Artificial Analysis",
+          "harness": "Stirrup",
           "run_ids": [
             "gpt-5.6-sol-high-opensplice-snv-v2-20260908",
             "gpt-5.6-sol-high-satmut-mpra-v2-20260908",
@@ -1105,7 +1105,7 @@
           "vep_score": 0.552434925383204,
           "external_result_id": "aa-gpt-5-6-sol",
           "source_id": "aa-gpt-5-6-sol",
-          "harness": "Artificial Analysis",
+          "harness": "Stirrup",
           "run_ids": [
             "gpt-5.6-sol-max-opensplice_snv-20260911",
             "gpt-5.6-sol-max-satmut_mpra-20260911",
@@ -1130,7 +1130,7 @@
           "vep_score": 0.45469586790654115,
           "external_result_id": "aa-gpt-5-6-terra",
           "source_id": "aa-gpt-5-6-terra",
-          "harness": "Artificial Analysis",
+          "harness": "Stirrup",
           "run_ids": [
             "gpt-5.6-terra-max-opensplice_snv-20260911",
             "gpt-5.6-terra-max-satmut_mpra-20260911",
@@ -1155,7 +1155,7 @@
           "vep_score": 0.5421959376090383,
           "external_result_id": "aa-gpt-6-astra-low",
           "source_id": "aa-gpt-6-astra-low",
-          "harness": "Artificial Analysis",
+          "harness": "Stirrup",
           "run_ids": [
             "gpt-6-astra-low-opensplice-snv-20260911T150230Z",
             "gpt-6-astra-low-satmut-mpra-20260911T150230Z",
@@ -1180,7 +1180,7 @@
           "vep_score": 0.5877608112325787,
           "external_result_id": "aa-gpt-6-astra-medium",
           "source_id": "aa-gpt-6-astra-medium",
-          "harness": "Artificial Analysis",
+          "harness": "Stirrup",
           "run_ids": [
             "gpt-6-astra-medium-opensplice-snv-v2-20260908",
             "gpt-6-astra-medium-satmut-mpra-v2-20260908",
@@ -1205,7 +1205,7 @@
           "vep_score": 0.5989761123535243,
           "external_result_id": "aa-gpt-6-astra-high",
           "source_id": "aa-gpt-6-astra-high",
-          "harness": "Artificial Analysis",
+          "harness": "Stirrup",
           "run_ids": [
             "gpt-6-astra-high-opensplice-snv-v2-20260908",
             "gpt-6-astra-high-satmut-mpra-v2-20260908",
@@ -1270,7 +1270,7 @@
           "vep_score": 0.48167113582042687,
           "external_result_id": "aa-gemini-3-8-flash-low",
           "source_id": "aa-gemini-3-8-flash-low",
-          "harness": "Artificial Analysis",
+          "harness": "AutomationBench multi-turn environment, dataset 1.0.6",
           "run_ids": [
             "gemini-3.8-flash-low-opensplice-snv-20260910T161559Z",
             "gemini-3.8-flash-low-satmut-mpra-20260910T161559Z",
@@ -1294,7 +1294,7 @@
           "vep_score": 0.5630149387834527,
           "external_result_id": "aa-gemini-3-8-flash-medium",
           "source_id": "aa-gemini-3-8-flash-medium",
-          "harness": "Artificial Analysis",
+          "harness": "AutomationBench multi-turn environment, dataset 1.0.6",
           "run_ids": [
             "gemini-3.8-flash-medium-opensplice-snv-20260910T151518Z",
             "gemini-3.8-flash-medium-satmut-mpra-20260910T151518Z",
@@ -1318,7 +1318,7 @@
           "vep_score": 0.5594124367572899,
           "external_result_id": "aa-gemini-3-8-flash",
           "source_id": "aa-gemini-3-8-flash",
-          "harness": "Artificial Analysis",
+          "harness": "AutomationBench multi-turn environment, dataset 1.0.6",
           "run_ids": [
             "gemini-3.8-flash-high-opensplice-snv-20260910T161559Z",
             "gemini-3.8-flash-high-satmut-mpra-20260910T161559Z",
@@ -1342,7 +1342,7 @@
           "vep_score": 0.21781045280565162,
           "external_result_id": "aa-gpt-5-6-luna-low",
           "source_id": "aa-gpt-5-6-luna-low",
-          "harness": "Artificial Analysis",
+          "harness": "AutomationBench multi-turn environment, dataset 1.0.6",
           "run_ids": [
             "gpt-5.6-luna-low-opensplice-snv-20260911T150230Z",
             "gpt-5.6-luna-low-satmut-mpra-20260911T150230Z",
@@ -1367,7 +1367,7 @@
           "vep_score": 0.31822468661146774,
           "external_result_id": "aa-gpt-5-6-luna-medium",
           "source_id": "aa-gpt-5-6-luna-medium",
-          "harness": "Artificial Analysis",
+          "harness": "AutomationBench multi-turn environment, dataset 1.0.6",
           "run_ids": [
             "gpt-5.6-luna-medium-opensplice-snv-v2-20260908",
             "gpt-5.6-luna-medium-satmut-mpra-v2-20260908",
@@ -1392,7 +1392,7 @@
           "vep_score": 0.4152805345914568,
           "external_result_id": "aa-gpt-5-6-luna-high",
           "source_id": "aa-gpt-5-6-luna-high",
-          "harness": "Artificial Analysis",
+          "harness": "AutomationBench multi-turn environment, dataset 1.0.6",
           "run_ids": [
             "gpt-5.6-luna-high-opensplice-snv-v2-20260908",
             "gpt-5.6-luna-high-satmut-mpra-v2-20260908",
@@ -1417,7 +1417,7 @@
           "vep_score": 0.4457585492793694,
           "external_result_id": "aa-gpt-5-6-luna",
           "source_id": "aa-gpt-5-6-luna",
-          "harness": "Artificial Analysis",
+          "harness": "AutomationBench multi-turn environment, dataset 1.0.6",
           "run_ids": [
             "gpt-5.6-luna-max-opensplice_snv-20260911",
             "gpt-5.6-luna-max-satmut_mpra-20260911",
@@ -1442,7 +1442,7 @@
           "vep_score": 0.4089072724487925,
           "external_result_id": "aa-gpt-5-6-sol-low",
           "source_id": "aa-gpt-5-6-sol-low",
-          "harness": "Artificial Analysis",
+          "harness": "AutomationBench multi-turn environment, dataset 1.0.6",
           "run_ids": [
             "gpt-5.6-sol-low-opensplice-snv-20260911T150230Z",
             "gpt-5.6-sol-low-satmut-mpra-20260911T150230Z",
@@ -1467,7 +1467,7 @@
           "vep_score": 0.4301571384011158,
           "external_result_id": "aa-gpt-5-6-sol-medium",
           "source_id": "aa-gpt-5-6-sol-medium",
-          "harness": "Artificial Analysis",
+          "harness": "AutomationBench multi-turn environment, dataset 1.0.6",
           "run_ids": [
             "gpt-5.6-sol-medium-opensplice-snv-v2-20260908",
             "gpt-5.6-sol-medium-satmut-mpra-v2-20260908",
@@ -1492,7 +1492,7 @@
           "vep_score": 0.4977817344978461,
           "external_result_id": "aa-gpt-5-6-sol-high",
           "source_id": "aa-gpt-5-6-sol-high",
-          "harness": "Artificial Analysis",
+          "harness": "AutomationBench multi-turn environment, dataset 1.0.6",
           "run_ids": [
             "gpt-5.6-sol-high-opensplice-snv-v2-20260908",
             "gpt-5.6-sol-high-satmut-mpra-v2-20260908",
@@ -1517,7 +1517,7 @@
           "vep_score": 0.552434925383204,
           "external_result_id": "aa-gpt-5-6-sol",
           "source_id": "aa-gpt-5-6-sol",
-          "harness": "Artificial Analysis",
+          "harness": "AutomationBench multi-turn environment, dataset 1.0.6",
           "run_ids": [
             "gpt-5.6-sol-max-opensplice_snv-20260911",
             "gpt-5.6-sol-max-satmut_mpra-20260911",
@@ -1542,7 +1542,7 @@
           "vep_score": 0.45469586790654115,
           "external_result_id": "aa-gpt-5-6-terra",
           "source_id": "aa-gpt-5-6-terra",
-          "harness": "Artificial Analysis",
+          "harness": "AutomationBench multi-turn environment, dataset 1.0.6",
           "run_ids": [
             "gpt-5.6-terra-max-opensplice_snv-20260911",
             "gpt-5.6-terra-max-satmut_mpra-20260911",
@@ -1567,7 +1567,7 @@
           "vep_score": 0.5421959376090383,
           "external_result_id": "aa-gpt-6-astra-low",
           "source_id": "aa-gpt-6-astra-low",
-          "harness": "Artificial Analysis",
+          "harness": "AutomationBench multi-turn environment, dataset 1.0.6",
           "run_ids": [
             "gpt-6-astra-low-opensplice-snv-20260911T150230Z",
             "gpt-6-astra-low-satmut-mpra-20260911T150230Z",
@@ -1592,7 +1592,7 @@
           "vep_score": 0.5877608112325787,
           "external_result_id": "aa-gpt-6-astra-medium",
           "source_id": "aa-gpt-6-astra-medium",
-          "harness": "Artificial Analysis",
+          "harness": "AutomationBench multi-turn environment, dataset 1.0.6",
           "run_ids": [
             "gpt-6-astra-medium-opensplice-snv-v2-20260908",
             "gpt-6-astra-medium-satmut-mpra-v2-20260908",
@@ -1617,7 +1617,7 @@
           "vep_score": 0.5989761123535243,
           "external_result_id": "aa-gpt-6-astra-high",
           "source_id": "aa-gpt-6-astra-high",
-          "harness": "Artificial Analysis",
+          "harness": "AutomationBench multi-turn environment, dataset 1.0.6",
           "run_ids": [
             "gpt-6-astra-high-opensplice-snv-v2-20260908",
             "gpt-6-astra-high-satmut-mpra-v2-20260908",
@@ -1682,7 +1682,7 @@
           "vep_score": 0.48167113582042687,
           "external_result_id": "aa-gemini-3-8-flash-low",
           "source_id": "aa-gemini-3-8-flash-low",
-          "harness": "Artificial Analysis",
+          "harness": "mini-SWE-agent v2.4.6",
           "run_ids": [
             "gemini-3.8-flash-low-opensplice-snv-20260910T161559Z",
             "gemini-3.8-flash-low-satmut-mpra-20260910T161559Z",
@@ -1706,7 +1706,7 @@
           "vep_score": 0.5630149387834527,
           "external_result_id": "aa-gemini-3-8-flash-medium",
           "source_id": "aa-gemini-3-8-flash-medium",
-          "harness": "Artificial Analysis",
+          "harness": "mini-SWE-agent v2.4.6",
           "run_ids": [
             "gemini-3.8-flash-medium-opensplice-snv-20260910T151518Z",
             "gemini-3.8-flash-medium-satmut-mpra-20260910T151518Z",
@@ -1730,7 +1730,7 @@
           "vep_score": 0.5594124367572899,
           "external_result_id": "aa-gemini-3-8-flash",
           "source_id": "aa-gemini-3-8-flash",
-          "harness": "Artificial Analysis",
+          "harness": "mini-SWE-agent v2.4.6",
           "run_ids": [
             "gemini-3.8-flash-high-opensplice-snv-20260910T161559Z",
             "gemini-3.8-flash-high-satmut-mpra-20260910T161559Z",
@@ -1754,7 +1754,7 @@
           "vep_score": 0.21781045280565162,
           "external_result_id": "aa-gpt-5-6-luna-low",
           "source_id": "aa-gpt-5-6-luna-low",
-          "harness": "Artificial Analysis",
+          "harness": "mini-SWE-agent v2.4.6",
           "run_ids": [
             "gpt-5.6-luna-low-opensplice-snv-20260911T150230Z",
             "gpt-5.6-luna-low-satmut-mpra-20260911T150230Z",
@@ -1779,7 +1779,7 @@
           "vep_score": 0.31822468661146774,
           "external_result_id": "aa-gpt-5-6-luna-medium",
           "source_id": "aa-gpt-5-6-luna-medium",
-          "harness": "Artificial Analysis",
+          "harness": "mini-SWE-agent v2.4.6",
           "run_ids": [
             "gpt-5.6-luna-medium-opensplice-snv-v2-20260908",
             "gpt-5.6-luna-medium-satmut-mpra-v2-20260908",
@@ -1804,7 +1804,7 @@
           "vep_score": 0.4152805345914568,
           "external_result_id": "aa-gpt-5-6-luna-high",
           "source_id": "aa-gpt-5-6-luna-high",
-          "harness": "Artificial Analysis",
+          "harness": "mini-SWE-agent v2.4.6",
           "run_ids": [
             "gpt-5.6-luna-high-opensplice-snv-v2-20260908",
             "gpt-5.6-luna-high-satmut-mpra-v2-20260908",
@@ -1829,7 +1829,7 @@
           "vep_score": 0.4457585492793694,
           "external_result_id": "aa-gpt-5-6-luna",
           "source_id": "aa-gpt-5-6-luna",
-          "harness": "Artificial Analysis",
+          "harness": "mini-SWE-agent v2.4.6",
           "run_ids": [
             "gpt-5.6-luna-max-opensplice_snv-20260911",
             "gpt-5.6-luna-max-satmut_mpra-20260911",
@@ -1854,7 +1854,7 @@
           "vep_score": 0.4089072724487925,
           "external_result_id": "aa-gpt-5-6-sol-low",
           "source_id": "aa-gpt-5-6-sol-low",
-          "harness": "Artificial Analysis",
+          "harness": "mini-SWE-agent v2.4.6",
           "run_ids": [
             "gpt-5.6-sol-low-opensplice-snv-20260911T150230Z",
             "gpt-5.6-sol-low-satmut-mpra-20260911T150230Z",
@@ -1879,7 +1879,7 @@
           "vep_score": 0.4301571384011158,
           "external_result_id": "aa-gpt-5-6-sol-medium",
           "source_id": "aa-gpt-5-6-sol-medium",
-          "harness": "Artificial Analysis",
+          "harness": "mini-SWE-agent v2.4.6",
           "run_ids": [
             "gpt-5.6-sol-medium-opensplice-snv-v2-20260908",
             "gpt-5.6-sol-medium-satmut-mpra-v2-20260908",
@@ -1904,7 +1904,7 @@
           "vep_score": 0.4977817344978461,
           "external_result_id": "aa-gpt-5-6-sol-high",
           "source_id": "aa-gpt-5-6-sol-high",
-          "harness": "Artificial Analysis",
+          "harness": "mini-SWE-agent v2.4.6",
           "run_ids": [
             "gpt-5.6-sol-high-opensplice-snv-v2-20260908",
             "gpt-5.6-sol-high-satmut-mpra-v2-20260908",
@@ -1929,7 +1929,7 @@
           "vep_score": 0.552434925383204,
           "external_result_id": "aa-gpt-5-6-sol",
           "source_id": "aa-gpt-5-6-sol",
-          "harness": "Artificial Analysis",
+          "harness": "mini-SWE-agent v2.4.6",
           "run_ids": [
             "gpt-5.6-sol-max-opensplice_snv-20260911",
             "gpt-5.6-sol-max-satmut_mpra-20260911",
@@ -1954,7 +1954,7 @@
           "vep_score": 0.45469586790654115,
           "external_result_id": "aa-gpt-5-6-terra",
           "source_id": "aa-gpt-5-6-terra",
-          "harness": "Artificial Analysis",
+          "harness": "mini-SWE-agent v2.4.6",
           "run_ids": [
             "gpt-5.6-terra-max-opensplice_snv-20260911",
             "gpt-5.6-terra-max-satmut_mpra-20260911",
@@ -1979,7 +1979,7 @@
           "vep_score": 0.5421959376090383,
           "external_result_id": "aa-gpt-6-astra-low",
           "source_id": "aa-gpt-6-astra-low",
-          "harness": "Artificial Analysis",
+          "harness": "mini-SWE-agent v2.4.6",
           "run_ids": [
             "gpt-6-astra-low-opensplice-snv-20260911T150230Z",
             "gpt-6-astra-low-satmut-mpra-20260911T150230Z",
@@ -2004,7 +2004,7 @@
           "vep_score": 0.5877608112325787,
           "external_result_id": "aa-gpt-6-astra-medium",
           "source_id": "aa-gpt-6-astra-medium",
-          "harness": "Artificial Analysis",
+          "harness": "mini-SWE-agent v2.4.6",
           "run_ids": [
             "gpt-6-astra-medium-opensplice-snv-v2-20260908",
             "gpt-6-astra-medium-satmut-mpra-v2-20260908",
@@ -2029,7 +2029,7 @@
           "vep_score": 0.5989761123535243,
           "external_result_id": "aa-gpt-6-astra-high",
           "source_id": "aa-gpt-6-astra-high",
-          "harness": "Artificial Analysis",
+          "harness": "mini-SWE-agent v2.4.6",
           "run_ids": [
             "gpt-6-astra-high-opensplice-snv-v2-20260908",
             "gpt-6-astra-high-satmut-mpra-v2-20260908",
@@ -2094,7 +2094,7 @@
           "vep_score": 0.48167113582042687,
           "external_result_id": "aa-gemini-3-8-flash-low",
           "source_id": "aa-gemini-3-8-flash-low",
-          "harness": "Artificial Analysis",
+          "harness": "AA scientist-background prompting; SciCode dataset 1.0.1",
           "run_ids": [
             "gemini-3.8-flash-low-opensplice-snv-20260910T161559Z",
             "gemini-3.8-flash-low-satmut-mpra-20260910T161559Z",
@@ -2118,7 +2118,7 @@
           "vep_score": 0.5630149387834527,
           "external_result_id": "aa-gemini-3-8-flash-medium",
           "source_id": "aa-gemini-3-8-flash-medium",
-          "harness": "Artificial Analysis",
+          "harness": "AA scientist-background prompting; SciCode dataset 1.0.1",
           "run_ids": [
             "gemini-3.8-flash-medium-opensplice-snv-20260910T151518Z",
             "gemini-3.8-flash-medium-satmut-mpra-20260910T151518Z",
@@ -2142,7 +2142,7 @@
           "vep_score": 0.5594124367572899,
           "external_result_id": "aa-gemini-3-8-flash",
           "source_id": "aa-gemini-3-8-flash",
-          "harness": "Artificial Analysis",
+          "harness": "AA scientist-background prompting; SciCode dataset 1.0.1",
           "run_ids": [
             "gemini-3.8-flash-high-opensplice-snv-20260910T161559Z",
             "gemini-3.8-flash-high-satmut-mpra-20260910T161559Z",
@@ -2166,7 +2166,7 @@
           "vep_score": 0.21781045280565162,
           "external_result_id": "aa-gpt-5-6-luna-low",
           "source_id": "aa-gpt-5-6-luna-low",
-          "harness": "Artificial Analysis",
+          "harness": "AA scientist-background prompting; SciCode dataset 1.0.1",
           "run_ids": [
             "gpt-5.6-luna-low-opensplice-snv-20260911T150230Z",
             "gpt-5.6-luna-low-satmut-mpra-20260911T150230Z",
@@ -2191,7 +2191,7 @@
           "vep_score": 0.31822468661146774,
           "external_result_id": "aa-gpt-5-6-luna-medium",
           "source_id": "aa-gpt-5-6-luna-medium",
-          "harness": "Artificial Analysis",
+          "harness": "AA scientist-background prompting; SciCode dataset 1.0.1",
           "run_ids": [
             "gpt-5.6-luna-medium-opensplice-snv-v2-20260908",
             "gpt-5.6-luna-medium-satmut-mpra-v2-20260908",
@@ -2216,7 +2216,7 @@
           "vep_score": 0.4152805345914568,
           "external_result_id": "aa-gpt-5-6-luna-high",
           "source_id": "aa-gpt-5-6-luna-high",
-          "harness": "Artificial Analysis",
+          "harness": "AA scientist-background prompting; SciCode dataset 1.0.1",
           "run_ids": [
             "gpt-5.6-luna-high-opensplice-snv-v2-20260908",
             "gpt-5.6-luna-high-satmut-mpra-v2-20260908",
@@ -2241,7 +2241,7 @@
           "vep_score": 0.4457585492793694,
           "external_result_id": "aa-gpt-5-6-luna",
           "source_id": "aa-gpt-5-6-luna",
-          "harness": "Artificial Analysis",
+          "harness": "AA scientist-background prompting; SciCode dataset 1.0.1",
           "run_ids": [
             "gpt-5.6-luna-max-opensplice_snv-20260911",
             "gpt-5.6-luna-max-satmut_mpra-20260911",
@@ -2266,7 +2266,7 @@
           "vep_score": 0.4089072724487925,
           "external_result_id": "aa-gpt-5-6-sol-low",
           "source_id": "aa-gpt-5-6-sol-low",
-          "harness": "Artificial Analysis",
+          "harness": "AA scientist-background prompting; SciCode dataset 1.0.1",
           "run_ids": [
             "gpt-5.6-sol-low-opensplice-snv-20260911T150230Z",
             "gpt-5.6-sol-low-satmut-mpra-20260911T150230Z",
@@ -2291,7 +2291,7 @@
           "vep_score": 0.4301571384011158,
           "external_result_id": "aa-gpt-5-6-sol-medium",
           "source_id": "aa-gpt-5-6-sol-medium",
-          "harness": "Artificial Analysis",
+          "harness": "AA scientist-background prompting; SciCode dataset 1.0.1",
           "run_ids": [
             "gpt-5.6-sol-medium-opensplice-snv-v2-20260908",
             "gpt-5.6-sol-medium-satmut-mpra-v2-20260908",
@@ -2316,7 +2316,7 @@
           "vep_score": 0.4977817344978461,
           "external_result_id": "aa-gpt-5-6-sol-high",
           "source_id": "aa-gpt-5-6-sol-high",
-          "harness": "Artificial Analysis",
+          "harness": "AA scientist-background prompting; SciCode dataset 1.0.1",
           "run_ids": [
             "gpt-5.6-sol-high-opensplice-snv-v2-20260908",
             "gpt-5.6-sol-high-satmut-mpra-v2-20260908",
@@ -2341,7 +2341,7 @@
           "vep_score": 0.552434925383204,
           "external_result_id": "aa-gpt-5-6-sol",
           "source_id": "aa-gpt-5-6-sol",
-          "harness": "Artificial Analysis",
+          "harness": "AA scientist-background prompting; SciCode dataset 1.0.1",
           "run_ids": [
             "gpt-5.6-sol-max-opensplice_snv-20260911",
             "gpt-5.6-sol-max-satmut_mpra-20260911",
@@ -2366,7 +2366,7 @@
           "vep_score": 0.45469586790654115,
           "external_result_id": "aa-gpt-5-6-terra",
           "source_id": "aa-gpt-5-6-terra",
-          "harness": "Artificial Analysis",
+          "harness": "AA scientist-background prompting; SciCode dataset 1.0.1",
           "run_ids": [
             "gpt-5.6-terra-max-opensplice_snv-20260911",
             "gpt-5.6-terra-max-satmut_mpra-20260911",
@@ -2391,7 +2391,7 @@
           "vep_score": 0.5421959376090383,
           "external_result_id": "aa-gpt-6-astra-low",
           "source_id": "aa-gpt-6-astra-low",
-          "harness": "Artificial Analysis",
+          "harness": "AA scientist-background prompting; SciCode dataset 1.0.1",
           "run_ids": [
             "gpt-6-astra-low-opensplice-snv-20260911T150230Z",
             "gpt-6-astra-low-satmut-mpra-20260911T150230Z",
@@ -2416,7 +2416,7 @@
           "vep_score": 0.5877608112325787,
           "external_result_id": "aa-gpt-6-astra-medium",
           "source_id": "aa-gpt-6-astra-medium",
-          "harness": "Artificial Analysis",
+          "harness": "AA scientist-background prompting; SciCode dataset 1.0.1",
           "run_ids": [
             "gpt-6-astra-medium-opensplice-snv-v2-20260908",
             "gpt-6-astra-medium-satmut-mpra-v2-20260908",
@@ -2441,7 +2441,7 @@
           "vep_score": 0.5989761123535243,
           "external_result_id": "aa-gpt-6-astra-high",
           "source_id": "aa-gpt-6-astra-high",
-          "harness": "Artificial Analysis",
+          "harness": "AA scientist-background prompting; SciCode dataset 1.0.1",
           "run_ids": [
             "gpt-6-astra-high-opensplice-snv-v2-20260908",
             "gpt-6-astra-high-satmut-mpra-v2-20260908",
@@ -2506,7 +2506,7 @@
           "vep_score": 0.48167113582042687,
           "external_result_id": "aa-gemini-3-8-flash-low",
           "source_id": "aa-gemini-3-8-flash-low",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gemini-3.8-flash-low-opensplice-snv-20260910T161559Z",
             "gemini-3.8-flash-low-satmut-mpra-20260910T161559Z",
@@ -2530,7 +2530,7 @@
           "vep_score": 0.5630149387834527,
           "external_result_id": "aa-gemini-3-8-flash-medium",
           "source_id": "aa-gemini-3-8-flash-medium",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gemini-3.8-flash-medium-opensplice-snv-20260910T151518Z",
             "gemini-3.8-flash-medium-satmut-mpra-20260910T151518Z",
@@ -2554,7 +2554,7 @@
           "vep_score": 0.5594124367572899,
           "external_result_id": "aa-gemini-3-8-flash",
           "source_id": "aa-gemini-3-8-flash",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gemini-3.8-flash-high-opensplice-snv-20260910T161559Z",
             "gemini-3.8-flash-high-satmut-mpra-20260910T161559Z",
@@ -2578,7 +2578,7 @@
           "vep_score": 0.21781045280565162,
           "external_result_id": "aa-gpt-5-6-luna-low",
           "source_id": "aa-gpt-5-6-luna-low",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-luna-low-opensplice-snv-20260911T150230Z",
             "gpt-5.6-luna-low-satmut-mpra-20260911T150230Z",
@@ -2603,7 +2603,7 @@
           "vep_score": 0.31822468661146774,
           "external_result_id": "aa-gpt-5-6-luna-medium",
           "source_id": "aa-gpt-5-6-luna-medium",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-luna-medium-opensplice-snv-v2-20260908",
             "gpt-5.6-luna-medium-satmut-mpra-v2-20260908",
@@ -2628,7 +2628,7 @@
           "vep_score": 0.4152805345914568,
           "external_result_id": "aa-gpt-5-6-luna-high",
           "source_id": "aa-gpt-5-6-luna-high",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-luna-high-opensplice-snv-v2-20260908",
             "gpt-5.6-luna-high-satmut-mpra-v2-20260908",
@@ -2653,7 +2653,7 @@
           "vep_score": 0.4457585492793694,
           "external_result_id": "aa-gpt-5-6-luna",
           "source_id": "aa-gpt-5-6-luna",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-luna-max-opensplice_snv-20260911",
             "gpt-5.6-luna-max-satmut_mpra-20260911",
@@ -2678,7 +2678,7 @@
           "vep_score": 0.4089072724487925,
           "external_result_id": "aa-gpt-5-6-sol-low",
           "source_id": "aa-gpt-5-6-sol-low",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-sol-low-opensplice-snv-20260911T150230Z",
             "gpt-5.6-sol-low-satmut-mpra-20260911T150230Z",
@@ -2703,7 +2703,7 @@
           "vep_score": 0.4301571384011158,
           "external_result_id": "aa-gpt-5-6-sol-medium",
           "source_id": "aa-gpt-5-6-sol-medium",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-sol-medium-opensplice-snv-v2-20260908",
             "gpt-5.6-sol-medium-satmut-mpra-v2-20260908",
@@ -2728,7 +2728,7 @@
           "vep_score": 0.4977817344978461,
           "external_result_id": "aa-gpt-5-6-sol-high",
           "source_id": "aa-gpt-5-6-sol-high",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-sol-high-opensplice-snv-v2-20260908",
             "gpt-5.6-sol-high-satmut-mpra-v2-20260908",
@@ -2753,7 +2753,7 @@
           "vep_score": 0.552434925383204,
           "external_result_id": "aa-gpt-5-6-sol",
           "source_id": "aa-gpt-5-6-sol",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-sol-max-opensplice_snv-20260911",
             "gpt-5.6-sol-max-satmut_mpra-20260911",
@@ -2778,7 +2778,7 @@
           "vep_score": 0.45469586790654115,
           "external_result_id": "aa-gpt-5-6-terra",
           "source_id": "aa-gpt-5-6-terra",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-terra-max-opensplice_snv-20260911",
             "gpt-5.6-terra-max-satmut_mpra-20260911",
@@ -2803,7 +2803,7 @@
           "vep_score": 0.5421959376090383,
           "external_result_id": "aa-gpt-6-astra-low",
           "source_id": "aa-gpt-6-astra-low",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-6-astra-low-opensplice-snv-20260911T150230Z",
             "gpt-6-astra-low-satmut-mpra-20260911T150230Z",
@@ -2828,7 +2828,7 @@
           "vep_score": 0.5877608112325787,
           "external_result_id": "aa-gpt-6-astra-medium",
           "source_id": "aa-gpt-6-astra-medium",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-6-astra-medium-opensplice-snv-v2-20260908",
             "gpt-6-astra-medium-satmut-mpra-v2-20260908",
@@ -2853,7 +2853,7 @@
           "vep_score": 0.5989761123535243,
           "external_result_id": "aa-gpt-6-astra-high",
           "source_id": "aa-gpt-6-astra-high",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-6-astra-high-opensplice-snv-v2-20260908",
             "gpt-6-astra-high-satmut-mpra-v2-20260908",
@@ -2918,7 +2918,7 @@
           "vep_score": 0.48167113582042687,
           "external_result_id": "aa-gemini-3-8-flash-low",
           "source_id": "aa-gemini-3-8-flash-low",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gemini-3.8-flash-low-opensplice-snv-20260910T161559Z",
             "gemini-3.8-flash-low-satmut-mpra-20260910T161559Z",
@@ -2942,7 +2942,7 @@
           "vep_score": 0.5630149387834527,
           "external_result_id": "aa-gemini-3-8-flash-medium",
           "source_id": "aa-gemini-3-8-flash-medium",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gemini-3.8-flash-medium-opensplice-snv-20260910T151518Z",
             "gemini-3.8-flash-medium-satmut-mpra-20260910T151518Z",
@@ -2966,7 +2966,7 @@
           "vep_score": 0.5594124367572899,
           "external_result_id": "aa-gemini-3-8-flash",
           "source_id": "aa-gemini-3-8-flash",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gemini-3.8-flash-high-opensplice-snv-20260910T161559Z",
             "gemini-3.8-flash-high-satmut-mpra-20260910T161559Z",
@@ -2990,7 +2990,7 @@
           "vep_score": 0.21781045280565162,
           "external_result_id": "aa-gpt-5-6-luna-low",
           "source_id": "aa-gpt-5-6-luna-low",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-luna-low-opensplice-snv-20260911T150230Z",
             "gpt-5.6-luna-low-satmut-mpra-20260911T150230Z",
@@ -3015,7 +3015,7 @@
           "vep_score": 0.31822468661146774,
           "external_result_id": "aa-gpt-5-6-luna-medium",
           "source_id": "aa-gpt-5-6-luna-medium",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-luna-medium-opensplice-snv-v2-20260908",
             "gpt-5.6-luna-medium-satmut-mpra-v2-20260908",
@@ -3040,7 +3040,7 @@
           "vep_score": 0.4152805345914568,
           "external_result_id": "aa-gpt-5-6-luna-high",
           "source_id": "aa-gpt-5-6-luna-high",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-luna-high-opensplice-snv-v2-20260908",
             "gpt-5.6-luna-high-satmut-mpra-v2-20260908",
@@ -3065,7 +3065,7 @@
           "vep_score": 0.4457585492793694,
           "external_result_id": "aa-gpt-5-6-luna",
           "source_id": "aa-gpt-5-6-luna",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-luna-max-opensplice_snv-20260911",
             "gpt-5.6-luna-max-satmut_mpra-20260911",
@@ -3090,7 +3090,7 @@
           "vep_score": 0.4089072724487925,
           "external_result_id": "aa-gpt-5-6-sol-low",
           "source_id": "aa-gpt-5-6-sol-low",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-sol-low-opensplice-snv-20260911T150230Z",
             "gpt-5.6-sol-low-satmut-mpra-20260911T150230Z",
@@ -3115,7 +3115,7 @@
           "vep_score": 0.4301571384011158,
           "external_result_id": "aa-gpt-5-6-sol-medium",
           "source_id": "aa-gpt-5-6-sol-medium",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-sol-medium-opensplice-snv-v2-20260908",
             "gpt-5.6-sol-medium-satmut-mpra-v2-20260908",
@@ -3140,7 +3140,7 @@
           "vep_score": 0.4977817344978461,
           "external_result_id": "aa-gpt-5-6-sol-high",
           "source_id": "aa-gpt-5-6-sol-high",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-sol-high-opensplice-snv-v2-20260908",
             "gpt-5.6-sol-high-satmut-mpra-v2-20260908",
@@ -3165,7 +3165,7 @@
           "vep_score": 0.552434925383204,
           "external_result_id": "aa-gpt-5-6-sol",
           "source_id": "aa-gpt-5-6-sol",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-sol-max-opensplice_snv-20260911",
             "gpt-5.6-sol-max-satmut_mpra-20260911",
@@ -3190,7 +3190,7 @@
           "vep_score": 0.45469586790654115,
           "external_result_id": "aa-gpt-5-6-terra",
           "source_id": "aa-gpt-5-6-terra",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-terra-max-opensplice_snv-20260911",
             "gpt-5.6-terra-max-satmut_mpra-20260911",
@@ -3215,7 +3215,7 @@
           "vep_score": 0.5421959376090383,
           "external_result_id": "aa-gpt-6-astra-low",
           "source_id": "aa-gpt-6-astra-low",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-6-astra-low-opensplice-snv-20260911T150230Z",
             "gpt-6-astra-low-satmut-mpra-20260911T150230Z",
@@ -3240,7 +3240,7 @@
           "vep_score": 0.5877608112325787,
           "external_result_id": "aa-gpt-6-astra-medium",
           "source_id": "aa-gpt-6-astra-medium",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-6-astra-medium-opensplice-snv-v2-20260908",
             "gpt-6-astra-medium-satmut-mpra-v2-20260908",
@@ -3265,7 +3265,7 @@
           "vep_score": 0.5989761123535243,
           "external_result_id": "aa-gpt-6-astra-high",
           "source_id": "aa-gpt-6-astra-high",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-6-astra-high-opensplice-snv-v2-20260908",
             "gpt-6-astra-high-satmut-mpra-v2-20260908",
@@ -3330,7 +3330,7 @@
           "vep_score": 0.48167113582042687,
           "external_result_id": "aa-gemini-3-8-flash-low",
           "source_id": "aa-gemini-3-8-flash-low",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gemini-3.8-flash-low-opensplice-snv-20260910T161559Z",
             "gemini-3.8-flash-low-satmut-mpra-20260910T161559Z",
@@ -3354,7 +3354,7 @@
           "vep_score": 0.5630149387834527,
           "external_result_id": "aa-gemini-3-8-flash-medium",
           "source_id": "aa-gemini-3-8-flash-medium",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gemini-3.8-flash-medium-opensplice-snv-20260910T151518Z",
             "gemini-3.8-flash-medium-satmut-mpra-20260910T151518Z",
@@ -3378,7 +3378,7 @@
           "vep_score": 0.5594124367572899,
           "external_result_id": "aa-gemini-3-8-flash",
           "source_id": "aa-gemini-3-8-flash",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gemini-3.8-flash-high-opensplice-snv-20260910T161559Z",
             "gemini-3.8-flash-high-satmut-mpra-20260910T161559Z",
@@ -3402,7 +3402,7 @@
           "vep_score": 0.21781045280565162,
           "external_result_id": "aa-gpt-5-6-luna-low",
           "source_id": "aa-gpt-5-6-luna-low",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-luna-low-opensplice-snv-20260911T150230Z",
             "gpt-5.6-luna-low-satmut-mpra-20260911T150230Z",
@@ -3427,7 +3427,7 @@
           "vep_score": 0.31822468661146774,
           "external_result_id": "aa-gpt-5-6-luna-medium",
           "source_id": "aa-gpt-5-6-luna-medium",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-luna-medium-opensplice-snv-v2-20260908",
             "gpt-5.6-luna-medium-satmut-mpra-v2-20260908",
@@ -3452,7 +3452,7 @@
           "vep_score": 0.4152805345914568,
           "external_result_id": "aa-gpt-5-6-luna-high",
           "source_id": "aa-gpt-5-6-luna-high",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-luna-high-opensplice-snv-v2-20260908",
             "gpt-5.6-luna-high-satmut-mpra-v2-20260908",
@@ -3477,7 +3477,7 @@
           "vep_score": 0.4457585492793694,
           "external_result_id": "aa-gpt-5-6-luna",
           "source_id": "aa-gpt-5-6-luna",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-luna-max-opensplice_snv-20260911",
             "gpt-5.6-luna-max-satmut_mpra-20260911",
@@ -3502,7 +3502,7 @@
           "vep_score": 0.4089072724487925,
           "external_result_id": "aa-gpt-5-6-sol-low",
           "source_id": "aa-gpt-5-6-sol-low",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-sol-low-opensplice-snv-20260911T150230Z",
             "gpt-5.6-sol-low-satmut-mpra-20260911T150230Z",
@@ -3527,7 +3527,7 @@
           "vep_score": 0.4301571384011158,
           "external_result_id": "aa-gpt-5-6-sol-medium",
           "source_id": "aa-gpt-5-6-sol-medium",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-sol-medium-opensplice-snv-v2-20260908",
             "gpt-5.6-sol-medium-satmut-mpra-v2-20260908",
@@ -3552,7 +3552,7 @@
           "vep_score": 0.4977817344978461,
           "external_result_id": "aa-gpt-5-6-sol-high",
           "source_id": "aa-gpt-5-6-sol-high",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-sol-high-opensplice-snv-v2-20260908",
             "gpt-5.6-sol-high-satmut-mpra-v2-20260908",
@@ -3577,7 +3577,7 @@
           "vep_score": 0.552434925383204,
           "external_result_id": "aa-gpt-5-6-sol",
           "source_id": "aa-gpt-5-6-sol",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-sol-max-opensplice_snv-20260911",
             "gpt-5.6-sol-max-satmut_mpra-20260911",
@@ -3602,7 +3602,7 @@
           "vep_score": 0.45469586790654115,
           "external_result_id": "aa-gpt-5-6-terra",
           "source_id": "aa-gpt-5-6-terra",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-terra-max-opensplice_snv-20260911",
             "gpt-5.6-terra-max-satmut_mpra-20260911",
@@ -3627,7 +3627,7 @@
           "vep_score": 0.5421959376090383,
           "external_result_id": "aa-gpt-6-astra-low",
           "source_id": "aa-gpt-6-astra-low",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-6-astra-low-opensplice-snv-20260911T150230Z",
             "gpt-6-astra-low-satmut-mpra-20260911T150230Z",
@@ -3652,7 +3652,7 @@
           "vep_score": 0.5877608112325787,
           "external_result_id": "aa-gpt-6-astra-medium",
           "source_id": "aa-gpt-6-astra-medium",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-6-astra-medium-opensplice-snv-v2-20260908",
             "gpt-6-astra-medium-satmut-mpra-v2-20260908",
@@ -3677,7 +3677,7 @@
           "vep_score": 0.5989761123535243,
           "external_result_id": "aa-gpt-6-astra-high",
           "source_id": "aa-gpt-6-astra-high",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-6-astra-high-opensplice-snv-v2-20260908",
             "gpt-6-astra-high-satmut-mpra-v2-20260908",
@@ -3742,7 +3742,7 @@
           "vep_score": 0.48167113582042687,
           "external_result_id": "aa-gemini-3-8-flash-low",
           "source_id": "aa-gemini-3-8-flash-low",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gemini-3.8-flash-low-opensplice-snv-20260910T161559Z",
             "gemini-3.8-flash-low-satmut-mpra-20260910T161559Z",
@@ -3766,7 +3766,7 @@
           "vep_score": 0.5630149387834527,
           "external_result_id": "aa-gemini-3-8-flash-medium",
           "source_id": "aa-gemini-3-8-flash-medium",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gemini-3.8-flash-medium-opensplice-snv-20260910T151518Z",
             "gemini-3.8-flash-medium-satmut-mpra-20260910T151518Z",
@@ -3790,7 +3790,7 @@
           "vep_score": 0.5594124367572899,
           "external_result_id": "aa-gemini-3-8-flash",
           "source_id": "aa-gemini-3-8-flash",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gemini-3.8-flash-high-opensplice-snv-20260910T161559Z",
             "gemini-3.8-flash-high-satmut-mpra-20260910T161559Z",
@@ -3814,7 +3814,7 @@
           "vep_score": 0.21781045280565162,
           "external_result_id": "aa-gpt-5-6-luna-low",
           "source_id": "aa-gpt-5-6-luna-low",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-luna-low-opensplice-snv-20260911T150230Z",
             "gpt-5.6-luna-low-satmut-mpra-20260911T150230Z",
@@ -3839,7 +3839,7 @@
           "vep_score": 0.31822468661146774,
           "external_result_id": "aa-gpt-5-6-luna-medium",
           "source_id": "aa-gpt-5-6-luna-medium",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-luna-medium-opensplice-snv-v2-20260908",
             "gpt-5.6-luna-medium-satmut-mpra-v2-20260908",
@@ -3864,7 +3864,7 @@
           "vep_score": 0.4152805345914568,
           "external_result_id": "aa-gpt-5-6-luna-high",
           "source_id": "aa-gpt-5-6-luna-high",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-luna-high-opensplice-snv-v2-20260908",
             "gpt-5.6-luna-high-satmut-mpra-v2-20260908",
@@ -3889,7 +3889,7 @@
           "vep_score": 0.4457585492793694,
           "external_result_id": "aa-gpt-5-6-luna",
           "source_id": "aa-gpt-5-6-luna",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-luna-max-opensplice_snv-20260911",
             "gpt-5.6-luna-max-satmut_mpra-20260911",
@@ -3914,7 +3914,7 @@
           "vep_score": 0.4089072724487925,
           "external_result_id": "aa-gpt-5-6-sol-low",
           "source_id": "aa-gpt-5-6-sol-low",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-sol-low-opensplice-snv-20260911T150230Z",
             "gpt-5.6-sol-low-satmut-mpra-20260911T150230Z",
@@ -3939,7 +3939,7 @@
           "vep_score": 0.4301571384011158,
           "external_result_id": "aa-gpt-5-6-sol-medium",
           "source_id": "aa-gpt-5-6-sol-medium",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-sol-medium-opensplice-snv-v2-20260908",
             "gpt-5.6-sol-medium-satmut-mpra-v2-20260908",
@@ -3964,7 +3964,7 @@
           "vep_score": 0.4977817344978461,
           "external_result_id": "aa-gpt-5-6-sol-high",
           "source_id": "aa-gpt-5-6-sol-high",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-sol-high-opensplice-snv-v2-20260908",
             "gpt-5.6-sol-high-satmut-mpra-v2-20260908",
@@ -3989,7 +3989,7 @@
           "vep_score": 0.552434925383204,
           "external_result_id": "aa-gpt-5-6-sol",
           "source_id": "aa-gpt-5-6-sol",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-sol-max-opensplice_snv-20260911",
             "gpt-5.6-sol-max-satmut_mpra-20260911",
@@ -4014,7 +4014,7 @@
           "vep_score": 0.45469586790654115,
           "external_result_id": "aa-gpt-5-6-terra",
           "source_id": "aa-gpt-5-6-terra",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-5.6-terra-max-opensplice_snv-20260911",
             "gpt-5.6-terra-max-satmut_mpra-20260911",
@@ -4039,7 +4039,7 @@
           "vep_score": 0.5421959376090383,
           "external_result_id": "aa-gpt-6-astra-low",
           "source_id": "aa-gpt-6-astra-low",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-6-astra-low-opensplice-snv-20260911T150230Z",
             "gpt-6-astra-low-satmut-mpra-20260911T150230Z",
@@ -4064,7 +4064,7 @@
           "vep_score": 0.5877608112325787,
           "external_result_id": "aa-gpt-6-astra-medium",
           "source_id": "aa-gpt-6-astra-medium",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-6-astra-medium-opensplice-snv-v2-20260908",
             "gpt-6-astra-medium-satmut-mpra-v2-20260908",
@@ -4089,7 +4089,7 @@
           "vep_score": 0.5989761123535243,
           "external_result_id": "aa-gpt-6-astra-high",
           "source_id": "aa-gpt-6-astra-high",
-          "harness": "Artificial Analysis",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
             "gpt-6-astra-high-opensplice-snv-v2-20260908",
             "gpt-6-astra-high-satmut-mpra-v2-20260908",
@@ -4154,7 +4154,7 @@
           "vep_score": 0.48167113582042687,
           "external_result_id": "aa-gemini-3-8-flash-low",
           "source_id": "aa-gemini-3-8-flash-low",
-          "harness": "Artificial Analysis",
+          "harness": "AA two-step reasoning/formatting; official CritPt grader",
           "run_ids": [
             "gemini-3.8-flash-low-opensplice-snv-20260910T161559Z",
             "gemini-3.8-flash-low-satmut-mpra-20260910T161559Z",
@@ -4178,7 +4178,7 @@
           "vep_score": 0.5630149387834527,
           "external_result_id": "aa-gemini-3-8-flash-medium",
           "source_id": "aa-gemini-3-8-flash-medium",
-          "harness": "Artificial Analysis",
+          "harness": "AA two-step reasoning/formatting; official CritPt grader",
           "run_ids": [
             "gemini-3.8-flash-medium-opensplice-snv-20260910T151518Z",
             "gemini-3.8-flash-medium-satmut-mpra-20260910T151518Z",
@@ -4202,7 +4202,7 @@
           "vep_score": 0.5594124367572899,
           "external_result_id": "aa-gemini-3-8-flash",
           "source_id": "aa-gemini-3-8-flash",
-          "harness": "Artificial Analysis",
+          "harness": "AA two-step reasoning/formatting; official CritPt grader",
           "run_ids": [
             "gemini-3.8-flash-high-opensplice-snv-20260910T161559Z",
             "gemini-3.8-flash-high-satmut-mpra-20260910T161559Z",
@@ -4226,7 +4226,7 @@
           "vep_score": 0.21781045280565162,
           "external_result_id": "aa-gpt-5-6-luna-low",
           "source_id": "aa-gpt-5-6-luna-low",
-          "harness": "Artificial Analysis",
+          "harness": "AA two-step reasoning/formatting; official CritPt grader",
           "run_ids": [
             "gpt-5.6-luna-low-opensplice-snv-20260911T150230Z",
             "gpt-5.6-luna-low-satmut-mpra-20260911T150230Z",
@@ -4251,7 +4251,7 @@
           "vep_score": 0.31822468661146774,
           "external_result_id": "aa-gpt-5-6-luna-medium",
           "source_id": "aa-gpt-5-6-luna-medium",
-          "harness": "Artificial Analysis",
+          "harness": "AA two-step reasoning/formatting; official CritPt grader",
           "run_ids": [
             "gpt-5.6-luna-medium-opensplice-snv-v2-20260908",
             "gpt-5.6-luna-medium-satmut-mpra-v2-20260908",
@@ -4276,7 +4276,7 @@
           "vep_score": 0.4152805345914568,
           "external_result_id": "aa-gpt-5-6-luna-high",
           "source_id": "aa-gpt-5-6-luna-high",
-          "harness": "Artificial Analysis",
+          "harness": "AA two-step reasoning/formatting; official CritPt grader",
           "run_ids": [
             "gpt-5.6-luna-high-opensplice-snv-v2-20260908",
             "gpt-5.6-luna-high-satmut-mpra-v2-20260908",
@@ -4301,7 +4301,7 @@
           "vep_score": 0.4457585492793694,
           "external_result_id": "aa-gpt-5-6-luna",
           "source_id": "aa-gpt-5-6-luna",
-          "harness": "Artificial Analysis",
+          "harness": "AA two-step reasoning/formatting; official CritPt grader",
           "run_ids": [
             "gpt-5.6-luna-max-opensplice_snv-20260911",
             "gpt-5.6-luna-max-satmut_mpra-20260911",
@@ -4326,7 +4326,7 @@
           "vep_score": 0.4089072724487925,
           "external_result_id": "aa-gpt-5-6-sol-low",
           "source_id": "aa-gpt-5-6-sol-low",
-          "harness": "Artificial Analysis",
+          "harness": "AA two-step reasoning/formatting; official CritPt grader",
           "run_ids": [
             "gpt-5.6-sol-low-opensplice-snv-20260911T150230Z",
             "gpt-5.6-sol-low-satmut-mpra-20260911T150230Z",
@@ -4351,7 +4351,7 @@
           "vep_score": 0.4301571384011158,
           "external_result_id": "aa-gpt-5-6-sol-medium",
           "source_id": "aa-gpt-5-6-sol-medium",
-          "harness": "Artificial Analysis",
+          "harness": "AA two-step reasoning/formatting; official CritPt grader",
           "run_ids": [
             "gpt-5.6-sol-medium-opensplice-snv-v2-20260908",
             "gpt-5.6-sol-medium-satmut-mpra-v2-20260908",
@@ -4376,7 +4376,7 @@
           "vep_score": 0.4977817344978461,
           "external_result_id": "aa-gpt-5-6-sol-high",
           "source_id": "aa-gpt-5-6-sol-high",
-          "harness": "Artificial Analysis",
+          "harness": "AA two-step reasoning/formatting; official CritPt grader",
           "run_ids": [
             "gpt-5.6-sol-high-opensplice-snv-v2-20260908",
             "gpt-5.6-sol-high-satmut-mpra-v2-20260908",
@@ -4401,7 +4401,7 @@
           "vep_score": 0.552434925383204,
           "external_result_id": "aa-gpt-5-6-sol",
           "source_id": "aa-gpt-5-6-sol",
-          "harness": "Artificial Analysis",
+          "harness": "AA two-step reasoning/formatting; official CritPt grader",
           "run_ids": [
             "gpt-5.6-sol-max-opensplice_snv-20260911",
             "gpt-5.6-sol-max-satmut_mpra-20260911",
@@ -4426,7 +4426,7 @@
           "vep_score": 0.45469586790654115,
           "external_result_id": "aa-gpt-5-6-terra",
           "source_id": "aa-gpt-5-6-terra",
-          "harness": "Artificial Analysis",
+          "harness": "AA two-step reasoning/formatting; official CritPt grader",
           "run_ids": [
             "gpt-5.6-terra-max-opensplice_snv-20260911",
             "gpt-5.6-terra-max-satmut_mpra-20260911",
@@ -4451,7 +4451,7 @@
           "vep_score": 0.5421959376090383,
           "external_result_id": "aa-gpt-6-astra-low",
           "source_id": "aa-gpt-6-astra-low",
-          "harness": "Artificial Analysis",
+          "harness": "AA two-step reasoning/formatting; official CritPt grader",
           "run_ids": [
             "gpt-6-astra-low-opensplice-snv-20260911T150230Z",
             "gpt-6-astra-low-satmut-mpra-20260911T150230Z",
@@ -4476,7 +4476,7 @@
           "vep_score": 0.5877608112325787,
           "external_result_id": "aa-gpt-6-astra-medium",
           "source_id": "aa-gpt-6-astra-medium",
-          "harness": "Artificial Analysis",
+          "harness": "AA two-step reasoning/formatting; official CritPt grader",
           "run_ids": [
             "gpt-6-astra-medium-opensplice-snv-v2-20260908",
             "gpt-6-astra-medium-satmut-mpra-v2-20260908",
@@ -4501,7 +4501,7 @@
           "vep_score": 0.5989761123535243,
           "external_result_id": "aa-gpt-6-astra-high",
           "source_id": "aa-gpt-6-astra-high",
-          "harness": "Artificial Analysis",
+          "harness": "AA two-step reasoning/formatting; official CritPt grader",
           "run_ids": [
             "gpt-6-astra-high-opensplice-snv-v2-20260908",
             "gpt-6-astra-high-satmut-mpra-v2-20260908",

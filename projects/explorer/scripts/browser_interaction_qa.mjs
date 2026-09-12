@@ -619,6 +619,12 @@ assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="SciCode
 assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="Terminal-Bench-Science"]').length`), 1);
 assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="Terminal-Bench-Science"] [aria-label="dot"] > *').length`), 4);
 assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="BixBench3"] [aria-label="dot"] > *').length`), 1);
+for (const [label, harness] of [["Terminal-Bench v4.0 (AA)", "mini-SWE-agent v2.4.6"], ["AA-Briefcase", "Stirrup"], ["GDPval-AA v2", "Stirrup"]]) {
+  const labels = await evaluate(`[...document.querySelectorAll('svg[aria-label*="${label}"] [aria-label="dot"] > *')]
+    .map((point) => point.getAttribute('aria-label'))`);
+  assert.equal(labels.length, 15);
+  assert.ok(labels.every((label) => label.includes(`Harness: ${harness}`)));
+}
 for (const effort of ["low", "medium", "high"]) {
   assert.equal(await evaluate(`[...document.querySelectorAll('svg[aria-label*="Intelligence Index"] [aria-label="dot"] > *')]
     .filter((point) => point.getAttribute('aria-label').includes('(${effort})')).length`), 4);

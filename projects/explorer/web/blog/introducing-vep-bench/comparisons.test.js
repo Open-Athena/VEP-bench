@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import test from "node:test";
-import {compareScores, matchStatus, selectHarness, summarizePairs} from "./comparisons.js";
+import {compareScores, matchStatus, pairedScoresCsv, selectHarness, summarizePairs} from "./comparisons.js";
 
 const pairs = (x, y) => x.map((v, i) => ({model_id: `model-${i}`, vep_score: v, external_score: y[i]}));
 
@@ -102,7 +102,7 @@ test("frozen snapshot includes every exact effort and documents the chosen harne
     for (const p of c.pairs) {
       const result = external.results.find((r) => r.id === p.external_result_id);
       assert.equal(result.group, c.group);
-      assert.equal(p.harness, result.harness);
+      assert.equal(p.harness, result.harness_by_metric?.[c.metric] ?? result.harness);
       assert.equal(result.effort, p.generation_parameters.reasoning.effort);
     }
   }
@@ -122,4 +122,18 @@ test("frozen snapshot includes every exact effort and documents the chosen harne
   changed.results.forEach((r) => Object.keys(r.scores).forEach((key) => { r.scores[key] *= -1; }));
   assert.deepEqual(compareScores(vep, changed).comparisons.map((c) => c.pairs.map((p) => p.external_result_id)),
     analysis.comparisons.map((c) => c.pairs.map((p) => p.external_result_id)));
+});
+
+test("AA points and CSV identify each metric's harness while TBS keeps each selected harness", () => {
+  const {comparisons} = compareScores(readSnapshot("vep-runs.json"), readSnapshot("external.json"));
+  for (const [id, harness] of [["aa-terminal", "mini-SWE-agent v2.4.6"], ["aa-briefcase", "Stirrup"], ["aa-gdpval", "Stirrup"]]) {
+    const comparison = comparisons.find((c) => c.id === id);
+    assert.equal(comparison.pairs.length, 15);
+    assert.ok(comparison.pairs.every((p) => p.harness === harness));
+    const csvRows = pairedScoresCsv([comparison]).trim().split("\n").slice(1);
+    assert.equal(csvRows.length, 15);
+    assert.ok(csvRows.every((row) => row.includes(`,"${harness}",`)));
+  }
+  const tbs = comparisons.find((c) => c.id === "tbs");
+  assert.deepEqual([...new Set(tbs.pairs.map((p) => p.harness))].sort(), ["Codex", "mini-SWE-agent"]);
 });

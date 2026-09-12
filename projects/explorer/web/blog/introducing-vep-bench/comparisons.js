@@ -95,7 +95,8 @@ export function compareScores(snapshot, external, {repeat = 0} = {}) {
   const comparisons = external.comparisons.map((comparison) => {
     const eligible = matches.filter((r) => r.group === comparison.group
       && r.match_status === "Exact version and effort match"
-      && Number.isFinite(r.scores[comparison.metric]));
+      && Number.isFinite(r.scores[comparison.metric]))
+      .map((r) => ({...r, harness: r.harness_by_metric?.[comparison.metric] ?? r.harness}));
     const pairs = [];
     for (const configuration of configurations) {
       const sameEffort = selectHarness(eligible.filter((r) => r.model_id === configuration.model_id

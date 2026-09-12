@@ -103,6 +103,8 @@ for (const [id, label, , metric_label, task_count, repeats, tools, category, wei
     budget: "Model-specific maximum output tokens; see source methodology", aa_index_weight: weight,
     ...aaSetups[id]});
 }
+const aaHarnesses = Object.fromEntries(comparisons.filter((c) => c.group === "aa")
+  .map((c) => [c.metric, c.harness]));
 function addAa(model, file, url) {
   if (!read(file).includes("Intelligence Index v4.3")) throw new Error(`Wrong AAII version: ${file}`);
   const scores = Object.fromEntries(aaMetrics.map(([id, , path]) => [id,
@@ -119,7 +121,9 @@ function addAa(model, file, url) {
     // Some entries put an explicit effort only in the published model label.
     effort: model.effort?.slug ?? model.name.match(/\b(none|minimal|low|medium|high|xhigh|max) effort\b/i)?.[1].toLowerCase() ?? null,
     scores, source_id: id,
-    reported_at: sources.at(-1).retrieved_at, harness: "Artificial Analysis", submitter: "Artificial Analysis",
+    reported_at: sources.at(-1).retrieved_at,
+    harness: "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+    harness_by_metric: aaHarnesses, submitter: "Artificial Analysis",
     exclusion: /fallback/i.test(model.name) ? "Fallback system may use another model; excluded from model-level comparisons"
       : model.intelligenceIndexIsEstimated ? "Estimated AAII score; independent measurement unavailable" : null});
 }
