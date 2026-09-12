@@ -9,6 +9,7 @@ from types import SimpleNamespace
 
 import pytest
 import vepbench_publishing.publication as publication_module
+import vepbench_publishing.split as split_module
 import zstandard
 from jsonschema import Draft202012Validator, FormatChecker
 from vepbench_publishing.cli import main as publishing_main
@@ -87,6 +88,23 @@ def combined_run_fixture(tmp_path: Path) -> tuple[Path, Path, list[dict]]:
     result_path = tmp_path / "results.jsonl"
     result_path.write_text("".join(canonical_json(item) + "\n" for item in records))
     return question_path, result_path, records
+
+
+def combined_batch_fixture(tmp_path: Path) -> tuple[Path, Path, list[dict]]:
+    questions, results, records = combined_run_fixture(tmp_path)
+    for record in records:
+        record["usage"].update(
+            cost=0.2,
+            vepbench={
+                "batch_id": "mixed-task-batch",
+                "batch_question_ids": [r["question_id"] for r in records],
+                "batch_usage": {"cost": 0.4, "total_tokens": 200},
+                "cost_source": "allocated_batch_total",
+                "cost_allocation": "equal",
+            },
+        )
+    results.write_text("".join(canonical_json(r) + "\n" for r in records))
+    return questions, results, records
 
 
 def retry_fixture(tmp_path: Path, *, combined: bool = False) -> tuple[Path, Path, Path]:
@@ -432,20 +450,8 @@ def test_split_results_preserves_responses_and_original_provenance(tmp_path: Pat
 
 
 def test_split_mixed_task_batch_preserves_receipt_and_publishes_task_costs(tmp_path: Path) -> None:
-    questions, results, records = combined_run_fixture(tmp_path)
+    questions, results, records = combined_batch_fixture(tmp_path)
     receipt = {"cost": 0.4, "total_tokens": 200}
-    for record in records:
-        record["usage"].update(
-            cost=0.2,
-            vepbench={
-                "batch_id": "mixed-task-batch",
-                "batch_question_ids": [r["question_id"] for r in records],
-                "batch_usage": deepcopy(receipt),
-                "cost_source": "allocated_batch_total",
-                "cost_allocation": "equal",
-            },
-        )
-    results.write_text("".join(canonical_json(r) + "\n" for r in records))
     original_bytes = results.read_bytes()
     export = tmp_path / "export"
     manifest = split_results(questions=questions, results=results, output=export)
@@ -473,6 +479,42 @@ def test_split_mixed_task_batch_preserves_receipt_and_publishes_task_costs(tmp_p
     assert validate_version(output, version_name="candidate") == built
     runs = json.loads((output / "versions/candidate/runs.json").read_text())["runs"]
     assert [r["metrics"]["total_cost_usd"] for r in runs] == [0.2, 0.2]
+
+
+@pytest.mark.parametrize("problem", ["missing", "null", "list", "object"])
+def test_split_rejects_malformed_batch_ids_without_export(tmp_path: Path, problem: str) -> None:
+    questions, results, records = combined_batch_fixture(tmp_path)
+    provenance = records[0]["usage"]["vepbench"]
+    if problem == "missing":
+        del provenance["batch_id"]
+    else:
+        provenance["batch_id"] = {"null": None, "list": [], "object": {}}[problem]
+    results.write_text("".join(canonical_json(r) + "\n" for r in records))
+    output = tmp_path / "export"
+    with pytest.raises(BuildError, match="invalid allocated batch cost provenance"):
+        split_results(questions=questions, results=results, output=output)
+    assert not output.exists()
+
+
+def test_split_rejects_source_changes_after_partition_discovery(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    questions, results, records = combined_batch_fixture(tmp_path)
+    discover_partitions = split_module.batch_task_partitions
+
+    def discover_then_change(path: Path) -> dict:
+        partitions = discover_partitions(path)
+        for record in records:
+            record["usage"]["cost"] = 0.3
+            record["usage"]["vepbench"]["batch_usage"]["cost"] = 0.6
+        path.write_text("".join(canonical_json(r) + "\n" for r in records))
+        return partitions
+
+    monkeypatch.setattr(split_module, "batch_task_partitions", discover_then_change)
+    output = tmp_path / "export"
+    with pytest.raises(BuildError, match="source results changed during export"):
+        split_results(questions=questions, results=results, output=output)
+    assert not output.exists()
 
 
 @pytest.mark.parametrize(

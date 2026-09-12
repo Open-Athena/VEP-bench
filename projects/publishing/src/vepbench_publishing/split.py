@@ -33,17 +33,19 @@ def batch_task_partitions(results: Path) -> dict[tuple[str, str, str], dict[str,
             validate_result(record, validator)
             if retry_metadata(record["usage"]) is not None or retry_policy(record["usage"]):
                 raise BuildError("publish retry-resolved task runs directly without split-results")
-            summary = {key: record[key] for key in ("run_id", "question_id", "usage")}
+            summary = {
+                **{key: record[key] for key in ("run_id", "question_id", "usage")},
+                "family": record["question"]["metadata"]["task_family"],
+            }
             summaries.append(summary)
-            provenance = record["usage"].get("vepbench", {})
-            if provenance.get("cost_source") != "allocated_batch_total":
-                continue
-            if provenance.get("batch_partition") is not None:
-                raise BuildError("source already contains batch partition provenance")
-            groups[(record["run_id"], provenance["batch_id"])].append(
-                {**summary, "family": record["question"]["metadata"]["task_family"]}
-            )
     validate_batch_usage_allocations(summaries, context=str(results))
+    for summary in summaries:
+        provenance = summary["usage"].get("vepbench", {})
+        if provenance.get("cost_source") != "allocated_batch_total":
+            continue
+        if provenance.get("batch_partition") is not None:
+            raise BuildError("source already contains batch partition provenance")
+        groups[(summary["run_id"], provenance["batch_id"])].append(summary)
     partitions = {}
     for (run_id, batch_id), records in groups.items():
         families = {record["family"] for record in records}
@@ -63,6 +65,7 @@ def split_results(*, questions: Path, results: Path, output: Path) -> dict[str, 
 
     if output.exists():
         raise BuildError(f"refusing to overwrite export directory {output}")
+    source_results_sha256 = sha256_file(results)
     batch_partitions = batch_task_partitions(results)
     source_questions = read_jsonl(questions)
     ids = [question["question_id"] for question in source_questions]
@@ -90,7 +93,7 @@ def split_results(*, questions: Path, results: Path, output: Path) -> dict[str, 
         "schema_version": "1.0",
         "source_questions_sha256": source_digest,
         "source_question_set_size": len(ids),
-        "source_results_sha256": sha256_file(results),
+        "source_results_sha256": source_results_sha256,
         "tasks": {},
     }
     output.parent.mkdir(parents=True, exist_ok=True)
