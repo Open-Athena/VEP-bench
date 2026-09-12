@@ -48,6 +48,10 @@ reasoning, usage, and scores are retained. Namespaced raw metadata and
 `export.json` record the original run, full question-set fingerprint, and source
 record hashes. Source files remain intact. This command accepts complete source
 runs; task runs containing an API error use the retry export below instead.
+When a provider batch spans tasks, each export retains the complete batch receipt
+and cost allocation ledger, together with its task membership. Its run cost
+includes only that task's allocated charges. A shared token receipt cannot fill
+missing token usage for an individual task.
 
 For a full task with one API error and one explicitly authorized unchanged retry,
 use `vepbench-publish resolve-retry --original ORIGINAL --retry RETRY --output OUTPUT`.

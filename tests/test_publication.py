@@ -19,7 +19,12 @@ from vepbench_publishing.publication import (
     validate_version,
     validate_version_name,
 )
-from vepbench_publishing.retry import resolve_retry, resolve_truncations, validate_retry_record
+from vepbench_publishing.retry import (
+    attempt_totals,
+    resolve_retry,
+    resolve_truncations,
+    validate_retry_record,
+)
 from vepbench_publishing.split import split_results
 
 from vepbench.artifacts import canonical_json, sha256_file, sha256_json
@@ -424,6 +429,50 @@ def test_split_results_preserves_responses_and_original_provenance(tmp_path: Pat
     assert validate_version(version, version_name="candidate") == built
     with pytest.raises(BuildError, match="refusing to overwrite"):
         split_results(questions=questions, results=results, output=first)
+
+
+def test_split_mixed_task_batch_preserves_receipt_and_publishes_task_costs(tmp_path: Path) -> None:
+    questions, results, records = combined_run_fixture(tmp_path)
+    receipt = {"cost": 0.4, "total_tokens": 200}
+    for record in records:
+        record["usage"].update(
+            cost=0.2,
+            vepbench={
+                "batch_id": "mixed-task-batch",
+                "batch_question_ids": [r["question_id"] for r in records],
+                "batch_usage": deepcopy(receipt),
+                "cost_source": "allocated_batch_total",
+                "cost_allocation": "equal",
+            },
+        )
+    results.write_text("".join(canonical_json(r) + "\n" for r in records))
+    original_bytes = results.read_bytes()
+    export = tmp_path / "export"
+    manifest = split_results(questions=questions, results=results, output=export)
+    assert results.read_bytes() == original_bytes
+    for task in manifest["tasks"].values():
+        record = json.loads((export / task["results"]).read_text())
+        provenance = record["usage"]["vepbench"]
+        assert provenance["batch_usage"] == receipt
+        assert provenance["batch_partition"] == {
+            "question_ids": [record["question_id"]],
+            "allocations": {r["question_id"]: 0.2 for r in records},
+        }
+        assert attempt_totals([record]) == (100, 0.2)
+        record["usage"].pop("total_tokens")
+        assert attempt_totals([record]) == (None, 0.2)
+    output = tmp_path / "publication"
+    built = build_version(
+        questions_path=tuple(export / t["questions"] for t in manifest["tasks"].values()),
+        results_dir=tuple(export / "results" / family for family in manifest["tasks"]),
+        result_schema_path=RESULT_SCHEMA,
+        schemas_dir=SCHEMAS,
+        output=output,
+        version_name="candidate",
+    )
+    assert validate_version(output, version_name="candidate") == built
+    runs = json.loads((output / "versions/candidate/runs.json").read_text())["runs"]
+    assert [r["metrics"]["total_cost_usd"] for r in runs] == [0.2, 0.2]
 
 
 @pytest.mark.parametrize(

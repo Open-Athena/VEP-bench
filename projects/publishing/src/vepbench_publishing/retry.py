@@ -172,6 +172,9 @@ def attempt_totals(records: Iterable[Mapping[str, Any]]) -> tuple[int | None, fl
             token_totals.append(sum(count for count in counts if isinstance(count, int)))
         else:
             receipt = usages[0].get("vepbench", {}).get("batch_usage", {}).get("total_tokens")
+            if usages[0].get("vepbench", {}).get("batch_partition") is not None:
+                # A receipt for several tasks cannot fill a missing task token count.
+                receipt = None
             known = sum(count for count in counts if type(count) is int and count >= 0)
             token_totals.append(receipt if type(receipt) is int and receipt >= known else None)
     tokens = (
