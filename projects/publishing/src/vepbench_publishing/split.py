@@ -12,11 +12,52 @@ from jsonschema import Draft202012Validator, FormatChecker
 
 from vepbench.artifacts import canonical_json, read_jsonl, sha256_file, sha256_json
 from vepbench.errors import BuildError
-from vepbench.evaluation.core import validate_result
+from vepbench.evaluation.core import validate_batch_usage_allocations, validate_result
 from vepbench.questions.validation import validate_question
 from vepbench.resources import QUESTION_SCHEMA, RESULT_SCHEMA
 
 from .retry import retry_metadata, retry_policy
+
+
+def batch_task_partitions(results: Path) -> dict[tuple[str, str, str], dict[str, Any]]:
+    """Validate complete batch ledgers before exporting their task partitions."""
+    summaries = []
+    groups: dict[tuple[str, str], list[dict[str, Any]]] = defaultdict(list)
+    validator = Draft202012Validator(
+        json.loads(RESULT_SCHEMA.read_text()), format_checker=FormatChecker()
+    )
+    # Retain only usage metadata; provider responses can be large.
+    with results.open() as source:
+        for line in source:
+            record = json.loads(line)
+            validate_result(record, validator)
+            if retry_metadata(record["usage"]) is not None or retry_policy(record["usage"]):
+                raise BuildError("publish retry-resolved task runs directly without split-results")
+            summary = {
+                **{key: record[key] for key in ("run_id", "question_id", "usage")},
+                "family": record["question"]["metadata"]["task_family"],
+            }
+            summaries.append(summary)
+    validate_batch_usage_allocations(summaries, context=str(results))
+    for summary in summaries:
+        provenance = summary["usage"].get("vepbench", {})
+        if provenance.get("cost_source") != "allocated_batch_total":
+            continue
+        if provenance.get("batch_partition") is not None:
+            raise BuildError("source already contains batch partition provenance")
+        groups[(summary["run_id"], provenance["batch_id"])].append(summary)
+    partitions = {}
+    for (run_id, batch_id), records in groups.items():
+        families = {record["family"] for record in records}
+        if len(families) < 2:
+            continue
+        allocations = {r["question_id"]: r["usage"]["cost"] for r in records}
+        for family in families:
+            partitions[(run_id, batch_id, family)] = {
+                "question_ids": sorted(r["question_id"] for r in records if r["family"] == family),
+                "allocations": allocations,
+            }
+    return partitions
 
 
 def split_results(*, questions: Path, results: Path, output: Path) -> dict[str, Any]:
@@ -24,6 +65,8 @@ def split_results(*, questions: Path, results: Path, output: Path) -> dict[str, 
 
     if output.exists():
         raise BuildError(f"refusing to overwrite export directory {output}")
+    source_results_sha256 = sha256_file(results)
+    batch_partitions = batch_task_partitions(results)
     source_questions = read_jsonl(questions)
     ids = [question["question_id"] for question in source_questions]
     if not ids or ids != sorted(set(ids)):
@@ -50,7 +93,7 @@ def split_results(*, questions: Path, results: Path, output: Path) -> dict[str, 
         "schema_version": "1.0",
         "source_questions_sha256": source_digest,
         "source_question_set_size": len(ids),
-        "source_results_sha256": sha256_file(results),
+        "source_results_sha256": source_results_sha256,
         "tasks": {},
     }
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -113,6 +156,12 @@ def split_results(*, questions: Path, results: Path, output: Path) -> dict[str, 
                     "source_raw_sha256": sha256_json(raw),
                 }
                 raw["_vepbench_task_export"] = provenance
+                usage_provenance = record["usage"].get("vepbench", {})
+                partition = batch_partitions.get(
+                    (record["run_id"], usage_provenance.get("batch_id"), family)
+                )
+                if partition is not None:
+                    usage_provenance["batch_partition"] = partition
                 record["run_id"] = f"{record['run_id']}-{family.replace('_', '-')}"
                 record["question_set_sha256"] = task["question_set_sha256"]
                 record["question_set_size"] = task["question_set_size"]

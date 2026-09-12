@@ -611,3 +611,69 @@ def test_batch_allocation_accepts_one_ulp_rounding_difference() -> None:
 
     assert math.fsum(record["usage"]["cost"] for record in records) != receipt_cost
     validate_batch_usage_allocations(records, context="rounding regression")
+
+
+@pytest.mark.parametrize(
+    "problem",
+    [None, "missing_ledger_member", "receipt", "local_cost", "membership", "negative", "boolean"],
+)
+def test_task_partition_validates_full_batch_receipt_and_local_cost(problem: str | None) -> None:
+    provenance = {
+        "batch_id": "mixed-task-batch",
+        "batch_question_ids": ["a", "b"],
+        "batch_usage": {"cost": 0.5},
+        "cost_source": "allocated_batch_total",
+        "cost_allocation": "proportional_total_tokens",
+        "batch_partition": {"question_ids": ["a"], "allocations": {"a": 0.125, "b": 0.375}},
+    }
+    record = {
+        "run_id": "task-a",
+        "question_id": "a",
+        "usage": {"cost": 0.125, "vepbench": provenance},
+    }
+    if problem == "missing_ledger_member":
+        del provenance["batch_partition"]["allocations"]["b"]
+    elif problem == "receipt":
+        provenance["batch_usage"]["cost"] = 0.6
+    elif problem == "local_cost":
+        record["usage"]["cost"] = 0.25
+    elif problem == "membership":
+        provenance["batch_partition"]["question_ids"] = ["b"]
+    elif problem in {"negative", "boolean"}:
+        provenance["batch_partition"]["allocations"]["b"] = (
+            -0.125 if problem == "negative" else True
+        )
+    if problem is None:
+        validate_batch_usage_allocations([record], context="task partition")
+    else:
+        with pytest.raises(BuildError):
+            validate_batch_usage_allocations([record], context="task partition")
+
+
+def test_task_partitions_cannot_disagree_on_the_shared_allocation_ledger() -> None:
+    records = []
+    for qid in ("a", "b"):
+        records.append(
+            {
+                "run_id": f"task-{qid}",
+                "question_id": qid,
+                "usage": {
+                    "cost": 0.375,
+                    "vepbench": {
+                        "batch_id": "shared",
+                        "batch_question_ids": ["a", "b"],
+                        "batch_usage": {"cost": 0.5},
+                        "cost_source": "allocated_batch_total",
+                        "cost_allocation": "proportional_total_tokens",
+                        "batch_partition": {
+                            "question_ids": [qid],
+                            "allocations": {q: 0.375 if q == qid else 0.125 for q in ("a", "b")},
+                        },
+                    },
+                },
+            }
+        )
+    for record in records:
+        validate_batch_usage_allocations([record], context="individual task")
+    with pytest.raises(BuildError, match="inconsistent batch partition ledgers across runs"):
+        validate_batch_usage_allocations(records, context="combined publication")

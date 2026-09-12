@@ -728,6 +728,7 @@ def validate_batch_usage_allocations(records: Iterable[Mapping[str, Any]], *, co
             (question_id, float(allocated_cost), provenance)
         )
 
+    partition_ledgers: dict[str, tuple[Any, ...]] = {}
     for (run_id, batch_id), allocated in groups.items():
         reference = allocated[0][2]
         expected_question_ids = reference["batch_question_ids"]
@@ -736,16 +737,49 @@ def validate_batch_usage_allocations(records: Iterable[Mapping[str, Any]], *, co
                 provenance.get("batch_usage") != reference["batch_usage"]
                 or provenance.get("cost_allocation") != reference["cost_allocation"]
                 or provenance.get("batch_question_ids") != expected_question_ids
+                or provenance.get("batch_partition") != reference.get("batch_partition")
             ):
                 raise BuildError(
                     f"{context}: batch {batch_id!r} has inconsistent allocation provenance"
                 )
         actual_question_ids = sorted(question_id for question_id, _, _ in allocated)
-        if actual_question_ids != expected_question_ids:
+        partition = reference.get("batch_partition")
+        if partition is not None:
+            if (
+                not isinstance(partition, Mapping)
+                or set(partition) != {"question_ids", "allocations"}
+                or not isinstance(partition["question_ids"], list)
+                or not partition["question_ids"]
+                or any(not isinstance(q, str) for q in partition["question_ids"])
+                or partition["question_ids"] != sorted(set(partition["question_ids"]))
+                or not set(partition["question_ids"]) <= set(expected_question_ids)
+                or not isinstance(partition["allocations"], Mapping)
+                or set(partition["allocations"]) != set(expected_question_ids)
+                or any(not _is_nonnegative_number(c) for c in partition["allocations"].values())
+            ):
+                raise BuildError(f"{context}: invalid batch partition provenance")
+            if actual_question_ids != partition["question_ids"]:
+                raise BuildError(f"{context}: batch partition does not cover its recorded members")
+            if any(cost != partition["allocations"][qid] for qid, cost, _ in allocated):
+                raise BuildError(f"{context}: batch partition cost does not match its allocation")
+            ledger = (
+                reference["batch_usage"],
+                reference["cost_allocation"],
+                expected_question_ids,
+                partition["allocations"],
+            )
+            if batch_id in partition_ledgers and partition_ledgers[batch_id] != ledger:
+                raise BuildError(f"{context}: inconsistent batch partition ledgers across runs")
+            partition_ledgers[batch_id] = ledger
+            # A task export retains the entire provider receipt and allocation ledger.
+            # Validate that ledger against the receipt, not just the task's subtotal.
+            allocated_total = math.fsum(partition["allocations"].values())
+        else:
+            allocated_total = math.fsum(cost for _, cost, _ in allocated)
+        if partition is None and actual_question_ids != expected_question_ids:
             raise BuildError(
                 f"{context}: batch {batch_id!r} allocations do not cover its recorded members"
             )
-        allocated_total = math.fsum(cost for _, cost, _ in allocated)
         receipt_total = float(reference["batch_usage"]["cost"])
         rounding_tolerance = max(math.ulp(allocated_total), math.ulp(receipt_total))
         if not math.isclose(
