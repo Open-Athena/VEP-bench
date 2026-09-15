@@ -11,10 +11,15 @@ VEP-bench v0.1
 
 VEP-bench asks language models to predict the effects of genetic variants from
 DNA sequence and experimental context, without tools or internet access. Its
-three tasks measure different outcomes: functional damage in
+three tasks measure different outcomes: functional effects in
 [saturation genome editing (SGE)](../tasks/sge.html), reporter activity in
 [satMutMPRA](../tasks/satmut-mpra.html), and exon inclusion in
 [OpenSplice](../tasks/opensplice-snv.html).
+
+<figure>
+  <img src="./introducing-vep-bench/tasks-overview.svg" width="1080" height="826" style="display: block; width: 100%; height: auto;" alt="Three assay tasks share one workflow: DNA sequence, assay context, and 50 variants go to a language model. It predicts functional effects for SGE, with higher scores indicating greater impairment, reporter activity changes for satMutMPRA, or exon-inclusion changes for OpenSplice. Predicted and measured effects are compared by Spearman correlation within each panel, then panels are averaged equally within each task.">
+  <figcaption>Each question is one panel from one assay. The biological target changes across tasks; the prediction and scoring workflow is shared. <a href="./introducing-vep-bench/tasks-overview.svg">Open the full-size SVG</a>.</figcaption>
+</figure>
 
 Before comparing model performance, we can ask what kinds of variants each
 task contains.
