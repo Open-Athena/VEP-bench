@@ -35,6 +35,11 @@ September 15, 2026, including its recovered maximum-effort runs. The
 [publication note](./introducing-vep-bench/specialist-methods.html#publication-snapshot)
 describes the recovered responses and replacements.
 
+Coverage is **1,000/1,000 splicing variants**, **700/800 expression variants**,
+and **487/800 fitness variants**. The molecular predictions include indels;
+the AVI fitness comparison covers SNVs only. Each LLM is rescored on the same
+covered variants as the specialist.
+
 ```js
 import {specialistRows, specialistCsv, specialistTasks} from "./introducing-vep-bench/specialists.js";
 import {matchedCorrelationPlot} from "./introducing-vep-bench/specialist-plots.js";
