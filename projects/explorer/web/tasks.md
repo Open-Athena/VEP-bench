@@ -6,11 +6,12 @@ title: Tasks
 
 VEP-bench publishes transparent development tasks with exact model prompts, complete responses, and deterministic scores.
 
-<div class="card">
+<div class="card vepbench-task-intro">
+<div class="vepbench-task-description">
 
 ## Fitness (SGE)
 
-Predict continuous functional damage for panels sampled from endogenous-locus saturation genome editing assays.
+Predict continuous functional effects for panels sampled from endogenous-locus saturation genome editing assays.
 
 - One eligible exon-level question per gene with 50 complete assayed alleles
 - Gene, assay mechanism, and exon sequence with exact 100 bp flanks
@@ -20,8 +21,11 @@ Predict continuous functional damage for panels sampled from endogenous-locus sa
 [Open task →](./tasks/sge.html)
 
 </div>
+<img class="vepbench-task-schematic" src="./tasks/schematics/sge.svg" width="324" height="360" alt="Fitness (SGE): variants in a native exon with 100 bp flanks are measured in a cellular assay. Higher functional-effect scores indicate greater impairment within one gene and assay.">
+</div>
 
-<div class="card">
+<div class="card vepbench-task-intro">
+<div class="vepbench-task-description">
 
 ## Expression (satMutMPRA)
 
@@ -35,8 +39,11 @@ Predict signed reporter-activity effects for panels sampled across the measured 
 [Open task →](./tasks/satmut-mpra.html)
 
 </div>
+<img class="vepbench-task-schematic" src="./tasks/schematics/satmut-mpra.svg" width="324" height="360" alt="Expression (satMutMPRA): promoter or enhancer inserts drive a luciferase reporter. Predict signed log₂ changes in reporter activity relative to the reference.">
+</div>
 
-<div class="card">
+<div class="card vepbench-task-intro">
+<div class="vepbench-task-description">
 
 ## Splicing (OpenSplice)
 
@@ -50,4 +57,6 @@ complete source-derived three-exon minigene cassettes.
 
 [Open task →](./tasks/opensplice-snv.html)
 
+</div>
+<img class="vepbench-task-schematic" src="./tasks/schematics/opensplice-snv.svg" width="324" height="360" alt="Splicing (OpenSplice): variants in a three-exon cassette can change inclusion or skipping of the middle exon. Predict ΔPSI, the change in exon inclusion relative to the reference.">
 </div>

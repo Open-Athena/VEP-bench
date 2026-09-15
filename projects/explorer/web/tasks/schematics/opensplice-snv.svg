@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="324" height="360" viewBox="716 137 324 360" role="img" aria-labelledby="title description">
+  <title id="title">Splicing: three-exon OpenSplice minigene assay</title>
+  <desc id="description">Splicing. Minigene assay · OpenSplice. Three-exon cassette. tested. Included. Skipped. Exon inclusion. ΔPSI, in percentage points. − less / + more than wild type</desc>
+  <!-- Generated from blog/introducing-vep-bench/tasks-overview.svg by uv run projects/explorer/scripts/export_task_schematics.py. Edit the combined SVG, then regenerate. -->
+  <defs>
+    <style>
+      text { font-family: Arial, Helvetica, sans-serif; fill: #172b36; }
+      .title { font-size: 34px; font-weight: 700; letter-spacing: -.7px; }
+      .task { font-size: 27px; font-weight: 700; }
+      .target { font-size: 23px; font-weight: 700; }
+      .body { font-size: 18px; }
+      .small { font-size: 16px; fill: #536675; }
+      .eyebrow { font-size: 14px; font-weight: 700; letter-spacing: 1.5px; fill: #536675; }
+      .white { fill: #fff; }
+      .fitness { fill: #075a56; }
+      .expression { fill: #84400b; }
+      .splicing { fill: #57398f; }
+      .line { fill: none; stroke: #7b8d98; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M1 1 9 5 1 9" fill="none" stroke="#7b8d98" stroke-width="1.5" />
+    </marker>
+    <g id="variant">
+      <path d="M0 0 -5 -9H5Z" />
+    </g>
+    <g id="cell">
+      <circle r="16" fill="#e0efea" stroke="#007f79" stroke-width="1.5" />
+      <circle cx="3" cy="-2" r="6" fill="#b9ded5" />
+      <path d="M-7 5 -2 -3 4 4 9 -3" fill="none" stroke="#007f79" stroke-width="1.5" />
+    </g>
+  </defs>
+  <g id="splicing-task" role="group" aria-label="Splicing: three-exon OpenSplice minigene assay">
+    <rect x="716" y="137" width="324" height="360" rx="12" fill="#f6f3fa" />
+    <path d="M740 160h28" stroke="#7254b4" stroke-width="4" />
+    <text x="740" y="195" class="task splicing">Splicing</text>
+    <text x="740" y="224" class="small">Minigene assay · OpenSplice</text>
+    <text x="878" y="264" text-anchor="middle" class="small">Three-exon cassette</text>
+    <path d="M762 298H994" stroke="#96a6b2" stroke-width="3" />
+    <path d="M810 298H840 M916 298H946" stroke="#b7a5da" stroke-width="7" />
+    <rect x="748" y="283" width="39" height="30" rx="3" fill="#e2e9ed" stroke="#93a5af" />
+    <rect x="840" y="281" width="76" height="34" rx="4" fill="#7254b4" />
+    <rect x="969" y="283" width="39" height="30" rx="3" fill="#e2e9ed" stroke="#93a5af" />
+    <text x="878" y="304" text-anchor="middle" class="small white">tested</text>
+    <use href="#variant" x="852" y="278" fill="#57398f" />
+    <use href="#variant" x="903" y="278" fill="#57398f" />
+    <path d="M878 320v14 M878 334H809v12 M878 334H965v12" class="line" marker-end="url(#arrow)" />
+    <path d="M760 359H855" stroke="#96a6b2" stroke-width="2" />
+    <rect x="748" y="350" width="24" height="18" rx="2" fill="#e2e9ed" stroke="#93a5af" />
+    <rect x="788" y="350" width="40" height="18" rx="2" fill="#7254b4" />
+    <rect x="844" y="350" width="24" height="18" rx="2" fill="#e2e9ed" stroke="#93a5af" />
+    <path d="M936 359H994" stroke="#96a6b2" stroke-width="2" />
+    <rect x="924" y="350" width="24" height="18" rx="2" fill="#e2e9ed" stroke="#93a5af" />
+    <rect x="984" y="350" width="24" height="18" rx="2" fill="#e2e9ed" stroke="#93a5af" />
+    <text x="808" y="391" text-anchor="middle" class="small">Included</text>
+    <text x="966" y="391" text-anchor="middle" class="small">Skipped</text>
+    <path d="M740 402H1016" stroke="#ddd4ec" />
+    <text x="740" y="436" class="target splicing">Exon inclusion</text>
+    <text x="740" y="464" class="body">ΔPSI, in percentage points</text>
+    <text x="740" y="487" class="small">− less / + more than wild type</text>
+  </g>
+</svg>

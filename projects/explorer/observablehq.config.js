@@ -39,6 +39,31 @@ export default {
   head: `
     <meta name="description" content="A public benchmark for native genetic variant effect prediction by language models.">
     <style>
+      .vepbench-task-intro {
+        align-items: flex-start;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        max-width: 1080px;
+      }
+
+      .vepbench-task-description {
+        flex: 1 1 24rem;
+        min-width: 0;
+      }
+
+      .vepbench-task-description > :first-child {
+        margin-top: 0;
+      }
+
+      .vepbench-task-schematic {
+        display: block;
+        flex: 0 1 324px;
+        height: auto;
+        max-width: 100%;
+        width: 324px;
+      }
+
       .vepbench-model-label {
         align-items: center;
         display: inline-flex;

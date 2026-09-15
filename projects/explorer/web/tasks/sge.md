@@ -111,13 +111,20 @@ if (metadataState.error) {
 }
 ```
 
-Predict continuous functional damage for assayed variants in endogenous-locus saturation genome editing screens, using the gene, assay mechanism, and local exon sequence.
+<div class="vepbench-task-intro">
+<div class="vepbench-task-description">
+
+Predict continuous functional effects for assayed variants in endogenous-locus saturation genome editing screens, using the gene, assay mechanism, and local exon sequence.
 
 **${formatInteger(taskQuestions.length)} published gene panels** each contain 50 variants from one exon and exactly 100 unmarked flanking bases on each side. Version-2 panels sample five score-space bins across the full eligible allele population, with sparse-bin slots redistributed. The primary score is mean within-gene Spearman correlation; mean Pearson correlation reports numerical agreement, valid-output rate reports strict JSON compliance, and invalid completed outputs contribute zero while remaining identifiable as format failures.
 
 Spearman measures ordering within each gene, not cross-assay calibration. SGE effects depend on the cellular system, engineered background, selection, timing, and treatment; they are not clinical classifications. One exon window omits distant gene and splice context, while score-space sampling does not reproduce the natural variant distribution.
 
 Source data come from published saturation genome editing score sets in [MaveDB](https://www.mavedb.org/), cited as [Rubin et al. (2025)](https://doi.org/10.1186/s13059-025-03476-y).
+
+</div>
+<img class="vepbench-task-schematic" src="./schematics/sge.svg" width="324" height="360" alt="Fitness (SGE): variants in a native exon with 100 bp flanks are measured in a cellular assay. Higher functional-effect scores indicate greater impairment within one gene and assay.">
+</div>
 
 ## Questions
 
