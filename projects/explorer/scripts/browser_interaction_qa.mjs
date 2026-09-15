@@ -3,6 +3,7 @@ import {readFile, writeFile} from "node:fs/promises";
 import {join} from "node:path";
 import {gunzipSync} from "node:zlib";
 import {stratumModelOrder, stratumRows} from "../web/blog/introducing-vep-bench/strata-analysis.js";
+import {specialistRows} from "../web/blog/introducing-vep-bench/specialists.js";
 
 const [siteUrl, debugUrl, outputDir, mode] = process.argv.slice(2);
 if (!siteUrl || !debugUrl) {
@@ -502,6 +503,14 @@ assert.equal(
 );
 
 await navigate("/blog/introducing-vep-bench.html");
+const specialistSnapshot = JSON.parse(gunzipSync(await readFile(
+  new URL("../web/blog/introducing-vep-bench/specialist-comparison.json.gz", import.meta.url)
+)));
+const expectedSpecialistRows = specialistRows(specialistSnapshot);
+const specialistPlot = 'svg[aria-label="Specialist and LLM correlations on identical variants within each task"]';
+await waitFor(`document.querySelectorAll(${JSON.stringify(specialistPlot + ' g[aria-label="dot"] circle')})
+  .length === ${expectedSpecialistRows.length}`, "matched specialist predictions");
+assert.equal(await evaluate(`document.querySelectorAll(${JSON.stringify(specialistPlot)}).length`), 1);
 const stratumSnapshot = JSON.parse(gunzipSync(await readFile(
   new URL("../web/blog/introducing-vep-bench/strata-2026-09-12.json.gz", import.meta.url)
 )));
@@ -579,6 +588,12 @@ for (const width of [1440, 390]) {
   });
   await waitFor(`document.body.scrollWidth <= innerWidth`, `stratum page fits viewport ${width}`);
   await checkStratumPlots();
+  if (width === 390) {
+    assert.equal(await evaluate(`(() => {
+      const region = document.querySelector('[aria-label="Matched specialist comparison"]');
+      return region.scrollWidth > region.clientWidth + 1;
+    })()`), true, "specialist chart keeps legible labels and scrolls on mobile");
+  }
   for (const axis of ["allele_type", "consequence"]) {
     assert.equal(await evaluate(`(() => {
       const scroll = document.querySelector('figure[data-stratum-axis="${axis}"] [role="region"]');

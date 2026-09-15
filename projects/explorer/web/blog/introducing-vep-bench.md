@@ -30,11 +30,17 @@ We compare AlphaGenome's signed molecular predictions for splicing and
 expression, and AlphaGenome Variant Impact (AVI) scores for fitness, with saved
 LLM answers on the same variants within each original panel. Each panel has
 equal weight. The full benchmark leaderboard retains its original variant set.
+This comparison uses the public LLM snapshot frozen on September 15, 2026,
+including its recovered maximum-effort runs; the variant-stratum figures below
+retain their September 12 snapshot.
 
 ```js
 import {specialistRows, specialistCsv, specialistTasks} from "./introducing-vep-bench/specialists.js";
 import {matchedCorrelationPlot} from "./introducing-vep-bench/specialist-plots.js";
-const specialistSnapshot = await FileAttachment("./introducing-vep-bench/specialist-comparison.json").json();
+import {fetchGzipJson} from "../components/benchmark-data.js";
+const specialistSnapshot = await fetchGzipJson(
+  await FileAttachment("./introducing-vep-bench/specialist-comparison.json.gz").url(), "specialist comparison"
+);
 const specialistData = specialistRows(specialistSnapshot);
 if (specialistSnapshot.status === "awaiting_inference") {
   display(html`<p>Scoring settings and initial eligibility are frozen. Predictions have not yet been collected.
@@ -45,7 +51,9 @@ if (specialistSnapshot.status === "awaiting_inference") {
     "Total variants": r.total_variants
   })), {select: false}));
 } else {
-  display(matchedCorrelationPlot(specialistData, {width, colors: specialistSnapshot.family_colors}));
+  display(html`<div role="region" tabindex="0" aria-label="Matched specialist comparison" style="overflow-x: auto">
+    ${matchedCorrelationPlot(specialistData, {width, colors: specialistSnapshot.family_colors})}
+  </div>`);
   display(Inputs.table(specialistData.map((r) => ({Task: r.task_label, Model: r.model,
     Variants: r.eligible_variants, Panels: r.eligible_panels,
     Spearman: r.mean_spearman_rho, Pearson: r.mean_pearson_r,
@@ -80,8 +88,12 @@ describe the coverage rules and departures from the original evaluations.
 ```js
 display(html`<p><a href=${await FileAttachment("./introducing-vep-bench/specialist-plan.json.gz").url()} download>
   Download frozen allele requests and settings (JSON.gz)</a> ·
-  <a href=${await FileAttachment("./introducing-vep-bench/specialist-comparison.json").url()} download>
-  Download comparison status, scores and coverage (JSON)</a></p>`);
+  <a href=${await FileAttachment("./introducing-vep-bench/specialist-comparison.json.gz").url()} download>
+  Download comparison scores and coverage (JSON.gz)</a> ·
+  <a href=${await FileAttachment("./introducing-vep-bench/specialist-predictions.json.gz").url()} download>
+  Download cached prediction evidence (JSON.gz)</a> ·
+  <a href=${await FileAttachment("./introducing-vep-bench/specialist-2026-09-15.manifest.json").url()} download>
+  Download frozen publication manifest (JSON)</a></p>`);
 ```
 
 ```js
@@ -259,7 +271,6 @@ features, with no canonical-transcript selection. We do not infer missense from
 exon membership.
 
 ```js
-import {fetchGzipJson} from "../components/benchmark-data.js";
 import {stratumCorrelationPlot} from "../components/correlation-plot.js";
 import {stratumRows, stratumCsv, stratumModelOrder} from "./introducing-vep-bench/strata-analysis.js";
 
@@ -370,13 +381,10 @@ it receives no summary score. Excluded panels contain fewer than 10 supported
 variants of that class, including panels with none. Missing or stale
 source-linked consequences are retained as unknown.
 
-No specialist comparison is included in this snapshot. The precomputed-score
-work in [issue #78](https://github.com/Open-Athena/VEP-bench/issues/78) is still
-pending. The analysis accepts a versioned specialist score file tied to exact
-question and candidate IDs, intersects its supported variants with each class
-**before applying either cutoff**, and rescores every LLM on that same subset.
-The output records unsupported IDs and any resulting loss of eligible panels.
-Each specialist requires a separate coverage plan and comparison.
+These variant-stratum figures compare LLMs on their September 12 snapshot.
+The AlphaGenome and AVI comparison earlier in this post uses a separate
+coverage plan and the September 15 LLM snapshot. It compares complete eligible
+panels and does not apply these variant-class cutoffs.
 
 ```js
 display(html`<p>

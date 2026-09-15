@@ -2,6 +2,7 @@
 
 import copy
 import json
+import threading
 
 import pytest
 from vepbench_blog_analysis import specialists as s
@@ -104,6 +105,37 @@ def test_transport_errors_are_not_cached_as_missing_scores_or_logged(tmp_path):
         s.predict(p, tmp_path, Failing())
     assert "secret-in-request" not in str(exc.value)
     assert list(tmp_path.glob("*.json")) == [tmp_path / "session.json"]
+    with pytest.raises(ValueError, match="incomplete"):
+        s.collect(p, tmp_path)
+
+
+def test_parallel_requests_deduplicate_and_cache_successes_before_stopping(tmp_path):
+    barrier = threading.Barrier(4)
+
+    class Concurrent(FakeClient):
+        def predict(self, request, metadata):
+            barrier.wait(timeout=5)
+            self.calls.append(request)
+            if request["variant"]["pos"] == 2:
+                raise ConnectionError("secret-in-request-metadata")
+            return {"status": "scored", "score": float(request["variant"]["pos"])}
+
+    p = plan([question("first", [1, 2, 3, 4, 5]), question("duplicate", [1, 2, 3, 4, 5])])
+    client = Concurrent()
+    with pytest.raises(RuntimeError, match="ConnectionError"):
+        s.predict(p, tmp_path, client, workers=4)
+    assert len(client.calls) == 4
+    assert len(list(tmp_path.glob("*.json"))) == 4  # Session plus three successes.
+    resumed = FakeClient()
+    s.predict(p, tmp_path, resumed, workers=4)
+    assert sorted(r["variant"]["pos"] for r in resumed.calls) == [2, 5]
+    assert len(s.collect(p, tmp_path)["panels"]["first"]["predictions"]) == 5
+
+
+def test_parallel_limit_bounds_new_requests(tmp_path):
+    p, client = plan([question("gene", [1, 2, 3, 4, 5])]), FakeClient()
+    s.predict(p, tmp_path, client, limit=2, workers=4)
+    assert len(client.calls) == 2
     with pytest.raises(ValueError, match="incomplete"):
         s.collect(p, tmp_path)
 
@@ -218,7 +250,7 @@ def test_committed_source_mapping_defines_eligibility_without_scores():
         s.make_panels(qs, sources, altered, policy)
 
 
-def test_committed_plan_and_blog_status_match_the_reviewed_implementation():
+def test_committed_plan_and_blog_status_match_the_reviewed_implementation(tmp_path):
     p = s.read_json(s.POST / "specialist-plan.json.gz")
     s.validate_plan(p)
     assert p["policy"] == s.read_json(s.POST / "specialist-policy.json")
@@ -226,7 +258,22 @@ def test_committed_plan_and_blog_status_match_the_reviewed_implementation():
     assert p["annotation_sha256"] == s.STRATA.file_sha256(
         s.ROOT / "projects/explorer/data/variant-annotations.json"
     )
-    snapshot = s.read_json(s.POST / "specialist-comparison.json")
+    snapshot = s.read_json(s.POST / "specialist-comparison.json.gz")
     assert snapshot["plan_sha256"] == sha256_json(p)
+    assert p["manifest_sha256"] == s.STRATA.file_sha256(
+        s.POST / "specialist-2026-09-15.manifest.json"
+    )
     if snapshot["status"] == "awaiting_inference":
         assert snapshot == s.planned_summary(p)
+    else:
+        predictions = s.read_json(s.POST / "specialist-predictions.json.gz")
+        assert snapshot["specialist_sha256"] == sha256_json(predictions)
+        assert snapshot["session"] == predictions["session"]
+        assert snapshot["manifest_sha256"] == p["manifest_sha256"]
+        s.write_new(tmp_path / "session.json", predictions["session"])
+        for panel in predictions["panels"].values():
+            for row in panel["evidence"].values():
+                path = s.cache_path(tmp_path, row["request"])
+                if not path.exists():
+                    s.write_new(path, row)
+        assert s.collect(p, tmp_path) == predictions

@@ -6,8 +6,12 @@ title: AlphaGenome and AVI comparison methods
 
 The [introduction post](../introducing-vep-bench.html) compares specialist scores
 with saved LLM answers on identical eligible variants within original panels.
-The comparison uses the post's frozen September 12 publication manifest. It
-does not modify the benchmark questions, responses, or official leaderboard.
+The comparison uses the public benchmark snapshot frozen on September 15, 2026. Six
+original maximum-effort LLM runs in the post's September 12 manifest were no
+longer downloadable, so this comparison uses the current publication's
+recovered run identities and answers. The complete question-set digest is
+unchanged. It does not modify benchmark questions, responses, or the official
+leaderboard; the earlier variant-stratum figures retain their own snapshot.
 
 ## Scoring choices
 
@@ -86,11 +90,10 @@ the website reads compact exports and never calls a model. Its
 Install with `uv sync --locked --all-packages --extra alphagenome --group test`.
 
 Use a local publication mirror containing the exact artifacts in
-`strata-2026-09-12.manifest.json`. The existing `fetch-strata-inputs.py` downloader
-verifies public files against that manifest; if a mutable `main` artifact has
-changed, restore its frozen copy rather than weakening the hash check. The
-frozen runs index can be reproduced byte-for-byte from the `leaderboard` field
-of `strata-2026-09-12.json.gz` using canonical JSON plus a trailing newline.
+`specialist-2026-09-15.manifest.json`. The existing `fetch-strata-inputs.py`
+downloader verifies public files against that manifest; if a mutable `main`
+artifact has changed, restore its frozen copy rather than weakening the hash
+check.
 
 ```bash
 uv run --no-sync vepbench-blog-specialists plan \
@@ -98,7 +101,7 @@ uv run --no-sync vepbench-blog-specialists plan \
 
 # Source a private file exporting ALPHAGENOME_API_KEY into this process.
 uv run --no-sync vepbench-blog-specialists predict \
-  --plan /tmp/specialist-plan.json --cache /tmp/specialist-cache
+  --plan /tmp/specialist-plan.json --cache /tmp/specialist-cache --workers 4
 
 uv run --no-sync vepbench-blog-specialists collect \
   --plan /tmp/specialist-plan.json --cache /tmp/specialist-cache \
@@ -107,15 +110,18 @@ uv run --no-sync vepbench-blog-specialists collect \
 uv run --no-sync vepbench-blog-specialists compare \
   --publication /tmp/specialist-publication --plan /tmp/specialist-plan.json \
   --predictions /tmp/specialist-predictions.json.gz \
-  --output /tmp/specialist-comparison.json
+  --output /tmp/specialist-comparison.json.gz
 ```
 
 `predict` resumes verified cached requests; `--limit` bounds new calls during
-validation. Partial runs cannot be collected or compared. A failed call stops
-the run and preserves completed work; failures never silently shrink the
-matched set. Output paths are exclusive to preserve frozen artifacts. A new
+validation. Up to four requests run concurrently, and each cached response
+records its concurrency limit. Partial runs cannot be collected or compared.
+A failed batch stops the run after preserving successful in-flight responses;
+failures never silently shrink the matched set. Output paths are exclusive to
+preserve frozen artifacts. A new
 implementation or policy requires a new plan and cache. Measured request time
-distinguishes live inference from Atlas lookup. Free access does not imply
+distinguishes live inference from Atlas lookup; summed request durations are
+not elapsed wall time when requests overlap. Free access does not imply
 zero underlying compute cost; that cost remains unknown.
 
 OpenSplice author-provided predictions may also be used in a future collection

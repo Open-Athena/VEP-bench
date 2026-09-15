@@ -7,7 +7,7 @@ export function matchedCorrelationPlot(rows, {width, colors}) {
     + `Spearman ρ: ${row.mean_spearman_rho.toFixed(3)}\n`
     + `${row.eligible_variants} matched variants in ${row.eligible_panels} panels\n`
     + `${row.invalid_panels} invalid panels (scored zero)`;
-  return Plot.plot({
+  const plot = Plot.plot({
     width: Math.max(740, width), height: models.length * 22 + 90,
     marginLeft: 180, marginBottom: 45,
     ariaLabel: "Specialist and LLM correlations on identical variants within each task",
@@ -21,4 +21,6 @@ export function matchedCorrelationPlot(rows, {width, colors}) {
         fill: "family", r: 4.5, tip: true, title: detail, ariaLabel: detail})
     ]
   });
+  plot.style.maxWidth = "none";
+  return plot;
 }

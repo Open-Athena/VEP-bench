@@ -11,6 +11,7 @@ import os
 import tempfile
 import time
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -237,7 +238,11 @@ def validate_prediction(row: dict, request: dict, session: dict) -> None:
         raise ValueError("invalid measured runtime")
 
 
-def predict(plan: dict, cache: Path, client: Any, *, limit: int | None = None) -> None:
+def predict(
+    plan: dict, cache: Path, client: Any, *, limit: int | None = None, workers: int = 1
+) -> None:
+    if not 1 <= workers <= 4:
+        raise ValueError("workers must be between 1 and 4")
     validate_plan(plan)
     session_path = cache / "session.json"
     if session_path.exists():
@@ -259,14 +264,22 @@ def predict(plan: dict, cache: Path, client: Any, *, limit: int | None = None) -
         write_new(session_path, session)
     started = time.monotonic()
     inferred = reused = 0
+    pending, seen = [], set()
     for request in requests(plan):
         path = cache_path(cache, request)
+        if path in seen:
+            reused += 1
+            continue
+        seen.add(path)
         if path.exists():
             validate_prediction(read_json(path), request, session)
             reused += 1
             continue
-        if limit is not None and inferred >= limit:
+        if limit is not None and len(pending) >= limit:
             break
+        pending.append(request)
+
+    def infer(request: dict) -> None:
         begin = time.monotonic()
         try:
             result = client.predict(request, session["metadata"])
@@ -282,13 +295,29 @@ def predict(plan: dict, cache: Path, client: Any, *, limit: int | None = None) -
             "session_sha256": sha256_json(session),
             "retrieved_at": datetime.now(UTC).isoformat(),
             "runtime_seconds": time.monotonic() - begin,
+            "concurrency_limit": workers,
             "mode": "atlas_lookup" if request["task_family"] == "sge" else "live_inference",
         }
         validate_prediction(row, request, session)
-        write_new(path, row)
-        inferred += 1
-        if inferred % 25 == 0:
-            print(f"Cached {inferred} new predictions; {reused} reused", flush=True)
+        write_new(cache_path(cache, request), row)
+
+    # Bounded batches prevent queuing the whole run after a transport failure.
+    # Each successful in-flight response is cached even if a sibling fails.
+    with ThreadPoolExecutor(max_workers=workers) as executor:
+        for start in range(0, len(pending), workers):
+            futures = [executor.submit(infer, r) for r in pending[start : start + workers]]
+            error = None
+            for future in futures:
+                try:
+                    future.result()
+                except Exception as exc:
+                    error = exc
+                else:
+                    inferred += 1
+                    if inferred % 25 == 0:
+                        print(f"Cached {inferred} new predictions; {reused} reused", flush=True)
+            if error is not None:
+                raise error
     print(
         f"Saved {inferred}; reused {reused}; elapsed {time.monotonic() - started:.1f}s", flush=True
     )
@@ -509,7 +538,9 @@ def main() -> None:
     parser.add_argument("mode", choices=["plan", "predict", "collect", "compare"])
     parser.add_argument("--plan", type=Path, required=True)
     parser.add_argument("--publication", type=Path)
-    parser.add_argument("--manifest", type=Path, default=POST / "strata-2026-09-12.manifest.json")
+    parser.add_argument(
+        "--manifest", type=Path, default=POST / "specialist-2026-09-15.manifest.json"
+    )
     parser.add_argument("--policy", type=Path, default=POST / "specialist-policy.json")
     parser.add_argument(
         "--annotations", type=Path, default=ROOT / "projects/explorer/data/variant-annotations.json"
@@ -520,6 +551,7 @@ def main() -> None:
     parser.add_argument(
         "--limit", type=int, help="Maximum new requests; partial runs cannot be compared"
     )
+    parser.add_argument("--workers", type=int, default=1, choices=range(1, 5))
     args = parser.parse_args()
     if args.mode in {"plan", "compare"} and args.publication is None:
         parser.error("--publication is required")
@@ -550,7 +582,7 @@ def main() -> None:
             parser.error("set ALPHAGENOME_API_KEY in the evaluation process")
         try:
             client = alphagenome_client.AlphaGenomeClient(key, plan["policy"])
-            predict(plan, args.cache, client, limit=args.limit)
+            predict(plan, args.cache, client, limit=args.limit, workers=args.workers)
         except Exception as exc:
             parser.exit(
                 1, f"Specialist inference stopped ({type(exc).__name__}); cache retained.\n"
