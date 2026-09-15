@@ -20,8 +20,8 @@ responses and 23 newly generated replacements for missing artifacts**, already
 present in that public release. They use the same questions and model settings.
 No new LLM requests were made for this analysis. Recovery metadata distinguishes
 original responses, retries, and replacements; unrecoverable attempts are not
-invented. SGE runs were unaffected. The complete question-set digest, source
-alleles, and specialist scoring policy are unchanged.
+invented. SGE runs were unaffected. The complete question-set digest and source
+alleles are unchanged.
 
 The blog rescores existing answers on each comparison's eligible variants. It
 does not modify the official leaderboard. The previous snapshot remains in Git
@@ -54,11 +54,68 @@ The API does not expose the historical 512-bp `DIFF_SUM` mask. Combining the
 paper's recommended 501-bp scorer with this published track list is an explicit
 departure from that historical configuration. GRCh38 replaces the paper's hg19
 inputs because our complete source alleles were validated on GRCh38. GP1BA
-maps to the table's GP1BB and MYCrs6983267 to MYC. TCF7L2 and ZRSh13 have no
-published match in this table and remain excluded; missing current tracks stop
-inference instead of silently selecting alternatives. No LASSO fitting or
-selection using observed benchmark performance is performed. CAGI5 MPRA was
-already evaluated in the original AlphaGenome paper.
+maps to the table's GP1BB and MYCrs6983267 to MYC. The remaining two elements
+use the explicitly chosen proxies below. Missing current tracks stop inference
+instead of silently selecting alternatives. No LASSO fitting or selection using
+observed benchmark performance is performed. CAGI5 MPRA was already evaluated
+in the original AlphaGenome paper.
+
+### Expression cell-type proxies
+
+TCF7L2 and ZRSh13 have no mapping in Supplementary Table 10. We extend the
+published mapping using assay context, with the ontology sets frozen before
+scoring either element. Both are human DNA elements tested in mouse cell lines;
+the following human output tracks are approximations of those assay contexts.
+They use the same native-context DNase scorer and equal track weighting as the
+other 14 elements.
+
+**TCF7L2:** the [original assay metadata](https://kircherlab.bihealth.org/satMutMPRA/)
+places both TCF7L2 and ZFAND3 in MIN6 with no added treatment. We therefore reuse
+AlphaGenome's published ZFAND3 mapping:
+
+| Ontology ID | Track biosample |
+| --- | --- |
+| `CL:0002351` | Progenitor cell of endocrine pancreas |
+| `UBERON:0001150` | Body of pancreas |
+| `UBERON:0001264` | Pancreas |
+
+This is an extrapolation of the published ZFAND3 mapping, not a published
+TCF7L2 mapping or an exact MIN6 match.
+
+**ZRSh13:** the assay used NIH3T3 with Hoxd13 co-transfection. NIH3T3 is a
+[mouse embryonic fibroblast line](https://www.atcc.org/products/crl-1658).
+We select the nine available human DNase tracks whose metadata labels their
+life stage as embryonic and their biosample name contains “fibroblast” or is
+“IMR-90”; [IMR-90 is a fetal lung fibroblast line](https://www.atcc.org/products/ccl-186).
+This lineage/stage rule avoids choosing a particular anatomical source by its
+benchmark performance. The exact ontology list is fixed, rather than expanded
+automatically when API metadata changes:
+
+| Ontology ID | Track biosample |
+| --- | --- |
+| `CL:0011021` | Fibroblast of upper back skin |
+| `CL:0011022` | Fibroblast of skin of back |
+| `CL:2000013` | Fibroblast of skin of abdomen |
+| `EFO:0001196` | IMR-90 |
+| `NTR:0000521` | Fibroblast of skin of left biceps |
+| `NTR:0000522` | Fibroblast of skin of left quadriceps |
+| `NTR:0000523` | Fibroblast of skin of right quadriceps |
+| `NTR:0000524` | Fibroblast of skin of scalp |
+| `NTR:0000525` | Fibroblast of skin of right biceps |
+
+These tracks approximate the cell lineage and developmental stage, but do not
+reproduce HOXD13 overexpression. This is our proxy choice, not an AlphaGenome
+paper mapping. It is a greater context mismatch than the TCF7L2 mapping.
+
+For comparison, [CADD v1.7](https://academic.oup.com/nar/article/52/D1/D1143/7511313)
+uses an average of Enformer DNase tracks for its main MPRA comparison, and
+also tests matching cell lines where available (Supplementary Notes S1/S3,
+Figures S6/S7). TCF7L2 and ZRSh13 enter its cell-type-agnostic comparison; it
+does not supply a specific matched cell type for either. We retain the
+AlphaGenome cell-matching approach across all 16 elements with the two
+documented extensions above.
+
+### Fitness and model version
 
 Fitness uses raw `AVI_SCORE` from Atlas, with exact assembly, chromosome,
 position, REF and ALT matching. The [Atlas paper](https://storage.googleapis.com/deepmind-media/DeepMind.com/Blog/alphagenome-atlas-a-predictive-map-of-every-possible-dna-letter-change-in-the-human-genome/alphagenome-atlas.pdf)
@@ -115,7 +172,7 @@ uv run --no-sync vepbench-blog-specialists plan \
 
 # Source a private file exporting ALPHAGENOME_API_KEY into this process.
 uv run --no-sync vepbench-blog-specialists predict \
-  --plan /tmp/specialist-plan.json --cache /tmp/specialist-cache --workers 4
+  --plan /tmp/specialist-plan.json --cache /tmp/specialist-cache --workers 1
 
 uv run --no-sync vepbench-blog-specialists collect \
   --plan /tmp/specialist-plan.json --cache /tmp/specialist-cache \

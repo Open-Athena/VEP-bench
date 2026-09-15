@@ -35,7 +35,7 @@ September 15, 2026, including its recovered maximum-effort runs. The
 [publication note](./introducing-vep-bench/specialist-methods.html#publication-snapshot)
 describes the recovered responses and replacements.
 
-Coverage is **1,000/1,000 splicing variants**, **700/800 expression variants**,
+Coverage is **1,000/1,000 splicing variants**, **800/800 expression variants**,
 and **487/800 fitness variants**. The molecular predictions include indels;
 the AVI fitness comparison covers SNVs only. Each LLM is rescored on the same
 covered variants as the specialist.
@@ -63,6 +63,68 @@ if (specialistSnapshot.status === "awaiting_inference") {
   display(html`<div role="region" tabindex="0" aria-label="Matched specialist comparison" style="overflow-x: auto">
     ${matchedCorrelationPlot(specialistData, {width, colors: specialistSnapshot.family_colors})}
   </div>`);
+}
+```
+
+<details id="specialist-methodology">
+<summary>Methodology and cell-type choices</summary>
+
+**Matched comparison.** AlphaGenome/AVI and each LLM are evaluated on identical
+variants within each original panel, with equal weight per panel. LLM answers
+come from the frozen September 15 publication; no new LLM calls are made.
+Invalid original LLM answers retain their zero penalty, even if their missing
+variants fall outside the matched set.
+
+**Splicing.** We follow the
+[OpenSplice native-context approach](https://github.com/lehner-lab/OpenSplice/blob/3e4ad8c037c216b952f1a8945f8f498669bff589/benchmarking_predictors/scripts/inference/alphagenome_genome_mode_snvs_inference.py):
+a 16-kb window around the tested exon, averaging signed changes in canonical
+donor and acceptor probabilities. This measures a proxy for exon inclusion,
+not calibrated delta PSI. Complete indels are scored, including zero alternate
+probability when a canonical site is deleted.
+
+**Expression.** Following AlphaGenome's zero-shot MPRA evaluation, we use
+native genomic context and average signed DNase effects across matching
+tracks as a proxy for reporter activity. The input is 1 Mb; the score is
+`log2((sum(ALT) + 1) / (sum(REF) + 1))` over 501 bp around the variant.
+This uses the recommended API scorer with the published Enformer-setting
+track matches, rather than the historical 512-bp scoring mask. Fourteen
+elements use the mappings in
+[AlphaGenome Supplementary Table 10](https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fs41586-025-10014-0/MediaObjects/41586_2025_10014_MOESM3_ESM.xlsx).
+The two remaining mappings are our extensions, chosen from assay context
+before scoring:
+
+| Element | Assay context | Selected AlphaGenome DNase tracks |
+| --- | --- | --- |
+| TCF7L2 | MIN6, also used for ZFAND3 | The same three pancreas tracks published for ZFAND3: endocrine-pancreas progenitor, body of pancreas, and pancreas |
+| ZRSh13 | NIH3T3 with added HOXD13 | Nine human embryonic fibroblast tracks, including IMR-90 and eight skin-derived fibroblast tracks |
+
+The [original assay metadata](https://kircherlab.bihealth.org/satMutMPRA/)
+supports the shared MIN6 mapping. The ZRSh13 mapping approximates the lineage
+and developmental stage of
+[NIH3T3 embryonic fibroblasts](https://www.atcc.org/products/crl-1658), but
+**does not reproduce HOXD13 overexpression**. Both are human-track proxies
+for mouse cell-line assays. Tracks are weighted equally; none are selected
+using their correlation with benchmark answers, and no LASSO model is fitted.
+
+**Fitness and overlap.** AVI measures general functional impact, rather than
+fitness in the specific assay conditions. The current public Atlas access
+covers the 487 selected fitness SNVs; the other 313 variants remain excluded.
+The second fitness comparison excludes BRCA1, RAD51C and DDX3X because their
+source studies were used for AVI model selection. CAGI5 MPRA was evaluated in
+the original AlphaGenome paper, and OpenSplice selected the 16-kb setting on
+its data, so these comparisons are not fully held out.
+
+Free API access does not establish zero underlying inference cost, and Atlas
+lookup time does not measure the cost of generating its scores.
+
+[Scoring definitions, provenance and reproduction](./introducing-vep-bench/specialist-methods.html)
+include the exact track ontology IDs, source evidence, coverage rules and
+departures from the original evaluations.
+
+</details>
+
+```js
+if (specialistSnapshot.status === "complete") {
   display(Inputs.table(specialistData.map((r) => ({Task: r.task_label, Model: r.model,
     Variants: r.eligible_variants, Panels: r.eligible_panels,
     Spearman: r.mean_spearman_rho, Pearson: r.mean_pearson_r,
@@ -78,22 +140,6 @@ if (specialistSnapshot.status === "awaiting_inference") {
     Download comparison scores (CSV)</a>`);
 }
 ```
-
-The splicing score measures changes at the tested exon's canonical donor and
-acceptor sites; it is a signed proxy for exon inclusion, not calibrated delta
-PSI. Expression uses signed DNase effects in published matching cell types,
-as a proxy for reporter activity. Both use native genomic context. AVI measures
-general functional impact, rather than fitness in the specific assay conditions.
-
-The second comparison excludes BRCA1, RAD51C and DDX3X fitness panels because
-their source studies were used for AVI model selection. The two MPRA elements
-without a published cell-type match are excluded. Invalid original LLM answers
-keep their zero penalty, even if their missing variants fall outside the match.
-Free API access does not establish zero underlying inference cost, and Atlas
-lookup time does not measure the cost of generating its scores.
-
-[Scoring definitions, provenance and reproduction](./introducing-vep-bench/specialist-methods.html)
-describe the coverage rules and departures from the original evaluations.
 
 ```js
 display(html`<p><a href=${await FileAttachment("./introducing-vep-bench/specialist-plan.json.gz").url()} download>

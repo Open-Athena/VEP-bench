@@ -27,7 +27,7 @@ performance, cost, or response length.
 
 The post uses one public LLM snapshot frozen on 15 September 2026, including
 the recovered maximum-effort runs described in the
-[publication note](specialist-methods.md#publication-snapshot). The coverage
+[publication note](specialist-methods.html#publication-snapshot). The coverage
 cutoffs and panel memberships are unchanged. Completed invalid answers keep
 their zero scores.
 
@@ -131,6 +131,6 @@ match from an ID or flip the specialist score direction. Support is intersected
 with each stratum before either cutoff, and that identical subset is used for
 the specialist and every LLM. The analysis reports unsupported candidate IDs,
 lost panels, and groups that no longer qualify. Run separate comparisons for
-specialists with different support. The post’s [AlphaGenome/AVI comparison](specialist-methods.md) uses the same
+specialists with different support. The post’s [AlphaGenome/AVI comparison](specialist-methods.html) uses the same
 publication with its own complete-panel eligibility rules. These stratum figures
 remain LLM-only; they do not apply variant-class cutoffs to the specialist scores.

@@ -38,14 +38,30 @@
       "MYCrs6983267": ["UBERON:0002369"],
       "PKLR": ["EFO:0002067"],
       "SORT1": ["EFO:0001187"],
+      "TCF7L2": ["CL:0002351", "UBERON:0001150", "UBERON:0001264"],
       "TERT": ["UBERON:0002369"],
-      "ZFAND3": ["CL:0002351", "UBERON:0001150", "UBERON:0001264"]
+      "ZFAND3": ["CL:0002351", "UBERON:0001150", "UBERON:0001264"],
+      "ZRSh13": ["CL:0011021", "CL:0011022", "CL:2000013", "EFO:0001196", "NTR:0000521", "NTR:0000522", "NTR:0000523", "NTR:0000524", "NTR:0000525"]
+    },
+    "proxy_matches": {
+      "TCF7L2": {
+        "assay_context": "MIN6; no added treatment",
+        "selection_rule": "Reuse the published ZFAND3 pancreas ontology set because both elements were assayed in MIN6.",
+        "limitation": "Human pancreas tracks approximate the mouse MIN6 assay; TCF7L2 itself has no mapping in Supplementary Table 10.",
+        "sources": ["https://kircherlab.bihealth.org/satMutMPRA/", "https://www.nature.com/articles/s41586-025-10014-0"]
+      },
+      "ZRSh13": {
+        "assay_context": "NIH3T3 with Hoxd13 co-transfection",
+        "selection_rule": "Freeze the nine human DNase tracks whose metadata has biosample_life_stage embryonic and biosample_name containing fibroblast or equal to IMR-90; average them equally.",
+        "limitation": "Human embryonic fibroblasts approximate mouse NIH3T3 lineage and developmental stage but do not reproduce HOXD13 overexpression.",
+        "sources": ["https://kircherlab.bihealth.org/satMutMPRA/", "https://www.atcc.org/products/crl-1658", "https://www.atcc.org/products/ccl-186"]
+      }
     },
     "departures": [
       "Use AlphaGenome's published recommended 501-bp log2((sum ALT + 1)/(sum REF + 1)) scorer with the published Enformer-setting track matches; the API does not expose the historical 512-bp DIFF_SUM mask.",
       "Use source-validated GRCh38 alleles rather than the paper's hg19 inputs.",
       "GP1BA is the source filename for GP1BB; MYCrs6983267 maps to MYC.",
-      "TCF7L2 and ZRSh13 have no published match in this table and are excluded.",
+      "Extend the published track mapping to TCF7L2 and ZRSh13 using the documented proxy_matches, fixed before scoring without selecting on observed benchmark performance.",
       "Use the current ALL_FOLDS API model; historical server weights are not version-addressable.",
       "Extend the published scoring recipe to complete indels using API score_variant alignment."
     ]

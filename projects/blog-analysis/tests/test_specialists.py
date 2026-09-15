@@ -240,7 +240,18 @@ def test_committed_source_mapping_defines_eligibility_without_scores():
         )
         for family in s.TASKS
     }
-    assert supported == {"opensplice_snv": 1000, "satmut_mpra": 700, "sge": 487}
+    assert supported == {"opensplice_snv": 1000, "satmut_mpra": 800, "sge": 487}
+    terms = policy["mpra"]["ontology_terms"]
+    assert terms["TCF7L2"] == terms["ZFAND3"]
+    tracks = s.read_json(s.POST / "specialist-predictions.json.gz")["session"]["metadata"]["dnase"]
+    embryonic_fibroblasts = {
+        row["ontology_curie"]
+        for row in tracks
+        if row["biosample_life_stage"] == "embryonic"
+        and ("fibroblast" in row["biosample_name"].lower() or row["biosample_name"] == "IMR-90")
+    }
+    assert set(terms["ZRSh13"]) == embryonic_fibroblasts
+    assert len(embryonic_fibroblasts) == 9
     assert sum(p["avi_model_selection_overlap"] for p in panels) == 3
     # Request artifacts must not expose measured effects or include mutable annotation consequences.
     assert "reference_score" not in json.dumps(panels)
