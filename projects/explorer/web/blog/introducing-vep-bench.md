@@ -64,8 +64,9 @@ if (specialistSnapshot.status === "awaiting_inference") {
       Variants: r.eligible_variants, Panels: r.eligible_panels,
       Spearman: r.mean_spearman_rho, Pearson: r.mean_pearson_r,
       "Invalid panels": r.invalid_panels})), {select: false}));
-  display(Inputs.download(new Blob([specialistCsv(specialistSnapshot)], {type: "text/csv"}),
-    {filename: "specialist-comparison.csv", label: "Download comparison scores"}));
+  display(html`<a download="specialist-comparison.csv"
+    href=${`data:text/csv;charset=utf-8,${encodeURIComponent(specialistCsv(specialistSnapshot))}`}>
+    Download comparison scores (CSV)</a>`);
 }
 ```
 
