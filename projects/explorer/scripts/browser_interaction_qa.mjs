@@ -601,6 +601,16 @@ for (const width of [1440, 390]) {
     })()`), width === 390, "task columns fit desktop and scroll within the figure on mobile");
   }
   if (outputDir) {
+    const specialistClip = await evaluate(`(() => {
+      const bounds = document.querySelector('[aria-label="Matched specialist comparison"]').getBoundingClientRect();
+      return {x: bounds.x + scrollX, y: bounds.y + scrollY,
+        width: bounds.width, height: bounds.height, scale: 1};
+    })()`);
+    const specialistScreenshot = await send("Page.captureScreenshot", {
+      clip: specialistClip, captureBeyondViewport: true
+    });
+    await writeFile(join(outputDir, `specialist-comparison-${width}.png`),
+      Buffer.from(specialistScreenshot.data, "base64"));
     for (const axis of ["allele_type", "consequence"]) {
       const clip = await evaluate(`(() => {
         const bounds = document.querySelector('figure[data-stratum-axis="${axis}"]').getBoundingClientRect();

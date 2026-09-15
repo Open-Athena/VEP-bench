@@ -42,6 +42,9 @@ const specialistSnapshot = await fetchGzipJson(
   await FileAttachment("./introducing-vep-bench/specialist-comparison.json.gz").url(), "specialist comparison"
 );
 const specialistData = specialistRows(specialistSnapshot);
+```
+
+```js
 if (specialistSnapshot.status === "awaiting_inference") {
   display(html`<p>Scoring settings and initial eligibility are frozen. Predictions have not yet been collected.
     The counts below are eligible requests; AVI lookup may further reduce coverage.</p>`);
