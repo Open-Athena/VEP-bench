@@ -35,11 +35,7 @@ equal weight. The full benchmark leaderboard retains its original variant set.
 import {specialistRows, specialistCsv, specialistTasks} from "./introducing-vep-bench/specialists.js";
 import {matchedCorrelationPlot} from "./introducing-vep-bench/specialist-plots.js";
 const specialistSnapshot = await FileAttachment("./introducing-vep-bench/specialist-comparison.json").json();
-const specialistCategory = view(Inputs.select(new Map([
-  ["All covered panels", "all_covered"],
-  ["Exclude AVI model-selection studies", "excluding_avi_model_selection"]
-]), {label: "Comparison"}));
-const specialistData = specialistRows(specialistSnapshot, specialistCategory);
+const specialistData = specialistRows(specialistSnapshot);
 if (specialistSnapshot.status === "awaiting_inference") {
   display(html`<p>Scoring settings and initial eligibility are frozen. Predictions have not yet been collected.
     The counts below are eligible requests; AVI lookup may further reduce coverage.</p>`);
@@ -54,6 +50,12 @@ if (specialistSnapshot.status === "awaiting_inference") {
     Variants: r.eligible_variants, Panels: r.eligible_panels,
     Spearman: r.mean_spearman_rho, Pearson: r.mean_pearson_r,
     "Invalid panels": r.invalid_panels})), {select: false}));
+  display(html`<h3>Fitness excluding AVI model-selection studies</h3>`);
+  display(Inputs.table(specialistRows(specialistSnapshot, "excluding_avi_model_selection")
+    .filter((r) => r.task_family === "sge").map((r) => ({Model: r.model,
+      Variants: r.eligible_variants, Panels: r.eligible_panels,
+      Spearman: r.mean_spearman_rho, Pearson: r.mean_pearson_r,
+      "Invalid panels": r.invalid_panels})), {select: false}));
   display(Inputs.download(new Blob([specialistCsv(specialistSnapshot)], {type: "text/csv"}),
     {filename: "specialist-comparison.csv", label: "Download comparison scores"}));
 }
