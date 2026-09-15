@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="324" height="360" viewBox="40 137 324 360" role="img" aria-labelledby="title description">
+  <title id="title">Fitness: endogenous-locus saturation genome editing</title>
+  <desc id="description">Fitness. Saturation genome editing · SGE. Endogenous locus. exon. 100 bp. 100 bp. Cellular assay. Functional effect. Higher = greater impairment. Within one gene and assay</desc>
+  <!-- Generated from blog/introducing-vep-bench/tasks-overview.svg by uv run projects/explorer/scripts/export_task_schematics.py. Edit the combined SVG, then regenerate. -->
+  <defs>
+    <style>
+      text { font-family: Arial, Helvetica, sans-serif; fill: #172b36; }
+      .title { font-size: 34px; font-weight: 700; letter-spacing: -.7px; }
+      .task { font-size: 27px; font-weight: 700; }
+      .target { font-size: 23px; font-weight: 700; }
+      .body { font-size: 18px; }
+      .small { font-size: 16px; fill: #536675; }
+      .eyebrow { font-size: 14px; font-weight: 700; letter-spacing: 1.5px; fill: #536675; }
+      .white { fill: #fff; }
+      .fitness { fill: #075a56; }
+      .expression { fill: #84400b; }
+      .splicing { fill: #57398f; }
+      .line { fill: none; stroke: #7b8d98; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M1 1 9 5 1 9" fill="none" stroke="#7b8d98" stroke-width="1.5" />
+    </marker>
+    <g id="variant">
+      <path d="M0 0 -5 -9H5Z" />
+    </g>
+    <g id="cell">
+      <circle r="16" fill="#e0efea" stroke="#007f79" stroke-width="1.5" />
+      <circle cx="3" cy="-2" r="6" fill="#b9ded5" />
+      <path d="M-7 5 -2 -3 4 4 9 -3" fill="none" stroke="#007f79" stroke-width="1.5" />
+    </g>
+  </defs>
+  <g id="fitness-task" role="group" aria-label="Fitness: endogenous-locus saturation genome editing">
+    <rect x="40" y="137" width="324" height="360" rx="12" fill="#f1f7f5" />
+    <path d="M64 160h28" stroke="#007f79" stroke-width="4" />
+    <text x="64" y="195" class="task fitness">Fitness</text>
+    <text x="64" y="224" class="small">Saturation genome editing · SGE</text>
+    <text x="202" y="264" text-anchor="middle" class="small">Endogenous locus</text>
+    <path d="M71 298H333" stroke="#97ada8" stroke-width="3" />
+    <rect x="151" y="281" width="102" height="34" rx="4" fill="#007f79" />
+    <text x="202" y="304" text-anchor="middle" class="body white">exon</text>
+    <use href="#variant" x="127" y="280" fill="#075a56" />
+    <use href="#variant" x="180" y="278" fill="#075a56" />
+    <use href="#variant" x="227" y="278" fill="#075a56" />
+    <text x="108" y="337" text-anchor="middle" class="small">100 bp</text>
+    <text x="295" y="337" text-anchor="middle" class="small">100 bp</text>
+    <use href="#cell" x="139" y="367" />
+    <use href="#cell" x="177" y="367" />
+    <text x="206" y="373" class="small">Cellular assay</text>
+    <path d="M64 402H340" stroke="#cbded7" />
+    <text x="64" y="436" class="target fitness">Functional effect</text>
+    <text x="64" y="464" class="body">Higher = greater impairment</text>
+    <text x="64" y="487" class="small">Within one gene and assay</text>
+  </g>
+</svg>

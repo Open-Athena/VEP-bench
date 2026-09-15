@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="324" height="360" viewBox="378 137 324 360" role="img" aria-labelledby="title description">
+  <title id="title">Expression: saturation-mutagenesis reporter assay</title>
+  <desc id="description">Expression. Reporter assay · satMutMPRA. Promoter. insert. luciferase. Enhancer. insert. luciferase. Fixed interface. Reporter activity. Signed log₂ activity effect. − decreased / + increased</desc>
+  <!-- Generated from blog/introducing-vep-bench/tasks-overview.svg by uv run projects/explorer/scripts/export_task_schematics.py. Edit the combined SVG, then regenerate. -->
+  <defs>
+    <style>
+      text { font-family: Arial, Helvetica, sans-serif; fill: #172b36; }
+      .title { font-size: 34px; font-weight: 700; letter-spacing: -.7px; }
+      .task { font-size: 27px; font-weight: 700; }
+      .target { font-size: 23px; font-weight: 700; }
+      .body { font-size: 18px; }
+      .small { font-size: 16px; fill: #536675; }
+      .eyebrow { font-size: 14px; font-weight: 700; letter-spacing: 1.5px; fill: #536675; }
+      .white { fill: #fff; }
+      .fitness { fill: #075a56; }
+      .expression { fill: #84400b; }
+      .splicing { fill: #57398f; }
+      .line { fill: none; stroke: #7b8d98; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M1 1 9 5 1 9" fill="none" stroke="#7b8d98" stroke-width="1.5" />
+    </marker>
+    <g id="variant">
+      <path d="M0 0 -5 -9H5Z" />
+    </g>
+    <g id="cell">
+      <circle r="16" fill="#e0efea" stroke="#007f79" stroke-width="1.5" />
+      <circle cx="3" cy="-2" r="6" fill="#b9ded5" />
+      <path d="M-7 5 -2 -3 4 4 9 -3" fill="none" stroke="#007f79" stroke-width="1.5" />
+    </g>
+  </defs>
+  <g id="expression-task" role="group" aria-label="Expression: saturation-mutagenesis reporter assay">
+    <rect x="378" y="137" width="324" height="360" rx="12" fill="#fbf5ed" />
+    <path d="M402 160h28" stroke="#b96516" stroke-width="4" />
+    <text x="402" y="195" class="task expression">Expression</text>
+    <text x="402" y="224" class="small">Reporter assay · satMutMPRA</text>
+    <text x="402" y="264" class="small">Promoter</text>
+    <path d="M404 290H676" stroke="#9c9d91" stroke-width="3" />
+    <rect x="404" y="277" width="124" height="27" rx="4" fill="#ad5b12" />
+    <text x="466" y="297" text-anchor="middle" class="small white">insert</text>
+    <path d="M538 275v-12h33" class="line" marker-end="url(#arrow)" />
+    <path d="M574 277H661L677 290 661 304H574Z" fill="#e2e9ed" stroke="#93a5af" />
+    <text x="622" y="297" text-anchor="middle" class="small">luciferase</text>
+    <use href="#variant" x="496" y="274" fill="#84400b" />
+    <text x="402" y="334" class="small">Enhancer</text>
+    <path d="M404 357H676" stroke="#9c9d91" stroke-width="3" />
+    <rect x="404" y="344" width="106" height="27" rx="4" fill="#ad5b12" />
+    <text x="457" y="364" text-anchor="middle" class="small white">insert</text>
+    <rect x="523" y="344" width="38" height="27" rx="3" fill="#f4dfb1" stroke="#b68d40" />
+    <path d="M564 341v-12h30" class="line" marker-end="url(#arrow)" />
+    <path d="M574 344H661L677 357 661 371H574Z" fill="#e2e9ed" stroke="#93a5af" />
+    <text x="622" y="364" text-anchor="middle" class="small">luciferase</text>
+    <use href="#variant" x="496" y="341" fill="#84400b" />
+    <path d="M542 373v9h-8" class="line" />
+    <text x="402" y="389" class="small">Fixed interface</text>
+    <path d="M402 402H678" stroke="#e6d8c7" />
+    <text x="402" y="436" class="target expression">Reporter activity</text>
+    <text x="402" y="464" class="body">Signed log₂ activity effect</text>
+    <text x="402" y="487" class="small">− decreased / + increased</text>
+  </g>
+</svg>

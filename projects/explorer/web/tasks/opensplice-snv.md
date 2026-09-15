@@ -111,6 +111,9 @@ if (metadataState.error) {
 }
 ```
 
+<div class="vepbench-task-intro">
+<div class="vepbench-task-description">
+
 Predict signed changes in alternative-exon inclusion for variants in complete
 three-exon minigene cassettes, using exact construct sequence and assay context.
 
@@ -124,6 +127,10 @@ reporter; they are not direct estimates of native-tissue splicing or clinical
 pathogenicity.
 
 Source data come from [Quarantani et al. (2026)](https://doi.org/10.64898/2026.05.22.727141) and the [OpenSplice Figshare v5 dataset](https://doi.org/10.6084/m9.figshare.32337414.v5).
+
+</div>
+<img class="vepbench-task-schematic" src="./schematics/opensplice-snv.svg" width="324" height="360" alt="Splicing (OpenSplice): variants in a three-exon cassette can change inclusion or skipping of the middle exon. Predict ΔPSI, the change in exon inclusion relative to the reference.">
+</div>
 
 ## Questions
 

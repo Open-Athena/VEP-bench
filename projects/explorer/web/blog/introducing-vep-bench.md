@@ -17,10 +17,8 @@ three tasks measure different outcomes: functional effects in
 [OpenSplice](../tasks/opensplice-snv.html).
 
 <figure style="max-width: 1080px;">
-  <div style="overflow-x: auto;" tabindex="0" role="region" aria-label="Benchmark task schematic; scroll horizontally on narrow screens">
-    <img src="./introducing-vep-bench/tasks-overview.svg" width="1080" height="826" style="display: block; width: 100%; min-width: 900px; max-width: none; height: auto;" alt="Three assay tasks share one workflow: DNA sequence, assay context, and 50 variants go to a language model. It predicts functional effects for SGE, with higher scores indicating greater impairment, reporter activity changes for satMutMPRA, or exon-inclusion changes for OpenSplice. Predicted and measured effects are compared by Spearman correlation within each panel, then panels are averaged equally within each task.">
-  </div>
-  <figcaption>Each question is one panel from one assay. The biological target changes across tasks; the prediction and scoring workflow is shared. Scroll horizontally on narrow screens, or <a href="./introducing-vep-bench/tasks-overview.svg" download>download the SVG</a>.</figcaption>
+  <img src="./introducing-vep-bench/tasks-overview.svg" width="1080" height="826" style="display: block; width: 100%; height: auto;" alt="Three assay tasks share one workflow: DNA sequence, assay context, and 50 variants go to a language model. It predicts functional effects for SGE, with higher scores indicating greater impairment, reporter activity changes for satMutMPRA, or exon-inclusion changes for OpenSplice. Predicted and measured effects are compared by Spearman correlation within each panel, then panels are averaged equally within each task.">
+  <figcaption>Each question is one panel from one assay. The biological target changes across tasks; the prediction and scoring workflow is shared. <a href="./introducing-vep-bench/tasks-overview.svg" download>Download the SVG</a> for a closer look.</figcaption>
 </figure>
 
 Before comparing model performance, we can ask what kinds of variants each
