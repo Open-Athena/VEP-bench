@@ -59,7 +59,7 @@
 
     <text x="402" y="264" class="small">Promoter</text>
     <path d="M404 290H676" stroke="#9c9d91" stroke-width="3"/>
-    <rect x="404" y="277" width="124" height="27" rx="4" fill="#b96516"/>
+    <rect x="404" y="277" width="124" height="27" rx="4" fill="#ad5b12"/>
     <text x="466" y="297" text-anchor="middle" class="small white">insert</text>
     <path d="M538 275v-12h33" class="line" marker-end="url(#arrow)"/>
     <path d="M574 277H661L677 290 661 304H574Z" fill="#e2e9ed" stroke="#93a5af"/>
@@ -68,7 +68,7 @@
 
     <text x="402" y="334" class="small">Enhancer</text>
     <path d="M404 357H676" stroke="#9c9d91" stroke-width="3"/>
-    <rect x="404" y="344" width="106" height="27" rx="4" fill="#b96516"/>
+    <rect x="404" y="344" width="106" height="27" rx="4" fill="#ad5b12"/>
     <text x="457" y="364" text-anchor="middle" class="small white">insert</text>
     <rect x="523" y="344" width="38" height="27" rx="3" fill="#f4dfb1" stroke="#b68d40"/>
     <path d="M564 341v-12h30" class="line" marker-end="url(#arrow)"/>
