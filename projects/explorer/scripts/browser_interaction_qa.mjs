@@ -512,11 +512,11 @@ await waitFor(`document.querySelectorAll(${JSON.stringify(specialistPlot + ' g[a
   .length === ${expectedSpecialistRows.length}`, "matched specialist predictions");
 assert.equal(await evaluate(`document.querySelectorAll(${JSON.stringify(specialistPlot)}).length`), 1);
 const stratumSnapshot = JSON.parse(gunzipSync(await readFile(
-  new URL("../web/blog/introducing-vep-bench/strata-2026-09-12.json.gz", import.meta.url)
+  new URL("../web/blog/introducing-vep-bench/strata-2026-09-15.json.gz", import.meta.url)
 )));
 const expectedStratumModels = stratumModelOrder(stratumSnapshot);
 const stratumIntervals = JSON.parse(await readFile(
-  new URL("../web/blog/introducing-vep-bench/strata-2026-09-12.intervals.json", import.meta.url), "utf8"
+  new URL("../web/blog/introducing-vep-bench/strata-2026-09-15.intervals.json", import.meta.url), "utf8"
 ));
 const expectedStratumRows = stratumRows(stratumSnapshot, stratumIntervals);
 const stratumPlot = 'svg[aria-label="Within-panel Spearman correlations by variant stratum and task"]';

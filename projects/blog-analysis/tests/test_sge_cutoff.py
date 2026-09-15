@@ -1,9 +1,55 @@
 """Offline checks for cohort handling and SciPy's directional test."""
 
 import copy
+import hashlib
+import json
+from pathlib import Path
 
 import pytest
-from vepbench_blog_analysis.sge_cutoff import add_statistics
+from vepbench_blog_analysis.sge_cutoff import add_statistics, frozen_publication
+
+from vepbench.artifacts import canonical_json, sha256_json
+
+
+def test_frozen_collection_verifies_each_artifact_before_using_saved_scores(tmp_path: Path) -> None:
+    question = {"question_id": "sge:one", "task_type": "ranking"}
+    digest = hashlib.sha256((canonical_json(question) + "\n").encode()).hexdigest()
+
+    def save(name: str, value: dict) -> dict:
+        data = (canonical_json(value) + "\n").encode()
+        (tmp_path / name).write_bytes(data)
+        return {
+            "path": name,
+            "artifact_bytes": len(data),
+            "content_bytes": len(data),
+            "artifact_sha256": hashlib.sha256(data).hexdigest(),
+            "content_sha256": hashlib.sha256(data).hexdigest(),
+        }
+
+    outcome = {"run_id": "run", "outcomes": [{"question_id": "sge:one", "spearman_rho": 0.5}]}
+    manifest = {
+        "question_set_size": 1,
+        "question_set_sha256": digest,
+        "artifacts": {
+            "question_index": save(
+                "questions.json",
+                {"questions": [{**question, "question_sha256": sha256_json(question)}]},
+            ),
+            "runs": save("runs.json", {"runs": [], "question_set_sha256": digest}),
+            "outcomes": [save("outcomes.json", outcome)],
+        },
+    }
+    path = tmp_path / "manifest.json"
+    path.write_text(json.dumps(manifest))
+    assets = Path(__file__).resolve().parents[2] / "explorer/web"
+    result = frozen_publication(tmp_path, path, assets)
+    assert result["outcomes"] == [outcome]
+    assert result["collection"]["manifest_sha256"] == hashlib.sha256(path.read_bytes()).hexdigest()
+    # A same-length score change still fails the pinned content check.
+    saved = tmp_path / "outcomes.json"
+    saved.write_text(saved.read_text().replace("0.5", "0.9"))
+    with pytest.raises(ValueError, match="digest mismatch"):
+        frozen_publication(tmp_path, path, assets)
 
 
 def analysis(before: list[float], after: list[float]) -> dict:

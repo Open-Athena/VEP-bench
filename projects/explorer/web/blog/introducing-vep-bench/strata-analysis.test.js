@@ -6,11 +6,11 @@ import test from "node:test";
 import {stratumRows, stratumCsv, stratumModelOrder} from "./strata-analysis.js";
 import {modelFamilyScale} from "../../components/benchmark-data.js";
 
-const snapshot = JSON.parse(gunzipSync(readFileSync(new URL("./strata-2026-09-12.json.gz", import.meta.url))));
-const intervals = JSON.parse(readFileSync(new URL("./strata-2026-09-12.intervals.json", import.meta.url)));
+const snapshot = JSON.parse(gunzipSync(readFileSync(new URL("./strata-2026-09-15.json.gz", import.meta.url))));
+const intervals = JSON.parse(readFileSync(new URL("./strata-2026-09-15.intervals.json", import.meta.url)));
 
 test("intervals are tied to the exact frozen scores and remain available in downloads", () => {
-  const raw = readFileSync(new URL("./strata-2026-09-12.json.gz", import.meta.url));
+  const raw = readFileSync(new URL("./strata-2026-09-15.json.gz", import.meta.url));
   assert.equal(intervals.snapshot_sha256, createHash("sha256").update(raw).digest("hex"));
   assert.equal(intervals.statistics.method, "Student's t");
   assert.equal(intervals.statistics.confidence_level, 0.95);

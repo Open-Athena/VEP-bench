@@ -30,9 +30,10 @@ We compare AlphaGenome's signed molecular predictions for splicing and
 expression, and AlphaGenome Variant Impact (AVI) scores for fitness, with saved
 LLM answers on the same variants within each original panel. Each panel has
 equal weight. The full benchmark leaderboard retains its original variant set.
-This comparison uses the public LLM snapshot frozen on September 15, 2026,
-including its recovered maximum-effort runs; the variant-stratum figures below
-retain their September 12 snapshot.
+All performance comparisons in this post use the public LLM snapshot frozen on
+September 15, 2026, including its recovered maximum-effort runs. The
+[publication note](./introducing-vep-bench/specialist-methods.html#publication-snapshot)
+describes the recovered responses and replacements.
 
 ```js
 import {specialistRows, specialistCsv, specialistTasks} from "./introducing-vep-bench/specialists.js";
@@ -249,7 +250,7 @@ can describe different aspects of the same allele.
 
 ## Performance within variant classes
 
-**Analysis snapshot: 12 September 2026.** We reused the saved answers from eight
+**Analysis snapshot: 15 September 2026.** We reused the saved answers from eight
 models across 52 panels, selecting the highest available reasoning effort for
 each model: max for GPT-5.6 Luna, Terra, and Sol; high for Gemini and GPT-6 Astra;
 medium for Muse; and low for GLM and DeepSeek.
@@ -260,9 +261,9 @@ and **at least 5 eligible panels within a task**. These are pragmatic coverage
 requirements, not a claim of statistical significance.
 
 The snapshot includes the published DeepSeek configuration with selective
-token-limit retries. Luna's MPRA run and Terra's OpenSplice run each retain
-one API-failure retry. Luna's completed invalid SGE answer retains its zero
-score. The saved results preserve these distinctions and the original attempts.
+token-limit retries and the recovered maximum-effort runs. Recovery metadata
+distinguishes available original responses, retries, and replacements.
+Completed invalid answers, including Luna’s invalid SGE answer, retain zero scores.
 
 Allele type and functional consequence are separate axes: an SNV can also be
 missense. For this finer allele breakdown, we trim shared REF/ALT flanks and
@@ -279,11 +280,11 @@ import {stratumCorrelationPlot} from "../components/correlation-plot.js";
 import {stratumRows, stratumCsv, stratumModelOrder} from "./introducing-vep-bench/strata-analysis.js";
 
 const strataSnapshot = await fetchGzipJson(
-  await FileAttachment("./introducing-vep-bench/strata-2026-09-12.json.gz").url(),
+  await FileAttachment("./introducing-vep-bench/strata-2026-09-15.json.gz").url(),
   "frozen variant-stratum analysis"
 );
 const strataModelOrder = stratumModelOrder(strataSnapshot);
-const strataIntervals = await FileAttachment("./introducing-vep-bench/strata-2026-09-12.intervals.json").json();
+const strataIntervals = await FileAttachment("./introducing-vep-bench/strata-2026-09-15.intervals.json").json();
 const strataScores = stratumRows(strataSnapshot, strataIntervals)
   .sort((a, b) => strataModelOrder.indexOf(a.model) - strataModelOrder.indexOf(b.model));
 const strataTaskLabel = (family) => composition.tasks.find((task) => task.family === family)?.label ?? family;
@@ -385,17 +386,16 @@ it receives no summary score. Excluded panels contain fewer than 10 supported
 variants of that class, including panels with none. Missing or stale
 source-linked consequences are retained as unknown.
 
-These variant-stratum figures compare LLMs on their September 12 snapshot.
-The AlphaGenome and AVI comparison earlier in this post uses a separate
-coverage plan and the September 15 LLM snapshot. It compares complete eligible
-panels and does not apply these variant-class cutoffs.
+These variant-stratum figures and the AlphaGenome/AVI comparison use the same
+frozen LLM publication. The specialist comparison has a separate coverage plan:
+it compares complete eligible panels and does not apply these variant-class cutoffs.
 
 ```js
 display(html`<p>
-  <a download="vepbench-variant-strata-2026-09-12.csv"
+  <a download="vepbench-variant-strata-2026-09-15.csv"
     href=${`data:text/csv;charset=utf-8,${encodeURIComponent(stratumCsv(strataSnapshot, strataIntervals))}`}>Download scores, 95% intervals, coverage, and exclusions (CSV)</a>
-  · <a href=${await FileAttachment("./introducing-vep-bench/strata-2026-09-12.json.gz").url()} download>Download frozen analysis, panel membership, model settings, and provenance (JSON.gz)</a>
-  · <a href=${await FileAttachment("./introducing-vep-bench/strata-2026-09-12.intervals.json").url()} download>Download confidence intervals and method (JSON)</a>
+  · <a href=${await FileAttachment("./introducing-vep-bench/strata-2026-09-15.json.gz").url()} download>Download frozen analysis, panel membership, model settings, and provenance (JSON.gz)</a>
+  · <a href=${await FileAttachment("./introducing-vep-bench/strata-2026-09-15.intervals.json").url()} download>Download confidence intervals and method (JSON)</a>
 </p>`);
 ```
 
@@ -598,7 +598,7 @@ secondary comparison. We selected sources for their scope and identifiable
 evaluation settings, before computing associations.
 
 **The comparisons remain descriptive.** Our frozen
-September 12, 2026 VEP snapshot has eight model versions with complete scores
+September 15, 2026 VEP snapshot has eight model versions with complete scores
 across all three tasks. After requiring the **same model release and exact
 reasoning effort**, the biology comparisons below contain at most four distinct
 models each. The latest Artificial Analysis Intelligence Index, **v4.3** at
@@ -613,7 +613,6 @@ dependent observations, so we do not pool the points into a cross-model
 correlation. Each biology comparison falls below our five-distinct-model
 threshold; AA has five models but repeated efforts.
 Sparse overlap does not establish either agreement or disagreement.
-The refresh adds VEP-bench evaluations of Luna, Terra, and Sol at max effort.
 The external benchmark results are reused from the September 11 source snapshot.
 
 ```js

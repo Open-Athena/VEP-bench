@@ -6,12 +6,26 @@ title: AlphaGenome and AVI comparison methods
 
 The [introduction post](../introducing-vep-bench.html) compares specialist scores
 with saved LLM answers on identical eligible variants within original panels.
-The comparison uses the public benchmark snapshot frozen on September 15, 2026. Six
-original maximum-effort LLM runs in the post's September 12 manifest were no
-longer downloadable, so this comparison uses the current publication's
-recovered run identities and answers. The complete question-set digest is
-unchanged. It does not modify benchmark questions, responses, or the official
-leaderboard; the earlier variant-stratum figures retain their own snapshot.
+
+## Publication snapshot
+
+All performance analyses in the post use the public LLM publication frozen on
+September 15, 2026 in `specialist-2026-09-15.manifest.json`. The name reflects its
+initial use for this comparison; it is also the manifest for the stratum,
+SGE cutoff, and external-benchmark comparisons.
+
+Six maximum-effort runs—GPT-5.6 Luna, Terra, and Sol on OpenSplice and satMutMPRA—
+use the recovered publication. Their 108 answers comprise **85 recovered
+responses and 23 newly generated replacements for missing artifacts**, already
+present in that public release. They use the same questions and model settings.
+No new LLM requests were made for this analysis. Recovery metadata distinguishes
+original responses, retries, and replacements; unrecoverable attempts are not
+invented. SGE runs were unaffected. The complete question-set digest, source
+alleles, and specialist scoring policy are unchanged.
+
+The blog rescores existing answers on each comparison's eligible variants. It
+does not modify the official leaderboard. The previous snapshot remains in Git
+history; external benchmark measurements retain their September 11 retrievals.
 
 ## Scoring choices
 

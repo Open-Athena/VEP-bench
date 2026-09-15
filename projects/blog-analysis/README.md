@@ -36,6 +36,21 @@ uv run --no-sync vepbench-blog-sge-cutoff \
 ```
 
 Use `--input /tmp/sge-cutoff-input.json` to replay the saved collection offline.
+For a frozen local publication, pass `--publication ROOT --manifest FILE` when
+collecting. Download its compact outcome indexes with the post's
+`fetch-strata-inputs.py --outcomes`; their bytes are checked against the manifest
+before analysis. All performance figures in the introduction use
+`specialist-2026-09-15.manifest.json`.
+
+Refresh external comparisons against that same publication while retaining
+the external measurements and retrieval dates:
+
+```bash
+node projects/explorer/scripts/freeze_comparisons.mjs --refresh-vep \
+  projects/explorer/web/blog/introducing-vep-bench/specialist-2026-09-15.manifest.json \
+  ROOT/versions/main/runs.json 2026-09-15
+```
+
 The export records library versions and data provenance. Run the package's
 offline tests with `uv run --locked --all-packages --group test pytest
 projects/blog-analysis/tests`.

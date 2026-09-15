@@ -1,12 +1,454 @@
 {
   "collection": {
-    "manifest_sha256": "8f32cc23b70c79799470faf5a053b5d659ffa9cec5d1a62db7cbe26d5ddd7987",
-    "method": "Local candidate publication; data_base_url identifies its publication destination",
+    "manifest_sha256": "0dfd0a545c77d8393ed89a8ae899aa8f1356a2dfd3feb06e9a550a0babc7c562",
+    "method": "Local publication verified against the frozen manifest",
+    "outcomes": [
+      {
+        "artifact_bytes": 833,
+        "artifact_sha256": "b5268c080b312a94664f4df26df02fd9157375a846327bd32da0ac87300e06f0",
+        "content_bytes": 3283,
+        "content_sha256": "ccd94289ff9d3880b18d62dbe50672c756ebc44c26aa99b3411d7c010295b1f3",
+        "path": "versions/main/outcomes/deepseek-v4.1-flash-low-opensplice-snv-20260911T162211Z-truncation-retry.json.gz",
+        "records": 20
+      },
+      {
+        "artifact_bytes": 798,
+        "artifact_sha256": "1e9ca5619d4f17d5e2a8ad2c64c7195055a45d103de1222c72f26efebfc3f503",
+        "content_bytes": 2702,
+        "content_sha256": "7b43e4ce75800899116d53ddf010ff10509595077bc09649e72bba6c43945919",
+        "path": "versions/main/outcomes/deepseek-v4.1-flash-low-satmut-mpra-20260911T162211Z-truncation-retry.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 738,
+        "artifact_sha256": "bdd62a65675b3d9bd60a5f0ad18b75d91b951ed690c10e960cbef7cded3ecb14",
+        "content_bytes": 2448,
+        "content_sha256": "fe3e5a8d526c7028cd57f1d20b6a3b2f73e83989a39a14977734c4dd794c3a8a",
+        "path": "versions/main/outcomes/deepseek-v4.1-flash-low-sge-20260911T162211Z-truncation-retry.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 815,
+        "artifact_sha256": "5f8488860028dd20e4920436ba7cb6530d20122f402d5b4b951a4b2209cc1fd7",
+        "content_bytes": 3268,
+        "content_sha256": "e9da343dec8ebba1f9bce866682785dedfd43f9703ab761190cdafca24733bd7",
+        "path": "versions/main/outcomes/gemini-3.8-flash-high-opensplice-snv-20260910T161559Z.json.gz",
+        "records": 20
+      },
+      {
+        "artifact_bytes": 780,
+        "artifact_sha256": "70edb76085793d869a3d94a7a0824a1d064ef213e23fcb599e251324ec8e05e1",
+        "content_bytes": 2660,
+        "content_sha256": "74f7ff5380d780235d6a32e1d860fe513f2dfd1965b64a1cad46a6f23ec496f2",
+        "path": "versions/main/outcomes/gemini-3.8-flash-high-satmut-mpra-20260910T161559Z.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 747,
+        "artifact_sha256": "9b98300acf2e4769d8950a43758726740d9efd2248ef82563bb7326e7274634e",
+        "content_bytes": 2509,
+        "content_sha256": "655e7f4f5460674c76fe0b8805de83f1829e78cde9cda9ce6ee6f36f7adf4176",
+        "path": "versions/main/outcomes/gemini-3.8-flash-high-sge-20260910T161559Z.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 805,
+        "artifact_sha256": "7f6331498b9afd7852aad0f6289ec0a46c35e840e6afaa44e0c2620a87002971",
+        "content_bytes": 3230,
+        "content_sha256": "3d1d2dc3407f84b43dc37f40ba8c5fcfbb55fe1a6789902f561acf8616dde686",
+        "path": "versions/main/outcomes/gemini-3.8-flash-low-opensplice-snv-20260910T161559Z.json.gz",
+        "records": 20
+      },
+      {
+        "artifact_bytes": 768,
+        "artifact_sha256": "13f6f9ba21f883228717d0e3adc908a7b4d0f5f7ce7bd06526dac3dad57c2971",
+        "content_bytes": 2617,
+        "content_sha256": "d282ead98230ed3101a459e88c5ffaf27a051de45d43c05838ced745906364e2",
+        "path": "versions/main/outcomes/gemini-3.8-flash-low-satmut-mpra-20260910T161559Z.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 744,
+        "artifact_sha256": "99acabfab5b176ce67b1532dc6995972e5698bae1274c985283c65b5fb53eba4",
+        "content_bytes": 2464,
+        "content_sha256": "bf1cc5d4d47aca01b359dc111df9b9677f109671b0604b4e07cc6643ea633fb2",
+        "path": "versions/main/outcomes/gemini-3.8-flash-low-sge-20260910T161559Z.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 822,
+        "artifact_sha256": "7bfb419d2f7f06fa58946da3cce86f091e833191620484692140d64d638b0a68",
+        "content_bytes": 3270,
+        "content_sha256": "be3c35f07c58d89eb14c556d1bb98b316ce1e14e89394bd0bdb8f6b351895733",
+        "path": "versions/main/outcomes/gemini-3.8-flash-medium-opensplice-snv-20260910T151518Z.json.gz",
+        "records": 20
+      },
+      {
+        "artifact_bytes": 776,
+        "artifact_sha256": "6c6e10cafb387f4489a9dbcb4b35ac64ff96a227d2f6c1b4d4f7cfe51fb325a9",
+        "content_bytes": 2655,
+        "content_sha256": "296b937082cdb825a322fbcd1bb73eb08413042f6ed20e21892609a71a419861",
+        "path": "versions/main/outcomes/gemini-3.8-flash-medium-satmut-mpra-20260910T151518Z.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 749,
+        "artifact_sha256": "f51639a2a466f23b67fe0df49abfbc05ac012727823bd8d86a5cca872bbd47f6",
+        "content_bytes": 2467,
+        "content_sha256": "9b0f3a87360247cb99d2f76c1b820b12ae37467f0d08a750005a4e8f645683e5",
+        "path": "versions/main/outcomes/gemini-3.8-flash-medium-sge-20260910T151518Z.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 814,
+        "artifact_sha256": "8fc7a3a1a4cf853dbd68e5e1c55098242e71224de3c23bad9523a022f7655944",
+        "content_bytes": 3265,
+        "content_sha256": "289bc0dc2c7de33c49247420048baa1a8174ac08c2860156e0fad14dfe11ed36",
+        "path": "versions/main/outcomes/glm-5.3-low-zai-full-20260909-opensplice-snv.json.gz",
+        "records": 20
+      },
+      {
+        "artifact_bytes": 772,
+        "artifact_sha256": "e40e81e75a609b07475342acb307ee7f8dc158b8482817b50cdd9fc9cde98618",
+        "content_bytes": 2669,
+        "content_sha256": "606a40670b9bc4bc9b8e2e3a7bd6d2de4efd5add8921933d1bf9a66b53b720c4",
+        "path": "versions/main/outcomes/glm-5.3-low-zai-full-20260909-satmut-mpra.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 766,
+        "artifact_sha256": "3cb71701ec27c2c355771f77773243bbf7e96a7565c1d1fc946d9d306a759c5f",
+        "content_bytes": 2526,
+        "content_sha256": "21bae52b68f0740529bba7beb20fb49b98f8024032649cf745a7cc2026cd603b",
+        "path": "versions/main/outcomes/glm-5.3-low-zai-full-20260909-sge.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 814,
+        "artifact_sha256": "1c67ec933ccad4ae793a6225d28f1dde5364bcd157cce7b9cd64b0ede8d83ca6",
+        "content_bytes": 3259,
+        "content_sha256": "319e0c299f2f6f7b5a664943d44d47777e7674c16ce6c224c018ffb6180e3a1c",
+        "path": "versions/main/outcomes/gpt-5.6-luna-high-opensplice-snv-v2-20260908.json.gz",
+        "records": 20
+      },
+      {
+        "artifact_bytes": 782,
+        "artifact_sha256": "c9bcb77ce7e46d56132139b6f26b8fc8207529efd0035df73aadc1842573c478",
+        "content_bytes": 2681,
+        "content_sha256": "83e8fcf15dbdee73d26f256e9261c4891d60bec9403f3d691075462be53f9cac",
+        "path": "versions/main/outcomes/gpt-5.6-luna-high-satmut-mpra-v2-20260908.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 754,
+        "artifact_sha256": "d6965aef635007908c4fcf51b1d86720b6e451750da85b9bce5b688b39c12114",
+        "content_bytes": 2514,
+        "content_sha256": "4e3ac31eedcf6855af6c2dd9a8f16718f63de0920e348f244c19fed2da716a01",
+        "path": "versions/main/outcomes/gpt-5.6-luna-high-sge-v2-20260908.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 841,
+        "artifact_sha256": "d80416e19cdb0d30528c5b0919aac7702cd632ffbabd541306ad1c4ba7e0651d",
+        "content_bytes": 3306,
+        "content_sha256": "98f29d226256c3da1f14aad11ddd0ae03d8fec79980d1e2cd1067dac589fb046",
+        "path": "versions/main/outcomes/gpt-5.6-luna-low-opensplice-snv-20260911T150230Z.json.gz",
+        "records": 20
+      },
+      {
+        "artifact_bytes": 723,
+        "artifact_sha256": "782de5e60bb1214b0e69b411708024c304eaaa20ba8e9b0d9e8693b364f8615f",
+        "content_bytes": 2547,
+        "content_sha256": "12f84fa7cc95fde5afd14c699a8a96190e7645d7b196174a7455289b2beac465",
+        "path": "versions/main/outcomes/gpt-5.6-luna-low-satmut-mpra-20260911T150230Z.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 764,
+        "artifact_sha256": "a22b5bb71d8dc926d5f52c6c0c5f0da284730650f839f878d56da6fbcc8060b0",
+        "content_bytes": 2532,
+        "content_sha256": "944f7cc6fa459de9ea9d4abed7c4377b0f0412e3a1b9348df2d892d67d042d9c",
+        "path": "versions/main/outcomes/gpt-5.6-luna-low-sge-20260911T150230Z.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 819,
+        "artifact_sha256": "14f8f3c6ca5cb5ba4094886bf7b1f6b28e6fe93d21be9930c7e607c5efc8cdee",
+        "content_bytes": 3268,
+        "content_sha256": "dc5ce025df14b45901e0d71436af191d871cbd6b3c84df43f06ab6847eae1231",
+        "path": "versions/main/outcomes/gpt-5.6-luna-max-opensplice_snv-recovered-20260912.json.gz",
+        "records": 20
+      },
+      {
+        "artifact_bytes": 781,
+        "artifact_sha256": "34b66796f02315549c0833723c7eee6b3ea6633cf34c04f240c9b5018497c9d6",
+        "content_bytes": 2672,
+        "content_sha256": "7b59dede51d6a89091291d5676b8af75d6dbf0cc632ea0a463b96e40242bb43d",
+        "path": "versions/main/outcomes/gpt-5.6-luna-max-satmut_mpra-recovered-20260912.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 740,
+        "artifact_sha256": "dfc0d42fd0234065e8b7cb1a2151bfe6866fb7fdf10e4d8d5985ca98f7fff0a6",
+        "content_bytes": 2469,
+        "content_sha256": "6277e46beaa474174392b076c0a74c2bf4178c3b1a8171f6467c6a775f5919ac",
+        "path": "versions/main/outcomes/gpt-5.6-luna-max-sge-20260911.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 822,
+        "artifact_sha256": "00b4002da74b58d3bb31ce324d7dc51e7e381509574abe47f66d821fd121de04",
+        "content_bytes": 3263,
+        "content_sha256": "6a21177cd7207b56c5a4e35d82bddd7c768052562ae25fe1a987f02aae9b3d9f",
+        "path": "versions/main/outcomes/gpt-5.6-luna-medium-opensplice-snv-v2-20260908.json.gz",
+        "records": 20
+      },
+      {
+        "artifact_bytes": 758,
+        "artifact_sha256": "d98e8c6ea808240a66e619f8cd83f74f914bd8bb72f1c96c3ea5a4fa995e50c0",
+        "content_bytes": 2642,
+        "content_sha256": "f82a832a71736fd389abc21ca4be8794bb7d37633ae2158872dbbba36d8d4aa5",
+        "path": "versions/main/outcomes/gpt-5.6-luna-medium-satmut-mpra-v2-20260908.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 756,
+        "artifact_sha256": "88da528e12ed86b611920eadd7f1dcbe3b8d4bd34f1ab17e8a80281fd3f2ac50",
+        "content_bytes": 2531,
+        "content_sha256": "a264bb340762327d5d29be82ab9e6147800d0b6ec5b83153d7681d70b661a574",
+        "path": "versions/main/outcomes/gpt-5.6-luna-medium-sge-v2-20260908.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 806,
+        "artifact_sha256": "6673a9e7631cfe48a39709f867d56001829fb1cbbd229e8526e6d6d93b4e9a3e",
+        "content_bytes": 3259,
+        "content_sha256": "d287188fc6d15a4bc39540128ca3ea72f0477ee7039db47c76da351b81b03e26",
+        "path": "versions/main/outcomes/gpt-5.6-sol-high-opensplice-snv-v2-20260908.json.gz",
+        "records": 20
+      },
+      {
+        "artifact_bytes": 775,
+        "artifact_sha256": "5f74d5898b62a217d6d7d510b3249a9e277694cec20acb2d3ed88f562112e48a",
+        "content_bytes": 2660,
+        "content_sha256": "b01a8c899bf8f240145ddd9bcbee9cde7eec84c544bda83a109e315e2e5153a3",
+        "path": "versions/main/outcomes/gpt-5.6-sol-high-satmut-mpra-v2-20260908.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 744,
+        "artifact_sha256": "868e49d78727cf8840370d52e94b9cd68e0cd431f7dbca04e46c7a37da6557d9",
+        "content_bytes": 2492,
+        "content_sha256": "244205016f2d46883dfed73336008edeed0a984751ec104094a29c517f32cefd",
+        "path": "versions/main/outcomes/gpt-5.6-sol-high-sge-v2-20260908.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 815,
+        "artifact_sha256": "022cc4f39fd37a39586199b83603f0ba5342d09e12868c8dee6d051fa23d954c",
+        "content_bytes": 3259,
+        "content_sha256": "60a43abfd9a75e5da7e866cb0ba169494cf4bbbee77a85b388eb03a141f6f343",
+        "path": "versions/main/outcomes/gpt-5.6-sol-low-opensplice-snv-20260911T150230Z.json.gz",
+        "records": 20
+      },
+      {
+        "artifact_bytes": 788,
+        "artifact_sha256": "5f7d4d79e28c194f421d412fc3e7ae59a7e6d98c85e42206e5e3580d058fbff7",
+        "content_bytes": 2692,
+        "content_sha256": "a1772d89329b39c21ba6978f3292bd2866e4ed4a10046e44c6bc38ab691ec93b",
+        "path": "versions/main/outcomes/gpt-5.6-sol-low-satmut-mpra-20260911T150230Z.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 759,
+        "artifact_sha256": "4c12b01a5c5e512073cbf9d6677305d08679b1bb77e25243d055c13af0402f04",
+        "content_bytes": 2526,
+        "content_sha256": "d8745b29596603813214d1372cd543c9dc4e53920d1c959de21b6f40352c80d0",
+        "path": "versions/main/outcomes/gpt-5.6-sol-low-sge-20260911T150230Z.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 807,
+        "artifact_sha256": "1109eb06cc7d606292e7b968ec732ec6d029498dcbe3aafcdcd453c3c8aa3f12",
+        "content_bytes": 3262,
+        "content_sha256": "c611b4ef3044c84db0c94a83c9a1abcb923e66d334304508cbfaa4d3619c458e",
+        "path": "versions/main/outcomes/gpt-5.6-sol-max-opensplice_snv-recovered-20260912.json.gz",
+        "records": 20
+      },
+      {
+        "artifact_bytes": 775,
+        "artifact_sha256": "55576e52754b299cee2a5c752a64231eb0a857b25e106bc184c736edb91297ac",
+        "content_bytes": 2659,
+        "content_sha256": "b4cf7c92734de612f9154213a89bd06df9bd1dbb5f42d46b64bb1a1cec3cd9a1",
+        "path": "versions/main/outcomes/gpt-5.6-sol-max-satmut_mpra-recovered-20260912.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 737,
+        "artifact_sha256": "da539534a434134bea4fcddf1cb53622ee160a2ceb03511351bf6d0a215a6261",
+        "content_bytes": 2486,
+        "content_sha256": "39ed87e2882f71030aab235bcb781add75cd6e6963a8b8ce49cebba1a9ac064a",
+        "path": "versions/main/outcomes/gpt-5.6-sol-max-sge-20260911.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 820,
+        "artifact_sha256": "e3326685572017ff0a6914d68a358df1ea149e227a39abe4c0d1109ab4ffbadd",
+        "content_bytes": 3266,
+        "content_sha256": "1a92c8aa3824c2efeb52fed784483001f1b3069d169bc3bb378500455edfaee1",
+        "path": "versions/main/outcomes/gpt-5.6-sol-medium-opensplice-snv-v2-20260908.json.gz",
+        "records": 20
+      },
+      {
+        "artifact_bytes": 783,
+        "artifact_sha256": "76cfd833de62adc1f9c3de3c26c555b195d9eb3e65a32fcdb22402bcf4c0cdf1",
+        "content_bytes": 2674,
+        "content_sha256": "a4a7f3c0b0779eea2e36e8239ea8b8870c4f769fb10381dff7df8e0ee61860e5",
+        "path": "versions/main/outcomes/gpt-5.6-sol-medium-satmut-mpra-v2-20260908.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 753,
+        "artifact_sha256": "2809d82bb2898bd6b1ce8d6d72a273a6981a53faa74ef38dbf67e189cada1d5b",
+        "content_bytes": 2518,
+        "content_sha256": "99dd3f421e28bbec027c7544048c3d8e14dbcebdde491292f9a46c6e9cc9a993",
+        "path": "versions/main/outcomes/gpt-5.6-sol-medium-sge-v2-20260908.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 824,
+        "artifact_sha256": "6a329f8914dd0cda7ba9fb0ddd4f8cb64d0beac05071346e8430a71b320aed62",
+        "content_bytes": 3273,
+        "content_sha256": "d894a4b673ad6df596928106f6f6394d30ae42cf0f7619b7b61119f77d007c61",
+        "path": "versions/main/outcomes/gpt-5.6-terra-max-opensplice_snv-recovered-20260912.json.gz",
+        "records": 20
+      },
+      {
+        "artifact_bytes": 795,
+        "artifact_sha256": "1c9f1c37086ee63070823cef595575491f54d5ad6b58acb9cf434f39e4aed105",
+        "content_bytes": 2682,
+        "content_sha256": "786ff5be1c338e33ad80e97c9ec7c71eedf735ed555f58c89e3d9f3a4c1c25dc",
+        "path": "versions/main/outcomes/gpt-5.6-terra-max-satmut_mpra-recovered-20260912.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 749,
+        "artifact_sha256": "8f2920c2199db4195178e433c1b2289da3b5fc0a886ffe83f4cc5af37801542b",
+        "content_bytes": 2506,
+        "content_sha256": "d3b79a1c5f0c2d37d2fcdb5f93f550f050f13ab20e89a9b60954c33e57f16ecb",
+        "path": "versions/main/outcomes/gpt-5.6-terra-max-sge-20260911.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 820,
+        "artifact_sha256": "a224732613d94ecb2c05cdacdd16930872ce2e74bf1ba12a8f10426e9e901802",
+        "content_bytes": 3263,
+        "content_sha256": "6871c04297b726483a1219bd8b0e49a2aad6cb7ffb35db45604402969cbc9e21",
+        "path": "versions/main/outcomes/gpt-6-astra-high-opensplice-snv-v2-20260908.json.gz",
+        "records": 20
+      },
+      {
+        "artifact_bytes": 767,
+        "artifact_sha256": "e29166c8b42071c9ef79bf4ec777b53ac8419b32fd52f13ed628a4a2d28422e6",
+        "content_bytes": 2644,
+        "content_sha256": "e45ec23dccdb4fd64b10d4a6c0d33e3b2ec14ce1e2c06656f02a5be95ddbded0",
+        "path": "versions/main/outcomes/gpt-6-astra-high-satmut-mpra-v2-20260908.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 736,
+        "artifact_sha256": "5554246ef2afcbb4c5341cf0eb38eadf06934c1ebc8786fbd212280022343413",
+        "content_bytes": 2488,
+        "content_sha256": "1a722d911a45a54c613be61e646d9ff89a05fd1842161438d187d40c9c2a4ace",
+        "path": "versions/main/outcomes/gpt-6-astra-high-sge-v2-20260908.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 815,
+        "artifact_sha256": "be3e51ad1eda98c36100b2720f61f65055e49429032688b6daf38c8ec1ece75b",
+        "content_bytes": 3268,
+        "content_sha256": "6cb555cab585d99cdcb5db4a644f8a9d01c20fa86e3b174e5e1c77b81fbd3f4e",
+        "path": "versions/main/outcomes/gpt-6-astra-low-opensplice-snv-20260911T150230Z.json.gz",
+        "records": 20
+      },
+      {
+        "artifact_bytes": 774,
+        "artifact_sha256": "8a608a01bf66cdb197cd34bb1f0180de53b76f0cb5524246fd69427d8e3b5ba2",
+        "content_bytes": 2653,
+        "content_sha256": "e75600ed87d78e0ae726323066f49c882ccddca5df7cc07e86a7571a8990499d",
+        "path": "versions/main/outcomes/gpt-6-astra-low-satmut-mpra-20260911T150230Z.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 745,
+        "artifact_sha256": "a106eada88b568d9d7717c0d0ba96e8cdce83388715cb2b779afbd21be29862c",
+        "content_bytes": 2500,
+        "content_sha256": "b3becbe17c6b8850c7370108754c0bc07272dcb6b7d371b06bc9b3a252b630b8",
+        "path": "versions/main/outcomes/gpt-6-astra-low-sge-20260911T150230Z.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 811,
+        "artifact_sha256": "71513f32b5831244807dc9bcf5c89999f54d338c9fa91d32b7461c5e1d942ee4",
+        "content_bytes": 3259,
+        "content_sha256": "f01ae89d85f09b3127687754f75776a0ab568594a9be12f3e753b5392b5bedbb",
+        "path": "versions/main/outcomes/gpt-6-astra-medium-opensplice-snv-v2-20260908.json.gz",
+        "records": 20
+      },
+      {
+        "artifact_bytes": 776,
+        "artifact_sha256": "74ebfdaf5b33e4219558302e9b1bcb862ab6197c58f9e0efcb34b70666417a36",
+        "content_bytes": 2653,
+        "content_sha256": "dba6811238747dc8188b26eceb8a5bc14314b73df5151f6ffc619f08c11eacba",
+        "path": "versions/main/outcomes/gpt-6-astra-medium-satmut-mpra-v2-20260908.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 738,
+        "artifact_sha256": "96940d95219cc3e9b579c4184982589dcb44fa8ce05f8d162ed4cd93264976b3",
+        "content_bytes": 2495,
+        "content_sha256": "338996c3c2f1e340da9f0a6ccd9e807acfeb12a0ff3ba2bdda58c70699a53766",
+        "path": "versions/main/outcomes/gpt-6-astra-medium-sge-v2-20260908.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 818,
+        "artifact_sha256": "7376a786a433dc4ec8cdd4797296d30fd6842adcb60483feb804463bb674d6df",
+        "content_bytes": 3268,
+        "content_sha256": "84e5bf30284c979f2faf9e62a15775b144478d0c0f67e0369f37beb0ba378de5",
+        "path": "versions/main/outcomes/muse-spark-1.3-medium-opensplice-snv-20260910T151518Z.json.gz",
+        "records": 20
+      },
+      {
+        "artifact_bytes": 780,
+        "artifact_sha256": "dd2bf3a892a58432604a09125e60a01b28b96de78ef161314138de32fa46e65a",
+        "content_bytes": 2634,
+        "content_sha256": "121b8382c04ccd3de1c8e750062d24ae8787618fa0725d0dab5bd6cb79f9b5e3",
+        "path": "versions/main/outcomes/muse-spark-1.3-medium-satmut-mpra-20260910T151518Z-retry1.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 699,
+        "artifact_sha256": "6b8b627c49d85a4f8ca32bfb335dc5a0c18728a21aa40feca846a1a9515118c3",
+        "content_bytes": 2389,
+        "content_sha256": "d08469cd0f738b49c2ef83935d4ea035b73a972c727a2a250a339d4fad7590cb",
+        "path": "versions/main/outcomes/muse-spark-1.3-medium-sge-20260910T151518Z.json.gz",
+        "records": 16
+      }
+    ],
+    "question_index": {
+      "artifact_bytes": 497096,
+      "artifact_sha256": "9fddc22b3cac863b3b19c61b1612d18e92e00e5cad08495f3b030dab0d6ed2c5",
+      "content_bytes": 497096,
+      "content_sha256": "9fddc22b3cac863b3b19c61b1612d18e92e00e5cad08495f3b030dab0d6ed2c5",
+      "path": "versions/main/question-index.json",
+      "records": 52
+    },
     "runs": {
-      "artifact_bytes": 92781,
-      "artifact_sha256": "293d208b7c6e112007332eadb7f4f49e009f13c1df4c1e453ad88fef5b7494eb",
-      "content_bytes": 92781,
-      "content_sha256": "293d208b7c6e112007332eadb7f4f49e009f13c1df4c1e453ad88fef5b7494eb",
+      "artifact_bytes": 93027,
+      "artifact_sha256": "6d514ed517275344db729b16fb59a5221c51248d1dd98d2388103b83c325240a",
+      "content_bytes": 93027,
+      "content_sha256": "6d514ed517275344db729b16fb59a5221c51248d1dd98d2388103b83c325240a",
       "path": "versions/main/runs.json",
       "records": 54
     }
@@ -14,7 +456,7 @@
   "comparison_count": 5,
   "data_base_url": "https://huggingface.co/buckets/open-athena/VEP-bench/resolve/versions/main",
   "question_set_sha256": "be62fd7b5f06656572a5150904758f04bb998590f63ce31ebbca13852a0bfab7",
-  "retrieved_at": "2026-09-12T14:52:19.068627+00:00",
+  "retrieved_at": "2026-09-15T20:12:21.271858+00:00",
   "scores": [
     {
       "assay_date": "2024-07-05",

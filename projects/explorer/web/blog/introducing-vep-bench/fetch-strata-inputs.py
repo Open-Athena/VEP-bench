@@ -49,6 +49,9 @@ def main() -> None:
     parser.add_argument(
         "--answers", action="store_true", help="Also fetch saved answers after freezing coverage"
     )
+    parser.add_argument(
+        "--outcomes", action="store_true", help="Also fetch compact outcome indexes"
+    )
     args = parser.parse_args()
     if not args.base_url.startswith("https://"):
         raise ValueError("use a public HTTPS artifact URL")
@@ -57,6 +60,8 @@ def main() -> None:
     descriptors = [artifacts["question_index"], artifacts["runs"]]
     if args.answers:
         descriptors += artifacts["answers"]
+    if args.outcomes:
+        descriptors += artifacts["outcomes"]
     # Four small network transfers; no full raw archives or model requests.
     with ThreadPoolExecutor(max_workers=4) as executor:
         for _ in executor.map(lambda d: fetch(args.output, args.base_url, d), descriptors):
