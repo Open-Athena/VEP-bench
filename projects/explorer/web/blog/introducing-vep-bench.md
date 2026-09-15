@@ -24,6 +24,64 @@ three tasks measure different outcomes: functional effects in
 Before comparing model performance, we can ask what kinds of variants each
 task contains.
 
+## Comparison with AlphaGenome and AVI
+
+We compare AlphaGenome's signed molecular predictions for splicing and
+expression, and AlphaGenome Variant Impact (AVI) scores for fitness, with saved
+LLM answers on the same variants within each original panel. Each panel has
+equal weight. The full benchmark leaderboard retains its original variant set.
+
+```js
+import {specialistRows, specialistCsv, specialistTasks} from "./introducing-vep-bench/specialists.js";
+import {matchedCorrelationPlot} from "./introducing-vep-bench/specialist-plots.js";
+const specialistSnapshot = await FileAttachment("./introducing-vep-bench/specialist-comparison.json").json();
+const specialistCategory = view(Inputs.select(new Map([
+  ["All covered panels", "all_covered"],
+  ["Exclude AVI model-selection studies", "excluding_avi_model_selection"]
+]), {label: "Comparison"}));
+const specialistData = specialistRows(specialistSnapshot, specialistCategory);
+if (specialistSnapshot.status === "awaiting_inference") {
+  display(html`<p>Scoring settings and initial eligibility are frozen. Predictions have not yet been collected.
+    The counts below are eligible requests; AVI lookup may further reduce coverage.</p>`);
+  display(Inputs.table(specialistSnapshot.coverage.map((r) => ({
+    Task: specialistTasks.find((t) => t.family === r.task_family).label,
+    "Eligible requests": r.eligible_variants,
+    "Total variants": r.total_variants
+  })), {select: false}));
+} else {
+  display(matchedCorrelationPlot(specialistData, {width, colors: specialistSnapshot.family_colors}));
+  display(Inputs.table(specialistData.map((r) => ({Task: r.task_label, Model: r.model,
+    Variants: r.eligible_variants, Panels: r.eligible_panels,
+    Spearman: r.mean_spearman_rho, Pearson: r.mean_pearson_r,
+    "Invalid panels": r.invalid_panels})), {select: false}));
+  display(Inputs.download(new Blob([specialistCsv(specialistSnapshot)], {type: "text/csv"}),
+    {filename: "specialist-comparison.csv", label: "Download comparison scores"}));
+}
+```
+
+The splicing score measures changes at the tested exon's canonical donor and
+acceptor sites; it is a signed proxy for exon inclusion, not calibrated delta
+PSI. Expression uses signed DNase effects in published matching cell types,
+as a proxy for reporter activity. Both use native genomic context. AVI measures
+general functional impact, rather than fitness in the specific assay conditions.
+
+The second comparison excludes BRCA1, RAD51C and DDX3X fitness panels because
+their source studies were used for AVI model selection. The two MPRA elements
+without a published cell-type match are excluded. Invalid original LLM answers
+keep their zero penalty, even if their missing variants fall outside the match.
+Free API access does not establish zero underlying inference cost, and Atlas
+lookup time does not measure the cost of generating its scores.
+
+[Scoring definitions, provenance and reproduction](./introducing-vep-bench/specialist-methods.html)
+describe the coverage rules and departures from the original evaluations.
+
+```js
+display(html`<p><a href=${await FileAttachment("./introducing-vep-bench/specialist-plan.json.gz").url()} download>
+  Download frozen allele requests and settings (JSON.gz)</a> ·
+  <a href=${await FileAttachment("./introducing-vep-bench/specialist-comparison.json").url()} download>
+  Download comparison status, scores and coverage (JSON)</a></p>`);
+```
+
 ```js
 import {variantComposition, compositionCsv} from "./introducing-vep-bench/analysis.js";
 import {distributionFigure} from "./introducing-vep-bench/plots.js";

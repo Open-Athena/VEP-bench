@@ -5,6 +5,13 @@ blog. It requires Node.js for the explorer's run selection and date grouping;
 SciPy performs the statistical test and estimates confidence intervals. Website
 builds consume the exported JSON without installing this package.
 
+The optional `alphagenome` extra also supports the introduction post's
+[AlphaGenome/AVI comparison](../explorer/web/blog/introducing-vep-bench/specialist-methods.md).
+`vepbench-blog-specialists` freezes allele eligibility, caches explicit live
+inference and Atlas lookups, and rescores saved answers on the same variants.
+Its tests use offline transports. Model calls require `ALPHAGENOME_API_KEY` in
+the evaluation process and are never made by website builds or CI.
+
 For SGE, select the highest available effort per model before examining scores.
 The one-sided test targets a before-cutoff performance advantage. Gene and assay
 composition can confound that advantage, so it is an exploratory per-model test,

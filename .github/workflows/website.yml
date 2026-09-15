@@ -136,7 +136,7 @@ jobs:
           enable-cache: true
 
       - name: Install optional blog analysis tests
-        run: uv sync --locked --package vepbench-blog-analysis --group test
+        run: uv sync --locked --all-packages --extra alphagenome --group test
 
       - name: Test and reproduce the saved statistics offline
         run: |

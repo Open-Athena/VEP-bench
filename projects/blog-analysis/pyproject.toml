@@ -9,9 +9,13 @@ dependencies = [
     "vepbench-explorer",
 ]
 
+[project.optional-dependencies]
+alphagenome = ["alphagenome==0.9.0"]
+
 [project.scripts]
 vepbench-blog-sge-cutoff = "vepbench_blog_analysis.sge_cutoff:main"
 vepbench-blog-strata-intervals = "vepbench_blog_analysis.strata_intervals:main"
+vepbench-blog-specialists = "vepbench_blog_analysis.specialists:main"
 
 [build-system]
 requires = ["hatchling>=1.27"]
