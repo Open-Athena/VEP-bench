@@ -3,7 +3,7 @@ import {readFile, writeFile} from "node:fs/promises";
 import {join} from "node:path";
 import {gunzipSync} from "node:zlib";
 import {stratumModelOrder, stratumRows} from "../web/blog/introducing-vep-bench/strata-analysis.js";
-import {specialistRows} from "../web/blog/introducing-vep-bench/specialists.js";
+import {specialistRows, specialistModelOrder, specialistTasks} from "../web/blog/introducing-vep-bench/specialists.js";
 
 const [siteUrl, debugUrl, outputDir, mode] = process.argv.slice(2);
 if (!siteUrl || !debugUrl) {
@@ -506,11 +506,37 @@ await navigate("/blog/introducing-vep-bench.html");
 const specialistSnapshot = JSON.parse(gunzipSync(await readFile(
   new URL("../web/blog/introducing-vep-bench/specialist-comparison.json.gz", import.meta.url)
 )));
-const expectedSpecialistRows = specialistRows(specialistSnapshot);
+const specialistIntervals = JSON.parse(await readFile(
+  new URL("../web/blog/introducing-vep-bench/specialist-intervals.json", import.meta.url), "utf8"
+));
+const expectedSpecialistRows = specialistRows(specialistSnapshot, "all_covered", specialistIntervals);
+const expectedSpecialistModels = specialistModelOrder(specialistSnapshot);
 const specialistPlot = 'svg[aria-label="Specialist and LLM correlations on identical variants within each task"]';
 await waitFor(`document.querySelectorAll(${JSON.stringify(specialistPlot + ' g[aria-label="dot"] circle')})
   .length === ${expectedSpecialistRows.length}`, "matched specialist predictions");
 assert.equal(await evaluate(`document.querySelectorAll(${JSON.stringify(specialistPlot)}).length`), 1);
+async function checkSpecialistPlot() {
+  const scales = await evaluate(`[...document.querySelectorAll(${JSON.stringify(specialistPlot + ' svg[data-task-family]')})]
+    .map((plot) => ({task: plot.dataset.taskFamily, x: plot.scale('x').domain, y: plot.scale('y').domain}))`);
+  assert.deepEqual(scales.map((scale) => scale.task), specialistTasks.map((task) => task.family));
+  assert.equal(new Set(scales.map((scale) => JSON.stringify(scale.x))).size, 3,
+    "matched comparison uses independent task scales");
+  for (const scale of scales) {
+    assert.deepEqual(scale.y, expectedSpecialistModels, "models follow overall matched performance");
+    const rows = expectedSpecialistRows.filter((row) => row.task_family === scale.task);
+    const scores = rows.flatMap((row) => [row.mean_spearman_rho, row.spearman_ci_low, row.spearman_ci_high])
+      .filter(Number.isFinite);
+    const minimum = Math.min(...scores), maximum = Math.max(...scores);
+    assert.ok(scale.x[0] <= minimum && scale.x[1] >= maximum, "axis includes every score and interval");
+    assert.ok(scale.x[1] - scale.x[0] <= 2 * (maximum - minimum), "axis fits task data without fixed limits");
+    if (minimum > 0.5) assert.ok(scale.x[0] > 0, "annotations do not force a zero baseline");
+    const group = `${specialistPlot} svg[data-task-family="${scale.task}"]`;
+    assert.equal(await evaluate(`document.querySelectorAll(${JSON.stringify(group + ' g[aria-description="95% confidence intervals"] line')}).length`),
+      rows.filter((row) => row.spearman_ci_status === "estimated").length);
+    assert.equal(await evaluate(`[...document.querySelectorAll(${JSON.stringify(group + ' g[aria-label="dot"] circle')})]
+      .every((dot) => dot.getAttribute('aria-label').includes('95% t CI:'))`), true);
+  }
+}
 const stratumSnapshot = JSON.parse(gunzipSync(await readFile(
   new URL("../web/blog/introducing-vep-bench/strata-2026-09-15.json.gz", import.meta.url)
 )));
@@ -587,6 +613,7 @@ for (const width of [1440, 390]) {
     width, height: 1100, deviceScaleFactor: 1, mobile: false
   });
   await waitFor(`document.body.scrollWidth <= innerWidth`, `stratum page fits viewport ${width}`);
+  await checkSpecialistPlot();
   await checkStratumPlots();
   if (width === 390) {
     assert.equal(await evaluate(`(() => {

@@ -153,6 +153,21 @@ weight within its task. The exported overall comparison gives each of the
 three tasks equal weight and requires the same model, generation parameters,
 and retry policy across all tasks. No variants are pooled across panels.
 
+Error bars use the same [panel-level interval method](./strata-methods.html#confidence-intervals)
+as the allele-type plots: the panel mean plus or minus the 97.5th percentile of
+Student's t with `n - 1` degrees of freedom times the sample standard error.
+They are pointwise 95% intervals across matched panels, conditional on the
+saved answers, with invalid-answer zero penalties retained. Bounds are not
+clipped; constant panel scores or fewer than two panels have no estimated
+interval. Shared assay effects, repeated-run variability and multiple
+comparisons are not accounted for. Individual model intervals are not paired
+tests of differences between models.
+
+The figure uses separate automatic task scales and orders models by the frozen
+overall matched score, weighting each of the three tasks equally. The fitness
+comparison uses the same SNVs for every model; it does not assess indel
+performance or make AVI's general-impact target assay-specific.
+
 ## Reproduction
 
 The implementation is the optional `projects/blog-analysis` workspace package;
@@ -182,6 +197,10 @@ uv run --no-sync vepbench-blog-specialists compare \
   --publication /tmp/specialist-publication --plan /tmp/specialist-plan.json \
   --predictions /tmp/specialist-predictions.json.gz \
   --output /tmp/specialist-comparison.json.gz
+
+uv run --no-sync python -m vepbench_blog_analysis.specialist_intervals \
+  --input /tmp/specialist-comparison.json.gz \
+  --output /tmp/specialist-intervals.json
 ```
 
 `predict` resumes verified cached requests; `--limit` bounds new calls during

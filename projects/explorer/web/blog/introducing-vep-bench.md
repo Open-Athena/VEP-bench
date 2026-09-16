@@ -41,13 +41,14 @@ the AVI fitness comparison covers SNVs only. Each LLM is rescored on the same
 covered variants as the specialist.
 
 ```js
-import {specialistRows, specialistCsv, specialistTasks} from "./introducing-vep-bench/specialists.js";
+import {specialistRows, specialistCsv, specialistTasks, specialistModelOrder} from "./introducing-vep-bench/specialists.js";
 import {matchedCorrelationPlot} from "./introducing-vep-bench/specialist-plots.js";
 import {fetchGzipJson} from "../components/benchmark-data.js";
 const specialistSnapshot = await fetchGzipJson(
   await FileAttachment("./introducing-vep-bench/specialist-comparison.json.gz").url(), "specialist comparison"
 );
-const specialistData = specialistRows(specialistSnapshot);
+const specialistIntervals = await FileAttachment("./introducing-vep-bench/specialist-intervals.json").json();
+const specialistData = specialistRows(specialistSnapshot, "all_covered", specialistIntervals);
 ```
 
 ```js
@@ -61,10 +62,19 @@ if (specialistSnapshot.status === "awaiting_inference") {
   })), {select: false}));
 } else {
   display(html`<div role="region" tabindex="0" aria-label="Matched specialist comparison" style="overflow-x: auto">
-    ${matchedCorrelationPlot(specialistData, {width, colors: specialistSnapshot.family_colors})}
+    ${matchedCorrelationPlot(specialistData, {width, colors: specialistSnapshot.family_colors,
+      modelOrder: specialistModelOrder(specialistSnapshot)})}
   </div>`);
+  display(html`<p style="font-size: 0.85em; text-align: center">Mean panel Spearman ρ and 95% t CI ·
+    Independent task scales · Models ordered by mean matched score across the three tasks</p>`);
 }
 ```
+
+Astra's fitness score is **0.625**, compared with **0.586** for AVI, on the
+same **487 SNVs across 16 genes**. Excluding AVI model-selection studies gives
+**0.604 versus 0.557** on **382 SNVs across 13 genes**. These are higher observed
+scores on the matched SNV subsets; they do not establish an advantage on indels
+or statistically conclusive superiority.
 
 <details id="specialist-methodology">
 <summary>Methodology and cell-type choices</summary>
@@ -74,6 +84,15 @@ variants within each original panel, with equal weight per panel. LLM answers
 come from the frozen September 15 publication; no new LLM calls are made.
 Invalid original LLM answers retain their zero penalty, even if their missing
 variants fall outside the matched set.
+
+**Error bars and ordering.** Bars show pointwise 95% Student's t confidence
+intervals for the equally weighted mean of panel correlations, using panels
+(genes, regulatory elements or exons) as the sampling units. These exploratory
+intervals assume independent panels and are conditional on the saved answers;
+they do not estimate shared assay effects or variability between model runs.
+They are not a paired significance test. Models are ordered by their mean
+matched Spearman score across the three equally weighted tasks. Each task's
+x-axis fits its own scores and intervals.
 
 **Splicing.** We follow the
 [OpenSplice native-context approach](https://github.com/lehner-lab/OpenSplice/blob/3e4ad8c037c216b952f1a8945f8f498669bff589/benchmarking_predictors/scripts/inference/alphagenome_genome_mode_snvs_inference.py):
@@ -127,16 +146,18 @@ departures from the original evaluations.
 if (specialistSnapshot.status === "complete") {
   display(Inputs.table(specialistData.map((r) => ({Task: r.task_label, Model: r.model,
     Variants: r.eligible_variants, Panels: r.eligible_panels,
-    Spearman: r.mean_spearman_rho, Pearson: r.mean_pearson_r,
+    Spearman: r.mean_spearman_rho, "95% CI low": r.spearman_ci_low,
+    "95% CI high": r.spearman_ci_high, Pearson: r.mean_pearson_r,
     "Invalid panels": r.invalid_panels})), {select: false}));
   display(html`<h3>Fitness excluding AVI model-selection studies</h3>`);
-  display(Inputs.table(specialistRows(specialistSnapshot, "excluding_avi_model_selection")
+  display(Inputs.table(specialistRows(specialistSnapshot, "excluding_avi_model_selection", specialistIntervals)
     .filter((r) => r.task_family === "sge").map((r) => ({Model: r.model,
       Variants: r.eligible_variants, Panels: r.eligible_panels,
-      Spearman: r.mean_spearman_rho, Pearson: r.mean_pearson_r,
+      Spearman: r.mean_spearman_rho, "95% CI low": r.spearman_ci_low,
+      "95% CI high": r.spearman_ci_high, Pearson: r.mean_pearson_r,
       "Invalid panels": r.invalid_panels})), {select: false}));
   display(html`<a download="specialist-comparison.csv"
-    href=${`data:text/csv;charset=utf-8,${encodeURIComponent(specialistCsv(specialistSnapshot))}`}>
+    href=${`data:text/csv;charset=utf-8,${encodeURIComponent(specialistCsv(specialistSnapshot, specialistIntervals))}`}>
     Download comparison scores (CSV)</a>`);
 }
 ```
@@ -146,6 +167,8 @@ display(html`<p><a href=${await FileAttachment("./introducing-vep-bench/speciali
   Download frozen allele requests and settings (JSON.gz)</a> ·
   <a href=${await FileAttachment("./introducing-vep-bench/specialist-comparison.json.gz").url()} download>
   Download comparison scores and coverage (JSON.gz)</a> ·
+  <a href=${await FileAttachment("./introducing-vep-bench/specialist-intervals.json").url()} download>
+  Download confidence intervals (JSON)</a> ·
   <a href=${await FileAttachment("./introducing-vep-bench/specialist-predictions.json.gz").url()} download>
   Download cached prediction evidence (JSON.gz)</a> ·
   <a href=${await FileAttachment("./introducing-vep-bench/specialist-2026-09-15.manifest.json").url()} download>

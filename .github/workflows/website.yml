@@ -151,6 +151,11 @@ jobs:
             --output /tmp/strata-intervals-replay.json
           cmp projects/explorer/web/blog/introducing-vep-bench/strata-2026-09-15.intervals.json \
             /tmp/strata-intervals-replay.json
+          uv run --no-sync python -m vepbench_blog_analysis.specialist_intervals \
+            --input projects/explorer/web/blog/introducing-vep-bench/specialist-comparison.json.gz \
+            --output /tmp/specialist-intervals-replay.json
+          cmp projects/explorer/web/blog/introducing-vep-bench/specialist-intervals.json \
+            /tmp/specialist-intervals-replay.json
 
   deploy:
     name: Deploy
