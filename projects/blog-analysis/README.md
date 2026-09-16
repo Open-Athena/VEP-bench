@@ -52,7 +52,7 @@ node projects/explorer/scripts/freeze_comparisons.mjs --refresh-vep \
 ```
 
 The export records library versions and data provenance. Run the package's
-offline tests with `uv run --locked --all-packages --group test pytest
+offline tests with `uv run --locked --all-packages --extra alphagenome --group test pytest
 projects/blog-analysis/tests`.
 
 For the variant-stratum figures, generate pointwise intervals directly from the
