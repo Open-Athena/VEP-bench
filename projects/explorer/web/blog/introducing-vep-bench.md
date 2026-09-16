@@ -502,6 +502,14 @@ display(Inputs.table(strataScores, {
 
 ## SGE performance before and after the knowledge cutoff
 
+**Correction — September 16, 2026.** Our original **9 before / 7 after** split
+used recent MaveDB releases without following their predecessors, other public
+repositories, or preprints. That overstated the number of later assays.
+The corrected split is **13 before / 2 after / 1 mixed**, for all five models
+with known cutoffs in this snapshot. The figure, statistics and downloads below
+have been regenerated from the same frozen model outcomes using the corrected
+provenance. Model predictions and benchmark scores have not changed.
+
 SGE's gene panels have different recorded public dates, so we can split them
 relative to each model's reported knowledge cutoff. The expression and splicing
 tasks each use a single assay date in this snapshot; they do not offer the same
@@ -532,11 +540,32 @@ if (cutoffAnalysis.summaries.length) {
 }
 ```
 
-All five models with known cutoffs in this snapshot have the same **9 before / 7 after** split.
-Their cutoffs (February 16, March, and April 30, 2026) fall in the same gap
-between recorded assay dates: PALB2 on January 19 and the next four panels on
-June 8. No panel falls between those dates, so each cutoff selects the same
-genes; the groups were not balanced to achieve these counts.
+The five cutoffs (February 16, March, and April 30, 2026) select the same genes.
+BARD1, CTCF, RAD51D and XRCC2 move to the earlier group. SFPQ is excluded from
+both means because its panel combines earlier and later evidence. The two
+remaining later panels are **SBDS and TINF2**; we verified no earlier scored
+release for either in this audit. This is a search result, not proof that they
+were absent from training data.
+
+| Panel | Earlier public evidence for our 50 selected variants |
+| --- | --- |
+| BARD1 | [MaveDB, October 21, 2025](https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001250-a-1): all 50 scores identical. |
+| CTCF | [IGVF, November 18, 2025](https://data.igvf.org/tabular-files/IGVFFI6548CGAB/): all 50 scores identical; 31 variants had earlier scores in June. |
+| PALB2 | [IGVF, November 18, 2025](https://data.igvf.org/tabular-files/IGVFFI5011VHRR/): all 50 scores identical; replaces a citation to a different PALB2 assay. |
+| RAD51D | [IGVF, November 18, 2025](https://data.igvf.org/tabular-files/IGVFFI2272LOUM/): all 50 variants had scores, but all scores were subsequently revised. |
+| XRCC2 | [MaveDB, January 10, 2026](https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001264-a-1): all 50 scores identical; 46 variants had scores in IGVF in November. |
+| SFPQ | [IGVF, June 23, 2025](https://data.igvf.org/tabular-files/IGVFFI3125FMNW/): 3 selected variants had earlier scores. The [June 8, 2026 MaveDB release](https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001265-a-2) expands coverage to all 50. |
+
+The audit also corrected older study dates using preprints and a BAP1 archived
+dataset. Individual IGVF **file release dates** determine availability: a file
+can be uploaded privately months before release, or added after its parent
+dataset became public.
+
+```js
+display(html`<p><a href=${await FileAttachment("./introducing-vep-bench/assay-provenance-audit.json").url()}
+  download="assay-provenance-audit.json">Download the variant-level release audit (JSON)</a>.
+  It records pinned source hashes, matched variants, unchanged scores and missing variants.</p>`);
+```
 
 The bars are symmetric **95% Student's t confidence intervals**:
 mean ± t(0.975, n − 1) × s / √n, where s is the sample standard deviation of
@@ -546,16 +575,22 @@ The interval has exact 95% coverage at finite sample sizes when the gene scores
 are independent and identically normally distributed; it does not require a
 large-sample approximation under those assumptions. Normality is an approximation
 for these bounded correlation scores, so coverage here is approximate, especially
-with only 9 and 7 panels. The intervals estimate uncertainty in the mean across
+with only two later panels. The intervals estimate uncertainty in the mean across
 genes, rather than variability across repeated model runs. We do not clip their
 bounds to the correlation range. A group with fewer than two genes or no
 variation has no estimated interval. Overlap
 between the two intervals is not the significance test; the p-value below
 tests the before-cutoff advantage directly.
 
-The assay date is the earliest verified public date among indexed records linked
-from the benchmark's pinned provenance (PubMed or MaveDB). It is a proxy for
-public availability, not proof of when the model saw the data. For a cutoff
+The assay date records the earliest verified public scored-assay evidence
+covering the selected panel, including preprints, archived datasets and
+superseded releases. Earlier experimental scores qualify even if later revised;
+this comparison concerns prior assay evidence, not exact answer identity.
+For historical papers, study-level coverage is used and score identity across
+versions has not been established. A partial earlier release spanning the cutoff
+is **Mixed availability** and excluded from both means. These dates are evidence
+bounds, not demonstrated first indexing dates or proof of when a model saw data.
+For a cutoff
 specified only to the month, panels dated in that month are excluded because
 their ordering is unknown. An exact cutoff date includes that day in the
 “before” group. Missing or unmatched assay dates are also excluded.
@@ -575,7 +610,7 @@ with the statistic **mean Spearman before minus mean Spearman after**, a
 one-sided alternative (before greater than after), and exact enumeration.
 The gene panel is the independent unit. SciPy reassigns whole genes between the
 groups while keeping their sizes fixed; it counts allocations with a difference
-at least as large as observed. With 9 and 7 genes, all 11,440 allocations are
+at least as large as observed. With 13 and 2 genes, all 105 allocations are
 included. This does not require normally distributed scores.
 
 The test assumes independent genes whose scores are exchangeable between date
@@ -585,18 +620,20 @@ exploratory association. It cannot separate date from gene or assay differences.
 The reported p-values are **unadjusted and interpreted separately for each
 model**, with a per-model threshold of 0.05. A detected before-cutoff advantage
 would be consistent with source exposure, but would not prove overfitting.
-With only 16 panels, a nonsignificant result cannot rule out overfitting or
+With only two later panels, a nonsignificant result cannot rule out overfitting or
 establish equivalence. Groups with fewer than two genes are not tested.
 
-The refreshed highest-effort runs show no before-cutoff advantage at the
-per-model 0.05 threshold. For the new max-effort configurations, the one-sided
-p-values are 0.307 for Luna, 0.154 for Terra, and 0.560 for Sol.
+No model has a detected before-cutoff advantage at the per-model 0.05 threshold
+after this correction. The one-sided p-values are 0.781 for Luna, 0.695 for
+Terra, 0.429 for Sol, 0.781 for Astra, and 0.886 for Gemini.
+This small, uneven comparison provides little evidence about memorization;
+it should not be read as validation of a contamination-free evaluation.
 
 ```js
 if (cutoffAnalysis.summaries.length) display(Inputs.table(cutoffAnalysis.summaries, {
-  columns: ["model", "knowledge_cutoff", "before_n", "before_mean", "after_n", "after_mean", "difference", "p_value", "excluded_n"],
+  columns: ["model", "knowledge_cutoff", "before_n", "before_mean", "after_n", "after_mean", "difference", "p_value", "mixed_n", "unknown_n"],
   header: {model: "Model", knowledge_cutoff: "Cutoff", before_n: "Before n", before_mean: "Before ρ",
-    after_n: "After n", after_mean: "After ρ", difference: "Before − after", p_value: "One-sided p", excluded_n: "Excluded panels"},
+    after_n: "After n", after_mean: "After ρ", difference: "Before − after", p_value: "One-sided p", mixed_n: "Mixed n", unknown_n: "Unknown n"},
   format: {before_mean: correlation, after_mean: correlation, difference: correlation, p_value: pValue,
     knowledge_cutoff: (value, i) => html`<a href=${cutoffAnalysis.summaries[i].knowledge_cutoff_url}>${value}</a>`},
   select: false,
@@ -614,9 +651,10 @@ if (cutoffAnalysis.summaries.length) display(html`<p>
 ```js
 const cutoffPanels = cutoffAnalysis.scores;
 display(Inputs.table(cutoffPanels, {
-  columns: ["model", "gene", "assay_date", "relation", "spearman_rho", "valid"],
-  header: {model: "Model", gene: "Gene", assay_date: "Recorded public date", relation: "Group", spearman_rho: "Spearman ρ", valid: "Valid output"},
+  columns: ["model", "gene", "assay_date", "earlier_evidence_date", "relation", "spearman_rho", "valid", "assay_note"],
+  header: {model: "Model", gene: "Gene", assay_date: "Public assay evidence", earlier_evidence_date: "Earlier partial evidence", relation: "Group", spearman_rho: "Spearman ρ", valid: "Valid output", assay_note: "Evidence and version notes"},
   format: {spearman_rho: correlation,
+    earlier_evidence_date: (value, i) => value ? html`<a href=${cutoffPanels[i].earlier_evidence_url}>${value}</a>` : "—",
     assay_date: (value, i) => value ? html`<a href=${cutoffPanels[i].assay_url}>${value}</a>` : "Unknown"},
   select: false,
   rows: 16

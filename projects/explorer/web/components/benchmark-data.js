@@ -99,6 +99,18 @@ export function rankingOutcomeMetrics(outcome) {
 }
 
 export function assayCutoffRelation(assayFirstIndexed, knowledgeCutoff) {
+  const relation = dateCutoffRelation(assayFirstIndexed, knowledgeCutoff);
+  const earlier = assayFirstIndexed?.earlier_evidence;
+  if (!earlier || relation === "Before cutoff") return relation;
+  const earlierRelation = dateCutoffRelation(earlier, knowledgeCutoff);
+  if (relation === "After cutoff" && earlierRelation === "Before cutoff") {
+    return "Mixed availability";
+  }
+  // A cutoff-month or invalid earlier date cannot establish a wholly later panel.
+  return earlierRelation === "Unknown" ? "Unknown" : relation;
+}
+
+function dateCutoffRelation(assayFirstIndexed, knowledgeCutoff) {
   const assayDate = typeof assayFirstIndexed === "string"
     ? assayFirstIndexed
     : assayFirstIndexed?.date;

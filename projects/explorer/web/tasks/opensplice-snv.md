@@ -163,6 +163,7 @@ const controlsInput = Inputs.form({
     "All cutoff relations",
     "Before cutoff",
     "After cutoff",
+    "Mixed availability",
     "Unknown"
   ], {label: "Cutoff relation"})
 });
@@ -267,7 +268,7 @@ const questionTable = Inputs.table(visibleEntries, {
   header: {
     question_label: "Question",
     element: "Exon",
-    assay_first_indexed: "Assay first indexed",
+    assay_first_indexed: "Public assay evidence",
     cutoff_relation: "Cutoff relation",
     spearman_rho: "Spearman ρ",
     pearson_r: "Pearson r",

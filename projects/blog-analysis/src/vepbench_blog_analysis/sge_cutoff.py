@@ -2,6 +2,7 @@
 
 import argparse
 import copy
+import hashlib
 import json
 import math
 import runpy
@@ -150,6 +151,11 @@ def collect(
         check=True,
     )
     analysis = json.loads(collected.stdout)
+    analysis["assay_publications_sha256"] = hashlib.sha256(
+        settings.assay_publications.read_bytes()
+    ).hexdigest()
+    audit_path = settings.assets_dir / "blog/introducing-vep-bench/assay-provenance-audit.json"
+    analysis["assay_provenance_audit_sha256"] = hashlib.sha256(audit_path.read_bytes()).hexdigest()
     analysis["retrieved_at"] = datetime.now(UTC).isoformat()
     return analysis
 

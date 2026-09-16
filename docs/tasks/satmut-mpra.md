@@ -85,9 +85,10 @@ GRCh38 is used only for validation and genomic provenance, not as the
 display-orientation policy.
 [`tasks/satmut-mpra/config/source-pins.yaml`](../../tasks/satmut-mpra/config/source-pins.yaml)
 records the exact input identities; preparation rejects unpinned changes.
-The earliest indexed-public date verified from the pinned provenance is the
-source study's 2019-08-08 online publication; this shared date is attached to
-all 16 explorer rows.
+Explorer dates use the [source study's preprint](https://www.biorxiv.org/content/10.1101/505362v1),
+posted 2018-12-23, before the journal publication on 2019-08-08. This shared
+study-level evidence date applies to all 16 rows; it is not a claim that every
+later score export is byte-identical. See the [date policy](../assay-provenance.md).
 
 The ZRS reporter-construct sequence has `A` at its terminal position
 7:156791604, whereas the pinned GRCh38 primary assembly has `T`. The prompt

@@ -59,6 +59,7 @@ export function assayFirstIndexedLink(value) {
   const relationClass = {
     "Before cutoff": "before",
     "After cutoff": "after",
+    "Mixed availability": "unknown",
     Unknown: "unknown"
   }[relation];
   if (relationClass) link.className = `vepbench-assay-date vepbench-assay-date-${relationClass}`;
@@ -66,7 +67,18 @@ export function assayFirstIndexedLink(value) {
   const cutoff = typeof value.knowledge_cutoff === "string"
     ? `model cutoff ${formatKnowledgeCutoff(value.knowledge_cutoff)}`
     : "model cutoff not disclosed";
-  link.title = [value.registry, kind, relation, cutoff].filter(Boolean).join(" · ");
+  link.title = [value.registry, kind, relation, cutoff, value.note].filter(Boolean).join(" · ");
+  if (value.earlier_evidence) {
+    const span = document.createElement("span");
+    const earlier = document.createElement("a");
+    earlier.href = value.earlier_evidence.url;
+    earlier.rel = "noreferrer";
+    earlier.target = "_blank";
+    earlier.textContent = `earlier: ${formatDate(value.earlier_evidence.date)}`;
+    earlier.title = value.note;
+    span.append(link, document.createElement("br"), earlier);
+    return span;
+  }
   return link;
 }
 
@@ -75,6 +87,7 @@ export function cutoffRelationBadge(value) {
   const suffix = {
     "Before cutoff": "before",
     "After cutoff": "after",
+    "Mixed availability": "unknown",
     Unknown: "unknown"
   }[value] ?? "unknown";
   badge.className = `vepbench-cutoff-badge vepbench-cutoff-${suffix}`;
@@ -109,6 +122,7 @@ export function knowledgeCutoffNote(run) {
       ? ". Later months are green; earlier months are amber; dates in the cutoff month are gray and Unknown."
       : ". Green assay dates are after it; amber dates are on or before it."
   );
+  note.append(" Partial earlier releases spanning the cutoff are Mixed availability and excluded from the two date groups. Dates document public assay evidence, including earlier score versions; they do not prove training exposure or absence.");
   return note;
 }
 

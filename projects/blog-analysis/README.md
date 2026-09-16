@@ -16,6 +16,9 @@ For SGE, select the highest available effort per model before examining scores.
 The one-sided test targets a before-cutoff performance advantage. Gene and assay
 composition can confound that advantage, so it is an exploratory per-model test,
 not proof of training-data exposure. Its p-values are unadjusted.
+Date groups follow [reviewed public assay evidence](../../docs/assay-provenance.md),
+including superseded scores and partial releases. Mixed-availability panels
+are retained in the export and excluded from both group means and tests.
 
 The plotted 95% confidence intervals use SciPy's Student's t interval for the
 mean, with n − 1 degrees of freedom and the sample standard deviation divided
@@ -36,6 +39,9 @@ uv run --no-sync vepbench-blog-sge-cutoff \
 ```
 
 Use `--input /tmp/sge-cutoff-input.json` to replay the saved collection offline.
+This replays existing groups; after correcting dates, recollect with the current
+metadata to regenerate group membership. The saved snapshot pins the date
+configuration and variant audit by digest, so stale provenance fails CI.
 For a frozen local publication, pass `--publication ROOT --manifest FILE` when
 collecting. Download its compact outcome indexes with the post's
 `fetch-strata-inputs.py --outcomes`; their bytes are checked against the manifest

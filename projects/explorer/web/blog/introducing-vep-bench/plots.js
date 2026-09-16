@@ -73,7 +73,7 @@ export function cutoffFigure(summaries, width) {
     {row, relation: "After cutoff", score: row.after_mean, n: row.after_n, low: row.after_ci_low, high: row.after_ci_high}
   ]).filter((point) => point.n > 0);
   const labels = new Map(rows.map((row) => [row.run_id,
-    `${row.model}\nCutoff ${row.knowledge_cutoff} · n = ${row.before_n} / ${row.after_n}`]));
+    `${row.model}\nCutoff ${row.knowledge_cutoff}\nn = ${row.before_n} / ${row.after_n} · excluded ${row.excluded_n}`]));
   const detail = ({row, relation, score, n, low, high}) =>
     `${row.model}\n${relation}: ${score.toFixed(3)} Spearman ρ\n95% CI: ${low == null || high == null ? "not estimable" : `${low.toFixed(3)}–${high.toFixed(3)}`}\n${n} gene panels\nKnowledge cutoff: ${row.knowledge_cutoff}`;
   const plot = Plot.plot({
@@ -119,7 +119,7 @@ export function cutoffFigure(summaries, width) {
   const figure = document.createElement("div");
   figure.className = "card";
   const legend = document.createElement("p");
-  legend.textContent = "● Before cutoff    ◆ After cutoff · bars: 95% CI · n = before / after · p tests before > after · * p ≤ 0.05";
+  legend.textContent = "● Before cutoff    ◆ After cutoff · bars: 95% CI · n = before / after · mixed and unknown panels excluded · p tests before > after · * p ≤ 0.05";
   figure.append(legend, chart);
   return figure;
 }

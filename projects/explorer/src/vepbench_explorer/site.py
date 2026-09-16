@@ -14,12 +14,13 @@ from vepbench.errors import BuildError
 
 from .annotations import source_alleles, variants_for_record
 
-ASSAY_PUBLICATION_KINDS = {"assay_repository", "dataset", "paper"}
+ASSAY_PUBLICATION_KINDS = {"assay_repository", "dataset", "paper", "preprint"}
 ASSAY_PUBLICATION_FIELDS = {"date", "kind", "registry", "url"}
+ASSAY_PUBLICATION_OPTIONAL_FIELDS = {"earlier_evidence", "note"}
 
 
 def load_assay_publications(path: str | Path) -> dict[str, Any]:
-    """Load reviewed first-indexed dates for assay records shown by the explorer."""
+    """Load reviewed public assay evidence, including partial earlier releases."""
 
     source_path, raw = load_yaml_mapping(path, label="assay publication metadata")
     if set(raw) != {"schema_version", "by_task_family"} or raw["schema_version"] != "1.0":
@@ -143,10 +144,20 @@ def build_question_metadata(
     return result
 
 
-def _assay_publication(value: Any, location: str) -> dict[str, str]:
-    if not isinstance(value, dict) or set(value) != ASSAY_PUBLICATION_FIELDS:
-        raise BuildError(f"{location} must contain exactly {sorted(ASSAY_PUBLICATION_FIELDS)}")
-    if any(not isinstance(value[field], str) or not value[field] for field in value):
+def _assay_publication(value: Any, location: str) -> dict[str, Any]:
+    if (
+        not isinstance(value, dict)
+        or not set(value) >= ASSAY_PUBLICATION_FIELDS
+        or set(value) - ASSAY_PUBLICATION_FIELDS - ASSAY_PUBLICATION_OPTIONAL_FIELDS
+    ):
+        raise BuildError(
+            f"{location} must contain {sorted(ASSAY_PUBLICATION_FIELDS)} "
+            f"and only optional {sorted(ASSAY_PUBLICATION_OPTIONAL_FIELDS)}"
+        )
+    if any(
+        not isinstance(value[field], str) or not value[field]
+        for field in ASSAY_PUBLICATION_FIELDS | ({"note"} & set(value))
+    ):
         raise BuildError(f"{location} fields must be non-empty strings")
     try:
         parsed_date = date.fromisoformat(value["date"])
@@ -159,7 +170,22 @@ def _assay_publication(value: Any, location: str) -> dict[str, str]:
     parsed_url = urlparse(value["url"])
     if parsed_url.scheme != "https" or not parsed_url.netloc:
         raise BuildError(f"{location}.url must be an absolute HTTPS URL")
-    return {field: value[field] for field in sorted(ASSAY_PUBLICATION_FIELDS)}
+    result = {field: value[field] for field in sorted(ASSAY_PUBLICATION_FIELDS)}
+    if "note" in value:
+        result["note"] = value["note"]
+    if "earlier_evidence" in value:
+        earlier = value["earlier_evidence"]
+        if not isinstance(earlier, dict) or set(earlier) != ASSAY_PUBLICATION_FIELDS:
+            raise BuildError(
+                f"{location}.earlier_evidence must contain exactly "
+                f"{sorted(ASSAY_PUBLICATION_FIELDS)}"
+            )
+        result["earlier_evidence"] = _assay_publication(earlier, f"{location}.earlier_evidence")
+        if earlier["date"] >= value["date"]:
+            raise BuildError(f"{location}.earlier_evidence must precede the full-panel date")
+        if "note" not in value:
+            raise BuildError(f"{location} requires a note explaining partial earlier evidence")
+    return result
 
 
 def build_site(

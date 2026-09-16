@@ -55,6 +55,9 @@ export function sgeCutoffPerformance(models, questions, metadata, outcomeStates)
         gene: display?.element ?? question.provenance?.source_record_id,
         assay_date: display?.assay_first_indexed?.date ?? null,
         assay_url: display?.assay_first_indexed?.url ?? null,
+        earlier_evidence_date: display?.assay_first_indexed?.earlier_evidence?.date ?? null,
+        earlier_evidence_url: display?.assay_first_indexed?.earlier_evidence?.url ?? null,
+        assay_note: display?.assay_first_indexed?.note ?? null,
         relation: assayCutoffRelation(display?.assay_first_indexed, identity.knowledge_cutoff),
         spearman_rho: rankingOutcomeMetrics(outcome).spearman_rho,
         valid: outcome.valid
@@ -78,7 +81,9 @@ export function sgeCutoffPerformance(models, questions, metadata, outcomeStates)
       after_n: after.n,
       after_mean: after.mean,
       after_format_failures: after.format_failures,
-      excluded_n: records.filter((record) => record.relation === "Unknown").length,
+      mixed_n: group("Mixed availability").n,
+      unknown_n: group("Unknown").n,
+      excluded_n: records.length - before.n - after.n,
       difference: before.n && after.n ? before.mean - after.mean : null
     });
     scores.push(...records);

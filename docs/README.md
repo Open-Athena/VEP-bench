@@ -14,6 +14,8 @@ working on VEP-bench.
 - [Publishing](publishing.md): building, validating, and publishing a static
   benchmark version.
 - [Task construction](task-construction.md): shared allele and sampling protocol.
+- [Assay provenance](assay-provenance.md): public evidence dates, release revisions,
+  and the September 2026 correction to the cutoff comparison.
 - [Task catalog](tasks/README.md): task documentation conventions and the list
   of implemented benchmark tasks.
 
