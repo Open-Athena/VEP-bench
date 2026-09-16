@@ -136,7 +136,7 @@ jobs:
           enable-cache: true
 
       - name: Install optional blog analysis tests
-        run: uv sync --locked --package vepbench-blog-analysis --group test
+        run: uv sync --locked --all-packages --extra alphagenome --group test
 
       - name: Test and reproduce the saved statistics offline
         run: |
@@ -147,10 +147,15 @@ jobs:
           cmp projects/explorer/web/blog/introducing-vep-bench/cutoff-analysis.json \
             /tmp/sge-cutoff-replay.json
           uv run --no-sync vepbench-blog-strata-intervals \
-            --input projects/explorer/web/blog/introducing-vep-bench/strata-2026-09-12.json.gz \
+            --input projects/explorer/web/blog/introducing-vep-bench/strata-2026-09-15.json.gz \
             --output /tmp/strata-intervals-replay.json
-          cmp projects/explorer/web/blog/introducing-vep-bench/strata-2026-09-12.intervals.json \
+          cmp projects/explorer/web/blog/introducing-vep-bench/strata-2026-09-15.intervals.json \
             /tmp/strata-intervals-replay.json
+          uv run --no-sync python -m vepbench_blog_analysis.specialist_intervals \
+            --input projects/explorer/web/blog/introducing-vep-bench/specialist-comparison.json.gz \
+            --output /tmp/specialist-intervals-replay.json
+          cmp projects/explorer/web/blog/introducing-vep-bench/specialist-intervals.json \
+            /tmp/specialist-intervals-replay.json
 
   deploy:
     name: Deploy

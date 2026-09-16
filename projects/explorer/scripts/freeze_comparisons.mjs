@@ -1,10 +1,12 @@
 // Offline extraction from downloaded public source files. Never runs evaluations.
 // Usage: node projects/explorer/scripts/freeze_comparisons.mjs SOURCE_DIRECTORY
 // Replay the committed analysis: node projects/explorer/scripts/freeze_comparisons.mjs --replay
+// Refresh only VEP: --refresh-vep MANIFEST RUNS YYYY-MM-DD (retains external evidence)
 import {createHash} from "node:crypto";
 import {mkdirSync, readFileSync, statSync, writeFileSync} from "node:fs";
 import {resolve} from "node:path";
 import {compareScores, pairedScoresCsv} from "../web/blog/introducing-vep-bench/comparisons.js";
+import {refreshVepSnapshot} from "./refresh_vep_snapshot.mjs";
 
 if (!process.argv[2]) throw new Error("Expected a source directory or --replay");
 const input = resolve(process.argv[2]);
@@ -17,6 +19,18 @@ const write = (file, value) => writeFileSync(new URL(file, output), JSON.stringi
 if (process.argv[2] === "--replay") {
   exportAnalysis(JSON.parse(readFileSync(new URL("vep-runs.json", output))),
     JSON.parse(readFileSync(new URL("external.json", output))));
+  process.exit(0);
+}
+if (process.argv[2] === "--refresh-vep") {
+  const [manifestPath, runsPath, date] = process.argv.slice(3);
+  const runsBytes = readFileSync(runsPath);
+  const external = refreshVepSnapshot(
+    JSON.parse(readFileSync(new URL("external.json", output))),
+    readFileSync(manifestPath), runsBytes, date
+  );
+  writeFileSync(new URL("vep-runs.json", output), runsBytes);
+  write("external.json", external);
+  exportAnalysis(JSON.parse(runsBytes), external);
   process.exit(0);
 }
 const sources = [], results = [], comparisons = [];

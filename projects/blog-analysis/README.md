@@ -5,6 +5,13 @@ blog. It requires Node.js for the explorer's run selection and date grouping;
 SciPy performs the statistical test and estimates confidence intervals. Website
 builds consume the exported JSON without installing this package.
 
+The optional `alphagenome` extra also supports the introduction post's
+[AlphaGenome/AVI comparison](../explorer/web/blog/introducing-vep-bench/specialist-methods.md).
+`vepbench-blog-specialists` freezes allele eligibility, caches explicit live
+inference and Atlas lookups, and rescores saved answers on the same variants.
+Its tests use offline transports. Model calls require `ALPHAGENOME_API_KEY` in
+the evaluation process and are never made by website builds or CI.
+
 For SGE, select the highest available effort per model before examining scores.
 The one-sided test targets a before-cutoff performance advantage. Gene and assay
 composition can confound that advantage, so it is an exploratory per-model test,
@@ -29,8 +36,23 @@ uv run --no-sync vepbench-blog-sge-cutoff \
 ```
 
 Use `--input /tmp/sge-cutoff-input.json` to replay the saved collection offline.
+For a frozen local publication, pass `--publication ROOT --manifest FILE` when
+collecting. Download its compact outcome indexes with the post's
+`fetch-strata-inputs.py --outcomes`; their bytes are checked against the manifest
+before analysis. All performance figures in the introduction use
+`specialist-2026-09-15.manifest.json`.
+
+Refresh external comparisons against that same publication while retaining
+the external measurements and retrieval dates:
+
+```bash
+node projects/explorer/scripts/freeze_comparisons.mjs --refresh-vep \
+  projects/explorer/web/blog/introducing-vep-bench/specialist-2026-09-15.manifest.json \
+  ROOT/versions/main/runs.json 2026-09-15
+```
+
 The export records library versions and data provenance. Run the package's
-offline tests with `uv run --locked --all-packages --group test pytest
+offline tests with `uv run --locked --all-packages --extra alphagenome --group test pytest
 projects/blog-analysis/tests`.
 
 For the variant-stratum figures, generate pointwise intervals directly from the

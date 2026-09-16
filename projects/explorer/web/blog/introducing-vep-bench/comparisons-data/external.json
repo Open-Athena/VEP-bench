@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "snapshot_date": "2026-09-12",
+  "snapshot_date": "2026-09-15",
   "aa_intelligence_index_version": "4.3",
   "rules": [
     "Choose benchmarks for biological relevance, agentic execution, attributable public results and overlap before computing associations.",
@@ -16,15 +16,15 @@
     {
       "id": "vep",
       "url": "https://huggingface.co/buckets/open-athena/VEP-bench/resolve/versions/main/manifest.json",
-      "retrieved_at": "2026-09-12T14:52:19.538Z",
-      "downloaded_sha256": "8f32cc23b70c79799470faf5a053b5d659ffa9cec5d1a62db7cbe26d5ddd7987",
-      "locator": "Validated local publication candidate; URL identifies the intended publication destination",
+      "retrieved_at": "2026-09-15",
+      "downloaded_sha256": "0dfd0a545c77d8393ed89a8ae899aa8f1356a2dfd3feb06e9a550a0babc7c562",
+      "locator": "Public publication verified against the post's frozen manifest",
       "evidence": {
         "runs": {
-          "artifact_bytes": 92781,
-          "artifact_sha256": "293d208b7c6e112007332eadb7f4f49e009f13c1df4c1e453ad88fef5b7494eb",
-          "content_bytes": 92781,
-          "content_sha256": "293d208b7c6e112007332eadb7f4f49e009f13c1df4c1e453ad88fef5b7494eb",
+          "artifact_bytes": 93027,
+          "artifact_sha256": "6d514ed517275344db729b16fb59a5221c51248d1dd98d2388103b83c325240a",
+          "content_bytes": 93027,
+          "content_sha256": "6d514ed517275344db729b16fb59a5221c51248d1dd98d2388103b83c325240a",
           "path": "versions/main/runs.json",
           "records": 54
         },

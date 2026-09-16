@@ -1,4 +1,4 @@
-# Reproducing the 12 September 2026 variant-stratum snapshot
+# Reproducing the 15 September 2026 variant-stratum snapshot
 
 The analysis uses the original question panels and saved OpenRouter completions.
 It does not make model calls. The 10-variant and 5-panel cutoffs were selected
@@ -25,13 +25,11 @@ Lower-effort runs remain in the
 publication and are listed as excluded from this analysis. Selection never uses
 performance, cost, or response length.
 
-Refresh, 12 September 2026: the same coverage cutoffs and panel memberships now
-include the three new max-effort configurations and the published DeepSeek
-results with selective token-limit retries. Luna's MPRA and Terra's OpenSplice
-each include one documented API-failure retry; completed invalid answers keep
-their zero scores. The snapshot records the expanded publication and recomputed
-scores and intervals. Model ordering uses the selected run identities, so
-the leaderboard's retry labels do not change which models appear in the figures.
+The post uses one public LLM snapshot frozen on 15 September 2026, including
+the recovered maximum-effort runs described in the
+[publication note](specialist-methods.html#publication-snapshot). The coverage
+cutoffs and panel memberships are unchanged. Completed invalid answers keep
+their zero scores.
 
 Each selected configuration is compared with the other selected configurations on the
 same variants within each eligible panel of a task/stratum. If a required answer
@@ -49,19 +47,19 @@ Use the repository's `uv` environment. From the repository root:
 post=projects/explorer/web/blog/introducing-vep-bench
 mkdir -p .vepbench/strata-replay
 uv run --locked python "$post/fetch-strata-inputs.py" \
-  --manifest "$post/strata-2026-09-12.manifest.json" \
+  --manifest "$post/specialist-2026-09-15.manifest.json" \
   --output .vepbench/strata-replay
 uv run --locked python "$post/strata.py" coverage \
   --publication .vepbench/strata-replay \
-  --manifest "$post/strata-2026-09-12.manifest.json" \
+  --manifest "$post/specialist-2026-09-15.manifest.json" \
   --annotations projects/explorer/data/variant-annotations.json \
   --plan .vepbench/strata-replay-plan.json
 uv run --locked python "$post/fetch-strata-inputs.py" \
-  --manifest "$post/strata-2026-09-12.manifest.json" \
+  --manifest "$post/specialist-2026-09-15.manifest.json" \
   --output .vepbench/strata-replay --answers
 uv run --locked python "$post/strata.py" score \
   --publication .vepbench/strata-replay \
-  --manifest "$post/strata-2026-09-12.manifest.json" \
+  --manifest "$post/specialist-2026-09-15.manifest.json" \
   --annotations projects/explorer/data/variant-annotations.json \
   --plan .vepbench/strata-replay-plan.json \
   --output .vepbench/strata-replayed.json.gz
@@ -77,26 +75,20 @@ the analysis/scorer hashes and color mapping; a regression check detects changes
 to its shared plotting source. Later rendering changes need an explicit dated
 correction or a separate snapshot, as required by issue #79.
 
-Rendering revision, 11 September 2026: the draft now groups all three tasks into
-two figures, one for allele type and one for consequence, with independently
-scaled signed Spearman axes for each task and aligned category rows. Model order
-uses the main leaderboard's task macro-average Spearman ranking for the selected
-configurations, computed by the same leaderboard helper from the saved publication.
-The regenerated snapshot retains that publication's verified run summaries and
-pins the revised plot source; scores, cutoffs, model selection, and panel
-memberships are unchanged.
+Model order uses the main leaderboard's task macro-average Spearman ranking for
+the selected configurations, computed by the same helper from the frozen
+publication. Each task has its own signed Spearman axis.
 
 ## Confidence intervals
 
-Uncertainty revision, 11 September 2026: both figures now show pointwise 95%
-Student's t intervals for the unweighted mean of the eligible panel Spearman
-scores. The interval is mean ± t(0.975, n − 1) × s / √n, with sample standard
-deviation s. [SciPy's t distribution](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.t.html)
+Both figures show pointwise 95% Student's t intervals for the unweighted mean of
+the eligible panel Spearman scores. The interval is mean ± t(0.975, n − 1) × s / √n,
+with sample standard deviation s.
+[SciPy's t distribution](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.t.html)
 provides the critical value. Invalid full-panel answers retain their zero
-scores, and all models retain the same panels within a stratum. Scores and
-coverage cutoffs are unchanged. Independent task axes include the full interval
-bounds, without clipping to the correlation range. Constant scores or fewer
-than two panels leave the interval unestimated rather than implying certainty.
+scores, and all models retain the same panels within a stratum. Axes include
+the full interval bounds, without clipping to the correlation range. Constant
+scores or fewer than two panels leave the interval unestimated.
 
 The sampling unit is an original gene panel for SGE and OpenSplice and an
 original regulatory-element panel for satMutMPRA. SGE uses one panel per gene;
@@ -118,7 +110,7 @@ installing SciPy. Reproduce it offline after the scoring step:
 
 ```bash
 uv run --locked --all-packages vepbench-blog-strata-intervals \
-  --input projects/explorer/web/blog/introducing-vep-bench/strata-2026-09-12.json.gz \
+  --input projects/explorer/web/blog/introducing-vep-bench/strata-2026-09-15.json.gz \
   --output .vepbench/strata-intervals-replayed.json
 ```
 
@@ -139,5 +131,6 @@ match from an ID or flip the specialist score direction. Support is intersected
 with each stratum before either cutoff, and that identical subset is used for
 the specialist and every LLM. The analysis reports unsupported candidate IDs,
 lost panels, and groups that no longer qualify. Run separate comparisons for
-specialists with different support. No specialist score file is yet available
-for this snapshot; acquiring it is tracked in issue #78.
+specialists with different support. The post’s [AlphaGenome/AVI comparison](specialist-methods.html) uses the same
+publication with its own complete-panel eligibility rules. These stratum figures
+remain LLM-only; they do not apply variant-class cutoffs to the specialist scores.

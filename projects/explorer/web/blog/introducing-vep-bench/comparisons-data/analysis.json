@@ -1,5 +1,5 @@
 {
-  "snapshot_date": "2026-09-12",
+  "snapshot_date": "2026-09-15",
   "primary": [
     {
       "id": "aa-intelligence",
@@ -178,13 +178,13 @@
           "label": "GPT 5.6 Luna",
           "external_model": "GPT-5.6 Luna (max)",
           "external_score": 37.5048489690841,
-          "vep_score": 0.4457585492793694,
+          "vep_score": 0.44516315482627644,
           "external_result_id": "aa-gpt-5-6-luna",
           "source_id": "aa-gpt-5-6-luna",
           "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
-            "gpt-5.6-luna-max-opensplice_snv-20260911",
-            "gpt-5.6-luna-max-satmut_mpra-20260911",
+            "gpt-5.6-luna-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-luna-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-luna-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -278,13 +278,13 @@
           "label": "GPT 5.6 Sol",
           "external_model": "GPT-5.6 Sol (max)",
           "external_score": 47.0613568915036,
-          "vep_score": 0.552434925383204,
+          "vep_score": 0.5578794938472712,
           "external_result_id": "aa-gpt-5-6-sol",
           "source_id": "aa-gpt-5-6-sol",
           "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
-            "gpt-5.6-sol-max-opensplice_snv-20260911",
-            "gpt-5.6-sol-max-satmut_mpra-20260911",
+            "gpt-5.6-sol-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-sol-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-sol-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -303,13 +303,13 @@
           "label": "GPT 5.6 Terra",
           "external_model": "GPT-5.6 Terra (max)",
           "external_score": 42.2514998239494,
-          "vep_score": 0.45469586790654115,
+          "vep_score": 0.46185443746664223,
           "external_result_id": "aa-gpt-5-6-terra",
           "source_id": "aa-gpt-5-6-terra",
           "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
-            "gpt-5.6-terra-max-opensplice_snv-20260911",
-            "gpt-5.6-terra-max-satmut_mpra-20260911",
+            "gpt-5.6-terra-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-terra-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-terra-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -590,13 +590,13 @@
           "label": "GPT 5.6 Luna",
           "external_model": "GPT-5.6 Luna (max)",
           "external_score": 1339.38,
-          "vep_score": 0.4457585492793694,
+          "vep_score": 0.44516315482627644,
           "external_result_id": "aa-gpt-5-6-luna",
           "source_id": "aa-gpt-5-6-luna",
           "harness": "Stirrup",
           "run_ids": [
-            "gpt-5.6-luna-max-opensplice_snv-20260911",
-            "gpt-5.6-luna-max-satmut_mpra-20260911",
+            "gpt-5.6-luna-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-luna-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-luna-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -690,13 +690,13 @@
           "label": "GPT 5.6 Sol",
           "external_model": "GPT-5.6 Sol (max)",
           "external_score": 1475,
-          "vep_score": 0.552434925383204,
+          "vep_score": 0.5578794938472712,
           "external_result_id": "aa-gpt-5-6-sol",
           "source_id": "aa-gpt-5-6-sol",
           "harness": "Stirrup",
           "run_ids": [
-            "gpt-5.6-sol-max-opensplice_snv-20260911",
-            "gpt-5.6-sol-max-satmut_mpra-20260911",
+            "gpt-5.6-sol-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-sol-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-sol-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -715,13 +715,13 @@
           "label": "GPT 5.6 Terra",
           "external_model": "GPT-5.6 Terra (max)",
           "external_score": 1330,
-          "vep_score": 0.45469586790654115,
+          "vep_score": 0.46185443746664223,
           "external_result_id": "aa-gpt-5-6-terra",
           "source_id": "aa-gpt-5-6-terra",
           "harness": "Stirrup",
           "run_ids": [
-            "gpt-5.6-terra-max-opensplice_snv-20260911",
-            "gpt-5.6-terra-max-satmut_mpra-20260911",
+            "gpt-5.6-terra-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-terra-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-terra-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -1002,13 +1002,13 @@
           "label": "GPT 5.6 Luna",
           "external_model": "GPT-5.6 Luna (max)",
           "external_score": 1489.33,
-          "vep_score": 0.4457585492793694,
+          "vep_score": 0.44516315482627644,
           "external_result_id": "aa-gpt-5-6-luna",
           "source_id": "aa-gpt-5-6-luna",
           "harness": "Stirrup",
           "run_ids": [
-            "gpt-5.6-luna-max-opensplice_snv-20260911",
-            "gpt-5.6-luna-max-satmut_mpra-20260911",
+            "gpt-5.6-luna-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-luna-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-luna-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -1102,13 +1102,13 @@
           "label": "GPT 5.6 Sol",
           "external_model": "GPT-5.6 Sol (max)",
           "external_score": 1624.11,
-          "vep_score": 0.552434925383204,
+          "vep_score": 0.5578794938472712,
           "external_result_id": "aa-gpt-5-6-sol",
           "source_id": "aa-gpt-5-6-sol",
           "harness": "Stirrup",
           "run_ids": [
-            "gpt-5.6-sol-max-opensplice_snv-20260911",
-            "gpt-5.6-sol-max-satmut_mpra-20260911",
+            "gpt-5.6-sol-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-sol-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-sol-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -1127,13 +1127,13 @@
           "label": "GPT 5.6 Terra",
           "external_model": "GPT-5.6 Terra (max)",
           "external_score": 1476.96,
-          "vep_score": 0.45469586790654115,
+          "vep_score": 0.46185443746664223,
           "external_result_id": "aa-gpt-5-6-terra",
           "source_id": "aa-gpt-5-6-terra",
           "harness": "Stirrup",
           "run_ids": [
-            "gpt-5.6-terra-max-opensplice_snv-20260911",
-            "gpt-5.6-terra-max-satmut_mpra-20260911",
+            "gpt-5.6-terra-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-terra-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-terra-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -1414,13 +1414,13 @@
           "label": "GPT 5.6 Luna",
           "external_model": "GPT-5.6 Luna (max)",
           "external_score": 0.5020861763756194,
-          "vep_score": 0.4457585492793694,
+          "vep_score": 0.44516315482627644,
           "external_result_id": "aa-gpt-5-6-luna",
           "source_id": "aa-gpt-5-6-luna",
           "harness": "AutomationBench multi-turn environment, dataset 1.0.6",
           "run_ids": [
-            "gpt-5.6-luna-max-opensplice_snv-20260911",
-            "gpt-5.6-luna-max-satmut_mpra-20260911",
+            "gpt-5.6-luna-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-luna-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-luna-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -1514,13 +1514,13 @@
           "label": "GPT 5.6 Sol",
           "external_model": "GPT-5.6 Sol (max)",
           "external_score": 0.6008114996276329,
-          "vep_score": 0.552434925383204,
+          "vep_score": 0.5578794938472712,
           "external_result_id": "aa-gpt-5-6-sol",
           "source_id": "aa-gpt-5-6-sol",
           "harness": "AutomationBench multi-turn environment, dataset 1.0.6",
           "run_ids": [
-            "gpt-5.6-sol-max-opensplice_snv-20260911",
-            "gpt-5.6-sol-max-satmut_mpra-20260911",
+            "gpt-5.6-sol-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-sol-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-sol-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -1539,13 +1539,13 @@
           "label": "GPT 5.6 Terra",
           "external_model": "GPT-5.6 Terra (max)",
           "external_score": 0.5964995802534495,
-          "vep_score": 0.45469586790654115,
+          "vep_score": 0.46185443746664223,
           "external_result_id": "aa-gpt-5-6-terra",
           "source_id": "aa-gpt-5-6-terra",
           "harness": "AutomationBench multi-turn environment, dataset 1.0.6",
           "run_ids": [
-            "gpt-5.6-terra-max-opensplice_snv-20260911",
-            "gpt-5.6-terra-max-satmut_mpra-20260911",
+            "gpt-5.6-terra-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-terra-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-terra-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -1826,13 +1826,13 @@
           "label": "GPT 5.6 Luna",
           "external_model": "GPT-5.6 Luna (max)",
           "external_score": 0.116161616161616,
-          "vep_score": 0.4457585492793694,
+          "vep_score": 0.44516315482627644,
           "external_result_id": "aa-gpt-5-6-luna",
           "source_id": "aa-gpt-5-6-luna",
           "harness": "mini-SWE-agent v2.4.6",
           "run_ids": [
-            "gpt-5.6-luna-max-opensplice_snv-20260911",
-            "gpt-5.6-luna-max-satmut_mpra-20260911",
+            "gpt-5.6-luna-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-luna-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-luna-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -1926,13 +1926,13 @@
           "label": "GPT 5.6 Sol",
           "external_model": "GPT-5.6 Sol (max)",
           "external_score": 0.398989898989899,
-          "vep_score": 0.552434925383204,
+          "vep_score": 0.5578794938472712,
           "external_result_id": "aa-gpt-5-6-sol",
           "source_id": "aa-gpt-5-6-sol",
           "harness": "mini-SWE-agent v2.4.6",
           "run_ids": [
-            "gpt-5.6-sol-max-opensplice_snv-20260911",
-            "gpt-5.6-sol-max-satmut_mpra-20260911",
+            "gpt-5.6-sol-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-sol-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-sol-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -1951,13 +1951,13 @@
           "label": "GPT 5.6 Terra",
           "external_model": "GPT-5.6 Terra (max)",
           "external_score": 0.353535353535354,
-          "vep_score": 0.45469586790654115,
+          "vep_score": 0.46185443746664223,
           "external_result_id": "aa-gpt-5-6-terra",
           "source_id": "aa-gpt-5-6-terra",
           "harness": "mini-SWE-agent v2.4.6",
           "run_ids": [
-            "gpt-5.6-terra-max-opensplice_snv-20260911",
-            "gpt-5.6-terra-max-satmut_mpra-20260911",
+            "gpt-5.6-terra-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-terra-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-terra-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -2238,13 +2238,13 @@
           "label": "GPT 5.6 Luna",
           "external_model": "GPT-5.6 Luna (max)",
           "external_score": 0.53587962962963,
-          "vep_score": 0.4457585492793694,
+          "vep_score": 0.44516315482627644,
           "external_result_id": "aa-gpt-5-6-luna",
           "source_id": "aa-gpt-5-6-luna",
           "harness": "AA scientist-background prompting; SciCode dataset 1.0.1",
           "run_ids": [
-            "gpt-5.6-luna-max-opensplice_snv-20260911",
-            "gpt-5.6-luna-max-satmut_mpra-20260911",
+            "gpt-5.6-luna-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-luna-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-luna-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -2338,13 +2338,13 @@
           "label": "GPT 5.6 Sol",
           "external_model": "GPT-5.6 Sol (max)",
           "external_score": 0.570601851851852,
-          "vep_score": 0.552434925383204,
+          "vep_score": 0.5578794938472712,
           "external_result_id": "aa-gpt-5-6-sol",
           "source_id": "aa-gpt-5-6-sol",
           "harness": "AA scientist-background prompting; SciCode dataset 1.0.1",
           "run_ids": [
-            "gpt-5.6-sol-max-opensplice_snv-20260911",
-            "gpt-5.6-sol-max-satmut_mpra-20260911",
+            "gpt-5.6-sol-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-sol-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-sol-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -2363,13 +2363,13 @@
           "label": "GPT 5.6 Terra",
           "external_model": "GPT-5.6 Terra (max)",
           "external_score": 0.549768518518518,
-          "vep_score": 0.45469586790654115,
+          "vep_score": 0.46185443746664223,
           "external_result_id": "aa-gpt-5-6-terra",
           "source_id": "aa-gpt-5-6-terra",
           "harness": "AA scientist-background prompting; SciCode dataset 1.0.1",
           "run_ids": [
-            "gpt-5.6-terra-max-opensplice_snv-20260911",
-            "gpt-5.6-terra-max-satmut_mpra-20260911",
+            "gpt-5.6-terra-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-terra-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-terra-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -2650,13 +2650,13 @@
           "label": "GPT 5.6 Luna",
           "external_model": "GPT-5.6 Luna (max)",
           "external_score": -10.2833333333333,
-          "vep_score": 0.4457585492793694,
+          "vep_score": 0.44516315482627644,
           "external_result_id": "aa-gpt-5-6-luna",
           "source_id": "aa-gpt-5-6-luna",
           "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
-            "gpt-5.6-luna-max-opensplice_snv-20260911",
-            "gpt-5.6-luna-max-satmut_mpra-20260911",
+            "gpt-5.6-luna-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-luna-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-luna-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -2750,13 +2750,13 @@
           "label": "GPT 5.6 Sol",
           "external_model": "GPT-5.6 Sol (max)",
           "external_score": 21.9666666666667,
-          "vep_score": 0.552434925383204,
+          "vep_score": 0.5578794938472712,
           "external_result_id": "aa-gpt-5-6-sol",
           "source_id": "aa-gpt-5-6-sol",
           "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
-            "gpt-5.6-sol-max-opensplice_snv-20260911",
-            "gpt-5.6-sol-max-satmut_mpra-20260911",
+            "gpt-5.6-sol-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-sol-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-sol-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -2775,13 +2775,13 @@
           "label": "GPT 5.6 Terra",
           "external_model": "GPT-5.6 Terra (max)",
           "external_score": 0.05,
-          "vep_score": 0.45469586790654115,
+          "vep_score": 0.46185443746664223,
           "external_result_id": "aa-gpt-5-6-terra",
           "source_id": "aa-gpt-5-6-terra",
           "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
-            "gpt-5.6-terra-max-opensplice_snv-20260911",
-            "gpt-5.6-terra-max-satmut_mpra-20260911",
+            "gpt-5.6-terra-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-terra-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-terra-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -3062,13 +3062,13 @@
           "label": "GPT 5.6 Luna",
           "external_model": "GPT-5.6 Luna (max)",
           "external_score": 0.24,
-          "vep_score": 0.4457585492793694,
+          "vep_score": 0.44516315482627644,
           "external_result_id": "aa-gpt-5-6-luna",
           "source_id": "aa-gpt-5-6-luna",
           "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
-            "gpt-5.6-luna-max-opensplice_snv-20260911",
-            "gpt-5.6-luna-max-satmut_mpra-20260911",
+            "gpt-5.6-luna-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-luna-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-luna-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -3162,13 +3162,13 @@
           "label": "GPT 5.6 Sol",
           "external_model": "GPT-5.6 Sol (max)",
           "external_score": 0.272,
-          "vep_score": 0.552434925383204,
+          "vep_score": 0.5578794938472712,
           "external_result_id": "aa-gpt-5-6-sol",
           "source_id": "aa-gpt-5-6-sol",
           "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
-            "gpt-5.6-sol-max-opensplice_snv-20260911",
-            "gpt-5.6-sol-max-satmut_mpra-20260911",
+            "gpt-5.6-sol-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-sol-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-sol-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -3187,13 +3187,13 @@
           "label": "GPT 5.6 Terra",
           "external_model": "GPT-5.6 Terra (max)",
           "external_score": 0.24,
-          "vep_score": 0.45469586790654115,
+          "vep_score": 0.46185443746664223,
           "external_result_id": "aa-gpt-5-6-terra",
           "source_id": "aa-gpt-5-6-terra",
           "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
-            "gpt-5.6-terra-max-opensplice_snv-20260911",
-            "gpt-5.6-terra-max-satmut_mpra-20260911",
+            "gpt-5.6-terra-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-terra-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-terra-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -3474,13 +3474,13 @@
           "label": "GPT 5.6 Luna",
           "external_model": "GPT-5.6 Luna (max)",
           "external_score": 0.836666666666667,
-          "vep_score": 0.4457585492793694,
+          "vep_score": 0.44516315482627644,
           "external_result_id": "aa-gpt-5-6-luna",
           "source_id": "aa-gpt-5-6-luna",
           "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
-            "gpt-5.6-luna-max-opensplice_snv-20260911",
-            "gpt-5.6-luna-max-satmut_mpra-20260911",
+            "gpt-5.6-luna-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-luna-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-luna-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -3574,13 +3574,13 @@
           "label": "GPT 5.6 Sol",
           "external_model": "GPT-5.6 Sol (max)",
           "external_score": 0.84,
-          "vep_score": 0.552434925383204,
+          "vep_score": 0.5578794938472712,
           "external_result_id": "aa-gpt-5-6-sol",
           "source_id": "aa-gpt-5-6-sol",
           "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
-            "gpt-5.6-sol-max-opensplice_snv-20260911",
-            "gpt-5.6-sol-max-satmut_mpra-20260911",
+            "gpt-5.6-sol-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-sol-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-sol-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -3599,13 +3599,13 @@
           "label": "GPT 5.6 Terra",
           "external_model": "GPT-5.6 Terra (max)",
           "external_score": 0.83,
-          "vep_score": 0.45469586790654115,
+          "vep_score": 0.46185443746664223,
           "external_result_id": "aa-gpt-5-6-terra",
           "source_id": "aa-gpt-5-6-terra",
           "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
-            "gpt-5.6-terra-max-opensplice_snv-20260911",
-            "gpt-5.6-terra-max-satmut_mpra-20260911",
+            "gpt-5.6-terra-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-terra-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-terra-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -3886,13 +3886,13 @@
           "label": "GPT 5.6 Luna",
           "external_model": "GPT-5.6 Luna (max)",
           "external_score": 0.394810009267841,
-          "vep_score": 0.4457585492793694,
+          "vep_score": 0.44516315482627644,
           "external_result_id": "aa-gpt-5-6-luna",
           "source_id": "aa-gpt-5-6-luna",
           "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
-            "gpt-5.6-luna-max-opensplice_snv-20260911",
-            "gpt-5.6-luna-max-satmut_mpra-20260911",
+            "gpt-5.6-luna-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-luna-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-luna-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -3986,13 +3986,13 @@
           "label": "GPT 5.6 Sol",
           "external_model": "GPT-5.6 Sol (max)",
           "external_score": 0.494902687673772,
-          "vep_score": 0.552434925383204,
+          "vep_score": 0.5578794938472712,
           "external_result_id": "aa-gpt-5-6-sol",
           "source_id": "aa-gpt-5-6-sol",
           "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
-            "gpt-5.6-sol-max-opensplice_snv-20260911",
-            "gpt-5.6-sol-max-satmut_mpra-20260911",
+            "gpt-5.6-sol-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-sol-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-sol-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -4011,13 +4011,13 @@
           "label": "GPT 5.6 Terra",
           "external_model": "GPT-5.6 Terra (max)",
           "external_score": 0.429101019462465,
-          "vep_score": 0.45469586790654115,
+          "vep_score": 0.46185443746664223,
           "external_result_id": "aa-gpt-5-6-terra",
           "source_id": "aa-gpt-5-6-terra",
           "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
           "run_ids": [
-            "gpt-5.6-terra-max-opensplice_snv-20260911",
-            "gpt-5.6-terra-max-satmut_mpra-20260911",
+            "gpt-5.6-terra-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-terra-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-terra-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -4298,13 +4298,13 @@
           "label": "GPT 5.6 Luna",
           "external_model": "GPT-5.6 Luna (max)",
           "external_score": 0.205714285714286,
-          "vep_score": 0.4457585492793694,
+          "vep_score": 0.44516315482627644,
           "external_result_id": "aa-gpt-5-6-luna",
           "source_id": "aa-gpt-5-6-luna",
           "harness": "AA two-step reasoning/formatting; official CritPt grader",
           "run_ids": [
-            "gpt-5.6-luna-max-opensplice_snv-20260911",
-            "gpt-5.6-luna-max-satmut_mpra-20260911",
+            "gpt-5.6-luna-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-luna-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-luna-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -4398,13 +4398,13 @@
           "label": "GPT 5.6 Sol",
           "external_model": "GPT-5.6 Sol (max)",
           "external_score": 0.322857142857143,
-          "vep_score": 0.552434925383204,
+          "vep_score": 0.5578794938472712,
           "external_result_id": "aa-gpt-5-6-sol",
           "source_id": "aa-gpt-5-6-sol",
           "harness": "AA two-step reasoning/formatting; official CritPt grader",
           "run_ids": [
-            "gpt-5.6-sol-max-opensplice_snv-20260911",
-            "gpt-5.6-sol-max-satmut_mpra-20260911",
+            "gpt-5.6-sol-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-sol-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-sol-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -4423,13 +4423,13 @@
           "label": "GPT 5.6 Terra",
           "external_model": "GPT-5.6 Terra (max)",
           "external_score": 0.3,
-          "vep_score": 0.45469586790654115,
+          "vep_score": 0.46185443746664223,
           "external_result_id": "aa-gpt-5-6-terra",
           "source_id": "aa-gpt-5-6-terra",
           "harness": "AA two-step reasoning/formatting; official CritPt grader",
           "run_ids": [
-            "gpt-5.6-terra-max-opensplice_snv-20260911",
-            "gpt-5.6-terra-max-satmut_mpra-20260911",
+            "gpt-5.6-terra-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-terra-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-terra-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -4590,13 +4590,13 @@
           "label": "GPT 5.6 Luna",
           "external_model": "GPT-5.6 Luna",
           "external_score": 0.017543859649122806,
-          "vep_score": 0.4457585492793694,
+          "vep_score": 0.44516315482627644,
           "external_result_id": "tbs-7cf10b06-3e5b-4723-b98f-c679e773959b",
           "source_id": "tbs",
           "harness": "Codex",
           "run_ids": [
-            "gpt-5.6-luna-max-opensplice_snv-20260911",
-            "gpt-5.6-luna-max-satmut_mpra-20260911",
+            "gpt-5.6-luna-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-luna-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-luna-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -4615,13 +4615,13 @@
           "label": "GPT 5.6 Sol",
           "external_model": "GPT-5.6 Sol",
           "external_score": 0.17543859649122806,
-          "vep_score": 0.552434925383204,
+          "vep_score": 0.5578794938472712,
           "external_result_id": "tbs-378f8b49-dbd8-4acf-a065-8c07e1712de2",
           "source_id": "tbs",
           "harness": "Codex",
           "run_ids": [
-            "gpt-5.6-sol-max-opensplice_snv-20260911",
-            "gpt-5.6-sol-max-satmut_mpra-20260911",
+            "gpt-5.6-sol-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-sol-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-sol-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -4640,13 +4640,13 @@
           "label": "GPT 5.6 Terra",
           "external_model": "GPT-5.6 Terra",
           "external_score": 0.07017543859649122,
-          "vep_score": 0.45469586790654115,
+          "vep_score": 0.46185443746664223,
           "external_result_id": "tbs-c79d5ef6-b3c6-40da-84b5-946c11099426",
           "source_id": "tbs",
           "harness": "Codex",
           "run_ids": [
-            "gpt-5.6-terra-max-opensplice_snv-20260911",
-            "gpt-5.6-terra-max-satmut_mpra-20260911",
+            "gpt-5.6-terra-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-terra-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-terra-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -4778,13 +4778,13 @@
           "label": "GPT 5.6 Luna",
           "external_model": "GPT-5.6 Luna (max)",
           "external_score": 0.165,
-          "vep_score": 0.4457585492793694,
+          "vep_score": 0.44516315482627644,
           "external_result_id": "gene-GPT-5.6 Luna (max)",
           "source_id": "gene",
           "harness": "GeneBench Docker analysis harness",
           "run_ids": [
-            "gpt-5.6-luna-max-opensplice_snv-20260911",
-            "gpt-5.6-luna-max-satmut_mpra-20260911",
+            "gpt-5.6-luna-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-luna-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-luna-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -4878,13 +4878,13 @@
           "label": "GPT 5.6 Sol",
           "external_model": "GPT-5.6 Sol (max)",
           "external_score": 0.287,
-          "vep_score": 0.552434925383204,
+          "vep_score": 0.5578794938472712,
           "external_result_id": "gene-GPT-5.6 Sol (max)",
           "source_id": "gene",
           "harness": "GeneBench Docker analysis harness",
           "run_ids": [
-            "gpt-5.6-sol-max-opensplice_snv-20260911",
-            "gpt-5.6-sol-max-satmut_mpra-20260911",
+            "gpt-5.6-sol-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-sol-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-sol-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -4903,13 +4903,13 @@
           "label": "GPT 5.6 Terra",
           "external_model": "GPT-5.6 Terra (max)",
           "external_score": 0.233,
-          "vep_score": 0.45469586790654115,
+          "vep_score": 0.46185443746664223,
           "external_result_id": "gene-GPT-5.6 Terra (max)",
           "source_id": "gene",
           "harness": "GeneBench Docker analysis harness",
           "run_ids": [
-            "gpt-5.6-terra-max-opensplice_snv-20260911",
-            "gpt-5.6-terra-max-satmut_mpra-20260911",
+            "gpt-5.6-terra-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-terra-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-terra-max-sge-20260911"
           ],
           "generation_parameters": {
@@ -4966,13 +4966,13 @@
           "label": "GPT 5.6 Sol",
           "external_model": "gpt-5.6-sol",
           "external_score": 0.4802380952380953,
-          "vep_score": 0.552434925383204,
+          "vep_score": 0.5578794938472712,
           "external_result_id": "bix3-gpt-5.6-sol",
           "source_id": "bix3",
           "harness": "BixBench3 public runner",
           "run_ids": [
-            "gpt-5.6-sol-max-opensplice_snv-20260911",
-            "gpt-5.6-sol-max-satmut_mpra-20260911",
+            "gpt-5.6-sol-max-opensplice_snv-recovered-20260912",
+            "gpt-5.6-sol-max-satmut_mpra-recovered-20260912",
             "gpt-5.6-sol-max-sge-20260911"
           ],
           "generation_parameters": {

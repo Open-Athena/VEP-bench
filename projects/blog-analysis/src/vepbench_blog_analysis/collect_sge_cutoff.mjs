@@ -9,8 +9,8 @@ const {artifactUrl, fetchJson, fetchOutcomeIndex} = await import(
 const {sgeCutoffModels, sgeCutoffPerformance} = await import(
   pathToFileURL(join(assets, "blog/introducing-vep-bench/cutoff.js"))
 );
-const metadata = JSON.parse(readFileSync(0, "utf8"));
-const [runs, questions] = await Promise.all([
+const {metadata, publication} = JSON.parse(readFileSync(0, "utf8"));
+const [runs, questions] = publication ? [publication.runs, publication.questions] : await Promise.all([
   fetchJson(artifactUrl(baseUrl, "runs.json")),
   fetchJson(artifactUrl(baseUrl, "question-index.json"))
 ]);
@@ -19,11 +19,14 @@ if (runs.question_set_sha256 !== questions.question_set_sha256) {
 }
 const models = sgeCutoffModels(runs);
 const outcomes = new Map(await Promise.all(models.map(async ({run}) => [
-  run.run_id, {document: await fetchOutcomeIndex(baseUrl, run)}
+  run.run_id, {document: publication
+    ? publication.outcomes.find((document) => document.run_id === run.run_id)
+    : await fetchOutcomeIndex(baseUrl, run)}
 ])));
 console.log(JSON.stringify({
   ...sgeCutoffPerformance(models, questions.questions, metadata, outcomes),
   comparison_count: models.length,
   data_base_url: baseUrl,
-  question_set_sha256: runs.question_set_sha256
+  question_set_sha256: runs.question_set_sha256,
+  ...(publication ? {collection: publication.collection} : {})
 }));

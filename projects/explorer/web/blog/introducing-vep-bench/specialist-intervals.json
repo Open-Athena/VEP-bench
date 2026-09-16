@@ -1,0 +1,566 @@
+{
+  "analysis_sha256": "5bee5a99ed27250fd755dd3ca420bcd89ca6fea717992ed0af4f5e1ad9f2cbe3",
+  "estimator_sha256": "06023c9abad30dfb37c0f20b9526b187f0ad3390ff67e17b04cf0a69a6f9263a",
+  "intervals": [
+    {
+      "category": "all_covered",
+      "eligible_panels": 20,
+      "mean_spearman_rho": 0.6755295014672698,
+      "run_id": "deepseek-v4.1-flash-low-opensplice-snv-20260911T162211Z-truncation-retry",
+      "spearman_ci_high": 0.715251491902551,
+      "spearman_ci_low": 0.6358075110319885,
+      "spearman_ci_status": "estimated",
+      "task_family": "opensplice_snv"
+    },
+    {
+      "category": "all_covered",
+      "eligible_panels": 20,
+      "mean_spearman_rho": 0.7699831816298817,
+      "run_id": "gemini-3.8-flash-high-opensplice-snv-20260910T161559Z",
+      "spearman_ci_high": 0.8053644056446994,
+      "spearman_ci_low": 0.734601957615064,
+      "spearman_ci_status": "estimated",
+      "task_family": "opensplice_snv"
+    },
+    {
+      "category": "all_covered",
+      "eligible_panels": 20,
+      "mean_spearman_rho": 0.6774428945811332,
+      "run_id": "glm-5.3-low-zai-full-20260909-opensplice-snv",
+      "spearman_ci_high": 0.7280510608695184,
+      "spearman_ci_low": 0.6268347282927479,
+      "spearman_ci_status": "estimated",
+      "task_family": "opensplice_snv"
+    },
+    {
+      "category": "all_covered",
+      "eligible_panels": 20,
+      "mean_spearman_rho": 0.7212616528293768,
+      "run_id": "gpt-5.6-luna-max-opensplice_snv-recovered-20260912",
+      "spearman_ci_high": 0.7533085052116851,
+      "spearman_ci_low": 0.6892148004470685,
+      "spearman_ci_status": "estimated",
+      "task_family": "opensplice_snv"
+    },
+    {
+      "category": "all_covered",
+      "eligible_panels": 20,
+      "mean_spearman_rho": 0.7317930013736422,
+      "run_id": "gpt-5.6-sol-max-opensplice_snv-recovered-20260912",
+      "spearman_ci_high": 0.7744580967505037,
+      "spearman_ci_low": 0.6891279059967808,
+      "spearman_ci_status": "estimated",
+      "task_family": "opensplice_snv"
+    },
+    {
+      "category": "all_covered",
+      "eligible_panels": 20,
+      "mean_spearman_rho": 0.7032395226368773,
+      "run_id": "gpt-5.6-terra-max-opensplice_snv-recovered-20260912",
+      "spearman_ci_high": 0.7529673646391546,
+      "spearman_ci_low": 0.6535116806346,
+      "spearman_ci_status": "estimated",
+      "task_family": "opensplice_snv"
+    },
+    {
+      "category": "all_covered",
+      "eligible_panels": 20,
+      "mean_spearman_rho": 0.7577100403929314,
+      "run_id": "gpt-6-astra-high-opensplice-snv-v2-20260908",
+      "spearman_ci_high": 0.7960039711401111,
+      "spearman_ci_low": 0.7194161096457518,
+      "spearman_ci_status": "estimated",
+      "task_family": "opensplice_snv"
+    },
+    {
+      "category": "all_covered",
+      "eligible_panels": 20,
+      "mean_spearman_rho": 0.7267627240296053,
+      "run_id": "muse-spark-1.3-medium-opensplice-snv-20260910T151518Z",
+      "spearman_ci_high": 0.7821935475981402,
+      "spearman_ci_low": 0.6713319004610704,
+      "spearman_ci_status": "estimated",
+      "task_family": "opensplice_snv"
+    },
+    {
+      "category": "all_covered",
+      "eligible_panels": 20,
+      "mean_spearman_rho": 0.8387659795260294,
+      "run_id": "specialist",
+      "spearman_ci_high": 0.8961082290212022,
+      "spearman_ci_low": 0.7814237300308565,
+      "spearman_ci_status": "estimated",
+      "task_family": "opensplice_snv"
+    },
+    {
+      "category": "excluding_avi_model_selection",
+      "eligible_panels": 20,
+      "mean_spearman_rho": 0.6755295014672698,
+      "run_id": "deepseek-v4.1-flash-low-opensplice-snv-20260911T162211Z-truncation-retry",
+      "spearman_ci_high": 0.715251491902551,
+      "spearman_ci_low": 0.6358075110319885,
+      "spearman_ci_status": "estimated",
+      "task_family": "opensplice_snv"
+    },
+    {
+      "category": "excluding_avi_model_selection",
+      "eligible_panels": 20,
+      "mean_spearman_rho": 0.7699831816298817,
+      "run_id": "gemini-3.8-flash-high-opensplice-snv-20260910T161559Z",
+      "spearman_ci_high": 0.8053644056446994,
+      "spearman_ci_low": 0.734601957615064,
+      "spearman_ci_status": "estimated",
+      "task_family": "opensplice_snv"
+    },
+    {
+      "category": "excluding_avi_model_selection",
+      "eligible_panels": 20,
+      "mean_spearman_rho": 0.6774428945811332,
+      "run_id": "glm-5.3-low-zai-full-20260909-opensplice-snv",
+      "spearman_ci_high": 0.7280510608695184,
+      "spearman_ci_low": 0.6268347282927479,
+      "spearman_ci_status": "estimated",
+      "task_family": "opensplice_snv"
+    },
+    {
+      "category": "excluding_avi_model_selection",
+      "eligible_panels": 20,
+      "mean_spearman_rho": 0.7212616528293768,
+      "run_id": "gpt-5.6-luna-max-opensplice_snv-recovered-20260912",
+      "spearman_ci_high": 0.7533085052116851,
+      "spearman_ci_low": 0.6892148004470685,
+      "spearman_ci_status": "estimated",
+      "task_family": "opensplice_snv"
+    },
+    {
+      "category": "excluding_avi_model_selection",
+      "eligible_panels": 20,
+      "mean_spearman_rho": 0.7317930013736422,
+      "run_id": "gpt-5.6-sol-max-opensplice_snv-recovered-20260912",
+      "spearman_ci_high": 0.7744580967505037,
+      "spearman_ci_low": 0.6891279059967808,
+      "spearman_ci_status": "estimated",
+      "task_family": "opensplice_snv"
+    },
+    {
+      "category": "excluding_avi_model_selection",
+      "eligible_panels": 20,
+      "mean_spearman_rho": 0.7032395226368773,
+      "run_id": "gpt-5.6-terra-max-opensplice_snv-recovered-20260912",
+      "spearman_ci_high": 0.7529673646391546,
+      "spearman_ci_low": 0.6535116806346,
+      "spearman_ci_status": "estimated",
+      "task_family": "opensplice_snv"
+    },
+    {
+      "category": "excluding_avi_model_selection",
+      "eligible_panels": 20,
+      "mean_spearman_rho": 0.7577100403929314,
+      "run_id": "gpt-6-astra-high-opensplice-snv-v2-20260908",
+      "spearman_ci_high": 0.7960039711401111,
+      "spearman_ci_low": 0.7194161096457518,
+      "spearman_ci_status": "estimated",
+      "task_family": "opensplice_snv"
+    },
+    {
+      "category": "excluding_avi_model_selection",
+      "eligible_panels": 20,
+      "mean_spearman_rho": 0.7267627240296053,
+      "run_id": "muse-spark-1.3-medium-opensplice-snv-20260910T151518Z",
+      "spearman_ci_high": 0.7821935475981402,
+      "spearman_ci_low": 0.6713319004610704,
+      "spearman_ci_status": "estimated",
+      "task_family": "opensplice_snv"
+    },
+    {
+      "category": "excluding_avi_model_selection",
+      "eligible_panels": 20,
+      "mean_spearman_rho": 0.8387659795260294,
+      "run_id": "specialist",
+      "spearman_ci_high": 0.8961082290212022,
+      "spearman_ci_low": 0.7814237300308565,
+      "spearman_ci_status": "estimated",
+      "task_family": "opensplice_snv"
+    },
+    {
+      "category": "all_covered",
+      "eligible_panels": 16,
+      "mean_spearman_rho": 0.12451329080850244,
+      "run_id": "deepseek-v4.1-flash-low-satmut-mpra-20260911T162211Z-truncation-retry",
+      "spearman_ci_high": 0.28393399165828875,
+      "spearman_ci_low": -0.03490741004128385,
+      "spearman_ci_status": "estimated",
+      "task_family": "satmut_mpra"
+    },
+    {
+      "category": "all_covered",
+      "eligible_panels": 16,
+      "mean_spearman_rho": 0.3549614908444493,
+      "run_id": "gemini-3.8-flash-high-satmut-mpra-20260910T161559Z",
+      "spearman_ci_high": 0.4771357588371863,
+      "spearman_ci_low": 0.23278722285171227,
+      "spearman_ci_status": "estimated",
+      "task_family": "satmut_mpra"
+    },
+    {
+      "category": "all_covered",
+      "eligible_panels": 16,
+      "mean_spearman_rho": 0.20394759885441466,
+      "run_id": "glm-5.3-low-zai-full-20260909-satmut-mpra",
+      "spearman_ci_high": 0.30524758004865066,
+      "spearman_ci_low": 0.10264761766017867,
+      "spearman_ci_status": "estimated",
+      "task_family": "satmut_mpra"
+    },
+    {
+      "category": "all_covered",
+      "eligible_panels": 16,
+      "mean_spearman_rho": 0.2575928201654509,
+      "run_id": "gpt-5.6-luna-max-satmut_mpra-recovered-20260912",
+      "spearman_ci_high": 0.33354289035288864,
+      "spearman_ci_low": 0.18164274997801308,
+      "spearman_ci_status": "estimated",
+      "task_family": "satmut_mpra"
+    },
+    {
+      "category": "all_covered",
+      "eligible_panels": 16,
+      "mean_spearman_rho": 0.3889066669887958,
+      "run_id": "gpt-5.6-sol-max-satmut_mpra-recovered-20260912",
+      "spearman_ci_high": 0.4910301155194034,
+      "spearman_ci_low": 0.28678321845818816,
+      "spearman_ci_status": "estimated",
+      "task_family": "satmut_mpra"
+    },
+    {
+      "category": "all_covered",
+      "eligible_panels": 16,
+      "mean_spearman_rho": 0.2390332081154808,
+      "run_id": "gpt-5.6-terra-max-satmut_mpra-recovered-20260912",
+      "spearman_ci_high": 0.36006388380274074,
+      "spearman_ci_low": 0.11800253242822085,
+      "spearman_ci_status": "estimated",
+      "task_family": "satmut_mpra"
+    },
+    {
+      "category": "all_covered",
+      "eligible_panels": 16,
+      "mean_spearman_rho": 0.3829445804925783,
+      "run_id": "gpt-6-astra-high-satmut-mpra-v2-20260908",
+      "spearman_ci_high": 0.4996870006492331,
+      "spearman_ci_low": 0.2662021603359235,
+      "spearman_ci_status": "estimated",
+      "task_family": "satmut_mpra"
+    },
+    {
+      "category": "all_covered",
+      "eligible_panels": 16,
+      "mean_spearman_rho": 0.2623112025403731,
+      "run_id": "muse-spark-1.3-medium-satmut-mpra-20260910T151518Z-retry1",
+      "spearman_ci_high": 0.3805195766300783,
+      "spearman_ci_low": 0.1441028284506679,
+      "spearman_ci_status": "estimated",
+      "task_family": "satmut_mpra"
+    },
+    {
+      "category": "all_covered",
+      "eligible_panels": 16,
+      "mean_spearman_rho": 0.5895198079231693,
+      "run_id": "specialist",
+      "spearman_ci_high": 0.7311444444163971,
+      "spearman_ci_low": 0.4478951714299414,
+      "spearman_ci_status": "estimated",
+      "task_family": "satmut_mpra"
+    },
+    {
+      "category": "excluding_avi_model_selection",
+      "eligible_panels": 16,
+      "mean_spearman_rho": 0.12451329080850244,
+      "run_id": "deepseek-v4.1-flash-low-satmut-mpra-20260911T162211Z-truncation-retry",
+      "spearman_ci_high": 0.28393399165828875,
+      "spearman_ci_low": -0.03490741004128385,
+      "spearman_ci_status": "estimated",
+      "task_family": "satmut_mpra"
+    },
+    {
+      "category": "excluding_avi_model_selection",
+      "eligible_panels": 16,
+      "mean_spearman_rho": 0.3549614908444493,
+      "run_id": "gemini-3.8-flash-high-satmut-mpra-20260910T161559Z",
+      "spearman_ci_high": 0.4771357588371863,
+      "spearman_ci_low": 0.23278722285171227,
+      "spearman_ci_status": "estimated",
+      "task_family": "satmut_mpra"
+    },
+    {
+      "category": "excluding_avi_model_selection",
+      "eligible_panels": 16,
+      "mean_spearman_rho": 0.20394759885441466,
+      "run_id": "glm-5.3-low-zai-full-20260909-satmut-mpra",
+      "spearman_ci_high": 0.30524758004865066,
+      "spearman_ci_low": 0.10264761766017867,
+      "spearman_ci_status": "estimated",
+      "task_family": "satmut_mpra"
+    },
+    {
+      "category": "excluding_avi_model_selection",
+      "eligible_panels": 16,
+      "mean_spearman_rho": 0.2575928201654509,
+      "run_id": "gpt-5.6-luna-max-satmut_mpra-recovered-20260912",
+      "spearman_ci_high": 0.33354289035288864,
+      "spearman_ci_low": 0.18164274997801308,
+      "spearman_ci_status": "estimated",
+      "task_family": "satmut_mpra"
+    },
+    {
+      "category": "excluding_avi_model_selection",
+      "eligible_panels": 16,
+      "mean_spearman_rho": 0.3889066669887958,
+      "run_id": "gpt-5.6-sol-max-satmut_mpra-recovered-20260912",
+      "spearman_ci_high": 0.4910301155194034,
+      "spearman_ci_low": 0.28678321845818816,
+      "spearman_ci_status": "estimated",
+      "task_family": "satmut_mpra"
+    },
+    {
+      "category": "excluding_avi_model_selection",
+      "eligible_panels": 16,
+      "mean_spearman_rho": 0.2390332081154808,
+      "run_id": "gpt-5.6-terra-max-satmut_mpra-recovered-20260912",
+      "spearman_ci_high": 0.36006388380274074,
+      "spearman_ci_low": 0.11800253242822085,
+      "spearman_ci_status": "estimated",
+      "task_family": "satmut_mpra"
+    },
+    {
+      "category": "excluding_avi_model_selection",
+      "eligible_panels": 16,
+      "mean_spearman_rho": 0.3829445804925783,
+      "run_id": "gpt-6-astra-high-satmut-mpra-v2-20260908",
+      "spearman_ci_high": 0.4996870006492331,
+      "spearman_ci_low": 0.2662021603359235,
+      "spearman_ci_status": "estimated",
+      "task_family": "satmut_mpra"
+    },
+    {
+      "category": "excluding_avi_model_selection",
+      "eligible_panels": 16,
+      "mean_spearman_rho": 0.2623112025403731,
+      "run_id": "muse-spark-1.3-medium-satmut-mpra-20260910T151518Z-retry1",
+      "spearman_ci_high": 0.3805195766300783,
+      "spearman_ci_low": 0.1441028284506679,
+      "spearman_ci_status": "estimated",
+      "task_family": "satmut_mpra"
+    },
+    {
+      "category": "excluding_avi_model_selection",
+      "eligible_panels": 16,
+      "mean_spearman_rho": 0.5895198079231693,
+      "run_id": "specialist",
+      "spearman_ci_high": 0.7311444444163971,
+      "spearman_ci_low": 0.4478951714299414,
+      "spearman_ci_status": "estimated",
+      "task_family": "satmut_mpra"
+    },
+    {
+      "category": "all_covered",
+      "eligible_panels": 16,
+      "mean_spearman_rho": 0.25494421445305276,
+      "run_id": "deepseek-v4.1-flash-low-sge-20260911T162211Z-truncation-retry",
+      "spearman_ci_high": 0.4006661219453611,
+      "spearman_ci_low": 0.10922230696074445,
+      "spearman_ci_status": "estimated",
+      "task_family": "sge"
+    },
+    {
+      "category": "all_covered",
+      "eligible_panels": 16,
+      "mean_spearman_rho": 0.5322251499918779,
+      "run_id": "gemini-3.8-flash-high-sge-20260910T161559Z",
+      "spearman_ci_high": 0.6964309568294711,
+      "spearman_ci_low": 0.36801934315428464,
+      "spearman_ci_status": "estimated",
+      "task_family": "sge"
+    },
+    {
+      "category": "all_covered",
+      "eligible_panels": 16,
+      "mean_spearman_rho": 0.2537570147250643,
+      "run_id": "glm-5.3-low-zai-full-20260909-sge",
+      "spearman_ci_high": 0.3918869703744138,
+      "spearman_ci_low": 0.11562705907571477,
+      "spearman_ci_status": "estimated",
+      "task_family": "sge"
+    },
+    {
+      "category": "all_covered",
+      "eligible_panels": 16,
+      "mean_spearman_rho": 0.3619276597058351,
+      "run_id": "gpt-5.6-luna-max-sge-20260911",
+      "spearman_ci_high": 0.5101432439533086,
+      "spearman_ci_low": 0.2137120754583617,
+      "spearman_ci_status": "estimated",
+      "task_family": "sge"
+    },
+    {
+      "category": "all_covered",
+      "eligible_panels": 16,
+      "mean_spearman_rho": 0.4966842092819365,
+      "run_id": "gpt-5.6-sol-max-sge-20260911",
+      "spearman_ci_high": 0.6445055024043758,
+      "spearman_ci_low": 0.3488629161594973,
+      "spearman_ci_status": "estimated",
+      "task_family": "sge"
+    },
+    {
+      "category": "all_covered",
+      "eligible_panels": 16,
+      "mean_spearman_rho": 0.40712743417011105,
+      "run_id": "gpt-5.6-terra-max-sge-20260911",
+      "spearman_ci_high": 0.5700343571898848,
+      "spearman_ci_low": 0.24422051115033727,
+      "spearman_ci_status": "estimated",
+      "task_family": "sge"
+    },
+    {
+      "category": "all_covered",
+      "eligible_panels": 16,
+      "mean_spearman_rho": 0.6249129063886325,
+      "run_id": "gpt-6-astra-high-sge-v2-20260908",
+      "spearman_ci_high": 0.7658557270169859,
+      "spearman_ci_low": 0.4839700857602791,
+      "spearman_ci_status": "estimated",
+      "task_family": "sge"
+    },
+    {
+      "category": "all_covered",
+      "eligible_panels": 16,
+      "mean_spearman_rho": 0.2975108578151545,
+      "run_id": "muse-spark-1.3-medium-sge-20260910T151518Z",
+      "spearman_ci_high": 0.4488322506572662,
+      "spearman_ci_low": 0.1461894649730429,
+      "spearman_ci_status": "estimated",
+      "task_family": "sge"
+    },
+    {
+      "category": "all_covered",
+      "eligible_panels": 16,
+      "mean_spearman_rho": 0.5859323516834842,
+      "run_id": "specialist",
+      "spearman_ci_high": 0.7569930728827874,
+      "spearman_ci_low": 0.4148716304841811,
+      "spearman_ci_status": "estimated",
+      "task_family": "sge"
+    },
+    {
+      "category": "excluding_avi_model_selection",
+      "eligible_panels": 13,
+      "mean_spearman_rho": 0.2028178282617301,
+      "run_id": "deepseek-v4.1-flash-low-sge-20260911T162211Z-truncation-retry",
+      "spearman_ci_high": 0.346432582771095,
+      "spearman_ci_low": 0.05920307375236514,
+      "spearman_ci_status": "estimated",
+      "task_family": "sge"
+    },
+    {
+      "category": "excluding_avi_model_selection",
+      "eligible_panels": 13,
+      "mean_spearman_rho": 0.49950971188419135,
+      "run_id": "gemini-3.8-flash-high-sge-20260910T161559Z",
+      "spearman_ci_high": 0.6993932443418084,
+      "spearman_ci_low": 0.2996261794265743,
+      "spearman_ci_status": "estimated",
+      "task_family": "sge"
+    },
+    {
+      "category": "excluding_avi_model_selection",
+      "eligible_panels": 13,
+      "mean_spearman_rho": 0.28950569019878986,
+      "run_id": "glm-5.3-low-zai-full-20260909-sge",
+      "spearman_ci_high": 0.42606167009081025,
+      "spearman_ci_low": 0.15294971030676946,
+      "spearman_ci_status": "estimated",
+      "task_family": "sge"
+    },
+    {
+      "category": "excluding_avi_model_selection",
+      "eligible_panels": 13,
+      "mean_spearman_rho": 0.30949517725147285,
+      "run_id": "gpt-5.6-luna-max-sge-20260911",
+      "spearman_ci_high": 0.48079343655197265,
+      "spearman_ci_low": 0.13819691795097305,
+      "spearman_ci_status": "estimated",
+      "task_family": "sge"
+    },
+    {
+      "category": "excluding_avi_model_selection",
+      "eligible_panels": 13,
+      "mean_spearman_rho": 0.44950460867551023,
+      "run_id": "gpt-5.6-sol-max-sge-20260911",
+      "spearman_ci_high": 0.6228200692420319,
+      "spearman_ci_low": 0.27618914810898854,
+      "spearman_ci_status": "estimated",
+      "task_family": "sge"
+    },
+    {
+      "category": "excluding_avi_model_selection",
+      "eligible_panels": 13,
+      "mean_spearman_rho": 0.3543126173774922,
+      "run_id": "gpt-5.6-terra-max-sge-20260911",
+      "spearman_ci_high": 0.5419016120823685,
+      "spearman_ci_low": 0.1667236226726158,
+      "spearman_ci_status": "estimated",
+      "task_family": "sge"
+    },
+    {
+      "category": "excluding_avi_model_selection",
+      "eligible_panels": 13,
+      "mean_spearman_rho": 0.6039939192665644,
+      "run_id": "gpt-6-astra-high-sge-v2-20260908",
+      "spearman_ci_high": 0.7769522686759489,
+      "spearman_ci_low": 0.43103556985717995,
+      "spearman_ci_status": "estimated",
+      "task_family": "sge"
+    },
+    {
+      "category": "excluding_avi_model_selection",
+      "eligible_panels": 13,
+      "mean_spearman_rho": 0.2927922049447519,
+      "run_id": "muse-spark-1.3-medium-sge-20260910T151518Z",
+      "spearman_ci_high": 0.4658497953188495,
+      "spearman_ci_low": 0.11973461457065426,
+      "spearman_ci_status": "estimated",
+      "task_family": "sge"
+    },
+    {
+      "category": "excluding_avi_model_selection",
+      "eligible_panels": 13,
+      "mean_spearman_rho": 0.5570839420610786,
+      "run_id": "specialist",
+      "spearman_ci_high": 0.7663465980352784,
+      "spearman_ci_low": 0.3478212860868788,
+      "spearman_ci_status": "estimated",
+      "task_family": "sge"
+    }
+  ],
+  "schema_version": 1,
+  "snapshot_sha256": "240dad5d2e7e141170714936239e9801be32ba862fc01a0419879846863f0b7e",
+  "statistics": {
+    "adjustment": "none; pointwise intervals, not simultaneous or pairwise tests",
+    "alternative": "two-sided",
+    "assumptions": "independent, identically distributed normal panel scores",
+    "clipped": false,
+    "confidence_level": 0.95,
+    "degrees_of_freedom": "n - 1",
+    "function": "scipy.stats.t.interval",
+    "interpretation": "Approximate exploratory intervals across selected panels, conditional on saved answers; shared assay effects and repeated-run variability are not estimated.",
+    "method": "Student's t",
+    "sampling_unit": "eligible original panel (gene, regulatory element or exon)",
+    "software": {
+      "numpy": "2.5.3",
+      "scipy": "1.18.1"
+    },
+    "standard_error": "scipy.stats.sem with ddof=1",
+    "statistic": "unweighted mean within-panel Spearman correlation"
+  }
+}

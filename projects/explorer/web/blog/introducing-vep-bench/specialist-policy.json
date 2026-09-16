@@ -1,0 +1,81 @@
+{
+  "schema_version": "1.0",
+  "assembly": "GRCh38",
+  "client_version": "0.9.0",
+  "model_version": "ALL_FOLDS",
+  "minimum_variants_per_panel": 2,
+  "splicing": {
+    "sequence_length": 16384,
+    "output": "SPLICE_SITES",
+    "score": "mean signed ALT-minus-REF canonical acceptor and donor probability",
+    "alternate_coordinates": "unaligned; map complete allele, zero at deleted sites",
+    "source_revision": "3e4ad8c037c216b952f1a8945f8f498669bff589",
+    "inference_sha256": "f6a49e808933d57bdd093075498d32c5800576d9d882430f36a49bfb63f93ff0",
+    "processing_sha256": "5f80157fcc95bf2e696e165b342ff4af9c66be65f90271335e35b2a3c24bc456",
+    "deletion_inference_sha256": "43a26fc1df3fc1ec0320693a9b233bdf125e8e0da2566ea62271df71ea628979",
+    "deletion_processing_sha256": "808e4582faa2f3cf13bb512efaf4dc3604c3706221fb5983fdafb54a7063ab2e"
+  },
+  "mpra": {
+    "sequence_length": 1048576,
+    "output": "DNASE",
+    "width": 501,
+    "aggregation": "DIFF_LOG2_SUM",
+    "track_reduction": "mean",
+    "source_setting": "Enformer settings DNASE cell type matching",
+    "supplement_url": "https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fs41586-025-10014-0/MediaObjects/41586_2025_10014_MOESM3_ESM.xlsx",
+    "supplement_sha256": "833cb78b6ae6fe39415cfff296ac00c48d800326139f13eb307531a1cc133154",
+    "sheet": "Suppl Table 10 CAGI5 CellType M",
+    "ontology_terms": {
+      "F9": ["EFO:0001187"],
+      "GP1BA": ["EFO:0002067"],
+      "HBB": ["EFO:0002067"],
+      "HBG1": ["EFO:0002067"],
+      "HNF4A": ["UBERON:0002369"],
+      "IRF4": ["CL:2000000", "CL:2000045", "EFO:0005720"],
+      "IRF6": ["CL:0000312", "CL:1001606"],
+      "LDLR": ["EFO:0001187"],
+      "MSMB": ["UBERON:0002369"],
+      "MYCrs6983267": ["UBERON:0002369"],
+      "PKLR": ["EFO:0002067"],
+      "SORT1": ["EFO:0001187"],
+      "TCF7L2": ["CL:0002351", "UBERON:0001150", "UBERON:0001264"],
+      "TERT": ["UBERON:0002369"],
+      "ZFAND3": ["CL:0002351", "UBERON:0001150", "UBERON:0001264"],
+      "ZRSh13": ["CL:0011021", "CL:0011022", "CL:2000013", "EFO:0001196", "NTR:0000521", "NTR:0000522", "NTR:0000523", "NTR:0000524", "NTR:0000525"]
+    },
+    "proxy_matches": {
+      "TCF7L2": {
+        "assay_context": "MIN6; no added treatment",
+        "selection_rule": "Reuse the published ZFAND3 pancreas ontology set because both elements were assayed in MIN6.",
+        "limitation": "Human pancreas tracks approximate the mouse MIN6 assay; TCF7L2 itself has no mapping in Supplementary Table 10.",
+        "sources": ["https://kircherlab.bihealth.org/satMutMPRA/", "https://www.nature.com/articles/s41586-025-10014-0"]
+      },
+      "ZRSh13": {
+        "assay_context": "NIH3T3 with Hoxd13 co-transfection",
+        "selection_rule": "Freeze the nine human DNase tracks whose metadata has biosample_life_stage embryonic and biosample_name containing fibroblast or equal to IMR-90; average them equally.",
+        "limitation": "Human embryonic fibroblasts approximate mouse NIH3T3 lineage and developmental stage but do not reproduce HOXD13 overexpression.",
+        "sources": ["https://kircherlab.bihealth.org/satMutMPRA/", "https://www.atcc.org/products/crl-1658", "https://www.atcc.org/products/ccl-186"]
+      }
+    },
+    "departures": [
+      "Use AlphaGenome's published recommended 501-bp log2((sum ALT + 1)/(sum REF + 1)) scorer with the published Enformer-setting track matches; the API does not expose the historical 512-bp DIFF_SUM mask.",
+      "Use source-validated GRCh38 alleles rather than the paper's hg19 inputs.",
+      "GP1BA is the source filename for GP1BB; MYCrs6983267 maps to MYC.",
+      "Extend the published track mapping to TCF7L2 and ZRSh13 using the documented proxy_matches, fixed before scoring without selecting on observed benchmark performance.",
+      "Use the current ALL_FOLDS API model; historical server weights are not version-addressable.",
+      "Extend the published scoring recipe to complete indels using API score_variant alignment."
+    ]
+  },
+  "avi": {
+    "scorer": "AVI_SCORE",
+    "release_coverage": "SNV",
+    "direction": "higher means greater functional impact",
+    "model_selection_genes": ["BRCA1", "RAD51C", "DDX3X"],
+    "atlas_paper_sha256": "07011853872613cb7bd3ce8ca62cd2621ad50b0a16e6f5dec3e480b3d190af2c"
+  },
+  "known_overlap": {
+    "mpra": "CAGI5 MPRA was evaluated in the original AlphaGenome paper; the benchmark is public development data.",
+    "splicing": "OpenSplice evaluated AlphaGenome and selected 16-kb context using that dataset; this context choice is not held out.",
+    "avi": "BRCA1, RAD51C and DDX3X source studies were used for AVI model selection. Other unknown overlap remains unknown."
+  }
+}

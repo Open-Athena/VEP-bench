@@ -24,6 +24,157 @@ three tasks measure different outcomes: functional effects in
 Before comparing model performance, we can ask what kinds of variants each
 task contains.
 
+## Comparison with AlphaGenome and AVI
+
+We compare AlphaGenome's signed molecular predictions for splicing and
+expression, and AlphaGenome Variant Impact (AVI) scores for fitness, with saved
+LLM answers on the same variants within each original panel. Each panel has
+equal weight. The full benchmark leaderboard retains its original variant set.
+All performance comparisons in this post use the public LLM snapshot frozen on
+September 15, 2026, including its recovered maximum-effort runs. The
+[publication note](./introducing-vep-bench/specialist-methods.html#publication-snapshot)
+describes the recovered responses and replacements.
+
+Coverage is **1,000/1,000 splicing variants**, **800/800 expression variants**,
+and **487/800 fitness variants**. The molecular predictions include indels;
+the AVI fitness comparison covers SNVs only. Each LLM is rescored on the same
+covered variants as the specialist.
+
+```js
+import {specialistRows, specialistCsv, specialistTasks, specialistModelOrder} from "./introducing-vep-bench/specialists.js";
+import {matchedCorrelationPlot} from "./introducing-vep-bench/specialist-plots.js";
+import {fetchGzipJson} from "../components/benchmark-data.js";
+const specialistSnapshot = await fetchGzipJson(
+  await FileAttachment("./introducing-vep-bench/specialist-comparison.json.gz").url(), "specialist comparison"
+);
+const specialistIntervals = await FileAttachment("./introducing-vep-bench/specialist-intervals.json").json();
+const specialistData = specialistRows(specialistSnapshot, "all_covered", specialistIntervals);
+```
+
+```js
+if (specialistSnapshot.status === "awaiting_inference") {
+  display(html`<p>Scoring settings and initial eligibility are frozen. Predictions have not yet been collected.
+    The counts below are eligible requests; AVI lookup may further reduce coverage.</p>`);
+  display(Inputs.table(specialistSnapshot.coverage.map((r) => ({
+    Task: specialistTasks.find((t) => t.family === r.task_family).label,
+    "Eligible requests": r.eligible_variants,
+    "Total variants": r.total_variants
+  })), {select: false}));
+} else {
+  display(html`<div role="region" tabindex="0" aria-label="Matched specialist comparison" style="overflow-x: auto">
+    ${matchedCorrelationPlot(specialistData, {width, colors: specialistSnapshot.family_colors,
+      modelOrder: specialistModelOrder(specialistSnapshot)})}
+  </div>`);
+  display(html`<p style="font-size: 0.85em; text-align: center">Mean panel Spearman ρ and 95% t CI ·
+    Independent task scales · Models ordered by mean matched score across the three tasks</p>`);
+}
+```
+
+Astra's fitness score is **0.625**, compared with **0.586** for AVI, on the
+same **487 SNVs across 16 genes**. Excluding AVI model-selection studies gives
+**0.604 versus 0.557** on **382 SNVs across 13 genes**. These are higher observed
+scores on the matched SNV subsets; they do not establish an advantage on indels
+or statistically conclusive superiority.
+
+<details id="specialist-methodology">
+<summary>Methodology and cell-type choices</summary>
+
+**Matched comparison.** AlphaGenome/AVI and each LLM are evaluated on identical
+variants within each original panel, with equal weight per panel. LLM answers
+come from the frozen September 15 publication; no new LLM calls are made.
+Invalid original LLM answers retain their zero penalty, even if their missing
+variants fall outside the matched set.
+
+**Error bars and ordering.** Bars show pointwise 95% Student's t confidence
+intervals for the equally weighted mean of panel correlations, using panels
+(genes, regulatory elements or exons) as the sampling units. These exploratory
+intervals assume independent panels and are conditional on the saved answers;
+they do not estimate shared assay effects or variability between model runs.
+They are not a paired significance test. Models are ordered by their mean
+matched Spearman score across the three equally weighted tasks. Each task's
+x-axis fits its own scores and intervals.
+
+**Splicing.** We follow the
+[OpenSplice native-context approach](https://github.com/lehner-lab/OpenSplice/blob/3e4ad8c037c216b952f1a8945f8f498669bff589/benchmarking_predictors/scripts/inference/alphagenome_genome_mode_snvs_inference.py):
+a 16-kb window around the tested exon, averaging signed changes in canonical
+donor and acceptor probabilities. This measures a proxy for exon inclusion,
+not calibrated delta PSI. Complete indels are scored, including zero alternate
+probability when a canonical site is deleted.
+
+**Expression.** Following AlphaGenome's zero-shot MPRA evaluation, we use
+native genomic context and average signed DNase effects across matching
+tracks as a proxy for reporter activity. The input is 1 Mb; the score is
+`log2((sum(ALT) + 1) / (sum(REF) + 1))` over 501 bp around the variant.
+This uses the recommended API scorer with the published Enformer-setting
+track matches, rather than the historical 512-bp scoring mask. Fourteen
+elements use the mappings in
+[AlphaGenome Supplementary Table 10](https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fs41586-025-10014-0/MediaObjects/41586_2025_10014_MOESM3_ESM.xlsx).
+The two remaining mappings are our extensions, chosen from assay context
+before scoring:
+
+| Element | Assay context | Selected AlphaGenome DNase tracks |
+| --- | --- | --- |
+| TCF7L2 | MIN6, also used for ZFAND3 | The same three pancreas tracks published for ZFAND3: endocrine-pancreas progenitor, body of pancreas, and pancreas |
+| ZRSh13 | NIH3T3 with added HOXD13 | Nine human embryonic fibroblast tracks, including IMR-90 and eight skin-derived fibroblast tracks |
+
+The [original assay metadata](https://kircherlab.bihealth.org/satMutMPRA/)
+supports the shared MIN6 mapping. The ZRSh13 mapping approximates the lineage
+and developmental stage of
+[NIH3T3 embryonic fibroblasts](https://www.atcc.org/products/crl-1658), but
+**does not reproduce HOXD13 overexpression**. Both are human-track proxies
+for mouse cell-line assays. Tracks are weighted equally; none are selected
+using their correlation with benchmark answers, and no LASSO model is fitted.
+
+**Fitness and overlap.** AVI measures general functional impact, rather than
+fitness in the specific assay conditions. The current public Atlas access
+covers the 487 selected fitness SNVs; the other 313 variants remain excluded.
+The second fitness comparison excludes BRCA1, RAD51C and DDX3X because their
+source studies were used for AVI model selection. CAGI5 MPRA was evaluated in
+the original AlphaGenome paper, and OpenSplice selected the 16-kb setting on
+its data, so these comparisons are not fully held out.
+
+Free API access does not establish zero underlying inference cost, and Atlas
+lookup time does not measure the cost of generating its scores.
+
+[Scoring definitions, provenance and reproduction](./introducing-vep-bench/specialist-methods.html)
+include the exact track ontology IDs, source evidence, coverage rules and
+departures from the original evaluations.
+
+</details>
+
+```js
+if (specialistSnapshot.status === "complete") {
+  display(Inputs.table(specialistData.map((r) => ({Task: r.task_label, Model: r.model,
+    Variants: r.eligible_variants, Panels: r.eligible_panels,
+    Spearman: r.mean_spearman_rho, "95% CI low": r.spearman_ci_low,
+    "95% CI high": r.spearman_ci_high, Pearson: r.mean_pearson_r,
+    "Invalid panels": r.invalid_panels})), {select: false}));
+  display(html`<h3>Fitness excluding AVI model-selection studies</h3>`);
+  display(Inputs.table(specialistRows(specialistSnapshot, "excluding_avi_model_selection", specialistIntervals)
+    .filter((r) => r.task_family === "sge").map((r) => ({Model: r.model,
+      Variants: r.eligible_variants, Panels: r.eligible_panels,
+      Spearman: r.mean_spearman_rho, "95% CI low": r.spearman_ci_low,
+      "95% CI high": r.spearman_ci_high, Pearson: r.mean_pearson_r,
+      "Invalid panels": r.invalid_panels})), {select: false}));
+  display(html`<a download="specialist-comparison.csv"
+    href=${`data:text/csv;charset=utf-8,${encodeURIComponent(specialistCsv(specialistSnapshot, specialistIntervals))}`}>
+    Download comparison scores (CSV)</a>`);
+}
+```
+
+```js
+display(html`<p><a href=${await FileAttachment("./introducing-vep-bench/specialist-plan.json.gz").url()} download>
+  Download frozen allele requests and settings (JSON.gz)</a> ·
+  <a href=${await FileAttachment("./introducing-vep-bench/specialist-comparison.json.gz").url()} download>
+  Download comparison scores and coverage (JSON.gz)</a> ·
+  <a href=${await FileAttachment("./introducing-vep-bench/specialist-intervals.json").url()} download>
+  Download confidence intervals (JSON)</a> ·
+  <a href=${await FileAttachment("./introducing-vep-bench/specialist-predictions.json.gz").url()} download>
+  Download cached prediction evidence (JSON.gz)</a> ·
+  <a href=${await FileAttachment("./introducing-vep-bench/specialist-2026-09-15.manifest.json").url()} download>
+  Download frozen publication manifest (JSON)</a></p>`);
+```
+
 ```js
 import {variantComposition, compositionCsv} from "./introducing-vep-bench/analysis.js";
 import {distributionFigure} from "./introducing-vep-bench/plots.js";
@@ -173,7 +324,7 @@ can describe different aspects of the same allele.
 
 ## Performance within variant classes
 
-**Analysis snapshot: 12 September 2026.** We reused the saved answers from eight
+**Analysis snapshot: 15 September 2026.** We reused the saved answers from eight
 models across 52 panels, selecting the highest available reasoning effort for
 each model: max for GPT-5.6 Luna, Terra, and Sol; high for Gemini and GPT-6 Astra;
 medium for Muse; and low for GLM and DeepSeek.
@@ -184,9 +335,9 @@ and **at least 5 eligible panels within a task**. These are pragmatic coverage
 requirements, not a claim of statistical significance.
 
 The snapshot includes the published DeepSeek configuration with selective
-token-limit retries. Luna's MPRA run and Terra's OpenSplice run each retain
-one API-failure retry. Luna's completed invalid SGE answer retains its zero
-score. The saved results preserve these distinctions and the original attempts.
+token-limit retries and the recovered maximum-effort runs. Recovery metadata
+distinguishes available original responses, retries, and replacements.
+Completed invalid answers, including Luna’s invalid SGE answer, retain zero scores.
 
 Allele type and functional consequence are separate axes: an SNV can also be
 missense. For this finer allele breakdown, we trim shared REF/ALT flanks and
@@ -199,16 +350,15 @@ features, with no canonical-transcript selection. We do not infer missense from
 exon membership.
 
 ```js
-import {fetchGzipJson} from "../components/benchmark-data.js";
 import {stratumCorrelationPlot} from "../components/correlation-plot.js";
 import {stratumRows, stratumCsv, stratumModelOrder} from "./introducing-vep-bench/strata-analysis.js";
 
 const strataSnapshot = await fetchGzipJson(
-  await FileAttachment("./introducing-vep-bench/strata-2026-09-12.json.gz").url(),
+  await FileAttachment("./introducing-vep-bench/strata-2026-09-15.json.gz").url(),
   "frozen variant-stratum analysis"
 );
 const strataModelOrder = stratumModelOrder(strataSnapshot);
-const strataIntervals = await FileAttachment("./introducing-vep-bench/strata-2026-09-12.intervals.json").json();
+const strataIntervals = await FileAttachment("./introducing-vep-bench/strata-2026-09-15.intervals.json").json();
 const strataScores = stratumRows(strataSnapshot, strataIntervals)
   .sort((a, b) => strataModelOrder.indexOf(a.model) - strataModelOrder.indexOf(b.model));
 const strataTaskLabel = (family) => composition.tasks.find((task) => task.family === family)?.label ?? family;
@@ -310,20 +460,16 @@ it receives no summary score. Excluded panels contain fewer than 10 supported
 variants of that class, including panels with none. Missing or stale
 source-linked consequences are retained as unknown.
 
-No specialist comparison is included in this snapshot. The precomputed-score
-work in [issue #78](https://github.com/Open-Athena/VEP-bench/issues/78) is still
-pending. The analysis accepts a versioned specialist score file tied to exact
-question and candidate IDs, intersects its supported variants with each class
-**before applying either cutoff**, and rescores every LLM on that same subset.
-The output records unsupported IDs and any resulting loss of eligible panels.
-Each specialist requires a separate coverage plan and comparison.
+These variant-stratum figures and the AlphaGenome/AVI comparison use the same
+frozen LLM publication. The specialist comparison has a separate coverage plan:
+it compares complete eligible panels and does not apply these variant-class cutoffs.
 
 ```js
 display(html`<p>
-  <a download="vepbench-variant-strata-2026-09-12.csv"
+  <a download="vepbench-variant-strata-2026-09-15.csv"
     href=${`data:text/csv;charset=utf-8,${encodeURIComponent(stratumCsv(strataSnapshot, strataIntervals))}`}>Download scores, 95% intervals, coverage, and exclusions (CSV)</a>
-  · <a href=${await FileAttachment("./introducing-vep-bench/strata-2026-09-12.json.gz").url()} download>Download frozen analysis, panel membership, model settings, and provenance (JSON.gz)</a>
-  · <a href=${await FileAttachment("./introducing-vep-bench/strata-2026-09-12.intervals.json").url()} download>Download confidence intervals and method (JSON)</a>
+  · <a href=${await FileAttachment("./introducing-vep-bench/strata-2026-09-15.json.gz").url()} download>Download frozen analysis, panel membership, model settings, and provenance (JSON.gz)</a>
+  · <a href=${await FileAttachment("./introducing-vep-bench/strata-2026-09-15.intervals.json").url()} download>Download confidence intervals and method (JSON)</a>
 </p>`);
 ```
 
@@ -526,7 +672,7 @@ secondary comparison. We selected sources for their scope and identifiable
 evaluation settings, before computing associations.
 
 **The comparisons remain descriptive.** Our frozen
-September 12, 2026 VEP snapshot has eight model versions with complete scores
+September 15, 2026 VEP snapshot has eight model versions with complete scores
 across all three tasks. After requiring the **same model release and exact
 reasoning effort**, the biology comparisons below contain at most four distinct
 models each. The latest Artificial Analysis Intelligence Index, **v4.3** at
@@ -541,7 +687,6 @@ dependent observations, so we do not pool the points into a cross-model
 correlation. Each biology comparison falls below our five-distinct-model
 threshold; AA has five models but repeated efforts.
 Sparse overlap does not establish either agreement or disagreement.
-The refresh adds VEP-bench evaluations of Luna, Terra, and Sol at max effort.
 The external benchmark results are reused from the September 11 source snapshot.
 
 ```js

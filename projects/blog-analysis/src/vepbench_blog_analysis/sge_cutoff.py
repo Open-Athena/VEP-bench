@@ -4,6 +4,7 @@ import argparse
 import copy
 import json
 import math
+import runpy
 import subprocess
 from datetime import UTC, datetime
 from pathlib import Path
@@ -98,7 +99,31 @@ def add_statistics(analysis: dict[str, Any]) -> dict[str, Any]:
     return result
 
 
-def collect(config: Path) -> dict[str, Any]:
+def frozen_publication(publication: Path, manifest_path: Path, assets: Path) -> dict[str, Any]:
+    """Use the stratum analysis's bounded, digest-checked publication reader."""
+    reader = runpy.run_path(str(assets / "blog/introducing-vep-bench/strata.py"))
+    manifest, questions, _ = reader["load_inputs"](publication, manifest_path)
+    read = reader["read_artifact"]
+    return {
+        "runs": read(publication, manifest["artifacts"]["runs"]),
+        "questions": {
+            "questions": questions,
+            "question_set_sha256": manifest["question_set_sha256"],
+        },
+        "outcomes": [read(publication, row) for row in manifest["artifacts"]["outcomes"]],
+        "collection": {
+            "method": "Local publication verified against the frozen manifest",
+            "manifest_sha256": reader["file_sha256"](manifest_path),
+            "runs": manifest["artifacts"]["runs"],
+            "question_index": manifest["artifacts"]["question_index"],
+            "outcomes": manifest["artifacts"]["outcomes"],
+        },
+    }
+
+
+def collect(
+    config: Path, publication: Path | None = None, manifest: Path | None = None
+) -> dict[str, Any]:
     """Reuse the explorer's source matching, cohort rules, and run selection."""
     settings = load_site_config(config)
     metadata = build_question_metadata(
@@ -112,7 +137,14 @@ def collect(config: Path) -> dict[str, Any]:
             settings.data_base_url,
             str(settings.assets_dir),
         ],
-        input=json.dumps(metadata),
+        input=json.dumps(
+            {
+                "metadata": metadata,
+                "publication": frozen_publication(publication, manifest, settings.assets_dir)
+                if publication is not None and manifest is not None
+                else None,
+            }
+        ),
         text=True,
         capture_output=True,
         check=True,
@@ -128,10 +160,18 @@ def main() -> None:
     parser.add_argument(
         "--input", type=Path, help="Replay a saved collection without network access"
     )
+    parser.add_argument("--publication", type=Path, help="Collect from a local publication root")
+    parser.add_argument("--manifest", type=Path, help="Frozen manifest for the local publication")
     parser.add_argument("--save-input", type=Path, help="Save the collection for offline replay")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
-    analysis = json.loads(args.input.read_text()) if args.input else collect(args.config)
+    if bool(args.publication) != bool(args.manifest) or (args.input and args.publication):
+        parser.error("use --publication and --manifest together, without --input")
+    analysis = (
+        json.loads(args.input.read_text())
+        if args.input
+        else collect(args.config, args.publication, args.manifest)
+    )
     result = add_statistics(analysis)
     if args.save_input:
         args.save_input.write_text(json.dumps(analysis, indent=2, sort_keys=True) + "\n")
