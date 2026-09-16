@@ -110,6 +110,18 @@ test("assay dates are compared with an explicit model knowledge cutoff", () => {
   assert.equal(assayCutoffRelation({date: "2026-02-17"}, "2026-13"), "Unknown");
 });
 
+test("partial earlier releases make a panel mixed until all variants have public evidence", () => {
+  const panel = {date: "2026-06-08", earlier_evidence: {date: "2025-06-23"}};
+  assert.equal(assayCutoffRelation(panel, "2026-02-16"), "Mixed availability");
+  assert.equal(assayCutoffRelation(panel, "2025-06-23"), "Mixed availability");
+  assert.equal(assayCutoffRelation(panel, "2025-05"), "After cutoff");
+  assert.equal(assayCutoffRelation(panel, "2025-06"), "Unknown");
+  assert.equal(assayCutoffRelation(panel, "2026-06"), "Unknown");
+  assert.equal(assayCutoffRelation(panel, "2026-06-08"), "Before cutoff");
+  assert.equal(assayCutoffRelation(panel, "2026-07"), "Before cutoff");
+  assert.equal(assayCutoffRelation({...panel, earlier_evidence: {date: "2025-02-30"}}, "2026-02"), "Unknown");
+});
+
 function run({
   accuracy = 0.5,
   complete = true,

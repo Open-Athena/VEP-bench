@@ -49,10 +49,10 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     assert len(metadata["by_task_family"]["satmut_mpra"]) == 16
     assert len(metadata["by_task_family"]["sge"]) == 16
     assert metadata["by_task_family"]["opensplice_snv"]["E01"]["assay_first_indexed"] == {
-        "date": "2026-05-24",
-        "kind": "dataset",
-        "registry": "Figshare",
-        "url": "https://doi.org/10.6084/m9.figshare.32337414.v5",
+        "date": "2026-05-23",
+        "kind": "preprint",
+        "registry": "bioRxiv",
+        "url": "https://www.biorxiv.org/content/10.64898/2026.05.22.727141v1",
     }
     assert {
         key: value
@@ -64,10 +64,10 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
         ),
         "element": "GP1BB promoter",
         "assay_first_indexed": {
-            "date": "2019-08-08",
-            "kind": "paper",
-            "registry": "PubMed",
-            "url": "https://pubmed.ncbi.nlm.nih.gov/31395865/",
+            "date": "2018-12-23",
+            "kind": "preprint",
+            "registry": "bioRxiv",
+            "url": "https://www.biorxiv.org/content/10.1101/505362v1",
         },
     }
     assert metadata["by_task_family"]["sge"]["BAP1"]["element"] == "BAP1"
@@ -76,19 +76,21 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     }
     assert metadata["by_task_family"]["opensplice_snv"]["E01"]["variants"] == {}
     assert metadata["by_task_family"]["sge"]["BAP1"]["assay_first_indexed"]["date"] == (
-        "2024-07-05"
+        "2024-01-11"
     )
     assert metadata["by_task_family"]["sge"]["VHL"]["assay_first_indexed"] == {
-        "date": "2024-04-25",
-        "kind": "assay_repository",
-        "registry": "MaveDB",
-        "url": "https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00000675-a-1",
+        "date": "2023-06-10",
+        "kind": "preprint",
+        "registry": "bioRxiv",
+        "url": "https://www.biorxiv.org/content/10.1101/2023.06.10.542698v1",
     }
     assert metadata["by_task_family"]["sge"]["BARD1"]["assay_first_indexed"] == {
-        "date": "2026-06-08",
+        "date": "2025-10-21",
         "kind": "assay_repository",
         "registry": "MaveDB",
-        "url": "https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001250-a-2",
+        "url": "https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001250-a-1",
+        "note": "All 50 selected scores are unchanged from this superseded release; "
+        "the study also appeared as a preprint on 2025-11-06.",
     }
     assert (output / "index.md").is_file()
     assert not (output / "questions.md").exists()
@@ -140,7 +142,7 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     assert "https://doi.org/10.1038/s41467-019-11526-w" in task_source
     assert "const controls = view(controlsInput);" in task_source
     assert "const selected = view(questionTable);" in task_source
-    assert 'assay_first_indexed: "Assay first indexed"' in task_source
+    assert 'assay_first_indexed: "Public assay evidence"' in task_source
     assert "assayFirstIndexedLink" in task_source
     assert 'spearman_rho: "Spearman \u03c1"' in task_source
     assert 'pearson_r: "Pearson r"' in task_source
@@ -264,6 +266,43 @@ def test_site_config_resolves_assay_publication_metadata() -> None:
     settings = load_site_config(SITE_CONFIG)
 
     assert settings.assay_publications == ASSAY_PUBLICATIONS.resolve()
+
+
+@pytest.mark.parametrize(
+    "change, message",
+    [
+        ({"earlier_evidence": {"date": "2025-01-01"}}, "exactly"),
+        ({"note": ""}, "non-empty strings"),
+        (
+            {
+                "earlier_evidence": {
+                    "date": "2027-01-01",
+                    "kind": "dataset",
+                    "registry": "Example",
+                    "url": "https://example.test/old",
+                }
+            },
+            "must precede",
+        ),
+    ],
+)
+def test_partial_publication_metadata_rejects_ambiguous_evidence(
+    tmp_path: Path, change: dict, message: str
+) -> None:
+    source = {
+        "date": "2026-01-01",
+        "kind": "dataset",
+        "registry": "Example",
+        "url": "https://example.test/new",
+        "note": "Partial earlier release",
+        **change,
+    }
+    path = tmp_path / "metadata.yaml"
+    path.write_text(
+        json.dumps({"schema_version": "1.0", "by_task_family": {"sge": {"default": source}}})
+    )
+    with pytest.raises(BuildError, match=message):
+        load_assay_publications(path)
 
 
 @pytest.mark.parametrize(

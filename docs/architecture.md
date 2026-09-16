@@ -109,9 +109,10 @@ identifiers; the product rename does not change existing contract identities.
 The [model catalog](../configs/models/catalog.yaml) supplies provider-documented
 knowledge cutoffs and evidence links. The
 [reviewed assay metadata](../projects/explorer/config/assay-publications.yaml)
-records the earliest verified public date among indexed records linked from
-pinned task provenance, such as PubMed, MaveDB, or Figshare. Arbitrary project
-URLs and source-control history do not qualify.
+records verified public scored-assay evidence across papers, preprints, archived
+datasets and superseded repository releases. Partial earlier releases are
+retained separately; a later database deposit does not reset availability.
+See the [provenance audit and date policy](assay-provenance.md).
 
 These dates support explorer display and filtering, not model input or scoring.
 Unknown dates remain unknown; a model's release date is not a substitute for

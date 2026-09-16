@@ -1,0 +1,305 @@
+{
+  "schema_version": "1.0",
+  "source_panels_sha256": "72d6bc847f0bc799e8846fc63f1129844eb0bf554092dc01f81f8471c959547c",
+  "sources": [
+    {
+      "gene": "BAP1",
+      "match_by": "source_hgvs",
+      "metadata": {
+        "filename": "bap1-datacite.json",
+        "sha256": "834fe549e5154e9171654b18e5a44f8dca14b93688413c374595177f761ddadf",
+        "url": "https://api.datacite.org/dois/10.5281/zenodo.10489733"
+      },
+      "registry": "Zenodo",
+      "scores": {
+        "columns": {
+          "alt": "alt",
+          "chrom": "ref_chr",
+          "pos": "pos",
+          "ref": "ref",
+          "score": "functional_score",
+          "source_hgvs": "HGVSc"
+        },
+        "filename": "bap1-2024-01-11.xlsx",
+        "format": "xlsx",
+        "header_row": 3,
+        "sha256": "7cc594b8870dff57ca067862b6bdbe902569a02013a0e7afd4a73e08cab5b1b4",
+        "sheet": "sheet2",
+        "url": "https://raw.githubusercontent.com/team113sanger/Waters_BAP1_SGE/v.1.0.0/extended_data_1_%28sge_bap1_dataset%29.xlsx"
+      },
+      "url": "https://doi.org/10.5281/zenodo.10489733"
+    },
+    {
+      "gene": "BARD1",
+      "metadata": {
+        "filename": "00001250-a-1.json",
+        "sha256": "23957bfcf2b160837a9c1fbc5f1fd6b6627a1dd860eee919c3325c9503bcc1c5",
+        "url": "https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001250-a-1"
+      },
+      "registry": "MaveDB",
+      "scores": {
+        "filename": "00001250-a-1.csv",
+        "format": "csv",
+        "sha256": "58fe32451da606ea24479b1efe8dc5162664c3785ce7fb400b2e8797ba5bf9a7",
+        "url": "https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001250-a-1/scores"
+      },
+      "url": "https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001250-a-1"
+    },
+    {
+      "gene": "BARD1",
+      "metadata": {
+        "filename": "IGVFFI2616FRGT.json",
+        "sha256": "0c7c3f02ddb2721d1e44a0a17fdb6e176216e2c86e7bab9bd7274da2b70f6155",
+        "url": "https://api.data.igvf.org/tabular-files/IGVFFI2616FRGT/?format=json"
+      },
+      "registry": "IGVF",
+      "scores": {
+        "filename": "IGVFFI2616FRGT.tsv.gz",
+        "format": "tsv.gz",
+        "sha256": "94d165e3f2183a782b6acc521ecbe04c745581615f8896c3b86f11ce2e7c7284",
+        "url": "https://api.data.igvf.org/tabular-files/IGVFFI2616FRGT/@@download/IGVFFI2616FRGT.tsv.gz"
+      },
+      "url": "https://data.igvf.org/tabular-files/IGVFFI2616FRGT/"
+    },
+    {
+      "gene": "CTCF",
+      "metadata": {
+        "filename": "00001262-a-1.json",
+        "sha256": "1d167e46d78a9f5cc6d5c5d7b05e315100a91ff9f21902e1a9874e767f883a9e",
+        "url": "https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001262-a-1"
+      },
+      "registry": "MaveDB",
+      "scores": {
+        "filename": "00001262-a-1.csv",
+        "format": "csv",
+        "sha256": "82b521e7e1d3b05c1de53218f9b6ef2055ba9112cd516b6a1a1e2bc35f23588f",
+        "url": "https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001262-a-1/scores"
+      },
+      "url": "https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001262-a-1"
+    },
+    {
+      "gene": "CTCF",
+      "metadata": {
+        "filename": "IGVFFI6548CGAB.json",
+        "sha256": "5eff315d003c8bf59fc94bb53f4f04582c91b78dda41a4176823ba7f03a555ae",
+        "url": "https://api.data.igvf.org/tabular-files/IGVFFI6548CGAB/?format=json"
+      },
+      "registry": "IGVF",
+      "scores": {
+        "filename": "IGVFFI6548CGAB.tsv.gz",
+        "format": "tsv.gz",
+        "sha256": "d7b3505fd29ccfa4302f48569a410552c14ce2c80f105ebb2bbed7500e671e22",
+        "url": "https://api.data.igvf.org/tabular-files/IGVFFI6548CGAB/@@download/IGVFFI6548CGAB.tsv.gz"
+      },
+      "url": "https://data.igvf.org/tabular-files/IGVFFI6548CGAB/"
+    },
+    {
+      "gene": "CTCF",
+      "metadata": {
+        "filename": "IGVFFI7008EHEH.json",
+        "sha256": "0a7af8403a2107cc5abf88f04285c250b449ea7e231a337da6883fa783903e5f",
+        "url": "https://api.data.igvf.org/tabular-files/IGVFFI7008EHEH/?format=json"
+      },
+      "registry": "IGVF",
+      "scores": {
+        "filename": "IGVFFI7008EHEH.tsv.gz",
+        "format": "tsv.gz",
+        "sha256": "8300b46c5f60da4dc7f922a24759cd7ea838edd8742b97715b212dfb0e56eb3a",
+        "url": "https://api.data.igvf.org/tabular-files/IGVFFI7008EHEH/@@download/IGVFFI7008EHEH.tsv.gz"
+      },
+      "url": "https://data.igvf.org/tabular-files/IGVFFI7008EHEH/"
+    },
+    {
+      "gene": "PALB2",
+      "metadata": {
+        "filename": "00001259-a-1.json",
+        "sha256": "349bb199788e04a92ea02add60dca10ed49b2106e66155296564fa89e480c356",
+        "url": "https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001259-a-1"
+      },
+      "registry": "MaveDB",
+      "scores": {
+        "filename": "00001259-a-1.csv",
+        "format": "csv",
+        "sha256": "67bd0536702ffab562c693c90858a730c2fe184ed37e9b9370adc04e5a0786fb",
+        "url": "https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001259-a-1/scores"
+      },
+      "url": "https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001259-a-1"
+    },
+    {
+      "gene": "PALB2",
+      "metadata": {
+        "filename": "IGVFFI5011VHRR.json",
+        "sha256": "8d816ac2965822eb68f1b2110d3f91a5153e60c7a151884edec596216bc7dbec",
+        "url": "https://api.data.igvf.org/tabular-files/IGVFFI5011VHRR/?format=json"
+      },
+      "registry": "IGVF",
+      "scores": {
+        "filename": "IGVFFI5011VHRR.tsv.gz",
+        "format": "tsv.gz",
+        "sha256": "fc9917f3b177ab83773d2d07c28b0a931abc6d713bc06ae1d0caf5c2111569f5",
+        "url": "https://api.data.igvf.org/tabular-files/IGVFFI5011VHRR/@@download/IGVFFI5011VHRR.tsv.gz"
+      },
+      "url": "https://data.igvf.org/tabular-files/IGVFFI5011VHRR/"
+    },
+    {
+      "gene": "PALB2",
+      "metadata": {
+        "filename": "IGVFFI9974PZRX.json",
+        "sha256": "5c00c4effc3e5c928e83778f96952ee30f9377c35086ceddb6ad08e4a1623cc2",
+        "url": "https://api.data.igvf.org/tabular-files/IGVFFI9974PZRX/?format=json"
+      },
+      "registry": "IGVF",
+      "scores": {
+        "filename": "IGVFFI9974PZRX.tsv.gz",
+        "format": "tsv.gz",
+        "sha256": "0a4bdefc820a76bf581ff5ae5432736be919bb448e0b714b7b254f3589897c65",
+        "url": "https://api.data.igvf.org/tabular-files/IGVFFI9974PZRX/@@download/IGVFFI9974PZRX.tsv.gz"
+      },
+      "url": "https://data.igvf.org/tabular-files/IGVFFI9974PZRX/"
+    },
+    {
+      "gene": "RAD51D",
+      "metadata": {
+        "filename": "00001260-a-1.json",
+        "sha256": "ac27020ab777fd094d536ca9ee37ea5a70f5a6da7345e1414c58eb5e39595255",
+        "url": "https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001260-a-1"
+      },
+      "registry": "MaveDB",
+      "scores": {
+        "filename": "00001260-a-1.csv",
+        "format": "csv",
+        "sha256": "a891b490002f536fd3dd9b59c04a9fbe17471e0c07a8d6e186aad747e28afa5f",
+        "url": "https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001260-a-1/scores"
+      },
+      "url": "https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001260-a-1"
+    },
+    {
+      "gene": "RAD51D",
+      "metadata": {
+        "filename": "IGVFFI2272LOUM.json",
+        "sha256": "f75eea8456e0948a8e983d14e61fd83e894954e1902710fe73c15da45f927083",
+        "url": "https://api.data.igvf.org/tabular-files/IGVFFI2272LOUM/?format=json"
+      },
+      "registry": "IGVF",
+      "scores": {
+        "filename": "IGVFFI2272LOUM.tsv.gz",
+        "format": "tsv.gz",
+        "sha256": "f3ce95456c69c6ef7b2c93acae5a018a308ffb1be4e3ffd122ec9118b79239fa",
+        "url": "https://api.data.igvf.org/tabular-files/IGVFFI2272LOUM/@@download/IGVFFI2272LOUM.tsv.gz"
+      },
+      "url": "https://data.igvf.org/tabular-files/IGVFFI2272LOUM/"
+    },
+    {
+      "gene": "RAD51D",
+      "metadata": {
+        "filename": "IGVFFI9138TFXQ.json",
+        "sha256": "714ecebba77bcfc544b78c580a66e4cab60dedab6602ceff6fee44ba5ce5d6a6",
+        "url": "https://api.data.igvf.org/tabular-files/IGVFFI9138TFXQ/?format=json"
+      },
+      "registry": "IGVF",
+      "scores": {
+        "filename": "IGVFFI9138TFXQ.tsv.gz",
+        "format": "tsv.gz",
+        "sha256": "1c4eec40e165dfca82059da3ec973977f01fe2be0fc589d5f66632de38f6ab49",
+        "url": "https://api.data.igvf.org/tabular-files/IGVFFI9138TFXQ/@@download/IGVFFI9138TFXQ.tsv.gz"
+      },
+      "url": "https://data.igvf.org/tabular-files/IGVFFI9138TFXQ/"
+    },
+    {
+      "gene": "SFPQ",
+      "metadata": {
+        "filename": "00001265-a-1.json",
+        "sha256": "644fd3a2348ae61ec6f3579b369e24031eebe0a689fdffa71b51fd94604b3eb5",
+        "url": "https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001265-a-1"
+      },
+      "registry": "MaveDB",
+      "scores": {
+        "filename": "00001265-a-1.csv",
+        "format": "csv",
+        "sha256": "9227363a8dc5ad81f1a402226a8001008bbfaf0df9fa212bc40b5ba83a5bb57b",
+        "url": "https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001265-a-1/scores"
+      },
+      "url": "https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001265-a-1"
+    },
+    {
+      "gene": "SFPQ",
+      "metadata": {
+        "filename": "IGVFFI1833BDXW.json",
+        "sha256": "65da030a15bc55bed10cf2c2018678376994672141955205d912a38c5a57b3a8",
+        "url": "https://api.data.igvf.org/tabular-files/IGVFFI1833BDXW/?format=json"
+      },
+      "registry": "IGVF",
+      "scores": {
+        "filename": "IGVFFI1833BDXW.tsv.gz",
+        "format": "tsv.gz",
+        "sha256": "0805dcc3c072f3cce63ba22cbf6ff3f4ed5b5e58fbff5dc93cc63bafcdd76e99",
+        "url": "https://api.data.igvf.org/tabular-files/IGVFFI1833BDXW/@@download/IGVFFI1833BDXW.tsv.gz"
+      },
+      "url": "https://data.igvf.org/tabular-files/IGVFFI1833BDXW/"
+    },
+    {
+      "gene": "SFPQ",
+      "metadata": {
+        "filename": "IGVFFI3125FMNW.json",
+        "sha256": "769b418d7647004b94ee44b5a43d1bfa04ab32aebc95163ad8ee511e19b8c6fb",
+        "url": "https://api.data.igvf.org/tabular-files/IGVFFI3125FMNW/?format=json"
+      },
+      "registry": "IGVF",
+      "scores": {
+        "filename": "IGVFFI3125FMNW.tsv.gz",
+        "format": "tsv.gz",
+        "sha256": "2145b010998ba8f27c2e51f5858d58f084b04e3ca592ae9df9d2eed30c8cebb0",
+        "url": "https://api.data.igvf.org/tabular-files/IGVFFI3125FMNW/@@download/IGVFFI3125FMNW.tsv.gz"
+      },
+      "url": "https://data.igvf.org/tabular-files/IGVFFI3125FMNW/"
+    },
+    {
+      "gene": "XRCC2",
+      "metadata": {
+        "filename": "00001264-a-1.json",
+        "sha256": "2ba45ee89a051b06652b28b89087bc302b61188983232f4565f59b7b77e5d2d4",
+        "url": "https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001264-a-1"
+      },
+      "registry": "MaveDB",
+      "scores": {
+        "filename": "00001264-a-1.csv",
+        "format": "csv",
+        "sha256": "634c4ac260028b6ca6ddb7147eed2ada25fb07340db996ee6e3fcec0648a2c76",
+        "url": "https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001264-a-1/scores"
+      },
+      "url": "https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001264-a-1"
+    },
+    {
+      "gene": "XRCC2",
+      "metadata": {
+        "filename": "IGVFFI1361XVSO.json",
+        "sha256": "fb731281ff9940870c9412167d3690dcd6ed679198cfc46f42def169499e6a90",
+        "url": "https://api.data.igvf.org/tabular-files/IGVFFI1361XVSO/?format=json"
+      },
+      "registry": "IGVF",
+      "scores": {
+        "filename": "IGVFFI1361XVSO.tsv.gz",
+        "format": "tsv.gz",
+        "sha256": "c206452066d800d25db28548f7c9bf99d244c9fbdb04a53819516f8dcd0153c5",
+        "url": "https://api.data.igvf.org/tabular-files/IGVFFI1361XVSO/@@download/IGVFFI1361XVSO.tsv.gz"
+      },
+      "url": "https://data.igvf.org/tabular-files/IGVFFI1361XVSO/"
+    },
+    {
+      "gene": "XRCC2",
+      "metadata": {
+        "filename": "IGVFFI1536JYYY.json",
+        "sha256": "b109ae7b9ce1b4710e811b4a3424b1ec707ebbb87cabd26d6b0073c81b9bad2a",
+        "url": "https://api.data.igvf.org/tabular-files/IGVFFI1536JYYY/?format=json"
+      },
+      "registry": "IGVF",
+      "scores": {
+        "filename": "IGVFFI1536JYYY.tsv.gz",
+        "format": "tsv.gz",
+        "sha256": "504d95697049daee6ee1f8d3d797446909daf5db60e34096a5ea32a6c51866a3",
+        "url": "https://api.data.igvf.org/tabular-files/IGVFFI1536JYYY/@@download/IGVFFI1536JYYY.tsv.gz"
+      },
+      "url": "https://data.igvf.org/tabular-files/IGVFFI1536JYYY/"
+    }
+  ]
+}

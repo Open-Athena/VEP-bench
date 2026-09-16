@@ -1,100 +1,134 @@
-# Earliest verified public date among indexed records linked from the benchmark's
-# pinned provenance. Prefer an indexed dataset or assay repository; use a
-# PubMed-indexed paper when that is the earliest linked public record. Do not
-# infer dates from arbitrary project URLs or source-control history.
+# Earliest verified public scored-assay evidence covering the selected panel.
+# Earlier score versions qualify; partial earlier releases remain explicit.
+# Dates are evidence bounds, not claims of first indexing or training exclusion.
+# Review scope, limitations and reproducible comparisons: docs/assay-provenance.md.
 schema_version: "1.0"
 by_task_family:
   opensplice_snv:
     default:
-      date: "2026-05-24"
-      kind: dataset
-      registry: Figshare
-      url: https://doi.org/10.6084/m9.figshare.32337414.v5
+      date: "2026-05-23"
+      kind: preprint
+      registry: bioRxiv
+      url: https://www.biorxiv.org/content/10.64898/2026.05.22.727141v1
   satmut_mpra:
     default:
-      date: "2019-08-08"
-      kind: paper
-      registry: PubMed
-      url: https://pubmed.ncbi.nlm.nih.gov/31395865/
+      date: "2018-12-23"
+      kind: preprint
+      registry: bioRxiv
+      url: https://www.biorxiv.org/content/10.1101/505362v1
   sge:
     records:
       BAP1:
-        date: "2024-07-05"
-        kind: paper
-        registry: PubMed
-        url: https://pubmed.ncbi.nlm.nih.gov/38969833/
+        date: "2024-01-11"
+        kind: dataset
+        registry: Zenodo
+        url: https://doi.org/10.5281/zenodo.10489733
+        note: All 50 selected scores match the archived v1.0.0 workbook, using the same versioned transcript HGVS identities.
       BARD1:
-        date: "2026-06-08"
+        date: "2025-10-21"
         kind: assay_repository
         registry: MaveDB
-        url: https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001250-a-2
+        url: https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001250-a-1
+        note: All 50 selected scores are unchanged from this superseded release; the study also appeared as a preprint on 2025-11-06.
       BRCA1:
-        date: "2018-09-12"
-        kind: paper
-        registry: PubMed
-        url: https://pubmed.ncbi.nlm.nih.gov/30209399/
+        date: "2018-04-05"
+        kind: preprint
+        registry: bioRxiv
+        url: https://www.biorxiv.org/content/10.1101/294520v1
       BRCA2:
-        date: "2025-01-08"
-        kind: paper
-        registry: PubMed
-        url: https://pubmed.ncbi.nlm.nih.gov/39779857/
+        date: "2023-12-15"
+        kind: preprint
+        registry: bioRxiv
+        url: https://www.biorxiv.org/content/10.1101/2023.12.14.571597v1
       CARD11:
         date: "2020-11-16"
         kind: paper
         registry: PubMed
         url: https://pubmed.ncbi.nlm.nih.gov/33202260/
       CTCF:
-        date: "2026-06-17"
+        date: "2025-11-18"
         kind: assay_repository
-        registry: MaveDB
-        url: https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001262-a-3
+        registry: IGVF
+        url: https://data.igvf.org/tabular-files/IGVFFI6548CGAB/
+        earlier_evidence:
+          date: "2025-06-24"
+          kind: assay_repository
+          registry: IGVF
+          url: https://data.igvf.org/tabular-files/IGVFFI7008EHEH/
+        note: The June file covers 31 of 50 selected variants with earlier scores. The November file covers all 50 with unchanged scores.
       DDX3X:
-        date: "2023-12-06"
-        kind: paper
-        registry: PubMed
-        url: https://pubmed.ncbi.nlm.nih.gov/38057330/
+        date: "2022-06-14"
+        kind: preprint
+        registry: medRxiv
+        url: https://www.medrxiv.org/content/10.1101/2022.06.10.22276179v1
       PALB2:
-        date: "2026-01-19"
-        kind: paper
-        registry: PubMed
-        url: https://pubmed.ncbi.nlm.nih.gov/41554690/
+        date: "2025-11-18"
+        kind: assay_repository
+        registry: IGVF
+        url: https://data.igvf.org/tabular-files/IGVFFI5011VHRR/
+        earlier_evidence:
+          date: "2025-06-24"
+          kind: assay_repository
+          registry: IGVF
+          url: https://data.igvf.org/tabular-files/IGVFFI9974PZRX/
+        note: The June file covers 24 of 50 selected variants with earlier scores. The November file covers all 50 with unchanged scores. The previously cited PALB2 paper is not the source for this full-panel assay.
       RAD51C:
         date: "2024-09-18"
         kind: paper
         registry: PubMed
         url: https://pubmed.ncbi.nlm.nih.gov/39299233/
       RAD51D:
-        date: "2026-06-08"
+        date: "2025-11-18"
         kind: assay_repository
-        registry: MaveDB
-        url: https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001260-a-2
+        registry: IGVF
+        url: https://data.igvf.org/tabular-files/IGVFFI2272LOUM/
+        earlier_evidence:
+          date: "2025-06-24"
+          kind: assay_repository
+          registry: IGVF
+          url: https://data.igvf.org/tabular-files/IGVFFI9138TFXQ/
+        note: The June file covers 30 of 50 selected variants; the November file covers all 50. All 50 pinned scores differ from the November scores. Earlier versions count as public assay evidence, not identical answers.
       SBDS:
         date: "2026-08-24"
         kind: assay_repository
         registry: MaveDB
         url: https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001284-a-1
+        note: No earlier scored release verified in the 2026-09-16 audit. The IGVF score file was created in March but first publicly released on 2026-08-26.
       SFPQ:
         date: "2026-06-08"
         kind: assay_repository
         registry: MaveDB
         url: https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001265-a-2
+        earlier_evidence:
+          date: "2025-06-23"
+          kind: assay_repository
+          registry: IGVF
+          url: https://data.igvf.org/tabular-files/IGVFFI3125FMNW/
+        note: Earlier releases cover only V01-V03 of the 50 selected variants; their pinned scores were public by 2025-11-18. V04-V50 first have verified score evidence in the expanded June 2026 release.
       TINF2:
         date: "2026-08-28"
         kind: assay_repository
         registry: MaveDB
         url: https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001286-a-1
+        note: No earlier scored release verified in the 2026-09-16 audit; this is not proof of absence from earlier public sources or model training.
       TP53:
-        date: "2025-01-07"
-        kind: paper
-        registry: PubMed
-        url: https://pubmed.ncbi.nlm.nih.gov/39774325/
+        date: "2023-03-10"
+        kind: preprint
+        registry: bioRxiv
+        url: https://www.biorxiv.org/content/10.1101/2023.03.10.531074v1
       VHL:
-        date: "2024-04-25"
-        kind: assay_repository
-        registry: MaveDB
-        url: https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00000675-a-1
+        date: "2023-06-10"
+        kind: preprint
+        registry: bioRxiv
+        url: https://www.biorxiv.org/content/10.1101/2023.06.10.542698v1
       XRCC2:
-        date: "2026-06-08"
+        date: "2026-01-10"
         kind: assay_repository
         registry: MaveDB
-        url: https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001264-a-2
+        url: https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001264-a-1
+        earlier_evidence:
+          date: "2025-11-18"
+          kind: assay_repository
+          registry: IGVF
+          url: https://data.igvf.org/tabular-files/IGVFFI1536JYYY/
+        note: The November IGVF file covers 46 of 50 selected variants (43 identical scores). All 50 selected scores match the January MaveDB release.

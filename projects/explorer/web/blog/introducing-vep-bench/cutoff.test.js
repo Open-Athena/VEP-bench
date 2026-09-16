@@ -53,6 +53,25 @@ test("exact-day cutoff includes that day; different model cutoffs change members
   assert.equal(row.before_mean, 0);
 });
 
+test("mixed panels retain their scores and evidence but enter neither date-group mean", () => {
+  const f = fixture("2025-06-01");
+  Object.assign(f.metadata.by_task_family.sge.G3.assay_first_indexed, {
+    earlier_evidence: {date: "2024-01-01", url: "https://example.test/earlier"},
+    note: "Only part of the selected panel had earlier scores."
+  });
+  const {summaries: [row], scores} = analyze(f);
+  assert.equal(row.before_n, 3);
+  assert.equal(row.after_n, 0);
+  assert.equal(row.mixed_n, 1);
+  assert.equal(row.unknown_n, 0);
+  assert.equal(row.excluded_n, 1);
+  assert.equal(row.after_mean, null);
+  assert.equal(row.difference, null);
+  assert.equal(scores[3].relation, "Mixed availability");
+  assert.equal(scores[3].spearman_rho, 0.2);
+  assert.equal(scores[3].earlier_evidence_url, "https://example.test/earlier");
+});
+
 test("missing or mismatched provenance excludes panels; empty groups have no score or difference", () => {
   const f = fixture("2026-01");
   delete f.metadata.by_task_family.sge.G0.assay_first_indexed;

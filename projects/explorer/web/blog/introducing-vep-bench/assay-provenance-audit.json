@@ -1,0 +1,5061 @@
+{
+  "assembly": "GRCh38",
+  "manifest_sha256": "61cbfc1c12c8fbf6bed7cd23ee55d7d1e154db463ecb6c7e4cff65fa879b55d2",
+  "schema_version": "1.0",
+  "source_panels_sha256": "72d6bc847f0bc799e8846fc63f1129844eb0bf554092dc01f81f8471c959547c",
+  "sources": [
+    {
+      "exact_score_count": 50,
+      "gene": "BAP1",
+      "match_by": "source_hgvs",
+      "matched_count": 50,
+      "matches": [
+        {
+          "candidate_id": "V01",
+          "genomic_key": "3:52409842:C:G",
+          "matched_identity": "ENST00000460680.6:c.37G>C",
+          "pinned_score": -0.108306762,
+          "public_score": -0.108306762
+        },
+        {
+          "candidate_id": "V02",
+          "genomic_key": "3:52409842:C:A",
+          "matched_identity": "ENST00000460680.6:c.37G>T",
+          "pinned_score": -0.074011499,
+          "public_score": -0.074011499
+        },
+        {
+          "candidate_id": "V03",
+          "genomic_key": "3:52409838:TCA:T",
+          "matched_identity": "ENST00000460680.6:c.37+2_37+3del",
+          "pinned_score": -0.1726259,
+          "public_score": -0.1726259
+        },
+        {
+          "candidate_id": "V04",
+          "genomic_key": "3:52409841:C:T",
+          "matched_identity": "ENST00000460680.6:c.37+1G>A",
+          "pinned_score": -0.189224823,
+          "public_score": -0.189224823
+        },
+        {
+          "candidate_id": "V05",
+          "genomic_key": "3:52409840:A:T",
+          "matched_identity": "ENST00000460680.6:c.37+2T>A",
+          "pinned_score": -0.181716457,
+          "public_score": -0.181716457
+        },
+        {
+          "candidate_id": "V06",
+          "genomic_key": "3:52409834:C:G",
+          "matched_identity": "ENST00000460680.6:c.37+8G>C",
+          "pinned_score": 0.009284385,
+          "public_score": 0.009284385
+        },
+        {
+          "candidate_id": "V07",
+          "genomic_key": "3:52409822:C:A",
+          "matched_identity": "ENST00000460680.6:c.37+20G>T",
+          "pinned_score": 0.001769169,
+          "public_score": 0.001769169
+        },
+        {
+          "candidate_id": "V08",
+          "genomic_key": "3:52409755:GAC:G",
+          "matched_identity": "ENST00000460680.6:c.38-14_38-13del",
+          "pinned_score": 0.000742386,
+          "public_score": 0.000742386
+        },
+        {
+          "candidate_id": "V09",
+          "genomic_key": "3:52409755:G:T",
+          "matched_identity": "ENST00000460680.6:c.38-12C>A",
+          "pinned_score": -0.204579759,
+          "public_score": -0.204579759
+        },
+        {
+          "candidate_id": "V10",
+          "genomic_key": "3:52409754:C:G",
+          "matched_identity": "ENST00000460680.6:c.38-11G>C",
+          "pinned_score": -0.007306932,
+          "public_score": -0.007306932
+        },
+        {
+          "candidate_id": "V11",
+          "genomic_key": "3:52409751:G:A",
+          "matched_identity": "ENST00000460680.6:c.38-8C>T",
+          "pinned_score": -0.001635521,
+          "public_score": -0.001635521
+        },
+        {
+          "candidate_id": "V12",
+          "genomic_key": "3:52409748:G:C",
+          "matched_identity": "ENST00000460680.6:c.38-5C>G",
+          "pinned_score": -0.093074896,
+          "public_score": -0.093074896
+        },
+        {
+          "candidate_id": "V13",
+          "genomic_key": "3:52409745:T:C",
+          "matched_identity": "ENST00000460680.6:c.38-2A>G",
+          "pinned_score": -0.176179269,
+          "public_score": -0.176179269
+        },
+        {
+          "candidate_id": "V14",
+          "genomic_key": "3:52409744:C:A",
+          "matched_identity": "ENST00000460680.6:c.38-1G>T",
+          "pinned_score": -0.188119544,
+          "public_score": -0.188119544
+        },
+        {
+          "candidate_id": "V15",
+          "genomic_key": "3:52409736:GAA:GCT",
+          "matched_identity": "ENST00000460680.6:c.43_44delinsAG",
+          "pinned_score": -0.09765566,
+          "public_score": -0.09765566
+        },
+        {
+          "candidate_id": "V16",
+          "genomic_key": "3:52409735:TGAA:TCAC",
+          "matched_identity": "ENST00000460680.6:c.43_45delinsGTG",
+          "pinned_score": -0.03739102,
+          "public_score": -0.03739102
+        },
+        {
+          "candidate_id": "V17",
+          "genomic_key": "3:52409737:A:T",
+          "matched_identity": "ENST00000460680.6:c.44T>A",
+          "pinned_score": -0.134751033,
+          "public_score": -0.134751033
+        },
+        {
+          "candidate_id": "V18",
+          "genomic_key": "3:52409737:A:G",
+          "matched_identity": "ENST00000460680.6:c.44T>C",
+          "pinned_score": -0.088102312,
+          "public_score": -0.088102312
+        },
+        {
+          "candidate_id": "V19",
+          "genomic_key": "3:52409735:TGA:TAT",
+          "matched_identity": "ENST00000460680.6:c.44_45delinsAT",
+          "pinned_score": -0.1677669,
+          "public_score": -0.1677669
+        },
+        {
+          "candidate_id": "V20",
+          "genomic_key": "3:52409734:GT:G",
+          "matched_identity": "ENST00000460680.6:c.46del",
+          "pinned_score": -0.2203306,
+          "public_score": -0.2203306
+        },
+        {
+          "candidate_id": "V21",
+          "genomic_key": "3:52409731:AG:A",
+          "matched_identity": "ENST00000460680.6:c.49del",
+          "pinned_score": -0.2218027,
+          "public_score": -0.2218027
+        },
+        {
+          "candidate_id": "V22",
+          "genomic_key": "3:52409734:G:A",
+          "matched_identity": "ENST00000460680.6:c.47C>T",
+          "pinned_score": -0.139736748,
+          "public_score": -0.139736748
+        },
+        {
+          "candidate_id": "V23",
+          "genomic_key": "3:52409732:GGG:GAA",
+          "matched_identity": "ENST00000460680.6:c.47_48delinsTT",
+          "pinned_score": -0.1578261,
+          "public_score": -0.1578261
+        },
+        {
+          "candidate_id": "V24",
+          "genomic_key": "3:52409731:A:G",
+          "matched_identity": "ENST00000460680.6:c.50T>C",
+          "pinned_score": -0.09727508,
+          "public_score": -0.09727508
+        },
+        {
+          "candidate_id": "V25",
+          "genomic_key": "3:52409729:GCA:GGG",
+          "matched_identity": "ENST00000460680.6:c.50_51delinsCC",
+          "pinned_score": -0.09107651,
+          "public_score": -0.09107651
+        },
+        {
+          "candidate_id": "V26",
+          "genomic_key": "3:52409729:GC:G",
+          "matched_identity": "ENST00000460680.6:c.51del",
+          "pinned_score": -0.20649,
+          "public_score": -0.20649
+        },
+        {
+          "candidate_id": "V27",
+          "genomic_key": "3:52409729:G:A",
+          "matched_identity": "ENST00000460680.6:c.52C>T",
+          "pinned_score": -0.072559436,
+          "public_score": -0.072559436
+        },
+        {
+          "candidate_id": "V28",
+          "genomic_key": "3:52409726:CGAG:CAAT",
+          "matched_identity": "ENST00000460680.6:c.52_54delinsATT",
+          "pinned_score": -0.002350706,
+          "public_score": -0.002350706
+        },
+        {
+          "candidate_id": "V29",
+          "genomic_key": "3:52409726:CGAG:CAAA",
+          "matched_identity": "ENST00000460680.6:c.52_54delinsTTT",
+          "pinned_score": -0.07353644,
+          "public_score": -0.07353644
+        },
+        {
+          "candidate_id": "V30",
+          "genomic_key": "3:52409728:A:T",
+          "matched_identity": "ENST00000460680.6:c.53T>A",
+          "pinned_score": -0.107807804,
+          "public_score": -0.107807804
+        },
+        {
+          "candidate_id": "V31",
+          "genomic_key": "3:52409726:CGA:CAT",
+          "matched_identity": "ENST00000460680.6:c.53_54delinsAT",
+          "pinned_score": -0.1178383,
+          "public_score": -0.1178383
+        },
+        {
+          "candidate_id": "V32",
+          "genomic_key": "3:52409726:CGA:CAG",
+          "matched_identity": "ENST00000460680.6:c.53_54delinsCT",
+          "pinned_score": -0.2121125,
+          "public_score": -0.2121125
+        },
+        {
+          "candidate_id": "V33",
+          "genomic_key": "3:52409726:CGA:CCC",
+          "matched_identity": "ENST00000460680.6:c.53_54delinsGG",
+          "pinned_score": -0.1771004,
+          "public_score": -0.1771004
+        },
+        {
+          "candidate_id": "V34",
+          "genomic_key": "3:52409725:AC:A",
+          "matched_identity": "ENST00000460680.6:c.55del",
+          "pinned_score": -0.2155069,
+          "public_score": -0.2155069
+        },
+        {
+          "candidate_id": "V35",
+          "genomic_key": "3:52409722:TCCA:T",
+          "matched_identity": "ENST00000460680.6:c.56_58del",
+          "pinned_score": -0.2245578,
+          "public_score": -0.2245578
+        },
+        {
+          "candidate_id": "V36",
+          "genomic_key": "3:52409718:ATCT:A",
+          "matched_identity": "ENST00000460680.6:c.60_62del",
+          "pinned_score": -0.2370224,
+          "public_score": -0.2370224
+        },
+        {
+          "candidate_id": "V37",
+          "genomic_key": "3:52409723:C:A",
+          "matched_identity": "ENST00000460680.6:c.58G>T",
+          "pinned_score": -0.167893452,
+          "public_score": -0.167893452
+        },
+        {
+          "candidate_id": "V38",
+          "genomic_key": "3:52409720:CTT:CCA",
+          "matched_identity": "ENST00000460680.6:c.59_60delinsTG",
+          "pinned_score": -0.05112051,
+          "public_score": -0.05112051
+        },
+        {
+          "candidate_id": "V39",
+          "genomic_key": "3:52409719:T:G",
+          "matched_identity": "ENST00000460680.6:c.62A>C",
+          "pinned_score": 0.002651261,
+          "public_score": 0.002651261
+        },
+        {
+          "candidate_id": "V40",
+          "genomic_key": "3:52409714:CG:C",
+          "matched_identity": "ENST00000460680.6:c.66del",
+          "pinned_score": -0.2079954,
+          "public_score": -0.2079954
+        },
+        {
+          "candidate_id": "V41",
+          "genomic_key": "3:52409711:TAC:T",
+          "matched_identity": "ENST00000460680.6:c.67+1_67+2del",
+          "pinned_score": -0.2306773,
+          "public_score": -0.2306773
+        },
+        {
+          "candidate_id": "V42",
+          "genomic_key": "3:52409713:C:T",
+          "matched_identity": "ENST00000460680.6:c.67+1G>A",
+          "pinned_score": -0.150979412,
+          "public_score": -0.150979412
+        },
+        {
+          "candidate_id": "V43",
+          "genomic_key": "3:52409711:TA:T",
+          "matched_identity": "ENST00000460680.6:c.67+2del",
+          "pinned_score": -0.1204582,
+          "public_score": -0.1204582
+        },
+        {
+          "candidate_id": "V44",
+          "genomic_key": "3:52409712:A:G",
+          "matched_identity": "ENST00000460680.6:c.67+2T>C",
+          "pinned_score": -0.175817767,
+          "public_score": -0.175817767
+        },
+        {
+          "candidate_id": "V45",
+          "genomic_key": "3:52409712:A:C",
+          "matched_identity": "ENST00000460680.6:c.67+2T>G",
+          "pinned_score": -0.18418156,
+          "public_score": -0.18418156
+        },
+        {
+          "candidate_id": "V46",
+          "genomic_key": "3:52409711:T:C",
+          "matched_identity": "ENST00000460680.6:c.67+3A>G",
+          "pinned_score": 0.003631076,
+          "public_score": 0.003631076
+        },
+        {
+          "candidate_id": "V47",
+          "genomic_key": "3:52409710:T:C",
+          "matched_identity": "ENST00000460680.6:c.67+4A>G",
+          "pinned_score": 0.000255333,
+          "public_score": 0.000255333
+        },
+        {
+          "candidate_id": "V48",
+          "genomic_key": "3:52409698:GA:G",
+          "matched_identity": "ENST00000460680.6:c.67+15del",
+          "pinned_score": -0.007919712,
+          "public_score": -0.007919712
+        },
+        {
+          "candidate_id": "V49",
+          "genomic_key": "3:52409630:A:T",
+          "matched_identity": "ENST00000460680.6:c.68-22T>A",
+          "pinned_score": -0.002884888,
+          "public_score": -0.002884888
+        },
+        {
+          "candidate_id": "V50",
+          "genomic_key": "3:52409619:G:C",
+          "matched_identity": "ENST00000460680.6:c.68-11C>G",
+          "pinned_score": -0.001879771,
+          "public_score": -0.001879771
+        }
+      ],
+      "max_absolute_score_difference": 0.0,
+      "metadata_sha256": "834fe549e5154e9171654b18e5a44f8dca14b93688413c374595177f761ddadf",
+      "missing_candidate_ids": [],
+      "public_date": "2024-01-11",
+      "registry": "Zenodo",
+      "scores_sha256": "7cc594b8870dff57ca067862b6bdbe902569a02013a0e7afd4a73e08cab5b1b4",
+      "selected_count": 50,
+      "url": "https://doi.org/10.5281/zenodo.10489733",
+      "within_1e_6_count": 50
+    },
+    {
+      "exact_score_count": 50,
+      "gene": "BARD1",
+      "match_by": "genomic",
+      "matched_count": 50,
+      "matches": [
+        {
+          "candidate_id": "V01",
+          "genomic_key": "2:214745177:C:A",
+          "matched_identity": "2:214745177:C:A",
+          "pinned_score": 0.0110602,
+          "public_score": 0.0110602
+        },
+        {
+          "candidate_id": "V02",
+          "genomic_key": "2:214745166:T:A",
+          "matched_identity": "2:214745166:T:A",
+          "pinned_score": 0.018708,
+          "public_score": 0.018708
+        },
+        {
+          "candidate_id": "V03",
+          "genomic_key": "2:214745161:T:G",
+          "matched_identity": "2:214745161:T:G",
+          "pinned_score": -0.285015,
+          "public_score": -0.285015
+        },
+        {
+          "candidate_id": "V04",
+          "genomic_key": "2:214745156:GTTA:G",
+          "matched_identity": "2:214745157:TTA:",
+          "pinned_score": -0.162702,
+          "public_score": -0.162702
+        },
+        {
+          "candidate_id": "V05",
+          "genomic_key": "2:214745151:CATG:C",
+          "matched_identity": "2:214745152:ATG:",
+          "pinned_score": -0.165535,
+          "public_score": -0.165535
+        },
+        {
+          "candidate_id": "V06",
+          "genomic_key": "2:214745150:A:C",
+          "matched_identity": "2:214745150:A:C",
+          "pinned_score": -0.273426,
+          "public_score": -0.273426
+        },
+        {
+          "candidate_id": "V07",
+          "genomic_key": "2:214745147:A:T",
+          "matched_identity": "2:214745147:A:T",
+          "pinned_score": -0.276793,
+          "public_score": -0.276793
+        },
+        {
+          "candidate_id": "V08",
+          "genomic_key": "2:214745141:G:A",
+          "matched_identity": "2:214745141:G:A",
+          "pinned_score": -0.0995831,
+          "public_score": -0.0995831
+        },
+        {
+          "candidate_id": "V09",
+          "genomic_key": "2:214745140:A:T",
+          "matched_identity": "2:214745140:A:T",
+          "pinned_score": -0.262962,
+          "public_score": -0.262962
+        },
+        {
+          "candidate_id": "V10",
+          "genomic_key": "2:214745125:T:G",
+          "matched_identity": "2:214745125:T:G",
+          "pinned_score": 0.02071,
+          "public_score": 0.02071
+        },
+        {
+          "candidate_id": "V11",
+          "genomic_key": "2:214745120:GTAC:G",
+          "matched_identity": "2:214745121:TAC:",
+          "pinned_score": -0.0311496,
+          "public_score": -0.0311496
+        },
+        {
+          "candidate_id": "V12",
+          "genomic_key": "2:214745117:A:T",
+          "matched_identity": "2:214745117:A:T",
+          "pinned_score": -0.135099,
+          "public_score": -0.135099
+        },
+        {
+          "candidate_id": "V13",
+          "genomic_key": "2:214745115:T:A",
+          "matched_identity": "2:214745115:T:A",
+          "pinned_score": -0.248037,
+          "public_score": -0.248037
+        },
+        {
+          "candidate_id": "V14",
+          "genomic_key": "2:214745109:TACA:T",
+          "matched_identity": "2:214745110:ACA:",
+          "pinned_score": -0.164842,
+          "public_score": -0.164842
+        },
+        {
+          "candidate_id": "V15",
+          "genomic_key": "2:214745108:ATAC:A",
+          "matched_identity": "2:214745109:TAC:",
+          "pinned_score": -0.217856,
+          "public_score": -0.217856
+        },
+        {
+          "candidate_id": "V16",
+          "genomic_key": "2:214745111:C:T",
+          "matched_identity": "2:214745111:C:T",
+          "pinned_score": 0.0216418,
+          "public_score": 0.0216418
+        },
+        {
+          "candidate_id": "V17",
+          "genomic_key": "2:214745107:CATA:C",
+          "matched_identity": "2:214745108:ATA:",
+          "pinned_score": -0.379875,
+          "public_score": -0.379875
+        },
+        {
+          "candidate_id": "V18",
+          "genomic_key": "2:214745110:A:T",
+          "matched_identity": "2:214745110:A:T",
+          "pinned_score": -0.18507,
+          "public_score": -0.18507
+        },
+        {
+          "candidate_id": "V19",
+          "genomic_key": "2:214745108:A:C",
+          "matched_identity": "2:214745108:A:C",
+          "pinned_score": -0.068524,
+          "public_score": -0.068524
+        },
+        {
+          "candidate_id": "V20",
+          "genomic_key": "2:214745095:GAGA:G",
+          "matched_identity": "2:214745096:AGA:",
+          "pinned_score": -0.430492,
+          "public_score": -0.430492
+        },
+        {
+          "candidate_id": "V21",
+          "genomic_key": "2:214745099:A:C",
+          "matched_identity": "2:214745099:A:C",
+          "pinned_score": -0.118974,
+          "public_score": -0.118974
+        },
+        {
+          "candidate_id": "V22",
+          "genomic_key": "2:214745094:TGAG:T",
+          "matched_identity": "2:214745095:GAG:",
+          "pinned_score": -0.476884,
+          "public_score": -0.476884
+        },
+        {
+          "candidate_id": "V23",
+          "genomic_key": "2:214745093:TTGA:T",
+          "matched_identity": "2:214745094:TGA:",
+          "pinned_score": -0.618532,
+          "public_score": -0.618532
+        },
+        {
+          "candidate_id": "V24",
+          "genomic_key": "2:214745096:A:T",
+          "matched_identity": "2:214745096:A:T",
+          "pinned_score": -0.11011,
+          "public_score": -0.11011
+        },
+        {
+          "candidate_id": "V25",
+          "genomic_key": "2:214745091:CATT:C",
+          "matched_identity": "2:214745092:ATT:",
+          "pinned_score": -0.42854,
+          "public_score": -0.42854
+        },
+        {
+          "candidate_id": "V26",
+          "genomic_key": "2:214745089:TCCA:T",
+          "matched_identity": "2:214745090:CCA:",
+          "pinned_score": -0.257593,
+          "public_score": -0.257593
+        },
+        {
+          "candidate_id": "V27",
+          "genomic_key": "2:214745091:C:T",
+          "matched_identity": "2:214745091:C:T",
+          "pinned_score": -0.327748,
+          "public_score": -0.327748
+        },
+        {
+          "candidate_id": "V28",
+          "genomic_key": "2:214745091:C:G",
+          "matched_identity": "2:214745091:C:G",
+          "pinned_score": -0.491148,
+          "public_score": -0.491148
+        },
+        {
+          "candidate_id": "V29",
+          "genomic_key": "2:214745086:GCAT:G",
+          "matched_identity": "2:214745087:CAT:",
+          "pinned_score": -0.313235,
+          "public_score": -0.313235
+        },
+        {
+          "candidate_id": "V30",
+          "genomic_key": "2:214745090:C:A",
+          "matched_identity": "2:214745090:C:A",
+          "pinned_score": -0.218507,
+          "public_score": -0.218507
+        },
+        {
+          "candidate_id": "V31",
+          "genomic_key": "2:214745089:T:A",
+          "matched_identity": "2:214745089:T:A",
+          "pinned_score": 0.00813071,
+          "public_score": 0.00813071
+        },
+        {
+          "candidate_id": "V32",
+          "genomic_key": "2:214745088:A:C",
+          "matched_identity": "2:214745088:A:C",
+          "pinned_score": -0.236647,
+          "public_score": -0.236647
+        },
+        {
+          "candidate_id": "V33",
+          "genomic_key": "2:214745082:TCCA:T",
+          "matched_identity": "2:214745083:CCA:",
+          "pinned_score": -0.372532,
+          "public_score": -0.372532
+        },
+        {
+          "candidate_id": "V34",
+          "genomic_key": "2:214745084:C:G",
+          "matched_identity": "2:214745084:C:G",
+          "pinned_score": -0.330501,
+          "public_score": -0.330501
+        },
+        {
+          "candidate_id": "V35",
+          "genomic_key": "2:214745080:AATC:A",
+          "matched_identity": "2:214745081:ATC:",
+          "pinned_score": -0.404215,
+          "public_score": -0.404215
+        },
+        {
+          "candidate_id": "V36",
+          "genomic_key": "2:214745082:T:A",
+          "matched_identity": "2:214745082:T:A",
+          "pinned_score": -0.0147393,
+          "public_score": -0.0147393
+        },
+        {
+          "candidate_id": "V37",
+          "genomic_key": "2:214745077:TAGA:T",
+          "matched_identity": "2:214745078:AGA:",
+          "pinned_score": -0.265371,
+          "public_score": -0.265371
+        },
+        {
+          "candidate_id": "V38",
+          "genomic_key": "2:214745076:TTAG:T",
+          "matched_identity": "2:214745077:TAG:",
+          "pinned_score": -0.387716,
+          "public_score": -0.387716
+        },
+        {
+          "candidate_id": "V39",
+          "genomic_key": "2:214745075:TTTA:T",
+          "matched_identity": "2:214745076:TTA:",
+          "pinned_score": -0.512885,
+          "public_score": -0.512885
+        },
+        {
+          "candidate_id": "V40",
+          "genomic_key": "2:214745078:A:T",
+          "matched_identity": "2:214745078:A:T",
+          "pinned_score": -0.22631,
+          "public_score": -0.22631
+        },
+        {
+          "candidate_id": "V41",
+          "genomic_key": "2:214745070:CAAA:C",
+          "matched_identity": "2:214745071:AAA:",
+          "pinned_score": -0.345634,
+          "public_score": -0.345634
+        },
+        {
+          "candidate_id": "V42",
+          "genomic_key": "2:214745073:A:T",
+          "matched_identity": "2:214745073:A:T",
+          "pinned_score": -0.101026,
+          "public_score": -0.101026
+        },
+        {
+          "candidate_id": "V43",
+          "genomic_key": "2:214745073:A:C",
+          "matched_identity": "2:214745073:A:C",
+          "pinned_score": -0.316129,
+          "public_score": -0.316129
+        },
+        {
+          "candidate_id": "V44",
+          "genomic_key": "2:214745071:A:G",
+          "matched_identity": "2:214745071:A:G",
+          "pinned_score": 0.0386239,
+          "public_score": 0.0386239
+        },
+        {
+          "candidate_id": "V45",
+          "genomic_key": "2:214745064:T:G",
+          "matched_identity": "2:214745064:T:G",
+          "pinned_score": -0.338249,
+          "public_score": -0.338249
+        },
+        {
+          "candidate_id": "V46",
+          "genomic_key": "2:214745059:ACAC:A",
+          "matched_identity": "2:214745060:CAC:",
+          "pinned_score": -0.531187,
+          "public_score": -0.531187
+        },
+        {
+          "candidate_id": "V47",
+          "genomic_key": "2:214745062:C:T",
+          "matched_identity": "2:214745062:C:T",
+          "pinned_score": -0.429282,
+          "public_score": -0.429282
+        },
+        {
+          "candidate_id": "V48",
+          "genomic_key": "2:214745061:A:T",
+          "matched_identity": "2:214745061:A:T",
+          "pinned_score": -0.108613,
+          "public_score": -0.108613
+        },
+        {
+          "candidate_id": "V49",
+          "genomic_key": "2:214745053:A:C",
+          "matched_identity": "2:214745053:A:C",
+          "pinned_score": 0.0229578,
+          "public_score": 0.0229578
+        },
+        {
+          "candidate_id": "V50",
+          "genomic_key": "2:214745017:A:C",
+          "matched_identity": "2:214745017:A:C",
+          "pinned_score": 0.0269609,
+          "public_score": 0.0269609
+        }
+      ],
+      "max_absolute_score_difference": 0.0,
+      "metadata_sha256": "23957bfcf2b160837a9c1fbc5f1fd6b6627a1dd860eee919c3325c9503bcc1c5",
+      "missing_candidate_ids": [],
+      "public_date": "2025-10-21",
+      "registry": "MaveDB",
+      "scores_sha256": "58fe32451da606ea24479b1efe8dc5162664c3785ce7fb400b2e8797ba5bf9a7",
+      "selected_count": 50,
+      "url": "https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001250-a-1",
+      "within_1e_6_count": 50
+    },
+    {
+      "exact_score_count": 50,
+      "gene": "BARD1",
+      "match_by": "genomic",
+      "matched_count": 50,
+      "matches": [
+        {
+          "candidate_id": "V01",
+          "genomic_key": "2:214745177:C:A",
+          "matched_identity": "2:214745177:C:A",
+          "pinned_score": 0.0110602,
+          "public_score": 0.0110602
+        },
+        {
+          "candidate_id": "V02",
+          "genomic_key": "2:214745166:T:A",
+          "matched_identity": "2:214745166:T:A",
+          "pinned_score": 0.018708,
+          "public_score": 0.018708
+        },
+        {
+          "candidate_id": "V03",
+          "genomic_key": "2:214745161:T:G",
+          "matched_identity": "2:214745161:T:G",
+          "pinned_score": -0.285015,
+          "public_score": -0.285015
+        },
+        {
+          "candidate_id": "V04",
+          "genomic_key": "2:214745156:GTTA:G",
+          "matched_identity": "2:214745157:TTA:",
+          "pinned_score": -0.162702,
+          "public_score": -0.162702
+        },
+        {
+          "candidate_id": "V05",
+          "genomic_key": "2:214745151:CATG:C",
+          "matched_identity": "2:214745152:ATG:",
+          "pinned_score": -0.165535,
+          "public_score": -0.165535
+        },
+        {
+          "candidate_id": "V06",
+          "genomic_key": "2:214745150:A:C",
+          "matched_identity": "2:214745150:A:C",
+          "pinned_score": -0.273426,
+          "public_score": -0.273426
+        },
+        {
+          "candidate_id": "V07",
+          "genomic_key": "2:214745147:A:T",
+          "matched_identity": "2:214745147:A:T",
+          "pinned_score": -0.276793,
+          "public_score": -0.276793
+        },
+        {
+          "candidate_id": "V08",
+          "genomic_key": "2:214745141:G:A",
+          "matched_identity": "2:214745141:G:A",
+          "pinned_score": -0.0995831,
+          "public_score": -0.0995831
+        },
+        {
+          "candidate_id": "V09",
+          "genomic_key": "2:214745140:A:T",
+          "matched_identity": "2:214745140:A:T",
+          "pinned_score": -0.262962,
+          "public_score": -0.262962
+        },
+        {
+          "candidate_id": "V10",
+          "genomic_key": "2:214745125:T:G",
+          "matched_identity": "2:214745125:T:G",
+          "pinned_score": 0.02071,
+          "public_score": 0.02071
+        },
+        {
+          "candidate_id": "V11",
+          "genomic_key": "2:214745120:GTAC:G",
+          "matched_identity": "2:214745121:TAC:",
+          "pinned_score": -0.0311496,
+          "public_score": -0.0311496
+        },
+        {
+          "candidate_id": "V12",
+          "genomic_key": "2:214745117:A:T",
+          "matched_identity": "2:214745117:A:T",
+          "pinned_score": -0.135099,
+          "public_score": -0.135099
+        },
+        {
+          "candidate_id": "V13",
+          "genomic_key": "2:214745115:T:A",
+          "matched_identity": "2:214745115:T:A",
+          "pinned_score": -0.248037,
+          "public_score": -0.248037
+        },
+        {
+          "candidate_id": "V14",
+          "genomic_key": "2:214745109:TACA:T",
+          "matched_identity": "2:214745110:ACA:",
+          "pinned_score": -0.164842,
+          "public_score": -0.164842
+        },
+        {
+          "candidate_id": "V15",
+          "genomic_key": "2:214745108:ATAC:A",
+          "matched_identity": "2:214745109:TAC:",
+          "pinned_score": -0.217856,
+          "public_score": -0.217856
+        },
+        {
+          "candidate_id": "V16",
+          "genomic_key": "2:214745111:C:T",
+          "matched_identity": "2:214745111:C:T",
+          "pinned_score": 0.0216418,
+          "public_score": 0.0216418
+        },
+        {
+          "candidate_id": "V17",
+          "genomic_key": "2:214745107:CATA:C",
+          "matched_identity": "2:214745108:ATA:",
+          "pinned_score": -0.379875,
+          "public_score": -0.379875
+        },
+        {
+          "candidate_id": "V18",
+          "genomic_key": "2:214745110:A:T",
+          "matched_identity": "2:214745110:A:T",
+          "pinned_score": -0.18507,
+          "public_score": -0.18507
+        },
+        {
+          "candidate_id": "V19",
+          "genomic_key": "2:214745108:A:C",
+          "matched_identity": "2:214745108:A:C",
+          "pinned_score": -0.068524,
+          "public_score": -0.068524
+        },
+        {
+          "candidate_id": "V20",
+          "genomic_key": "2:214745095:GAGA:G",
+          "matched_identity": "2:214745096:AGA:",
+          "pinned_score": -0.430492,
+          "public_score": -0.430492
+        },
+        {
+          "candidate_id": "V21",
+          "genomic_key": "2:214745099:A:C",
+          "matched_identity": "2:214745099:A:C",
+          "pinned_score": -0.118974,
+          "public_score": -0.118974
+        },
+        {
+          "candidate_id": "V22",
+          "genomic_key": "2:214745094:TGAG:T",
+          "matched_identity": "2:214745095:GAG:",
+          "pinned_score": -0.476884,
+          "public_score": -0.476884
+        },
+        {
+          "candidate_id": "V23",
+          "genomic_key": "2:214745093:TTGA:T",
+          "matched_identity": "2:214745094:TGA:",
+          "pinned_score": -0.618532,
+          "public_score": -0.618532
+        },
+        {
+          "candidate_id": "V24",
+          "genomic_key": "2:214745096:A:T",
+          "matched_identity": "2:214745096:A:T",
+          "pinned_score": -0.11011,
+          "public_score": -0.11011
+        },
+        {
+          "candidate_id": "V25",
+          "genomic_key": "2:214745091:CATT:C",
+          "matched_identity": "2:214745092:ATT:",
+          "pinned_score": -0.42854,
+          "public_score": -0.42854
+        },
+        {
+          "candidate_id": "V26",
+          "genomic_key": "2:214745089:TCCA:T",
+          "matched_identity": "2:214745090:CCA:",
+          "pinned_score": -0.257593,
+          "public_score": -0.257593
+        },
+        {
+          "candidate_id": "V27",
+          "genomic_key": "2:214745091:C:T",
+          "matched_identity": "2:214745091:C:T",
+          "pinned_score": -0.327748,
+          "public_score": -0.327748
+        },
+        {
+          "candidate_id": "V28",
+          "genomic_key": "2:214745091:C:G",
+          "matched_identity": "2:214745091:C:G",
+          "pinned_score": -0.491148,
+          "public_score": -0.491148
+        },
+        {
+          "candidate_id": "V29",
+          "genomic_key": "2:214745086:GCAT:G",
+          "matched_identity": "2:214745087:CAT:",
+          "pinned_score": -0.313235,
+          "public_score": -0.313235
+        },
+        {
+          "candidate_id": "V30",
+          "genomic_key": "2:214745090:C:A",
+          "matched_identity": "2:214745090:C:A",
+          "pinned_score": -0.218507,
+          "public_score": -0.218507
+        },
+        {
+          "candidate_id": "V31",
+          "genomic_key": "2:214745089:T:A",
+          "matched_identity": "2:214745089:T:A",
+          "pinned_score": 0.00813071,
+          "public_score": 0.00813071
+        },
+        {
+          "candidate_id": "V32",
+          "genomic_key": "2:214745088:A:C",
+          "matched_identity": "2:214745088:A:C",
+          "pinned_score": -0.236647,
+          "public_score": -0.236647
+        },
+        {
+          "candidate_id": "V33",
+          "genomic_key": "2:214745082:TCCA:T",
+          "matched_identity": "2:214745083:CCA:",
+          "pinned_score": -0.372532,
+          "public_score": -0.372532
+        },
+        {
+          "candidate_id": "V34",
+          "genomic_key": "2:214745084:C:G",
+          "matched_identity": "2:214745084:C:G",
+          "pinned_score": -0.330501,
+          "public_score": -0.330501
+        },
+        {
+          "candidate_id": "V35",
+          "genomic_key": "2:214745080:AATC:A",
+          "matched_identity": "2:214745081:ATC:",
+          "pinned_score": -0.404215,
+          "public_score": -0.404215
+        },
+        {
+          "candidate_id": "V36",
+          "genomic_key": "2:214745082:T:A",
+          "matched_identity": "2:214745082:T:A",
+          "pinned_score": -0.0147393,
+          "public_score": -0.0147393
+        },
+        {
+          "candidate_id": "V37",
+          "genomic_key": "2:214745077:TAGA:T",
+          "matched_identity": "2:214745078:AGA:",
+          "pinned_score": -0.265371,
+          "public_score": -0.265371
+        },
+        {
+          "candidate_id": "V38",
+          "genomic_key": "2:214745076:TTAG:T",
+          "matched_identity": "2:214745077:TAG:",
+          "pinned_score": -0.387716,
+          "public_score": -0.387716
+        },
+        {
+          "candidate_id": "V39",
+          "genomic_key": "2:214745075:TTTA:T",
+          "matched_identity": "2:214745076:TTA:",
+          "pinned_score": -0.512885,
+          "public_score": -0.512885
+        },
+        {
+          "candidate_id": "V40",
+          "genomic_key": "2:214745078:A:T",
+          "matched_identity": "2:214745078:A:T",
+          "pinned_score": -0.22631,
+          "public_score": -0.22631
+        },
+        {
+          "candidate_id": "V41",
+          "genomic_key": "2:214745070:CAAA:C",
+          "matched_identity": "2:214745071:AAA:",
+          "pinned_score": -0.345634,
+          "public_score": -0.345634
+        },
+        {
+          "candidate_id": "V42",
+          "genomic_key": "2:214745073:A:T",
+          "matched_identity": "2:214745073:A:T",
+          "pinned_score": -0.101026,
+          "public_score": -0.101026
+        },
+        {
+          "candidate_id": "V43",
+          "genomic_key": "2:214745073:A:C",
+          "matched_identity": "2:214745073:A:C",
+          "pinned_score": -0.316129,
+          "public_score": -0.316129
+        },
+        {
+          "candidate_id": "V44",
+          "genomic_key": "2:214745071:A:G",
+          "matched_identity": "2:214745071:A:G",
+          "pinned_score": 0.0386239,
+          "public_score": 0.0386239
+        },
+        {
+          "candidate_id": "V45",
+          "genomic_key": "2:214745064:T:G",
+          "matched_identity": "2:214745064:T:G",
+          "pinned_score": -0.338249,
+          "public_score": -0.338249
+        },
+        {
+          "candidate_id": "V46",
+          "genomic_key": "2:214745059:ACAC:A",
+          "matched_identity": "2:214745060:CAC:",
+          "pinned_score": -0.531187,
+          "public_score": -0.531187
+        },
+        {
+          "candidate_id": "V47",
+          "genomic_key": "2:214745062:C:T",
+          "matched_identity": "2:214745062:C:T",
+          "pinned_score": -0.429282,
+          "public_score": -0.429282
+        },
+        {
+          "candidate_id": "V48",
+          "genomic_key": "2:214745061:A:T",
+          "matched_identity": "2:214745061:A:T",
+          "pinned_score": -0.108613,
+          "public_score": -0.108613
+        },
+        {
+          "candidate_id": "V49",
+          "genomic_key": "2:214745053:A:C",
+          "matched_identity": "2:214745053:A:C",
+          "pinned_score": 0.0229578,
+          "public_score": 0.0229578
+        },
+        {
+          "candidate_id": "V50",
+          "genomic_key": "2:214745017:A:C",
+          "matched_identity": "2:214745017:A:C",
+          "pinned_score": 0.0269609,
+          "public_score": 0.0269609
+        }
+      ],
+      "max_absolute_score_difference": 0.0,
+      "metadata_sha256": "0c7c3f02ddb2721d1e44a0a17fdb6e176216e2c86e7bab9bd7274da2b70f6155",
+      "missing_candidate_ids": [],
+      "public_date": "2025-11-18",
+      "registry": "IGVF",
+      "scores_sha256": "94d165e3f2183a782b6acc521ecbe04c745581615f8896c3b86f11ce2e7c7284",
+      "selected_count": 50,
+      "url": "https://data.igvf.org/tabular-files/IGVFFI2616FRGT/",
+      "within_1e_6_count": 50
+    },
+    {
+      "exact_score_count": 0,
+      "gene": "CTCF",
+      "match_by": "genomic",
+      "matched_count": 31,
+      "matches": [
+        {
+          "candidate_id": "V01",
+          "genomic_key": "16:67621426:T:G",
+          "matched_identity": "16:67621426:T:G",
+          "pinned_score": -0.0864861,
+          "public_score": -0.100744
+        },
+        {
+          "candidate_id": "V02",
+          "genomic_key": "16:67621431:T:A",
+          "matched_identity": "16:67621431:T:A",
+          "pinned_score": -0.128723,
+          "public_score": -0.142029
+        },
+        {
+          "candidate_id": "V04",
+          "genomic_key": "16:67621436:T:A",
+          "matched_identity": "16:67621436:T:A",
+          "pinned_score": -0.0941983,
+          "public_score": -0.109197
+        },
+        {
+          "candidate_id": "V06",
+          "genomic_key": "16:67621444:G:T",
+          "matched_identity": "16:67621444:G:T",
+          "pinned_score": -0.262453,
+          "public_score": -0.285063
+        },
+        {
+          "candidate_id": "V08",
+          "genomic_key": "16:67621449:G:C",
+          "matched_identity": "16:67621449:G:C",
+          "pinned_score": -0.0855257,
+          "public_score": -0.0962574
+        },
+        {
+          "candidate_id": "V11",
+          "genomic_key": "16:67621468:T:A",
+          "matched_identity": "16:67621468:T:A",
+          "pinned_score": -0.281721,
+          "public_score": -0.2974
+        },
+        {
+          "candidate_id": "V13",
+          "genomic_key": "16:67621474:G:C",
+          "matched_identity": "16:67621474:G:C",
+          "pinned_score": -0.286352,
+          "public_score": -0.308897
+        },
+        {
+          "candidate_id": "V15",
+          "genomic_key": "16:67621477:C:T",
+          "matched_identity": "16:67621477:C:T",
+          "pinned_score": -0.136572,
+          "public_score": -0.151929
+        },
+        {
+          "candidate_id": "V19",
+          "genomic_key": "16:67621482:T:A",
+          "matched_identity": "16:67621482:T:A",
+          "pinned_score": 0.00537556,
+          "public_score": 0.000553967
+        },
+        {
+          "candidate_id": "V21",
+          "genomic_key": "16:67621492:G:C",
+          "matched_identity": "16:67621492:G:C",
+          "pinned_score": -0.230448,
+          "public_score": -0.251427
+        },
+        {
+          "candidate_id": "V22",
+          "genomic_key": "16:67621492:G:T",
+          "matched_identity": "16:67621492:G:T",
+          "pinned_score": 0.0136941,
+          "public_score": 0.00361502
+        },
+        {
+          "candidate_id": "V25",
+          "genomic_key": "16:67621505:T:G",
+          "matched_identity": "16:67621505:T:G",
+          "pinned_score": -0.222084,
+          "public_score": -0.116308
+        },
+        {
+          "candidate_id": "V27",
+          "genomic_key": "16:67621510:A:G",
+          "matched_identity": "16:67621510:A:G",
+          "pinned_score": 0.0339534,
+          "public_score": 0.014727
+        },
+        {
+          "candidate_id": "V28",
+          "genomic_key": "16:67621517:A:C",
+          "matched_identity": "16:67621517:A:C",
+          "pinned_score": -0.203907,
+          "public_score": -0.224162
+        },
+        {
+          "candidate_id": "V29",
+          "genomic_key": "16:67621519:A:C",
+          "matched_identity": "16:67621519:A:C",
+          "pinned_score": 0.0437613,
+          "public_score": 0.0211078
+        },
+        {
+          "candidate_id": "V30",
+          "genomic_key": "16:67621519:A:T",
+          "matched_identity": "16:67621519:A:T",
+          "pinned_score": -0.388934,
+          "public_score": -0.395291
+        },
+        {
+          "candidate_id": "V32",
+          "genomic_key": "16:67621521:G:A",
+          "matched_identity": "16:67621521:G:A",
+          "pinned_score": 0.0325613,
+          "public_score": 0.0119408
+        },
+        {
+          "candidate_id": "V34",
+          "genomic_key": "16:67621531:A:T",
+          "matched_identity": "16:67621531:A:T",
+          "pinned_score": 0.0379859,
+          "public_score": 0.0268484
+        },
+        {
+          "candidate_id": "V36",
+          "genomic_key": "16:67621549:T:A",
+          "matched_identity": "16:67621549:T:A",
+          "pinned_score": -0.260429,
+          "public_score": -0.230788
+        },
+        {
+          "candidate_id": "V38",
+          "genomic_key": "16:67621550:G:T",
+          "matched_identity": "16:67621550:G:T",
+          "pinned_score": -0.369408,
+          "public_score": -0.362892
+        },
+        {
+          "candidate_id": "V39",
+          "genomic_key": "16:67621551:T:A",
+          "matched_identity": "16:67621551:T:A",
+          "pinned_score": -0.300821,
+          "public_score": -0.31068
+        },
+        {
+          "candidate_id": "V40",
+          "genomic_key": "16:67621571:T:G",
+          "matched_identity": "16:67621571:T:G",
+          "pinned_score": -0.24091,
+          "public_score": -0.271919
+        },
+        {
+          "candidate_id": "V41",
+          "genomic_key": "16:67621574:C:A",
+          "matched_identity": "16:67621574:C:A",
+          "pinned_score": -0.153148,
+          "public_score": -0.166328
+        },
+        {
+          "candidate_id": "V42",
+          "genomic_key": "16:67621575:C:G",
+          "matched_identity": "16:67621575:C:G",
+          "pinned_score": 0.0217502,
+          "public_score": 0.0124076
+        },
+        {
+          "candidate_id": "V44",
+          "genomic_key": "16:67621579:A:C",
+          "matched_identity": "16:67621579:A:C",
+          "pinned_score": 0.0184898,
+          "public_score": 0.0107742
+        },
+        {
+          "candidate_id": "V45",
+          "genomic_key": "16:67621579:A:T",
+          "matched_identity": "16:67621579:A:T",
+          "pinned_score": -0.309885,
+          "public_score": -0.316876
+        },
+        {
+          "candidate_id": "V46",
+          "genomic_key": "16:67621586:A:C",
+          "matched_identity": "16:67621586:A:C",
+          "pinned_score": -0.44374,
+          "public_score": -0.476607
+        },
+        {
+          "candidate_id": "V47",
+          "genomic_key": "16:67621586:A:G",
+          "matched_identity": "16:67621586:A:G",
+          "pinned_score": -0.153071,
+          "public_score": -0.161956
+        },
+        {
+          "candidate_id": "V48",
+          "genomic_key": "16:67621588:T:A",
+          "matched_identity": "16:67621588:T:A",
+          "pinned_score": 0.037342,
+          "public_score": 0.0235224
+        },
+        {
+          "candidate_id": "V49",
+          "genomic_key": "16:67621593:T:A",
+          "matched_identity": "16:67621593:T:A",
+          "pinned_score": -0.199126,
+          "public_score": -0.220596
+        },
+        {
+          "candidate_id": "V50",
+          "genomic_key": "16:67621622:A:G",
+          "matched_identity": "16:67621622:A:G",
+          "pinned_score": 0.023649,
+          "public_score": 0.0122781
+        }
+      ],
+      "max_absolute_score_difference": 0.10577600000000001,
+      "metadata_sha256": "0a7af8403a2107cc5abf88f04285c250b449ea7e231a337da6883fa783903e5f",
+      "missing_candidate_ids": [
+        "V03",
+        "V05",
+        "V07",
+        "V09",
+        "V10",
+        "V12",
+        "V14",
+        "V16",
+        "V17",
+        "V18",
+        "V20",
+        "V23",
+        "V24",
+        "V26",
+        "V31",
+        "V33",
+        "V35",
+        "V37",
+        "V43"
+      ],
+      "public_date": "2025-06-24",
+      "registry": "IGVF",
+      "scores_sha256": "8300b46c5f60da4dc7f922a24759cd7ea838edd8742b97715b212dfb0e56eb3a",
+      "selected_count": 50,
+      "url": "https://data.igvf.org/tabular-files/IGVFFI7008EHEH/",
+      "within_1e_6_count": 0
+    },
+    {
+      "exact_score_count": 50,
+      "gene": "CTCF",
+      "match_by": "genomic",
+      "matched_count": 50,
+      "matches": [
+        {
+          "candidate_id": "V01",
+          "genomic_key": "16:67621426:T:G",
+          "matched_identity": "16:67621426:T:G",
+          "pinned_score": -0.0864861,
+          "public_score": -0.0864861
+        },
+        {
+          "candidate_id": "V02",
+          "genomic_key": "16:67621431:T:A",
+          "matched_identity": "16:67621431:T:A",
+          "pinned_score": -0.128723,
+          "public_score": -0.128723
+        },
+        {
+          "candidate_id": "V03",
+          "genomic_key": "16:67621435:TTTA:T",
+          "matched_identity": "16:67621436:TTA:",
+          "pinned_score": -0.107993,
+          "public_score": -0.107993
+        },
+        {
+          "candidate_id": "V04",
+          "genomic_key": "16:67621436:T:A",
+          "matched_identity": "16:67621436:T:A",
+          "pinned_score": -0.0941983,
+          "public_score": -0.0941983
+        },
+        {
+          "candidate_id": "V05",
+          "genomic_key": "16:67621439:AAGG:A",
+          "matched_identity": "16:67621440:AGG:",
+          "pinned_score": -0.373975,
+          "public_score": -0.373975
+        },
+        {
+          "candidate_id": "V06",
+          "genomic_key": "16:67621444:G:T",
+          "matched_identity": "16:67621444:G:T",
+          "pinned_score": -0.262453,
+          "public_score": -0.262453
+        },
+        {
+          "candidate_id": "V07",
+          "genomic_key": "16:67621444:GAAA:G",
+          "matched_identity": "16:67621445:AAA:",
+          "pinned_score": -0.33525,
+          "public_score": -0.33525
+        },
+        {
+          "candidate_id": "V08",
+          "genomic_key": "16:67621449:G:C",
+          "matched_identity": "16:67621449:G:C",
+          "pinned_score": -0.0855257,
+          "public_score": -0.0855257
+        },
+        {
+          "candidate_id": "V09",
+          "genomic_key": "16:67621455:TGAA:T",
+          "matched_identity": "16:67621456:GAA:",
+          "pinned_score": -0.465179,
+          "public_score": -0.465179
+        },
+        {
+          "candidate_id": "V10",
+          "genomic_key": "16:67621456:GAAT:G",
+          "matched_identity": "16:67621457:AAT:",
+          "pinned_score": -0.391555,
+          "public_score": -0.391555
+        },
+        {
+          "candidate_id": "V11",
+          "genomic_key": "16:67621468:T:A",
+          "matched_identity": "16:67621468:T:A",
+          "pinned_score": -0.281721,
+          "public_score": -0.281721
+        },
+        {
+          "candidate_id": "V12",
+          "genomic_key": "16:67621472:ATGC:A",
+          "matched_identity": "16:67621473:TGC:",
+          "pinned_score": -0.507701,
+          "public_score": -0.507701
+        },
+        {
+          "candidate_id": "V13",
+          "genomic_key": "16:67621474:G:C",
+          "matched_identity": "16:67621474:G:C",
+          "pinned_score": -0.286352,
+          "public_score": -0.286352
+        },
+        {
+          "candidate_id": "V14",
+          "genomic_key": "16:67621475:CTCG:C",
+          "matched_identity": "16:67621476:TCG:",
+          "pinned_score": -0.492024,
+          "public_score": -0.492024
+        },
+        {
+          "candidate_id": "V15",
+          "genomic_key": "16:67621477:C:T",
+          "matched_identity": "16:67621477:C:T",
+          "pinned_score": -0.136572,
+          "public_score": -0.136572
+        },
+        {
+          "candidate_id": "V16",
+          "genomic_key": "16:67621477:CGGT:C",
+          "matched_identity": "16:67621478:GGT:",
+          "pinned_score": -0.419351,
+          "public_score": -0.419351
+        },
+        {
+          "candidate_id": "V17",
+          "genomic_key": "16:67621479:GTTT:G",
+          "matched_identity": "16:67621480:TTT:",
+          "pinned_score": -0.529987,
+          "public_score": -0.529987
+        },
+        {
+          "candidate_id": "V18",
+          "genomic_key": "16:67621480:TTTA:T",
+          "matched_identity": "16:67621481:TTA:",
+          "pinned_score": -0.385906,
+          "public_score": -0.385906
+        },
+        {
+          "candidate_id": "V19",
+          "genomic_key": "16:67621482:T:A",
+          "matched_identity": "16:67621482:T:A",
+          "pinned_score": 0.00537556,
+          "public_score": 0.00537556
+        },
+        {
+          "candidate_id": "V20",
+          "genomic_key": "16:67621486:CAAA:C",
+          "matched_identity": "16:67621487:AAA:",
+          "pinned_score": -0.456585,
+          "public_score": -0.456585
+        },
+        {
+          "candidate_id": "V21",
+          "genomic_key": "16:67621492:G:C",
+          "matched_identity": "16:67621492:G:C",
+          "pinned_score": -0.230448,
+          "public_score": -0.230448
+        },
+        {
+          "candidate_id": "V22",
+          "genomic_key": "16:67621492:G:T",
+          "matched_identity": "16:67621492:G:T",
+          "pinned_score": 0.0136941,
+          "public_score": 0.0136941
+        },
+        {
+          "candidate_id": "V23",
+          "genomic_key": "16:67621502:AGAT:A",
+          "matched_identity": "16:67621503:GAT:",
+          "pinned_score": -0.450652,
+          "public_score": -0.450652
+        },
+        {
+          "candidate_id": "V24",
+          "genomic_key": "16:67621504:ATGC:A",
+          "matched_identity": "16:67621505:TGC:",
+          "pinned_score": -0.649608,
+          "public_score": -0.649608
+        },
+        {
+          "candidate_id": "V25",
+          "genomic_key": "16:67621505:T:G",
+          "matched_identity": "16:67621505:T:G",
+          "pinned_score": -0.222084,
+          "public_score": -0.222084
+        },
+        {
+          "candidate_id": "V26",
+          "genomic_key": "16:67621505:TGCA:T",
+          "matched_identity": "16:67621506:GCA:",
+          "pinned_score": -0.477524,
+          "public_score": -0.477524
+        },
+        {
+          "candidate_id": "V27",
+          "genomic_key": "16:67621510:A:G",
+          "matched_identity": "16:67621510:A:G",
+          "pinned_score": 0.0339534,
+          "public_score": 0.0339534
+        },
+        {
+          "candidate_id": "V28",
+          "genomic_key": "16:67621517:A:C",
+          "matched_identity": "16:67621517:A:C",
+          "pinned_score": -0.203907,
+          "public_score": -0.203907
+        },
+        {
+          "candidate_id": "V29",
+          "genomic_key": "16:67621519:A:C",
+          "matched_identity": "16:67621519:A:C",
+          "pinned_score": 0.0437613,
+          "public_score": 0.0437613
+        },
+        {
+          "candidate_id": "V30",
+          "genomic_key": "16:67621519:A:T",
+          "matched_identity": "16:67621519:A:T",
+          "pinned_score": -0.388934,
+          "public_score": -0.388934
+        },
+        {
+          "candidate_id": "V31",
+          "genomic_key": "16:67621519:AAGC:A",
+          "matched_identity": "16:67621520:AGC:",
+          "pinned_score": -0.248806,
+          "public_score": -0.248806
+        },
+        {
+          "candidate_id": "V32",
+          "genomic_key": "16:67621521:G:A",
+          "matched_identity": "16:67621521:G:A",
+          "pinned_score": 0.0325613,
+          "public_score": 0.0325613
+        },
+        {
+          "candidate_id": "V33",
+          "genomic_key": "16:67621523:ACAC:A",
+          "matched_identity": "16:67621524:CAC:",
+          "pinned_score": -0.150838,
+          "public_score": -0.150838
+        },
+        {
+          "candidate_id": "V34",
+          "genomic_key": "16:67621531:A:T",
+          "matched_identity": "16:67621531:A:T",
+          "pinned_score": 0.0379859,
+          "public_score": 0.0379859
+        },
+        {
+          "candidate_id": "V35",
+          "genomic_key": "16:67621540:AAAT:A",
+          "matched_identity": "16:67621541:AAT:",
+          "pinned_score": -0.131228,
+          "public_score": -0.131228
+        },
+        {
+          "candidate_id": "V36",
+          "genomic_key": "16:67621549:T:A",
+          "matched_identity": "16:67621549:T:A",
+          "pinned_score": -0.260429,
+          "public_score": -0.260429
+        },
+        {
+          "candidate_id": "V37",
+          "genomic_key": "16:67621549:T:G",
+          "matched_identity": "16:67621549:T:G",
+          "pinned_score": -0.547694,
+          "public_score": -0.547694
+        },
+        {
+          "candidate_id": "V38",
+          "genomic_key": "16:67621550:G:T",
+          "matched_identity": "16:67621550:G:T",
+          "pinned_score": -0.369408,
+          "public_score": -0.369408
+        },
+        {
+          "candidate_id": "V39",
+          "genomic_key": "16:67621551:T:A",
+          "matched_identity": "16:67621551:T:A",
+          "pinned_score": -0.300821,
+          "public_score": -0.300821
+        },
+        {
+          "candidate_id": "V40",
+          "genomic_key": "16:67621571:T:G",
+          "matched_identity": "16:67621571:T:G",
+          "pinned_score": -0.24091,
+          "public_score": -0.24091
+        },
+        {
+          "candidate_id": "V41",
+          "genomic_key": "16:67621574:C:A",
+          "matched_identity": "16:67621574:C:A",
+          "pinned_score": -0.153148,
+          "public_score": -0.153148
+        },
+        {
+          "candidate_id": "V42",
+          "genomic_key": "16:67621575:C:G",
+          "matched_identity": "16:67621575:C:G",
+          "pinned_score": 0.0217502,
+          "public_score": 0.0217502
+        },
+        {
+          "candidate_id": "V43",
+          "genomic_key": "16:67621577:GAAA:G",
+          "matched_identity": "16:67621578:AAA:",
+          "pinned_score": -0.384894,
+          "public_score": -0.384894
+        },
+        {
+          "candidate_id": "V44",
+          "genomic_key": "16:67621579:A:C",
+          "matched_identity": "16:67621579:A:C",
+          "pinned_score": 0.0184898,
+          "public_score": 0.0184898
+        },
+        {
+          "candidate_id": "V45",
+          "genomic_key": "16:67621579:A:T",
+          "matched_identity": "16:67621579:A:T",
+          "pinned_score": -0.309885,
+          "public_score": -0.309885
+        },
+        {
+          "candidate_id": "V46",
+          "genomic_key": "16:67621586:A:C",
+          "matched_identity": "16:67621586:A:C",
+          "pinned_score": -0.44374,
+          "public_score": -0.44374
+        },
+        {
+          "candidate_id": "V47",
+          "genomic_key": "16:67621586:A:G",
+          "matched_identity": "16:67621586:A:G",
+          "pinned_score": -0.153071,
+          "public_score": -0.153071
+        },
+        {
+          "candidate_id": "V48",
+          "genomic_key": "16:67621588:T:A",
+          "matched_identity": "16:67621588:T:A",
+          "pinned_score": 0.037342,
+          "public_score": 0.037342
+        },
+        {
+          "candidate_id": "V49",
+          "genomic_key": "16:67621593:T:A",
+          "matched_identity": "16:67621593:T:A",
+          "pinned_score": -0.199126,
+          "public_score": -0.199126
+        },
+        {
+          "candidate_id": "V50",
+          "genomic_key": "16:67621622:A:G",
+          "matched_identity": "16:67621622:A:G",
+          "pinned_score": 0.023649,
+          "public_score": 0.023649
+        }
+      ],
+      "max_absolute_score_difference": 0.0,
+      "metadata_sha256": "5eff315d003c8bf59fc94bb53f4f04582c91b78dda41a4176823ba7f03a555ae",
+      "missing_candidate_ids": [],
+      "public_date": "2025-11-18",
+      "registry": "IGVF",
+      "scores_sha256": "d7b3505fd29ccfa4302f48569a410552c14ce2c80f105ebb2bbed7500e671e22",
+      "selected_count": 50,
+      "url": "https://data.igvf.org/tabular-files/IGVFFI6548CGAB/",
+      "within_1e_6_count": 50
+    },
+    {
+      "exact_score_count": 50,
+      "gene": "CTCF",
+      "match_by": "genomic",
+      "matched_count": 50,
+      "matches": [
+        {
+          "candidate_id": "V01",
+          "genomic_key": "16:67621426:T:G",
+          "matched_identity": "16:67621426:T:G",
+          "pinned_score": -0.0864861,
+          "public_score": -0.0864861
+        },
+        {
+          "candidate_id": "V02",
+          "genomic_key": "16:67621431:T:A",
+          "matched_identity": "16:67621431:T:A",
+          "pinned_score": -0.128723,
+          "public_score": -0.128723
+        },
+        {
+          "candidate_id": "V03",
+          "genomic_key": "16:67621435:TTTA:T",
+          "matched_identity": "16:67621436:TTA:",
+          "pinned_score": -0.107993,
+          "public_score": -0.107993
+        },
+        {
+          "candidate_id": "V04",
+          "genomic_key": "16:67621436:T:A",
+          "matched_identity": "16:67621436:T:A",
+          "pinned_score": -0.0941983,
+          "public_score": -0.0941983
+        },
+        {
+          "candidate_id": "V05",
+          "genomic_key": "16:67621439:AAGG:A",
+          "matched_identity": "16:67621440:AGG:",
+          "pinned_score": -0.373975,
+          "public_score": -0.373975
+        },
+        {
+          "candidate_id": "V06",
+          "genomic_key": "16:67621444:G:T",
+          "matched_identity": "16:67621444:G:T",
+          "pinned_score": -0.262453,
+          "public_score": -0.262453
+        },
+        {
+          "candidate_id": "V07",
+          "genomic_key": "16:67621444:GAAA:G",
+          "matched_identity": "16:67621445:AAA:",
+          "pinned_score": -0.33525,
+          "public_score": -0.33525
+        },
+        {
+          "candidate_id": "V08",
+          "genomic_key": "16:67621449:G:C",
+          "matched_identity": "16:67621449:G:C",
+          "pinned_score": -0.0855257,
+          "public_score": -0.0855257
+        },
+        {
+          "candidate_id": "V09",
+          "genomic_key": "16:67621455:TGAA:T",
+          "matched_identity": "16:67621456:GAA:",
+          "pinned_score": -0.465179,
+          "public_score": -0.465179
+        },
+        {
+          "candidate_id": "V10",
+          "genomic_key": "16:67621456:GAAT:G",
+          "matched_identity": "16:67621457:AAT:",
+          "pinned_score": -0.391555,
+          "public_score": -0.391555
+        },
+        {
+          "candidate_id": "V11",
+          "genomic_key": "16:67621468:T:A",
+          "matched_identity": "16:67621468:T:A",
+          "pinned_score": -0.281721,
+          "public_score": -0.281721
+        },
+        {
+          "candidate_id": "V12",
+          "genomic_key": "16:67621472:ATGC:A",
+          "matched_identity": "16:67621473:TGC:",
+          "pinned_score": -0.507701,
+          "public_score": -0.507701
+        },
+        {
+          "candidate_id": "V13",
+          "genomic_key": "16:67621474:G:C",
+          "matched_identity": "16:67621474:G:C",
+          "pinned_score": -0.286352,
+          "public_score": -0.286352
+        },
+        {
+          "candidate_id": "V14",
+          "genomic_key": "16:67621475:CTCG:C",
+          "matched_identity": "16:67621476:TCG:",
+          "pinned_score": -0.492024,
+          "public_score": -0.492024
+        },
+        {
+          "candidate_id": "V15",
+          "genomic_key": "16:67621477:C:T",
+          "matched_identity": "16:67621477:C:T",
+          "pinned_score": -0.136572,
+          "public_score": -0.136572
+        },
+        {
+          "candidate_id": "V16",
+          "genomic_key": "16:67621477:CGGT:C",
+          "matched_identity": "16:67621478:GGT:",
+          "pinned_score": -0.419351,
+          "public_score": -0.419351
+        },
+        {
+          "candidate_id": "V17",
+          "genomic_key": "16:67621479:GTTT:G",
+          "matched_identity": "16:67621480:TTT:",
+          "pinned_score": -0.529987,
+          "public_score": -0.529987
+        },
+        {
+          "candidate_id": "V18",
+          "genomic_key": "16:67621480:TTTA:T",
+          "matched_identity": "16:67621481:TTA:",
+          "pinned_score": -0.385906,
+          "public_score": -0.385906
+        },
+        {
+          "candidate_id": "V19",
+          "genomic_key": "16:67621482:T:A",
+          "matched_identity": "16:67621482:T:A",
+          "pinned_score": 0.00537556,
+          "public_score": 0.00537556
+        },
+        {
+          "candidate_id": "V20",
+          "genomic_key": "16:67621486:CAAA:C",
+          "matched_identity": "16:67621487:AAA:",
+          "pinned_score": -0.456585,
+          "public_score": -0.456585
+        },
+        {
+          "candidate_id": "V21",
+          "genomic_key": "16:67621492:G:C",
+          "matched_identity": "16:67621492:G:C",
+          "pinned_score": -0.230448,
+          "public_score": -0.230448
+        },
+        {
+          "candidate_id": "V22",
+          "genomic_key": "16:67621492:G:T",
+          "matched_identity": "16:67621492:G:T",
+          "pinned_score": 0.0136941,
+          "public_score": 0.0136941
+        },
+        {
+          "candidate_id": "V23",
+          "genomic_key": "16:67621502:AGAT:A",
+          "matched_identity": "16:67621503:GAT:",
+          "pinned_score": -0.450652,
+          "public_score": -0.450652
+        },
+        {
+          "candidate_id": "V24",
+          "genomic_key": "16:67621504:ATGC:A",
+          "matched_identity": "16:67621505:TGC:",
+          "pinned_score": -0.649608,
+          "public_score": -0.649608
+        },
+        {
+          "candidate_id": "V25",
+          "genomic_key": "16:67621505:T:G",
+          "matched_identity": "16:67621505:T:G",
+          "pinned_score": -0.222084,
+          "public_score": -0.222084
+        },
+        {
+          "candidate_id": "V26",
+          "genomic_key": "16:67621505:TGCA:T",
+          "matched_identity": "16:67621506:GCA:",
+          "pinned_score": -0.477524,
+          "public_score": -0.477524
+        },
+        {
+          "candidate_id": "V27",
+          "genomic_key": "16:67621510:A:G",
+          "matched_identity": "16:67621510:A:G",
+          "pinned_score": 0.0339534,
+          "public_score": 0.0339534
+        },
+        {
+          "candidate_id": "V28",
+          "genomic_key": "16:67621517:A:C",
+          "matched_identity": "16:67621517:A:C",
+          "pinned_score": -0.203907,
+          "public_score": -0.203907
+        },
+        {
+          "candidate_id": "V29",
+          "genomic_key": "16:67621519:A:C",
+          "matched_identity": "16:67621519:A:C",
+          "pinned_score": 0.0437613,
+          "public_score": 0.0437613
+        },
+        {
+          "candidate_id": "V30",
+          "genomic_key": "16:67621519:A:T",
+          "matched_identity": "16:67621519:A:T",
+          "pinned_score": -0.388934,
+          "public_score": -0.388934
+        },
+        {
+          "candidate_id": "V31",
+          "genomic_key": "16:67621519:AAGC:A",
+          "matched_identity": "16:67621520:AGC:",
+          "pinned_score": -0.248806,
+          "public_score": -0.248806
+        },
+        {
+          "candidate_id": "V32",
+          "genomic_key": "16:67621521:G:A",
+          "matched_identity": "16:67621521:G:A",
+          "pinned_score": 0.0325613,
+          "public_score": 0.0325613
+        },
+        {
+          "candidate_id": "V33",
+          "genomic_key": "16:67621523:ACAC:A",
+          "matched_identity": "16:67621524:CAC:",
+          "pinned_score": -0.150838,
+          "public_score": -0.150838
+        },
+        {
+          "candidate_id": "V34",
+          "genomic_key": "16:67621531:A:T",
+          "matched_identity": "16:67621531:A:T",
+          "pinned_score": 0.0379859,
+          "public_score": 0.0379859
+        },
+        {
+          "candidate_id": "V35",
+          "genomic_key": "16:67621540:AAAT:A",
+          "matched_identity": "16:67621541:AAT:",
+          "pinned_score": -0.131228,
+          "public_score": -0.131228
+        },
+        {
+          "candidate_id": "V36",
+          "genomic_key": "16:67621549:T:A",
+          "matched_identity": "16:67621549:T:A",
+          "pinned_score": -0.260429,
+          "public_score": -0.260429
+        },
+        {
+          "candidate_id": "V37",
+          "genomic_key": "16:67621549:T:G",
+          "matched_identity": "16:67621549:T:G",
+          "pinned_score": -0.547694,
+          "public_score": -0.547694
+        },
+        {
+          "candidate_id": "V38",
+          "genomic_key": "16:67621550:G:T",
+          "matched_identity": "16:67621550:G:T",
+          "pinned_score": -0.369408,
+          "public_score": -0.369408
+        },
+        {
+          "candidate_id": "V39",
+          "genomic_key": "16:67621551:T:A",
+          "matched_identity": "16:67621551:T:A",
+          "pinned_score": -0.300821,
+          "public_score": -0.300821
+        },
+        {
+          "candidate_id": "V40",
+          "genomic_key": "16:67621571:T:G",
+          "matched_identity": "16:67621571:T:G",
+          "pinned_score": -0.24091,
+          "public_score": -0.24091
+        },
+        {
+          "candidate_id": "V41",
+          "genomic_key": "16:67621574:C:A",
+          "matched_identity": "16:67621574:C:A",
+          "pinned_score": -0.153148,
+          "public_score": -0.153148
+        },
+        {
+          "candidate_id": "V42",
+          "genomic_key": "16:67621575:C:G",
+          "matched_identity": "16:67621575:C:G",
+          "pinned_score": 0.0217502,
+          "public_score": 0.0217502
+        },
+        {
+          "candidate_id": "V43",
+          "genomic_key": "16:67621577:GAAA:G",
+          "matched_identity": "16:67621578:AAA:",
+          "pinned_score": -0.384894,
+          "public_score": -0.384894
+        },
+        {
+          "candidate_id": "V44",
+          "genomic_key": "16:67621579:A:C",
+          "matched_identity": "16:67621579:A:C",
+          "pinned_score": 0.0184898,
+          "public_score": 0.0184898
+        },
+        {
+          "candidate_id": "V45",
+          "genomic_key": "16:67621579:A:T",
+          "matched_identity": "16:67621579:A:T",
+          "pinned_score": -0.309885,
+          "public_score": -0.309885
+        },
+        {
+          "candidate_id": "V46",
+          "genomic_key": "16:67621586:A:C",
+          "matched_identity": "16:67621586:A:C",
+          "pinned_score": -0.44374,
+          "public_score": -0.44374
+        },
+        {
+          "candidate_id": "V47",
+          "genomic_key": "16:67621586:A:G",
+          "matched_identity": "16:67621586:A:G",
+          "pinned_score": -0.153071,
+          "public_score": -0.153071
+        },
+        {
+          "candidate_id": "V48",
+          "genomic_key": "16:67621588:T:A",
+          "matched_identity": "16:67621588:T:A",
+          "pinned_score": 0.037342,
+          "public_score": 0.037342
+        },
+        {
+          "candidate_id": "V49",
+          "genomic_key": "16:67621593:T:A",
+          "matched_identity": "16:67621593:T:A",
+          "pinned_score": -0.199126,
+          "public_score": -0.199126
+        },
+        {
+          "candidate_id": "V50",
+          "genomic_key": "16:67621622:A:G",
+          "matched_identity": "16:67621622:A:G",
+          "pinned_score": 0.023649,
+          "public_score": 0.023649
+        }
+      ],
+      "max_absolute_score_difference": 0.0,
+      "metadata_sha256": "1d167e46d78a9f5cc6d5c5d7b05e315100a91ff9f21902e1a9874e767f883a9e",
+      "missing_candidate_ids": [],
+      "public_date": "2026-01-10",
+      "registry": "MaveDB",
+      "scores_sha256": "82b521e7e1d3b05c1de53218f9b6ef2055ba9112cd516b6a1a1e2bc35f23588f",
+      "selected_count": 50,
+      "url": "https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001262-a-1",
+      "within_1e_6_count": 50
+    },
+    {
+      "exact_score_count": 0,
+      "gene": "PALB2",
+      "match_by": "genomic",
+      "matched_count": 24,
+      "matches": [
+        {
+          "candidate_id": "V02",
+          "genomic_key": "16:23624097:A:C",
+          "matched_identity": "16:23624097:A:C",
+          "pinned_score": -0.164514,
+          "public_score": -0.136505
+        },
+        {
+          "candidate_id": "V04",
+          "genomic_key": "16:23624095:C:A",
+          "matched_identity": "16:23624095:C:A",
+          "pinned_score": -0.186563,
+          "public_score": -0.174968
+        },
+        {
+          "candidate_id": "V06",
+          "genomic_key": "16:23624090:G:T",
+          "matched_identity": "16:23624090:G:T",
+          "pinned_score": 0.00670724,
+          "public_score": 0.0246517
+        },
+        {
+          "candidate_id": "V07",
+          "genomic_key": "16:23624090:G:C",
+          "matched_identity": "16:23624090:G:C",
+          "pinned_score": -0.112902,
+          "public_score": -0.102303
+        },
+        {
+          "candidate_id": "V09",
+          "genomic_key": "16:23624087:A:G",
+          "matched_identity": "16:23624087:A:G",
+          "pinned_score": -0.0751723,
+          "public_score": -0.0348492
+        },
+        {
+          "candidate_id": "V13",
+          "genomic_key": "16:23624079:T:A",
+          "matched_identity": "16:23624079:T:A",
+          "pinned_score": 0.0504421,
+          "public_score": 0.07001
+        },
+        {
+          "candidate_id": "V14",
+          "genomic_key": "16:23624076:C:A",
+          "matched_identity": "16:23624076:C:A",
+          "pinned_score": 0.0149621,
+          "public_score": 0.0317043
+        },
+        {
+          "candidate_id": "V15",
+          "genomic_key": "16:23624075:A:C",
+          "matched_identity": "16:23624075:A:C",
+          "pinned_score": -0.360854,
+          "public_score": -0.264447
+        },
+        {
+          "candidate_id": "V18",
+          "genomic_key": "16:23624071:T:G",
+          "matched_identity": "16:23624071:T:G",
+          "pinned_score": 0.0353904,
+          "public_score": 0.0534809
+        },
+        {
+          "candidate_id": "V19",
+          "genomic_key": "16:23624069:A:T",
+          "matched_identity": "16:23624069:A:T",
+          "pinned_score": -0.25057,
+          "public_score": -0.219954
+        },
+        {
+          "candidate_id": "V24",
+          "genomic_key": "16:23624050:G:T",
+          "matched_identity": "16:23624050:G:T",
+          "pinned_score": 0.0240358,
+          "public_score": 0.0355807
+        },
+        {
+          "candidate_id": "V26",
+          "genomic_key": "16:23624047:C:T",
+          "matched_identity": "16:23624047:C:T",
+          "pinned_score": 0.0339208,
+          "public_score": 0.0544081
+        },
+        {
+          "candidate_id": "V29",
+          "genomic_key": "16:23624045:C:A",
+          "matched_identity": "16:23624045:C:A",
+          "pinned_score": -0.00719126,
+          "public_score": 0.0104933
+        },
+        {
+          "candidate_id": "V30",
+          "genomic_key": "16:23624044:A:T",
+          "matched_identity": "16:23624044:A:T",
+          "pinned_score": -0.310708,
+          "public_score": -0.264238
+        },
+        {
+          "candidate_id": "V32",
+          "genomic_key": "16:23624039:G:A",
+          "matched_identity": "16:23624039:G:A",
+          "pinned_score": -0.0641558,
+          "public_score": -0.0477273
+        },
+        {
+          "candidate_id": "V34",
+          "genomic_key": "16:23624036:A:G",
+          "matched_identity": "16:23624036:A:G",
+          "pinned_score": 0.0445671,
+          "public_score": 0.0500478
+        },
+        {
+          "candidate_id": "V35",
+          "genomic_key": "16:23624034:C:T",
+          "matched_identity": "16:23624034:C:T",
+          "pinned_score": -0.31698,
+          "public_score": -0.305537
+        },
+        {
+          "candidate_id": "V37",
+          "genomic_key": "16:23624024:T:C",
+          "matched_identity": "16:23624024:T:C",
+          "pinned_score": -0.0716167,
+          "public_score": -0.063218
+        },
+        {
+          "candidate_id": "V39",
+          "genomic_key": "16:23624022:T:G",
+          "matched_identity": "16:23624022:T:G",
+          "pinned_score": -0.0228699,
+          "public_score": -0.0256457
+        },
+        {
+          "candidate_id": "V40",
+          "genomic_key": "16:23624018:C:G",
+          "matched_identity": "16:23624018:C:G",
+          "pinned_score": -0.0712686,
+          "public_score": -0.085945
+        },
+        {
+          "candidate_id": "V43",
+          "genomic_key": "16:23624015:T:A",
+          "matched_identity": "16:23624015:T:A",
+          "pinned_score": -0.26735,
+          "public_score": -0.266401
+        },
+        {
+          "candidate_id": "V44",
+          "genomic_key": "16:23624014:C:G",
+          "matched_identity": "16:23624014:C:G",
+          "pinned_score": -0.102856,
+          "public_score": -0.122981
+        },
+        {
+          "candidate_id": "V47",
+          "genomic_key": "16:23624010:T:C",
+          "matched_identity": "16:23624010:T:C",
+          "pinned_score": -0.300999,
+          "public_score": -0.327895
+        },
+        {
+          "candidate_id": "V48",
+          "genomic_key": "16:23624008:C:T",
+          "matched_identity": "16:23624008:C:T",
+          "pinned_score": -0.170818,
+          "public_score": -0.16253
+        }
+      ],
+      "max_absolute_score_difference": 0.09640700000000002,
+      "metadata_sha256": "5c00c4effc3e5c928e83778f96952ee30f9377c35086ceddb6ad08e4a1623cc2",
+      "missing_candidate_ids": [
+        "V01",
+        "V03",
+        "V05",
+        "V08",
+        "V10",
+        "V11",
+        "V12",
+        "V16",
+        "V17",
+        "V20",
+        "V21",
+        "V22",
+        "V23",
+        "V25",
+        "V27",
+        "V28",
+        "V31",
+        "V33",
+        "V36",
+        "V38",
+        "V41",
+        "V42",
+        "V45",
+        "V46",
+        "V49",
+        "V50"
+      ],
+      "public_date": "2025-06-24",
+      "registry": "IGVF",
+      "scores_sha256": "0a4bdefc820a76bf581ff5ae5432736be919bb448e0b714b7b254f3589897c65",
+      "selected_count": 50,
+      "url": "https://data.igvf.org/tabular-files/IGVFFI9974PZRX/",
+      "within_1e_6_count": 0
+    },
+    {
+      "exact_score_count": 50,
+      "gene": "PALB2",
+      "match_by": "genomic",
+      "matched_count": 50,
+      "matches": [
+        {
+          "candidate_id": "V01",
+          "genomic_key": "16:23624094:CCTA:C",
+          "matched_identity": "16:23624095:CTA:",
+          "pinned_score": -0.420749,
+          "public_score": -0.420749
+        },
+        {
+          "candidate_id": "V02",
+          "genomic_key": "16:23624097:A:C",
+          "matched_identity": "16:23624097:A:C",
+          "pinned_score": -0.164514,
+          "public_score": -0.164514
+        },
+        {
+          "candidate_id": "V03",
+          "genomic_key": "16:23624092:AACC:A",
+          "matched_identity": "16:23624093:ACC:",
+          "pinned_score": -0.529337,
+          "public_score": -0.529337
+        },
+        {
+          "candidate_id": "V04",
+          "genomic_key": "16:23624095:C:A",
+          "matched_identity": "16:23624095:C:A",
+          "pinned_score": -0.186563,
+          "public_score": -0.186563
+        },
+        {
+          "candidate_id": "V05",
+          "genomic_key": "16:23624087:ACTG:A",
+          "matched_identity": "16:23624088:CTG:",
+          "pinned_score": -0.177624,
+          "public_score": -0.177624
+        },
+        {
+          "candidate_id": "V06",
+          "genomic_key": "16:23624090:G:T",
+          "matched_identity": "16:23624090:G:T",
+          "pinned_score": 0.00670724,
+          "public_score": 0.00670724
+        },
+        {
+          "candidate_id": "V07",
+          "genomic_key": "16:23624090:G:C",
+          "matched_identity": "16:23624090:G:C",
+          "pinned_score": -0.112902,
+          "public_score": -0.112902
+        },
+        {
+          "candidate_id": "V08",
+          "genomic_key": "16:23624085:ATAC:A",
+          "matched_identity": "16:23624086:TAC:",
+          "pinned_score": -0.124243,
+          "public_score": -0.124243
+        },
+        {
+          "candidate_id": "V09",
+          "genomic_key": "16:23624087:A:G",
+          "matched_identity": "16:23624087:A:G",
+          "pinned_score": -0.0751723,
+          "public_score": -0.0751723
+        },
+        {
+          "candidate_id": "V10",
+          "genomic_key": "16:23624079:TCTG:T",
+          "matched_identity": "16:23624080:CTG:",
+          "pinned_score": -0.162881,
+          "public_score": -0.162881
+        },
+        {
+          "candidate_id": "V11",
+          "genomic_key": "16:23624081:T:G",
+          "matched_identity": "16:23624081:T:G",
+          "pinned_score": -0.450962,
+          "public_score": -0.450962
+        },
+        {
+          "candidate_id": "V12",
+          "genomic_key": "16:23624076:CTAT:C",
+          "matched_identity": "16:23624077:TAT:",
+          "pinned_score": -0.416013,
+          "public_score": -0.416013
+        },
+        {
+          "candidate_id": "V13",
+          "genomic_key": "16:23624079:T:A",
+          "matched_identity": "16:23624079:T:A",
+          "pinned_score": 0.0504421,
+          "public_score": 0.0504421
+        },
+        {
+          "candidate_id": "V14",
+          "genomic_key": "16:23624076:C:A",
+          "matched_identity": "16:23624076:C:A",
+          "pinned_score": 0.0149621,
+          "public_score": 0.0149621
+        },
+        {
+          "candidate_id": "V15",
+          "genomic_key": "16:23624075:A:C",
+          "matched_identity": "16:23624075:A:C",
+          "pinned_score": -0.360854,
+          "public_score": -0.360854
+        },
+        {
+          "candidate_id": "V16",
+          "genomic_key": "16:23624071:TGGA:T",
+          "matched_identity": "16:23624072:GGA:",
+          "pinned_score": -0.19497,
+          "public_score": -0.19497
+        },
+        {
+          "candidate_id": "V17",
+          "genomic_key": "16:23624070:CTGG:C",
+          "matched_identity": "16:23624071:TGG:",
+          "pinned_score": -0.442187,
+          "public_score": -0.442187
+        },
+        {
+          "candidate_id": "V18",
+          "genomic_key": "16:23624071:T:G",
+          "matched_identity": "16:23624071:T:G",
+          "pinned_score": 0.0353904,
+          "public_score": 0.0353904
+        },
+        {
+          "candidate_id": "V19",
+          "genomic_key": "16:23624069:A:T",
+          "matched_identity": "16:23624069:A:T",
+          "pinned_score": -0.25057,
+          "public_score": -0.25057
+        },
+        {
+          "candidate_id": "V20",
+          "genomic_key": "16:23624060:ACAT:A",
+          "matched_identity": "16:23624061:CAT:",
+          "pinned_score": -0.311594,
+          "public_score": -0.311594
+        },
+        {
+          "candidate_id": "V21",
+          "genomic_key": "16:23624059:CACA:C",
+          "matched_identity": "16:23624060:ACA:",
+          "pinned_score": -0.226067,
+          "public_score": -0.226067
+        },
+        {
+          "candidate_id": "V22",
+          "genomic_key": "16:23624057:TACA:T",
+          "matched_identity": "16:23624058:ACA:",
+          "pinned_score": -0.0257932,
+          "public_score": -0.0257932
+        },
+        {
+          "candidate_id": "V23",
+          "genomic_key": "16:23624047:CACG:C",
+          "matched_identity": "16:23624048:ACG:",
+          "pinned_score": -0.243309,
+          "public_score": -0.243309
+        },
+        {
+          "candidate_id": "V24",
+          "genomic_key": "16:23624050:G:T",
+          "matched_identity": "16:23624050:G:T",
+          "pinned_score": 0.0240358,
+          "public_score": 0.0240358
+        },
+        {
+          "candidate_id": "V25",
+          "genomic_key": "16:23624046:ACAC:A",
+          "matched_identity": "16:23624047:CAC:",
+          "pinned_score": -0.358799,
+          "public_score": -0.358799
+        },
+        {
+          "candidate_id": "V26",
+          "genomic_key": "16:23624047:C:T",
+          "matched_identity": "16:23624047:C:T",
+          "pinned_score": 0.0339208,
+          "public_score": 0.0339208
+        },
+        {
+          "candidate_id": "V27",
+          "genomic_key": "16:23624046:A:G",
+          "matched_identity": "16:23624046:A:G",
+          "pinned_score": -0.519177,
+          "public_score": -0.519177
+        },
+        {
+          "candidate_id": "V28",
+          "genomic_key": "16:23624042:ACAC:A",
+          "matched_identity": "16:23624043:CAC:",
+          "pinned_score": -0.247461,
+          "public_score": -0.247461
+        },
+        {
+          "candidate_id": "V29",
+          "genomic_key": "16:23624045:C:A",
+          "matched_identity": "16:23624045:C:A",
+          "pinned_score": -0.00719126,
+          "public_score": -0.00719126
+        },
+        {
+          "candidate_id": "V30",
+          "genomic_key": "16:23624044:A:T",
+          "matched_identity": "16:23624044:A:T",
+          "pinned_score": -0.310708,
+          "public_score": -0.310708
+        },
+        {
+          "candidate_id": "V31",
+          "genomic_key": "16:23624036:AAAG:A",
+          "matched_identity": "16:23624037:AAG:",
+          "pinned_score": -0.483952,
+          "public_score": -0.483952
+        },
+        {
+          "candidate_id": "V32",
+          "genomic_key": "16:23624039:G:A",
+          "matched_identity": "16:23624039:G:A",
+          "pinned_score": -0.0641558,
+          "public_score": -0.0641558
+        },
+        {
+          "candidate_id": "V33",
+          "genomic_key": "16:23624035:CAAA:C",
+          "matched_identity": "16:23624036:AAA:",
+          "pinned_score": -0.198296,
+          "public_score": -0.198296
+        },
+        {
+          "candidate_id": "V34",
+          "genomic_key": "16:23624036:A:G",
+          "matched_identity": "16:23624036:A:G",
+          "pinned_score": 0.0445671,
+          "public_score": 0.0445671
+        },
+        {
+          "candidate_id": "V35",
+          "genomic_key": "16:23624034:C:T",
+          "matched_identity": "16:23624034:C:T",
+          "pinned_score": -0.31698,
+          "public_score": -0.31698
+        },
+        {
+          "candidate_id": "V36",
+          "genomic_key": "16:23624021:ATTT:A",
+          "matched_identity": "16:23624022:TTT:",
+          "pinned_score": -0.467386,
+          "public_score": -0.467386
+        },
+        {
+          "candidate_id": "V37",
+          "genomic_key": "16:23624024:T:C",
+          "matched_identity": "16:23624024:T:C",
+          "pinned_score": -0.0716167,
+          "public_score": -0.0716167
+        },
+        {
+          "candidate_id": "V38",
+          "genomic_key": "16:23624020:GATT:G",
+          "matched_identity": "16:23624021:ATT:",
+          "pinned_score": -0.347741,
+          "public_score": -0.347741
+        },
+        {
+          "candidate_id": "V39",
+          "genomic_key": "16:23624022:T:G",
+          "matched_identity": "16:23624022:T:G",
+          "pinned_score": -0.0228699,
+          "public_score": -0.0228699
+        },
+        {
+          "candidate_id": "V40",
+          "genomic_key": "16:23624018:C:G",
+          "matched_identity": "16:23624018:C:G",
+          "pinned_score": -0.0712686,
+          "public_score": -0.0712686
+        },
+        {
+          "candidate_id": "V41",
+          "genomic_key": "16:23624013:TCTC:T",
+          "matched_identity": "16:23624014:CTC:",
+          "pinned_score": -0.538539,
+          "public_score": -0.538539
+        },
+        {
+          "candidate_id": "V42",
+          "genomic_key": "16:23624012:ATCT:A",
+          "matched_identity": "16:23624013:TCT:",
+          "pinned_score": -0.290631,
+          "public_score": -0.290631
+        },
+        {
+          "candidate_id": "V43",
+          "genomic_key": "16:23624015:T:A",
+          "matched_identity": "16:23624015:T:A",
+          "pinned_score": -0.26735,
+          "public_score": -0.26735
+        },
+        {
+          "candidate_id": "V44",
+          "genomic_key": "16:23624014:C:G",
+          "matched_identity": "16:23624014:C:G",
+          "pinned_score": -0.102856,
+          "public_score": -0.102856
+        },
+        {
+          "candidate_id": "V45",
+          "genomic_key": "16:23624012:A:T",
+          "matched_identity": "16:23624012:A:T",
+          "pinned_score": -0.399167,
+          "public_score": -0.399167
+        },
+        {
+          "candidate_id": "V46",
+          "genomic_key": "16:23624008:CCTG:C",
+          "matched_identity": "16:23624009:CTG:",
+          "pinned_score": -0.3712,
+          "public_score": -0.3712
+        },
+        {
+          "candidate_id": "V47",
+          "genomic_key": "16:23624010:T:C",
+          "matched_identity": "16:23624010:T:C",
+          "pinned_score": -0.300999,
+          "public_score": -0.300999
+        },
+        {
+          "candidate_id": "V48",
+          "genomic_key": "16:23624008:C:T",
+          "matched_identity": "16:23624008:C:T",
+          "pinned_score": -0.170818,
+          "public_score": -0.170818
+        },
+        {
+          "candidate_id": "V49",
+          "genomic_key": "16:23624007:A:T",
+          "matched_identity": "16:23624007:A:T",
+          "pinned_score": -0.451177,
+          "public_score": -0.451177
+        },
+        {
+          "candidate_id": "V50",
+          "genomic_key": "16:23624003:ACAT:A",
+          "matched_identity": "16:23624004:CAT:",
+          "pinned_score": -0.340638,
+          "public_score": -0.340638
+        }
+      ],
+      "max_absolute_score_difference": 0.0,
+      "metadata_sha256": "8d816ac2965822eb68f1b2110d3f91a5153e60c7a151884edec596216bc7dbec",
+      "missing_candidate_ids": [],
+      "public_date": "2025-11-18",
+      "registry": "IGVF",
+      "scores_sha256": "fc9917f3b177ab83773d2d07c28b0a931abc6d713bc06ae1d0caf5c2111569f5",
+      "selected_count": 50,
+      "url": "https://data.igvf.org/tabular-files/IGVFFI5011VHRR/",
+      "within_1e_6_count": 50
+    },
+    {
+      "exact_score_count": 50,
+      "gene": "PALB2",
+      "match_by": "genomic",
+      "matched_count": 50,
+      "matches": [
+        {
+          "candidate_id": "V01",
+          "genomic_key": "16:23624094:CCTA:C",
+          "matched_identity": "16:23624095:CTA:",
+          "pinned_score": -0.420749,
+          "public_score": -0.420749
+        },
+        {
+          "candidate_id": "V02",
+          "genomic_key": "16:23624097:A:C",
+          "matched_identity": "16:23624097:A:C",
+          "pinned_score": -0.164514,
+          "public_score": -0.164514
+        },
+        {
+          "candidate_id": "V03",
+          "genomic_key": "16:23624092:AACC:A",
+          "matched_identity": "16:23624093:ACC:",
+          "pinned_score": -0.529337,
+          "public_score": -0.529337
+        },
+        {
+          "candidate_id": "V04",
+          "genomic_key": "16:23624095:C:A",
+          "matched_identity": "16:23624095:C:A",
+          "pinned_score": -0.186563,
+          "public_score": -0.186563
+        },
+        {
+          "candidate_id": "V05",
+          "genomic_key": "16:23624087:ACTG:A",
+          "matched_identity": "16:23624088:CTG:",
+          "pinned_score": -0.177624,
+          "public_score": -0.177624
+        },
+        {
+          "candidate_id": "V06",
+          "genomic_key": "16:23624090:G:T",
+          "matched_identity": "16:23624090:G:T",
+          "pinned_score": 0.00670724,
+          "public_score": 0.00670724
+        },
+        {
+          "candidate_id": "V07",
+          "genomic_key": "16:23624090:G:C",
+          "matched_identity": "16:23624090:G:C",
+          "pinned_score": -0.112902,
+          "public_score": -0.112902
+        },
+        {
+          "candidate_id": "V08",
+          "genomic_key": "16:23624085:ATAC:A",
+          "matched_identity": "16:23624086:TAC:",
+          "pinned_score": -0.124243,
+          "public_score": -0.124243
+        },
+        {
+          "candidate_id": "V09",
+          "genomic_key": "16:23624087:A:G",
+          "matched_identity": "16:23624087:A:G",
+          "pinned_score": -0.0751723,
+          "public_score": -0.0751723
+        },
+        {
+          "candidate_id": "V10",
+          "genomic_key": "16:23624079:TCTG:T",
+          "matched_identity": "16:23624080:CTG:",
+          "pinned_score": -0.162881,
+          "public_score": -0.162881
+        },
+        {
+          "candidate_id": "V11",
+          "genomic_key": "16:23624081:T:G",
+          "matched_identity": "16:23624081:T:G",
+          "pinned_score": -0.450962,
+          "public_score": -0.450962
+        },
+        {
+          "candidate_id": "V12",
+          "genomic_key": "16:23624076:CTAT:C",
+          "matched_identity": "16:23624077:TAT:",
+          "pinned_score": -0.416013,
+          "public_score": -0.416013
+        },
+        {
+          "candidate_id": "V13",
+          "genomic_key": "16:23624079:T:A",
+          "matched_identity": "16:23624079:T:A",
+          "pinned_score": 0.0504421,
+          "public_score": 0.0504421
+        },
+        {
+          "candidate_id": "V14",
+          "genomic_key": "16:23624076:C:A",
+          "matched_identity": "16:23624076:C:A",
+          "pinned_score": 0.0149621,
+          "public_score": 0.0149621
+        },
+        {
+          "candidate_id": "V15",
+          "genomic_key": "16:23624075:A:C",
+          "matched_identity": "16:23624075:A:C",
+          "pinned_score": -0.360854,
+          "public_score": -0.360854
+        },
+        {
+          "candidate_id": "V16",
+          "genomic_key": "16:23624071:TGGA:T",
+          "matched_identity": "16:23624072:GGA:",
+          "pinned_score": -0.19497,
+          "public_score": -0.19497
+        },
+        {
+          "candidate_id": "V17",
+          "genomic_key": "16:23624070:CTGG:C",
+          "matched_identity": "16:23624071:TGG:",
+          "pinned_score": -0.442187,
+          "public_score": -0.442187
+        },
+        {
+          "candidate_id": "V18",
+          "genomic_key": "16:23624071:T:G",
+          "matched_identity": "16:23624071:T:G",
+          "pinned_score": 0.0353904,
+          "public_score": 0.0353904
+        },
+        {
+          "candidate_id": "V19",
+          "genomic_key": "16:23624069:A:T",
+          "matched_identity": "16:23624069:A:T",
+          "pinned_score": -0.25057,
+          "public_score": -0.25057
+        },
+        {
+          "candidate_id": "V20",
+          "genomic_key": "16:23624060:ACAT:A",
+          "matched_identity": "16:23624061:CAT:",
+          "pinned_score": -0.311594,
+          "public_score": -0.311594
+        },
+        {
+          "candidate_id": "V21",
+          "genomic_key": "16:23624059:CACA:C",
+          "matched_identity": "16:23624060:ACA:",
+          "pinned_score": -0.226067,
+          "public_score": -0.226067
+        },
+        {
+          "candidate_id": "V22",
+          "genomic_key": "16:23624057:TACA:T",
+          "matched_identity": "16:23624058:ACA:",
+          "pinned_score": -0.0257932,
+          "public_score": -0.0257932
+        },
+        {
+          "candidate_id": "V23",
+          "genomic_key": "16:23624047:CACG:C",
+          "matched_identity": "16:23624048:ACG:",
+          "pinned_score": -0.243309,
+          "public_score": -0.243309
+        },
+        {
+          "candidate_id": "V24",
+          "genomic_key": "16:23624050:G:T",
+          "matched_identity": "16:23624050:G:T",
+          "pinned_score": 0.0240358,
+          "public_score": 0.0240358
+        },
+        {
+          "candidate_id": "V25",
+          "genomic_key": "16:23624046:ACAC:A",
+          "matched_identity": "16:23624047:CAC:",
+          "pinned_score": -0.358799,
+          "public_score": -0.358799
+        },
+        {
+          "candidate_id": "V26",
+          "genomic_key": "16:23624047:C:T",
+          "matched_identity": "16:23624047:C:T",
+          "pinned_score": 0.0339208,
+          "public_score": 0.0339208
+        },
+        {
+          "candidate_id": "V27",
+          "genomic_key": "16:23624046:A:G",
+          "matched_identity": "16:23624046:A:G",
+          "pinned_score": -0.519177,
+          "public_score": -0.519177
+        },
+        {
+          "candidate_id": "V28",
+          "genomic_key": "16:23624042:ACAC:A",
+          "matched_identity": "16:23624043:CAC:",
+          "pinned_score": -0.247461,
+          "public_score": -0.247461
+        },
+        {
+          "candidate_id": "V29",
+          "genomic_key": "16:23624045:C:A",
+          "matched_identity": "16:23624045:C:A",
+          "pinned_score": -0.00719126,
+          "public_score": -0.00719126
+        },
+        {
+          "candidate_id": "V30",
+          "genomic_key": "16:23624044:A:T",
+          "matched_identity": "16:23624044:A:T",
+          "pinned_score": -0.310708,
+          "public_score": -0.310708
+        },
+        {
+          "candidate_id": "V31",
+          "genomic_key": "16:23624036:AAAG:A",
+          "matched_identity": "16:23624037:AAG:",
+          "pinned_score": -0.483952,
+          "public_score": -0.483952
+        },
+        {
+          "candidate_id": "V32",
+          "genomic_key": "16:23624039:G:A",
+          "matched_identity": "16:23624039:G:A",
+          "pinned_score": -0.0641558,
+          "public_score": -0.0641558
+        },
+        {
+          "candidate_id": "V33",
+          "genomic_key": "16:23624035:CAAA:C",
+          "matched_identity": "16:23624036:AAA:",
+          "pinned_score": -0.198296,
+          "public_score": -0.198296
+        },
+        {
+          "candidate_id": "V34",
+          "genomic_key": "16:23624036:A:G",
+          "matched_identity": "16:23624036:A:G",
+          "pinned_score": 0.0445671,
+          "public_score": 0.0445671
+        },
+        {
+          "candidate_id": "V35",
+          "genomic_key": "16:23624034:C:T",
+          "matched_identity": "16:23624034:C:T",
+          "pinned_score": -0.31698,
+          "public_score": -0.31698
+        },
+        {
+          "candidate_id": "V36",
+          "genomic_key": "16:23624021:ATTT:A",
+          "matched_identity": "16:23624022:TTT:",
+          "pinned_score": -0.467386,
+          "public_score": -0.467386
+        },
+        {
+          "candidate_id": "V37",
+          "genomic_key": "16:23624024:T:C",
+          "matched_identity": "16:23624024:T:C",
+          "pinned_score": -0.0716167,
+          "public_score": -0.0716167
+        },
+        {
+          "candidate_id": "V38",
+          "genomic_key": "16:23624020:GATT:G",
+          "matched_identity": "16:23624021:ATT:",
+          "pinned_score": -0.347741,
+          "public_score": -0.347741
+        },
+        {
+          "candidate_id": "V39",
+          "genomic_key": "16:23624022:T:G",
+          "matched_identity": "16:23624022:T:G",
+          "pinned_score": -0.0228699,
+          "public_score": -0.0228699
+        },
+        {
+          "candidate_id": "V40",
+          "genomic_key": "16:23624018:C:G",
+          "matched_identity": "16:23624018:C:G",
+          "pinned_score": -0.0712686,
+          "public_score": -0.0712686
+        },
+        {
+          "candidate_id": "V41",
+          "genomic_key": "16:23624013:TCTC:T",
+          "matched_identity": "16:23624014:CTC:",
+          "pinned_score": -0.538539,
+          "public_score": -0.538539
+        },
+        {
+          "candidate_id": "V42",
+          "genomic_key": "16:23624012:ATCT:A",
+          "matched_identity": "16:23624013:TCT:",
+          "pinned_score": -0.290631,
+          "public_score": -0.290631
+        },
+        {
+          "candidate_id": "V43",
+          "genomic_key": "16:23624015:T:A",
+          "matched_identity": "16:23624015:T:A",
+          "pinned_score": -0.26735,
+          "public_score": -0.26735
+        },
+        {
+          "candidate_id": "V44",
+          "genomic_key": "16:23624014:C:G",
+          "matched_identity": "16:23624014:C:G",
+          "pinned_score": -0.102856,
+          "public_score": -0.102856
+        },
+        {
+          "candidate_id": "V45",
+          "genomic_key": "16:23624012:A:T",
+          "matched_identity": "16:23624012:A:T",
+          "pinned_score": -0.399167,
+          "public_score": -0.399167
+        },
+        {
+          "candidate_id": "V46",
+          "genomic_key": "16:23624008:CCTG:C",
+          "matched_identity": "16:23624009:CTG:",
+          "pinned_score": -0.3712,
+          "public_score": -0.3712
+        },
+        {
+          "candidate_id": "V47",
+          "genomic_key": "16:23624010:T:C",
+          "matched_identity": "16:23624010:T:C",
+          "pinned_score": -0.300999,
+          "public_score": -0.300999
+        },
+        {
+          "candidate_id": "V48",
+          "genomic_key": "16:23624008:C:T",
+          "matched_identity": "16:23624008:C:T",
+          "pinned_score": -0.170818,
+          "public_score": -0.170818
+        },
+        {
+          "candidate_id": "V49",
+          "genomic_key": "16:23624007:A:T",
+          "matched_identity": "16:23624007:A:T",
+          "pinned_score": -0.451177,
+          "public_score": -0.451177
+        },
+        {
+          "candidate_id": "V50",
+          "genomic_key": "16:23624003:ACAT:A",
+          "matched_identity": "16:23624004:CAT:",
+          "pinned_score": -0.340638,
+          "public_score": -0.340638
+        }
+      ],
+      "max_absolute_score_difference": 0.0,
+      "metadata_sha256": "349bb199788e04a92ea02add60dca10ed49b2106e66155296564fa89e480c356",
+      "missing_candidate_ids": [],
+      "public_date": "2026-01-10",
+      "registry": "MaveDB",
+      "scores_sha256": "67bd0536702ffab562c693c90858a730c2fe184ed37e9b9370adc04e5a0786fb",
+      "selected_count": 50,
+      "url": "https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001259-a-1",
+      "within_1e_6_count": 50
+    },
+    {
+      "exact_score_count": 0,
+      "gene": "RAD51D",
+      "match_by": "genomic",
+      "matched_count": 30,
+      "matches": [
+        {
+          "candidate_id": "V03",
+          "genomic_key": "17:35103326:T:G",
+          "matched_identity": "17:35103326:T:G",
+          "pinned_score": -0.223201,
+          "public_score": -0.262984
+        },
+        {
+          "candidate_id": "V05",
+          "genomic_key": "17:35103325:C:T",
+          "matched_identity": "17:35103325:C:T",
+          "pinned_score": -0.338496,
+          "public_score": -0.206998
+        },
+        {
+          "candidate_id": "V10",
+          "genomic_key": "17:35103309:A:C",
+          "matched_identity": "17:35103309:A:C",
+          "pinned_score": -0.0401892,
+          "public_score": 0.0283741
+        },
+        {
+          "candidate_id": "V12",
+          "genomic_key": "17:35103307:G:A",
+          "matched_identity": "17:35103307:G:A",
+          "pinned_score": -0.116928,
+          "public_score": -0.0723806
+        },
+        {
+          "candidate_id": "V13",
+          "genomic_key": "17:35103306:T:G",
+          "matched_identity": "17:35103306:T:G",
+          "pinned_score": -0.0846756,
+          "public_score": -0.0451254
+        },
+        {
+          "candidate_id": "V14",
+          "genomic_key": "17:35103305:C:G",
+          "matched_identity": "17:35103305:C:G",
+          "pinned_score": 0.00455456,
+          "public_score": 0.0269238
+        },
+        {
+          "candidate_id": "V18",
+          "genomic_key": "17:35103298:G:A",
+          "matched_identity": "17:35103298:G:A",
+          "pinned_score": -0.224526,
+          "public_score": -0.090581
+        },
+        {
+          "candidate_id": "V19",
+          "genomic_key": "17:35103297:C:G",
+          "matched_identity": "17:35103297:C:G",
+          "pinned_score": -0.28322,
+          "public_score": -0.193032
+        },
+        {
+          "candidate_id": "V20",
+          "genomic_key": "17:35103296:T:C",
+          "matched_identity": "17:35103296:T:C",
+          "pinned_score": 0.00933154,
+          "public_score": 0.0149483
+        },
+        {
+          "candidate_id": "V22",
+          "genomic_key": "17:35103295:C:A",
+          "matched_identity": "17:35103295:C:A",
+          "pinned_score": -0.2638,
+          "public_score": -0.223799
+        },
+        {
+          "candidate_id": "V23",
+          "genomic_key": "17:35103291:A:T",
+          "matched_identity": "17:35103291:A:T",
+          "pinned_score": -0.0493189,
+          "public_score": -0.0765429
+        },
+        {
+          "candidate_id": "V24",
+          "genomic_key": "17:35103291:A:G",
+          "matched_identity": "17:35103291:A:G",
+          "pinned_score": -0.22773,
+          "public_score": -0.123148
+        },
+        {
+          "candidate_id": "V25",
+          "genomic_key": "17:35103291:A:C",
+          "matched_identity": "17:35103291:A:C",
+          "pinned_score": -0.335162,
+          "public_score": -0.193457
+        },
+        {
+          "candidate_id": "V26",
+          "genomic_key": "17:35103289:T:A",
+          "matched_identity": "17:35103289:T:A",
+          "pinned_score": -0.277101,
+          "public_score": -0.192102
+        },
+        {
+          "candidate_id": "V30",
+          "genomic_key": "17:35103279:G:C",
+          "matched_identity": "17:35103279:G:C",
+          "pinned_score": -0.0092718,
+          "public_score": 0.0287245
+        },
+        {
+          "candidate_id": "V32",
+          "genomic_key": "17:35103271:G:T",
+          "matched_identity": "17:35103271:G:T",
+          "pinned_score": 0.0133858,
+          "public_score": 0.0185727
+        },
+        {
+          "candidate_id": "V33",
+          "genomic_key": "17:35103271:G:C",
+          "matched_identity": "17:35103271:G:C",
+          "pinned_score": 0.00949895,
+          "public_score": 0.00867904
+        },
+        {
+          "candidate_id": "V34",
+          "genomic_key": "17:35103267:C:T",
+          "matched_identity": "17:35103267:C:T",
+          "pinned_score": 0.00314435,
+          "public_score": -0.00490948
+        },
+        {
+          "candidate_id": "V38",
+          "genomic_key": "17:35103261:G:T",
+          "matched_identity": "17:35103261:G:T",
+          "pinned_score": -0.0499858,
+          "public_score": -0.040042
+        },
+        {
+          "candidate_id": "V39",
+          "genomic_key": "17:35103258:A:T",
+          "matched_identity": "17:35103258:A:T",
+          "pinned_score": -0.168745,
+          "public_score": -0.115601
+        },
+        {
+          "candidate_id": "V40",
+          "genomic_key": "17:35103255:A:T",
+          "matched_identity": "17:35103255:A:T",
+          "pinned_score": -0.241317,
+          "public_score": -0.127417
+        },
+        {
+          "candidate_id": "V41",
+          "genomic_key": "17:35103254:C:G",
+          "matched_identity": "17:35103254:C:G",
+          "pinned_score": -0.123674,
+          "public_score": -0.0805939
+        },
+        {
+          "candidate_id": "V42",
+          "genomic_key": "17:35103253:C:T",
+          "matched_identity": "17:35103253:C:T",
+          "pinned_score": -0.227646,
+          "public_score": -0.18295
+        },
+        {
+          "candidate_id": "V43",
+          "genomic_key": "17:35103253:C:A",
+          "matched_identity": "17:35103253:C:A",
+          "pinned_score": -0.255197,
+          "public_score": -0.127906
+        },
+        {
+          "candidate_id": "V44",
+          "genomic_key": "17:35103251:C:A",
+          "matched_identity": "17:35103251:C:A",
+          "pinned_score": -0.0558692,
+          "public_score": -0.0688571
+        },
+        {
+          "candidate_id": "V45",
+          "genomic_key": "17:35103249:C:G",
+          "matched_identity": "17:35103249:C:G",
+          "pinned_score": -0.0443908,
+          "public_score": -0.0167377
+        },
+        {
+          "candidate_id": "V46",
+          "genomic_key": "17:35103243:T:C",
+          "matched_identity": "17:35103243:T:C",
+          "pinned_score": 0.0401963,
+          "public_score": 0.0367631
+        },
+        {
+          "candidate_id": "V47",
+          "genomic_key": "17:35103240:G:A",
+          "matched_identity": "17:35103240:G:A",
+          "pinned_score": -0.184292,
+          "public_score": -0.138394
+        },
+        {
+          "candidate_id": "V48",
+          "genomic_key": "17:35103233:T:G",
+          "matched_identity": "17:35103233:T:G",
+          "pinned_score": 0.030718,
+          "public_score": 0.0136437
+        },
+        {
+          "candidate_id": "V50",
+          "genomic_key": "17:35103220:A:G",
+          "matched_identity": "17:35103220:A:G",
+          "pinned_score": 0.0134998,
+          "public_score": 0.073532
+        }
+      ],
+      "max_absolute_score_difference": 0.14170500000000003,
+      "metadata_sha256": "714ecebba77bcfc544b78c580a66e4cab60dedab6602ceff6fee44ba5ce5d6a6",
+      "missing_candidate_ids": [
+        "V01",
+        "V02",
+        "V04",
+        "V06",
+        "V07",
+        "V08",
+        "V09",
+        "V11",
+        "V15",
+        "V16",
+        "V17",
+        "V21",
+        "V27",
+        "V28",
+        "V29",
+        "V31",
+        "V35",
+        "V36",
+        "V37",
+        "V49"
+      ],
+      "public_date": "2025-06-24",
+      "registry": "IGVF",
+      "scores_sha256": "1c4eec40e165dfca82059da3ec973977f01fe2be0fc589d5f66632de38f6ab49",
+      "selected_count": 50,
+      "url": "https://data.igvf.org/tabular-files/IGVFFI9138TFXQ/",
+      "within_1e_6_count": 0
+    },
+    {
+      "exact_score_count": 0,
+      "gene": "RAD51D",
+      "match_by": "genomic",
+      "matched_count": 50,
+      "matches": [
+        {
+          "candidate_id": "V01",
+          "genomic_key": "17:35103324:CCTG:C",
+          "matched_identity": "17:35103325:CTG:",
+          "pinned_score": -0.255482,
+          "public_score": -0.216962
+        },
+        {
+          "candidate_id": "V02",
+          "genomic_key": "17:35103323:GCCT:G",
+          "matched_identity": "17:35103324:CCT:",
+          "pinned_score": -0.369428,
+          "public_score": -0.164859
+        },
+        {
+          "candidate_id": "V03",
+          "genomic_key": "17:35103326:T:G",
+          "matched_identity": "17:35103326:T:G",
+          "pinned_score": -0.223201,
+          "public_score": -0.198031
+        },
+        {
+          "candidate_id": "V04",
+          "genomic_key": "17:35103322:AGCC:A",
+          "matched_identity": "17:35103323:GCC:",
+          "pinned_score": -0.278841,
+          "public_score": -0.247508
+        },
+        {
+          "candidate_id": "V05",
+          "genomic_key": "17:35103325:C:T",
+          "matched_identity": "17:35103325:C:T",
+          "pinned_score": -0.338496,
+          "public_score": -0.195945
+        },
+        {
+          "candidate_id": "V06",
+          "genomic_key": "17:35103320:CAAG:C",
+          "matched_identity": "17:35103321:AAG:",
+          "pinned_score": -0.0419073,
+          "public_score": -0.0883485
+        },
+        {
+          "candidate_id": "V07",
+          "genomic_key": "17:35103317:GGCC:G",
+          "matched_identity": "17:35103318:GCC:",
+          "pinned_score": -0.13025,
+          "public_score": -0.0830269
+        },
+        {
+          "candidate_id": "V08",
+          "genomic_key": "17:35103316:AGGC:A",
+          "matched_identity": "17:35103317:GGC:",
+          "pinned_score": -0.17993,
+          "public_score": -0.178367
+        },
+        {
+          "candidate_id": "V09",
+          "genomic_key": "17:35103315:AAGG:A",
+          "matched_identity": "17:35103316:AGG:",
+          "pinned_score": -0.207383,
+          "public_score": -0.150042
+        },
+        {
+          "candidate_id": "V10",
+          "genomic_key": "17:35103309:A:C",
+          "matched_identity": "17:35103309:A:C",
+          "pinned_score": -0.0401892,
+          "public_score": 0.00724416
+        },
+        {
+          "candidate_id": "V11",
+          "genomic_key": "17:35103303:AGCT:A",
+          "matched_identity": "17:35103304:GCT:",
+          "pinned_score": -0.265246,
+          "public_score": -0.193634
+        },
+        {
+          "candidate_id": "V12",
+          "genomic_key": "17:35103307:G:A",
+          "matched_identity": "17:35103307:G:A",
+          "pinned_score": -0.116928,
+          "public_score": -0.0746819
+        },
+        {
+          "candidate_id": "V13",
+          "genomic_key": "17:35103306:T:G",
+          "matched_identity": "17:35103306:T:G",
+          "pinned_score": -0.0846756,
+          "public_score": -0.0600674
+        },
+        {
+          "candidate_id": "V14",
+          "genomic_key": "17:35103305:C:G",
+          "matched_identity": "17:35103305:C:G",
+          "pinned_score": 0.00455456,
+          "public_score": 0.00534103
+        },
+        {
+          "candidate_id": "V15",
+          "genomic_key": "17:35103300:GCCA:G",
+          "matched_identity": "17:35103301:CCA:",
+          "pinned_score": -0.265183,
+          "public_score": -0.234785
+        },
+        {
+          "candidate_id": "V16",
+          "genomic_key": "17:35103297:CGGG:C",
+          "matched_identity": "17:35103298:GGG:",
+          "pinned_score": -0.369797,
+          "public_score": -0.219751
+        },
+        {
+          "candidate_id": "V17",
+          "genomic_key": "17:35103296:TCGG:T",
+          "matched_identity": "17:35103297:CGG:",
+          "pinned_score": -0.33792,
+          "public_score": -0.21215
+        },
+        {
+          "candidate_id": "V18",
+          "genomic_key": "17:35103298:G:A",
+          "matched_identity": "17:35103298:G:A",
+          "pinned_score": -0.224526,
+          "public_score": -0.149655
+        },
+        {
+          "candidate_id": "V19",
+          "genomic_key": "17:35103297:C:G",
+          "matched_identity": "17:35103297:C:G",
+          "pinned_score": -0.28322,
+          "public_score": -0.197275
+        },
+        {
+          "candidate_id": "V20",
+          "genomic_key": "17:35103296:T:C",
+          "matched_identity": "17:35103296:T:C",
+          "pinned_score": 0.00933154,
+          "public_score": 0.00614892
+        },
+        {
+          "candidate_id": "V21",
+          "genomic_key": "17:35103292:GCTC:G",
+          "matched_identity": "17:35103293:CTC:",
+          "pinned_score": -0.304623,
+          "public_score": -0.19365
+        },
+        {
+          "candidate_id": "V22",
+          "genomic_key": "17:35103295:C:A",
+          "matched_identity": "17:35103295:C:A",
+          "pinned_score": -0.2638,
+          "public_score": -0.210412
+        },
+        {
+          "candidate_id": "V23",
+          "genomic_key": "17:35103291:A:T",
+          "matched_identity": "17:35103291:A:T",
+          "pinned_score": -0.0493189,
+          "public_score": -0.0869184
+        },
+        {
+          "candidate_id": "V24",
+          "genomic_key": "17:35103291:A:G",
+          "matched_identity": "17:35103291:A:G",
+          "pinned_score": -0.22773,
+          "public_score": -0.130443
+        },
+        {
+          "candidate_id": "V25",
+          "genomic_key": "17:35103291:A:C",
+          "matched_identity": "17:35103291:A:C",
+          "pinned_score": -0.335162,
+          "public_score": -0.222846
+        },
+        {
+          "candidate_id": "V26",
+          "genomic_key": "17:35103289:T:A",
+          "matched_identity": "17:35103289:T:A",
+          "pinned_score": -0.277101,
+          "public_score": -0.206265
+        },
+        {
+          "candidate_id": "V27",
+          "genomic_key": "17:35103283:GGGT:G",
+          "matched_identity": "17:35103284:GGT:",
+          "pinned_score": -0.0654494,
+          "public_score": -0.0638964
+        },
+        {
+          "candidate_id": "V28",
+          "genomic_key": "17:35103282:AGGG:A",
+          "matched_identity": "17:35103283:GGG:",
+          "pinned_score": -0.0550293,
+          "public_score": -0.00276685
+        },
+        {
+          "candidate_id": "V29",
+          "genomic_key": "17:35103279:GCCA:G",
+          "matched_identity": "17:35103280:CCA:",
+          "pinned_score": -0.314538,
+          "public_score": -0.169691
+        },
+        {
+          "candidate_id": "V30",
+          "genomic_key": "17:35103279:G:C",
+          "matched_identity": "17:35103279:G:C",
+          "pinned_score": -0.0092718,
+          "public_score": 0.0102374
+        },
+        {
+          "candidate_id": "V31",
+          "genomic_key": "17:35103268:CAAG:C",
+          "matched_identity": "17:35103269:AAG:",
+          "pinned_score": 0.0136109,
+          "public_score": 0.0191077
+        },
+        {
+          "candidate_id": "V32",
+          "genomic_key": "17:35103271:G:T",
+          "matched_identity": "17:35103271:G:T",
+          "pinned_score": 0.0133858,
+          "public_score": 0.00531137
+        },
+        {
+          "candidate_id": "V33",
+          "genomic_key": "17:35103271:G:C",
+          "matched_identity": "17:35103271:G:C",
+          "pinned_score": 0.00949895,
+          "public_score": -0.00412568
+        },
+        {
+          "candidate_id": "V34",
+          "genomic_key": "17:35103267:C:T",
+          "matched_identity": "17:35103267:C:T",
+          "pinned_score": 0.00314435,
+          "public_score": -0.0115428
+        },
+        {
+          "candidate_id": "V35",
+          "genomic_key": "17:35103263:CATG:C",
+          "matched_identity": "17:35103264:ATG:",
+          "pinned_score": -0.0700856,
+          "public_score": -0.0259197
+        },
+        {
+          "candidate_id": "V36",
+          "genomic_key": "17:35103261:GCCA:G",
+          "matched_identity": "17:35103262:CCA:",
+          "pinned_score": -0.132636,
+          "public_score": -0.0955103
+        },
+        {
+          "candidate_id": "V37",
+          "genomic_key": "17:35103260:TGCC:T",
+          "matched_identity": "17:35103261:GCC:",
+          "pinned_score": -0.164505,
+          "public_score": -0.149557
+        },
+        {
+          "candidate_id": "V38",
+          "genomic_key": "17:35103261:G:T",
+          "matched_identity": "17:35103261:G:T",
+          "pinned_score": -0.0499858,
+          "public_score": -0.0386635
+        },
+        {
+          "candidate_id": "V39",
+          "genomic_key": "17:35103258:A:T",
+          "matched_identity": "17:35103258:A:T",
+          "pinned_score": -0.168745,
+          "public_score": -0.140005
+        },
+        {
+          "candidate_id": "V40",
+          "genomic_key": "17:35103255:A:T",
+          "matched_identity": "17:35103255:A:T",
+          "pinned_score": -0.241317,
+          "public_score": -0.175025
+        },
+        {
+          "candidate_id": "V41",
+          "genomic_key": "17:35103254:C:G",
+          "matched_identity": "17:35103254:C:G",
+          "pinned_score": -0.123674,
+          "public_score": -0.0801744
+        },
+        {
+          "candidate_id": "V42",
+          "genomic_key": "17:35103253:C:T",
+          "matched_identity": "17:35103253:C:T",
+          "pinned_score": -0.227646,
+          "public_score": -0.17668
+        },
+        {
+          "candidate_id": "V43",
+          "genomic_key": "17:35103253:C:A",
+          "matched_identity": "17:35103253:C:A",
+          "pinned_score": -0.255197,
+          "public_score": -0.02552
+        },
+        {
+          "candidate_id": "V44",
+          "genomic_key": "17:35103251:C:A",
+          "matched_identity": "17:35103251:C:A",
+          "pinned_score": -0.0558692,
+          "public_score": -0.00553077
+        },
+        {
+          "candidate_id": "V45",
+          "genomic_key": "17:35103249:C:G",
+          "matched_identity": "17:35103249:C:G",
+          "pinned_score": -0.0443908,
+          "public_score": -0.0259886
+        },
+        {
+          "candidate_id": "V46",
+          "genomic_key": "17:35103243:T:C",
+          "matched_identity": "17:35103243:T:C",
+          "pinned_score": 0.0401963,
+          "public_score": 0.0279506
+        },
+        {
+          "candidate_id": "V47",
+          "genomic_key": "17:35103240:G:A",
+          "matched_identity": "17:35103240:G:A",
+          "pinned_score": -0.184292,
+          "public_score": -0.131214
+        },
+        {
+          "candidate_id": "V48",
+          "genomic_key": "17:35103233:T:G",
+          "matched_identity": "17:35103233:T:G",
+          "pinned_score": 0.030718,
+          "public_score": 0.00168472
+        },
+        {
+          "candidate_id": "V49",
+          "genomic_key": "17:35103219:GAAA:G",
+          "matched_identity": "17:35103220:AAA:",
+          "pinned_score": 0.0275719,
+          "public_score": 0.00446231
+        },
+        {
+          "candidate_id": "V50",
+          "genomic_key": "17:35103220:A:G",
+          "matched_identity": "17:35103220:A:G",
+          "pinned_score": 0.0134998,
+          "public_score": 0.0542585
+        }
+      ],
+      "max_absolute_score_difference": 0.22967700000000002,
+      "metadata_sha256": "f75eea8456e0948a8e983d14e61fd83e894954e1902710fe73c15da45f927083",
+      "missing_candidate_ids": [],
+      "public_date": "2025-11-18",
+      "registry": "IGVF",
+      "scores_sha256": "f3ce95456c69c6ef7b2c93acae5a018a308ffb1be4e3ffd122ec9118b79239fa",
+      "selected_count": 50,
+      "url": "https://data.igvf.org/tabular-files/IGVFFI2272LOUM/",
+      "within_1e_6_count": 0
+    },
+    {
+      "exact_score_count": 0,
+      "gene": "RAD51D",
+      "match_by": "genomic",
+      "matched_count": 50,
+      "matches": [
+        {
+          "candidate_id": "V01",
+          "genomic_key": "17:35103324:CCTG:C",
+          "matched_identity": "17:35103325:CTG:",
+          "pinned_score": -0.255482,
+          "public_score": -0.216962
+        },
+        {
+          "candidate_id": "V02",
+          "genomic_key": "17:35103323:GCCT:G",
+          "matched_identity": "17:35103324:CCT:",
+          "pinned_score": -0.369428,
+          "public_score": -0.164859
+        },
+        {
+          "candidate_id": "V03",
+          "genomic_key": "17:35103326:T:G",
+          "matched_identity": "17:35103326:T:G",
+          "pinned_score": -0.223201,
+          "public_score": -0.198031
+        },
+        {
+          "candidate_id": "V04",
+          "genomic_key": "17:35103322:AGCC:A",
+          "matched_identity": "17:35103323:GCC:",
+          "pinned_score": -0.278841,
+          "public_score": -0.247508
+        },
+        {
+          "candidate_id": "V05",
+          "genomic_key": "17:35103325:C:T",
+          "matched_identity": "17:35103325:C:T",
+          "pinned_score": -0.338496,
+          "public_score": -0.195945
+        },
+        {
+          "candidate_id": "V06",
+          "genomic_key": "17:35103320:CAAG:C",
+          "matched_identity": "17:35103321:AAG:",
+          "pinned_score": -0.0419073,
+          "public_score": -0.0883485
+        },
+        {
+          "candidate_id": "V07",
+          "genomic_key": "17:35103317:GGCC:G",
+          "matched_identity": "17:35103318:GCC:",
+          "pinned_score": -0.13025,
+          "public_score": -0.0830269
+        },
+        {
+          "candidate_id": "V08",
+          "genomic_key": "17:35103316:AGGC:A",
+          "matched_identity": "17:35103317:GGC:",
+          "pinned_score": -0.17993,
+          "public_score": -0.178367
+        },
+        {
+          "candidate_id": "V09",
+          "genomic_key": "17:35103315:AAGG:A",
+          "matched_identity": "17:35103316:AGG:",
+          "pinned_score": -0.207383,
+          "public_score": -0.150042
+        },
+        {
+          "candidate_id": "V10",
+          "genomic_key": "17:35103309:A:C",
+          "matched_identity": "17:35103309:A:C",
+          "pinned_score": -0.0401892,
+          "public_score": 0.00724416
+        },
+        {
+          "candidate_id": "V11",
+          "genomic_key": "17:35103303:AGCT:A",
+          "matched_identity": "17:35103304:GCT:",
+          "pinned_score": -0.265246,
+          "public_score": -0.193634
+        },
+        {
+          "candidate_id": "V12",
+          "genomic_key": "17:35103307:G:A",
+          "matched_identity": "17:35103307:G:A",
+          "pinned_score": -0.116928,
+          "public_score": -0.0746819
+        },
+        {
+          "candidate_id": "V13",
+          "genomic_key": "17:35103306:T:G",
+          "matched_identity": "17:35103306:T:G",
+          "pinned_score": -0.0846756,
+          "public_score": -0.0600674
+        },
+        {
+          "candidate_id": "V14",
+          "genomic_key": "17:35103305:C:G",
+          "matched_identity": "17:35103305:C:G",
+          "pinned_score": 0.00455456,
+          "public_score": 0.00534103
+        },
+        {
+          "candidate_id": "V15",
+          "genomic_key": "17:35103300:GCCA:G",
+          "matched_identity": "17:35103301:CCA:",
+          "pinned_score": -0.265183,
+          "public_score": -0.234785
+        },
+        {
+          "candidate_id": "V16",
+          "genomic_key": "17:35103297:CGGG:C",
+          "matched_identity": "17:35103298:GGG:",
+          "pinned_score": -0.369797,
+          "public_score": -0.219751
+        },
+        {
+          "candidate_id": "V17",
+          "genomic_key": "17:35103296:TCGG:T",
+          "matched_identity": "17:35103297:CGG:",
+          "pinned_score": -0.33792,
+          "public_score": -0.21215
+        },
+        {
+          "candidate_id": "V18",
+          "genomic_key": "17:35103298:G:A",
+          "matched_identity": "17:35103298:G:A",
+          "pinned_score": -0.224526,
+          "public_score": -0.149655
+        },
+        {
+          "candidate_id": "V19",
+          "genomic_key": "17:35103297:C:G",
+          "matched_identity": "17:35103297:C:G",
+          "pinned_score": -0.28322,
+          "public_score": -0.197275
+        },
+        {
+          "candidate_id": "V20",
+          "genomic_key": "17:35103296:T:C",
+          "matched_identity": "17:35103296:T:C",
+          "pinned_score": 0.00933154,
+          "public_score": 0.00614892
+        },
+        {
+          "candidate_id": "V21",
+          "genomic_key": "17:35103292:GCTC:G",
+          "matched_identity": "17:35103293:CTC:",
+          "pinned_score": -0.304623,
+          "public_score": -0.19365
+        },
+        {
+          "candidate_id": "V22",
+          "genomic_key": "17:35103295:C:A",
+          "matched_identity": "17:35103295:C:A",
+          "pinned_score": -0.2638,
+          "public_score": -0.210412
+        },
+        {
+          "candidate_id": "V23",
+          "genomic_key": "17:35103291:A:T",
+          "matched_identity": "17:35103291:A:T",
+          "pinned_score": -0.0493189,
+          "public_score": -0.0869184
+        },
+        {
+          "candidate_id": "V24",
+          "genomic_key": "17:35103291:A:G",
+          "matched_identity": "17:35103291:A:G",
+          "pinned_score": -0.22773,
+          "public_score": -0.130443
+        },
+        {
+          "candidate_id": "V25",
+          "genomic_key": "17:35103291:A:C",
+          "matched_identity": "17:35103291:A:C",
+          "pinned_score": -0.335162,
+          "public_score": -0.222846
+        },
+        {
+          "candidate_id": "V26",
+          "genomic_key": "17:35103289:T:A",
+          "matched_identity": "17:35103289:T:A",
+          "pinned_score": -0.277101,
+          "public_score": -0.206265
+        },
+        {
+          "candidate_id": "V27",
+          "genomic_key": "17:35103283:GGGT:G",
+          "matched_identity": "17:35103284:GGT:",
+          "pinned_score": -0.0654494,
+          "public_score": -0.0638964
+        },
+        {
+          "candidate_id": "V28",
+          "genomic_key": "17:35103282:AGGG:A",
+          "matched_identity": "17:35103283:GGG:",
+          "pinned_score": -0.0550293,
+          "public_score": -0.00276685
+        },
+        {
+          "candidate_id": "V29",
+          "genomic_key": "17:35103279:GCCA:G",
+          "matched_identity": "17:35103280:CCA:",
+          "pinned_score": -0.314538,
+          "public_score": -0.169691
+        },
+        {
+          "candidate_id": "V30",
+          "genomic_key": "17:35103279:G:C",
+          "matched_identity": "17:35103279:G:C",
+          "pinned_score": -0.0092718,
+          "public_score": 0.0102374
+        },
+        {
+          "candidate_id": "V31",
+          "genomic_key": "17:35103268:CAAG:C",
+          "matched_identity": "17:35103269:AAG:",
+          "pinned_score": 0.0136109,
+          "public_score": 0.0191077
+        },
+        {
+          "candidate_id": "V32",
+          "genomic_key": "17:35103271:G:T",
+          "matched_identity": "17:35103271:G:T",
+          "pinned_score": 0.0133858,
+          "public_score": 0.00531137
+        },
+        {
+          "candidate_id": "V33",
+          "genomic_key": "17:35103271:G:C",
+          "matched_identity": "17:35103271:G:C",
+          "pinned_score": 0.00949895,
+          "public_score": -0.00412568
+        },
+        {
+          "candidate_id": "V34",
+          "genomic_key": "17:35103267:C:T",
+          "matched_identity": "17:35103267:C:T",
+          "pinned_score": 0.00314435,
+          "public_score": -0.0115428
+        },
+        {
+          "candidate_id": "V35",
+          "genomic_key": "17:35103263:CATG:C",
+          "matched_identity": "17:35103264:ATG:",
+          "pinned_score": -0.0700856,
+          "public_score": -0.0259197
+        },
+        {
+          "candidate_id": "V36",
+          "genomic_key": "17:35103261:GCCA:G",
+          "matched_identity": "17:35103262:CCA:",
+          "pinned_score": -0.132636,
+          "public_score": -0.0955103
+        },
+        {
+          "candidate_id": "V37",
+          "genomic_key": "17:35103260:TGCC:T",
+          "matched_identity": "17:35103261:GCC:",
+          "pinned_score": -0.164505,
+          "public_score": -0.149557
+        },
+        {
+          "candidate_id": "V38",
+          "genomic_key": "17:35103261:G:T",
+          "matched_identity": "17:35103261:G:T",
+          "pinned_score": -0.0499858,
+          "public_score": -0.0386635
+        },
+        {
+          "candidate_id": "V39",
+          "genomic_key": "17:35103258:A:T",
+          "matched_identity": "17:35103258:A:T",
+          "pinned_score": -0.168745,
+          "public_score": -0.140005
+        },
+        {
+          "candidate_id": "V40",
+          "genomic_key": "17:35103255:A:T",
+          "matched_identity": "17:35103255:A:T",
+          "pinned_score": -0.241317,
+          "public_score": -0.175025
+        },
+        {
+          "candidate_id": "V41",
+          "genomic_key": "17:35103254:C:G",
+          "matched_identity": "17:35103254:C:G",
+          "pinned_score": -0.123674,
+          "public_score": -0.0801744
+        },
+        {
+          "candidate_id": "V42",
+          "genomic_key": "17:35103253:C:T",
+          "matched_identity": "17:35103253:C:T",
+          "pinned_score": -0.227646,
+          "public_score": -0.17668
+        },
+        {
+          "candidate_id": "V43",
+          "genomic_key": "17:35103253:C:A",
+          "matched_identity": "17:35103253:C:A",
+          "pinned_score": -0.255197,
+          "public_score": -0.02552
+        },
+        {
+          "candidate_id": "V44",
+          "genomic_key": "17:35103251:C:A",
+          "matched_identity": "17:35103251:C:A",
+          "pinned_score": -0.0558692,
+          "public_score": -0.00553077
+        },
+        {
+          "candidate_id": "V45",
+          "genomic_key": "17:35103249:C:G",
+          "matched_identity": "17:35103249:C:G",
+          "pinned_score": -0.0443908,
+          "public_score": -0.0259886
+        },
+        {
+          "candidate_id": "V46",
+          "genomic_key": "17:35103243:T:C",
+          "matched_identity": "17:35103243:T:C",
+          "pinned_score": 0.0401963,
+          "public_score": 0.0279506
+        },
+        {
+          "candidate_id": "V47",
+          "genomic_key": "17:35103240:G:A",
+          "matched_identity": "17:35103240:G:A",
+          "pinned_score": -0.184292,
+          "public_score": -0.131214
+        },
+        {
+          "candidate_id": "V48",
+          "genomic_key": "17:35103233:T:G",
+          "matched_identity": "17:35103233:T:G",
+          "pinned_score": 0.030718,
+          "public_score": 0.00168472
+        },
+        {
+          "candidate_id": "V49",
+          "genomic_key": "17:35103219:GAAA:G",
+          "matched_identity": "17:35103220:AAA:",
+          "pinned_score": 0.0275719,
+          "public_score": 0.00446231
+        },
+        {
+          "candidate_id": "V50",
+          "genomic_key": "17:35103220:A:G",
+          "matched_identity": "17:35103220:A:G",
+          "pinned_score": 0.0134998,
+          "public_score": 0.0542585
+        }
+      ],
+      "max_absolute_score_difference": 0.22967700000000002,
+      "metadata_sha256": "ac27020ab777fd094d536ca9ee37ea5a70f5a6da7345e1414c58eb5e39595255",
+      "missing_candidate_ids": [],
+      "public_date": "2026-01-10",
+      "registry": "MaveDB",
+      "scores_sha256": "a891b490002f536fd3dd9b59c04a9fbe17471e0c07a8d6e186aad747e28afa5f",
+      "selected_count": 50,
+      "url": "https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001260-a-1",
+      "within_1e_6_count": 0
+    },
+    {
+      "exact_score_count": 0,
+      "gene": "SFPQ",
+      "match_by": "genomic",
+      "matched_count": 3,
+      "matches": [
+        {
+          "candidate_id": "V01",
+          "genomic_key": "1:35190692:A:C",
+          "matched_identity": "1:35190692:A:C",
+          "pinned_score": -0.197004,
+          "public_score": -0.233207
+        },
+        {
+          "candidate_id": "V02",
+          "genomic_key": "1:35190691:T:G",
+          "matched_identity": "1:35190691:T:G",
+          "pinned_score": -0.173639,
+          "public_score": -0.193092
+        },
+        {
+          "candidate_id": "V03",
+          "genomic_key": "1:35190651:A:C",
+          "matched_identity": "1:35190651:A:C",
+          "pinned_score": -0.21153,
+          "public_score": -0.218782
+        }
+      ],
+      "max_absolute_score_difference": 0.036202999999999985,
+      "metadata_sha256": "769b418d7647004b94ee44b5a43d1bfa04ab32aebc95163ad8ee511e19b8c6fb",
+      "missing_candidate_ids": [
+        "V04",
+        "V05",
+        "V06",
+        "V07",
+        "V08",
+        "V09",
+        "V10",
+        "V11",
+        "V12",
+        "V13",
+        "V14",
+        "V15",
+        "V16",
+        "V17",
+        "V18",
+        "V19",
+        "V20",
+        "V21",
+        "V22",
+        "V23",
+        "V24",
+        "V25",
+        "V26",
+        "V27",
+        "V28",
+        "V29",
+        "V30",
+        "V31",
+        "V32",
+        "V33",
+        "V34",
+        "V35",
+        "V36",
+        "V37",
+        "V38",
+        "V39",
+        "V40",
+        "V41",
+        "V42",
+        "V43",
+        "V44",
+        "V45",
+        "V46",
+        "V47",
+        "V48",
+        "V49",
+        "V50"
+      ],
+      "public_date": "2025-06-23",
+      "registry": "IGVF",
+      "scores_sha256": "2145b010998ba8f27c2e51f5858d58f084b04e3ca592ae9df9d2eed30c8cebb0",
+      "selected_count": 50,
+      "url": "https://data.igvf.org/tabular-files/IGVFFI3125FMNW/",
+      "within_1e_6_count": 0
+    },
+    {
+      "exact_score_count": 3,
+      "gene": "SFPQ",
+      "match_by": "genomic",
+      "matched_count": 3,
+      "matches": [
+        {
+          "candidate_id": "V01",
+          "genomic_key": "1:35190692:A:C",
+          "matched_identity": "1:35190692:A:C",
+          "pinned_score": -0.197004,
+          "public_score": -0.197004
+        },
+        {
+          "candidate_id": "V02",
+          "genomic_key": "1:35190691:T:G",
+          "matched_identity": "1:35190691:T:G",
+          "pinned_score": -0.173639,
+          "public_score": -0.173639
+        },
+        {
+          "candidate_id": "V03",
+          "genomic_key": "1:35190651:A:C",
+          "matched_identity": "1:35190651:A:C",
+          "pinned_score": -0.21153,
+          "public_score": -0.21153
+        }
+      ],
+      "max_absolute_score_difference": 0.0,
+      "metadata_sha256": "65da030a15bc55bed10cf2c2018678376994672141955205d912a38c5a57b3a8",
+      "missing_candidate_ids": [
+        "V04",
+        "V05",
+        "V06",
+        "V07",
+        "V08",
+        "V09",
+        "V10",
+        "V11",
+        "V12",
+        "V13",
+        "V14",
+        "V15",
+        "V16",
+        "V17",
+        "V18",
+        "V19",
+        "V20",
+        "V21",
+        "V22",
+        "V23",
+        "V24",
+        "V25",
+        "V26",
+        "V27",
+        "V28",
+        "V29",
+        "V30",
+        "V31",
+        "V32",
+        "V33",
+        "V34",
+        "V35",
+        "V36",
+        "V37",
+        "V38",
+        "V39",
+        "V40",
+        "V41",
+        "V42",
+        "V43",
+        "V44",
+        "V45",
+        "V46",
+        "V47",
+        "V48",
+        "V49",
+        "V50"
+      ],
+      "public_date": "2025-11-18",
+      "registry": "IGVF",
+      "scores_sha256": "0805dcc3c072f3cce63ba22cbf6ff3f4ed5b5e58fbff5dc93cc63bafcdd76e99",
+      "selected_count": 50,
+      "url": "https://data.igvf.org/tabular-files/IGVFFI1833BDXW/",
+      "within_1e_6_count": 3
+    },
+    {
+      "exact_score_count": 3,
+      "gene": "SFPQ",
+      "match_by": "genomic",
+      "matched_count": 3,
+      "matches": [
+        {
+          "candidate_id": "V01",
+          "genomic_key": "1:35190692:A:C",
+          "matched_identity": "1:35190692:A:C",
+          "pinned_score": -0.197004,
+          "public_score": -0.197004
+        },
+        {
+          "candidate_id": "V02",
+          "genomic_key": "1:35190691:T:G",
+          "matched_identity": "1:35190691:T:G",
+          "pinned_score": -0.173639,
+          "public_score": -0.173639
+        },
+        {
+          "candidate_id": "V03",
+          "genomic_key": "1:35190651:A:C",
+          "matched_identity": "1:35190651:A:C",
+          "pinned_score": -0.21153,
+          "public_score": -0.21153
+        }
+      ],
+      "max_absolute_score_difference": 0.0,
+      "metadata_sha256": "644fd3a2348ae61ec6f3579b369e24031eebe0a689fdffa71b51fd94604b3eb5",
+      "missing_candidate_ids": [
+        "V04",
+        "V05",
+        "V06",
+        "V07",
+        "V08",
+        "V09",
+        "V10",
+        "V11",
+        "V12",
+        "V13",
+        "V14",
+        "V15",
+        "V16",
+        "V17",
+        "V18",
+        "V19",
+        "V20",
+        "V21",
+        "V22",
+        "V23",
+        "V24",
+        "V25",
+        "V26",
+        "V27",
+        "V28",
+        "V29",
+        "V30",
+        "V31",
+        "V32",
+        "V33",
+        "V34",
+        "V35",
+        "V36",
+        "V37",
+        "V38",
+        "V39",
+        "V40",
+        "V41",
+        "V42",
+        "V43",
+        "V44",
+        "V45",
+        "V46",
+        "V47",
+        "V48",
+        "V49",
+        "V50"
+      ],
+      "public_date": "2026-01-13",
+      "registry": "MaveDB",
+      "scores_sha256": "9227363a8dc5ad81f1a402226a8001008bbfaf0df9fa212bc40b5ba83a5bb57b",
+      "selected_count": 50,
+      "url": "https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001265-a-1",
+      "within_1e_6_count": 3
+    },
+    {
+      "exact_score_count": 0,
+      "gene": "XRCC2",
+      "match_by": "genomic",
+      "matched_count": 0,
+      "matches": [],
+      "max_absolute_score_difference": null,
+      "metadata_sha256": "fb731281ff9940870c9412167d3690dcd6ed679198cfc46f42def169499e6a90",
+      "missing_candidate_ids": [
+        "V01",
+        "V02",
+        "V03",
+        "V04",
+        "V05",
+        "V06",
+        "V07",
+        "V08",
+        "V09",
+        "V10",
+        "V11",
+        "V12",
+        "V13",
+        "V14",
+        "V15",
+        "V16",
+        "V17",
+        "V18",
+        "V19",
+        "V20",
+        "V21",
+        "V22",
+        "V23",
+        "V24",
+        "V25",
+        "V26",
+        "V27",
+        "V28",
+        "V29",
+        "V30",
+        "V31",
+        "V32",
+        "V33",
+        "V34",
+        "V35",
+        "V36",
+        "V37",
+        "V38",
+        "V39",
+        "V40",
+        "V41",
+        "V42",
+        "V43",
+        "V44",
+        "V45",
+        "V46",
+        "V47",
+        "V48",
+        "V49",
+        "V50"
+      ],
+      "public_date": "2025-06-23",
+      "registry": "IGVF",
+      "scores_sha256": "c206452066d800d25db28548f7c9bf99d244c9fbdb04a53819516f8dcd0153c5",
+      "selected_count": 50,
+      "url": "https://data.igvf.org/tabular-files/IGVFFI1361XVSO/",
+      "within_1e_6_count": 0
+    },
+    {
+      "exact_score_count": 43,
+      "gene": "XRCC2",
+      "match_by": "genomic",
+      "matched_count": 46,
+      "matches": [
+        {
+          "candidate_id": "V01",
+          "genomic_key": "7:152649362:ACCT:A",
+          "matched_identity": "7:152649363:CCT:",
+          "pinned_score": -0.304058,
+          "public_score": -0.304058
+        },
+        {
+          "candidate_id": "V02",
+          "genomic_key": "7:152649365:T:G",
+          "matched_identity": "7:152649365:T:G",
+          "pinned_score": -0.282687,
+          "public_score": -0.282687
+        },
+        {
+          "candidate_id": "V03",
+          "genomic_key": "7:152649365:T:C",
+          "matched_identity": "7:152649365:T:C",
+          "pinned_score": -0.288967,
+          "public_score": -0.288967
+        },
+        {
+          "candidate_id": "V04",
+          "genomic_key": "7:152649352:CAAG:C",
+          "matched_identity": "7:152649353:AAG:",
+          "pinned_score": -0.123466,
+          "public_score": -0.123466
+        },
+        {
+          "candidate_id": "V05",
+          "genomic_key": "7:152649357:A:T",
+          "matched_identity": "7:152649357:A:T",
+          "pinned_score": -0.101852,
+          "public_score": -0.101852
+        },
+        {
+          "candidate_id": "V06",
+          "genomic_key": "7:152649352:C:A",
+          "matched_identity": "7:152649352:C:A",
+          "pinned_score": -0.309535,
+          "public_score": -0.309535
+        },
+        {
+          "candidate_id": "V07",
+          "genomic_key": "7:152649340:GGCC:G",
+          "matched_identity": "7:152649341:GCC:",
+          "pinned_score": -0.28665,
+          "public_score": -0.28665
+        },
+        {
+          "candidate_id": "V08",
+          "genomic_key": "7:152649330:GTTC:G",
+          "matched_identity": "7:152649331:TTC:",
+          "pinned_score": -0.0572919,
+          "public_score": -0.0572919
+        },
+        {
+          "candidate_id": "V09",
+          "genomic_key": "7:152649328:CTGT:C",
+          "matched_identity": "7:152649329:TGT:",
+          "pinned_score": -0.181325,
+          "public_score": -0.181325
+        },
+        {
+          "candidate_id": "V10",
+          "genomic_key": "7:152649332:T:G",
+          "matched_identity": "7:152649332:T:G",
+          "pinned_score": 0.0473423,
+          "public_score": 0.0473423
+        },
+        {
+          "candidate_id": "V11",
+          "genomic_key": "7:152649328:C:A",
+          "matched_identity": "7:152649328:C:A",
+          "pinned_score": -0.298627,
+          "public_score": -0.298627
+        },
+        {
+          "candidate_id": "V12",
+          "genomic_key": "7:152649322:T:G",
+          "matched_identity": "7:152649322:T:G",
+          "pinned_score": -0.324511,
+          "public_score": -0.324511
+        },
+        {
+          "candidate_id": "V13",
+          "genomic_key": "7:152649304:G:A",
+          "matched_identity": "7:152649304:G:A",
+          "pinned_score": 0.0350887,
+          "public_score": 0.0350887
+        },
+        {
+          "candidate_id": "V14",
+          "genomic_key": "7:152649298:CTGT:C",
+          "matched_identity": "7:152649299:TGT:",
+          "pinned_score": -0.233057,
+          "public_score": -0.233057
+        },
+        {
+          "candidate_id": "V15",
+          "genomic_key": "7:152649295:GTGC:G",
+          "matched_identity": "7:152649296:TGC:",
+          "pinned_score": -0.202833,
+          "public_score": -0.202833
+        },
+        {
+          "candidate_id": "V16",
+          "genomic_key": "7:152649262:C:T",
+          "matched_identity": "7:152649262:C:T",
+          "pinned_score": -0.207081,
+          "public_score": -0.207081
+        },
+        {
+          "candidate_id": "V17",
+          "genomic_key": "7:152649262:C:A",
+          "matched_identity": "7:152649262:C:A",
+          "pinned_score": -0.366867,
+          "public_score": -0.366867
+        },
+        {
+          "candidate_id": "V18",
+          "genomic_key": "7:152649261:T:G",
+          "matched_identity": "7:152649261:T:G",
+          "pinned_score": 0.00778019,
+          "public_score": 0.00778019
+        },
+        {
+          "candidate_id": "V19",
+          "genomic_key": "7:152649243:A:C",
+          "matched_identity": "7:152649243:A:C",
+          "pinned_score": -0.326855,
+          "public_score": -0.326855
+        },
+        {
+          "candidate_id": "V20",
+          "genomic_key": "7:152649183:G:A",
+          "matched_identity": "7:152649183:G:A",
+          "pinned_score": 0.0175933,
+          "public_score": 0.0175933
+        },
+        {
+          "candidate_id": "V21",
+          "genomic_key": "7:152649150:A:C",
+          "matched_identity": "7:152649150:A:C",
+          "pinned_score": -0.237072,
+          "public_score": -0.237072
+        },
+        {
+          "candidate_id": "V22",
+          "genomic_key": "7:152649143:T:A",
+          "matched_identity": "7:152649143:T:A",
+          "pinned_score": -0.110199,
+          "public_score": -0.110199
+        },
+        {
+          "candidate_id": "V23",
+          "genomic_key": "7:152649141:A:T",
+          "matched_identity": "7:152649141:A:T",
+          "pinned_score": -0.210744,
+          "public_score": -0.210744
+        },
+        {
+          "candidate_id": "V24",
+          "genomic_key": "7:152649108:A:T",
+          "matched_identity": "7:152649108:A:T",
+          "pinned_score": -0.46655,
+          "public_score": -0.46655
+        },
+        {
+          "candidate_id": "V25",
+          "genomic_key": "7:152649099:GTAA:G",
+          "matched_identity": "7:152649100:TAA:",
+          "pinned_score": -0.379135,
+          "public_score": -0.379135
+        },
+        {
+          "candidate_id": "V26",
+          "genomic_key": "7:152649078:ATAC:A",
+          "matched_identity": "7:152649079:TAC:",
+          "pinned_score": -0.0565237,
+          "public_score": -0.0565237
+        },
+        {
+          "candidate_id": "V27",
+          "genomic_key": "7:152649042:A:G",
+          "matched_identity": "7:152649042:A:G",
+          "pinned_score": -0.0685598,
+          "public_score": -0.0685598
+        },
+        {
+          "candidate_id": "V28",
+          "genomic_key": "7:152649037:TATC:T",
+          "matched_identity": "7:152649038:ATC:",
+          "pinned_score": -0.307795,
+          "public_score": -0.307795
+        },
+        {
+          "candidate_id": "V29",
+          "genomic_key": "7:152649025:A:G",
+          "matched_identity": "7:152649025:A:G",
+          "pinned_score": -0.0488665,
+          "public_score": -0.0488665
+        },
+        {
+          "candidate_id": "V30",
+          "genomic_key": "7:152649018:C:T",
+          "matched_identity": "7:152649018:C:T",
+          "pinned_score": -0.291643,
+          "public_score": -0.291643
+        },
+        {
+          "candidate_id": "V31",
+          "genomic_key": "7:152649014:TATC:T",
+          "matched_identity": "7:152649015:ATC:",
+          "pinned_score": -0.298215,
+          "public_score": -0.298215
+        },
+        {
+          "candidate_id": "V32",
+          "genomic_key": "7:152648958:CATT:C",
+          "matched_identity": "7:152648959:ATT:",
+          "pinned_score": -0.0981025,
+          "public_score": -0.0981025
+        },
+        {
+          "candidate_id": "V33",
+          "genomic_key": "7:152648948:GCAC:G",
+          "matched_identity": "7:152648949:CAC:",
+          "pinned_score": -0.211504,
+          "public_score": -0.211504
+        },
+        {
+          "candidate_id": "V34",
+          "genomic_key": "7:152648948:G:T",
+          "matched_identity": "7:152648948:G:T",
+          "pinned_score": -0.323333,
+          "public_score": -0.323333
+        },
+        {
+          "candidate_id": "V35",
+          "genomic_key": "7:152648934:A:T",
+          "matched_identity": "7:152648934:A:T",
+          "pinned_score": -0.153372,
+          "public_score": -0.153372
+        },
+        {
+          "candidate_id": "V36",
+          "genomic_key": "7:152648926:AGTC:A",
+          "matched_identity": "7:152648927:GTC:",
+          "pinned_score": -0.0909447,
+          "public_score": -0.0909447
+        },
+        {
+          "candidate_id": "V37",
+          "genomic_key": "7:152648918:CAGG:C",
+          "matched_identity": "7:152648919:AGG:",
+          "pinned_score": -0.184792,
+          "public_score": -0.184792
+        },
+        {
+          "candidate_id": "V38",
+          "genomic_key": "7:152648891:T:C",
+          "matched_identity": "7:152648891:T:C",
+          "pinned_score": 0.0183674,
+          "public_score": 0.0183674
+        },
+        {
+          "candidate_id": "V39",
+          "genomic_key": "7:152648884:T:A",
+          "matched_identity": "7:152648884:T:A",
+          "pinned_score": -0.333667,
+          "public_score": -0.333667
+        },
+        {
+          "candidate_id": "V40",
+          "genomic_key": "7:152648832:T:G",
+          "matched_identity": "7:152648832:T:G",
+          "pinned_score": 0.0136145,
+          "public_score": 0.0183003
+        },
+        {
+          "candidate_id": "V41",
+          "genomic_key": "7:152648825:GTCC:G",
+          "matched_identity": "7:152648826:TCC:",
+          "pinned_score": -0.00346591,
+          "public_score": 0.00561372
+        },
+        {
+          "candidate_id": "V42",
+          "genomic_key": "7:152648813:TCTG:T",
+          "matched_identity": "7:152648814:CTG:",
+          "pinned_score": -0.292918,
+          "public_score": -0.269136
+        },
+        {
+          "candidate_id": "V47",
+          "genomic_key": "7:152648727:A:G",
+          "matched_identity": "7:152648727:A:G",
+          "pinned_score": 0.00785598,
+          "public_score": 0.00785598
+        },
+        {
+          "candidate_id": "V48",
+          "genomic_key": "7:152648662:TTTC:T",
+          "matched_identity": "7:152648663:TTC:",
+          "pinned_score": -0.0547659,
+          "public_score": -0.0547659
+        },
+        {
+          "candidate_id": "V49",
+          "genomic_key": "7:152648658:C:A",
+          "matched_identity": "7:152648658:C:A",
+          "pinned_score": -0.152499,
+          "public_score": -0.152499
+        },
+        {
+          "candidate_id": "V50",
+          "genomic_key": "7:152648637:G:T",
+          "matched_identity": "7:152648637:G:T",
+          "pinned_score": 0.00316978,
+          "public_score": 0.00316978
+        }
+      ],
+      "max_absolute_score_difference": 0.023782000000000025,
+      "metadata_sha256": "b109ae7b9ce1b4710e811b4a3424b1ec707ebbb87cabd26d6b0073c81b9bad2a",
+      "missing_candidate_ids": [
+        "V43",
+        "V44",
+        "V45",
+        "V46"
+      ],
+      "public_date": "2025-11-18",
+      "registry": "IGVF",
+      "scores_sha256": "504d95697049daee6ee1f8d3d797446909daf5db60e34096a5ea32a6c51866a3",
+      "selected_count": 50,
+      "url": "https://data.igvf.org/tabular-files/IGVFFI1536JYYY/",
+      "within_1e_6_count": 43
+    },
+    {
+      "exact_score_count": 50,
+      "gene": "XRCC2",
+      "match_by": "genomic",
+      "matched_count": 50,
+      "matches": [
+        {
+          "candidate_id": "V01",
+          "genomic_key": "7:152649362:ACCT:A",
+          "matched_identity": "7:152649363:CCT:",
+          "pinned_score": -0.304058,
+          "public_score": -0.304058
+        },
+        {
+          "candidate_id": "V02",
+          "genomic_key": "7:152649365:T:G",
+          "matched_identity": "7:152649365:T:G",
+          "pinned_score": -0.282687,
+          "public_score": -0.282687
+        },
+        {
+          "candidate_id": "V03",
+          "genomic_key": "7:152649365:T:C",
+          "matched_identity": "7:152649365:T:C",
+          "pinned_score": -0.288967,
+          "public_score": -0.288967
+        },
+        {
+          "candidate_id": "V04",
+          "genomic_key": "7:152649352:CAAG:C",
+          "matched_identity": "7:152649353:AAG:",
+          "pinned_score": -0.123466,
+          "public_score": -0.123466
+        },
+        {
+          "candidate_id": "V05",
+          "genomic_key": "7:152649357:A:T",
+          "matched_identity": "7:152649357:A:T",
+          "pinned_score": -0.101852,
+          "public_score": -0.101852
+        },
+        {
+          "candidate_id": "V06",
+          "genomic_key": "7:152649352:C:A",
+          "matched_identity": "7:152649352:C:A",
+          "pinned_score": -0.309535,
+          "public_score": -0.309535
+        },
+        {
+          "candidate_id": "V07",
+          "genomic_key": "7:152649340:GGCC:G",
+          "matched_identity": "7:152649341:GCC:",
+          "pinned_score": -0.28665,
+          "public_score": -0.28665
+        },
+        {
+          "candidate_id": "V08",
+          "genomic_key": "7:152649330:GTTC:G",
+          "matched_identity": "7:152649331:TTC:",
+          "pinned_score": -0.0572919,
+          "public_score": -0.0572919
+        },
+        {
+          "candidate_id": "V09",
+          "genomic_key": "7:152649328:CTGT:C",
+          "matched_identity": "7:152649329:TGT:",
+          "pinned_score": -0.181325,
+          "public_score": -0.181325
+        },
+        {
+          "candidate_id": "V10",
+          "genomic_key": "7:152649332:T:G",
+          "matched_identity": "7:152649332:T:G",
+          "pinned_score": 0.0473423,
+          "public_score": 0.0473423
+        },
+        {
+          "candidate_id": "V11",
+          "genomic_key": "7:152649328:C:A",
+          "matched_identity": "7:152649328:C:A",
+          "pinned_score": -0.298627,
+          "public_score": -0.298627
+        },
+        {
+          "candidate_id": "V12",
+          "genomic_key": "7:152649322:T:G",
+          "matched_identity": "7:152649322:T:G",
+          "pinned_score": -0.324511,
+          "public_score": -0.324511
+        },
+        {
+          "candidate_id": "V13",
+          "genomic_key": "7:152649304:G:A",
+          "matched_identity": "7:152649304:G:A",
+          "pinned_score": 0.0350887,
+          "public_score": 0.0350887
+        },
+        {
+          "candidate_id": "V14",
+          "genomic_key": "7:152649298:CTGT:C",
+          "matched_identity": "7:152649299:TGT:",
+          "pinned_score": -0.233057,
+          "public_score": -0.233057
+        },
+        {
+          "candidate_id": "V15",
+          "genomic_key": "7:152649295:GTGC:G",
+          "matched_identity": "7:152649296:TGC:",
+          "pinned_score": -0.202833,
+          "public_score": -0.202833
+        },
+        {
+          "candidate_id": "V16",
+          "genomic_key": "7:152649262:C:T",
+          "matched_identity": "7:152649262:C:T",
+          "pinned_score": -0.207081,
+          "public_score": -0.207081
+        },
+        {
+          "candidate_id": "V17",
+          "genomic_key": "7:152649262:C:A",
+          "matched_identity": "7:152649262:C:A",
+          "pinned_score": -0.366867,
+          "public_score": -0.366867
+        },
+        {
+          "candidate_id": "V18",
+          "genomic_key": "7:152649261:T:G",
+          "matched_identity": "7:152649261:T:G",
+          "pinned_score": 0.00778019,
+          "public_score": 0.00778019
+        },
+        {
+          "candidate_id": "V19",
+          "genomic_key": "7:152649243:A:C",
+          "matched_identity": "7:152649243:A:C",
+          "pinned_score": -0.326855,
+          "public_score": -0.326855
+        },
+        {
+          "candidate_id": "V20",
+          "genomic_key": "7:152649183:G:A",
+          "matched_identity": "7:152649183:G:A",
+          "pinned_score": 0.0175933,
+          "public_score": 0.0175933
+        },
+        {
+          "candidate_id": "V21",
+          "genomic_key": "7:152649150:A:C",
+          "matched_identity": "7:152649150:A:C",
+          "pinned_score": -0.237072,
+          "public_score": -0.237072
+        },
+        {
+          "candidate_id": "V22",
+          "genomic_key": "7:152649143:T:A",
+          "matched_identity": "7:152649143:T:A",
+          "pinned_score": -0.110199,
+          "public_score": -0.110199
+        },
+        {
+          "candidate_id": "V23",
+          "genomic_key": "7:152649141:A:T",
+          "matched_identity": "7:152649141:A:T",
+          "pinned_score": -0.210744,
+          "public_score": -0.210744
+        },
+        {
+          "candidate_id": "V24",
+          "genomic_key": "7:152649108:A:T",
+          "matched_identity": "7:152649108:A:T",
+          "pinned_score": -0.46655,
+          "public_score": -0.46655
+        },
+        {
+          "candidate_id": "V25",
+          "genomic_key": "7:152649099:GTAA:G",
+          "matched_identity": "7:152649100:TAA:",
+          "pinned_score": -0.379135,
+          "public_score": -0.379135
+        },
+        {
+          "candidate_id": "V26",
+          "genomic_key": "7:152649078:ATAC:A",
+          "matched_identity": "7:152649079:TAC:",
+          "pinned_score": -0.0565237,
+          "public_score": -0.0565237
+        },
+        {
+          "candidate_id": "V27",
+          "genomic_key": "7:152649042:A:G",
+          "matched_identity": "7:152649042:A:G",
+          "pinned_score": -0.0685598,
+          "public_score": -0.0685598
+        },
+        {
+          "candidate_id": "V28",
+          "genomic_key": "7:152649037:TATC:T",
+          "matched_identity": "7:152649038:ATC:",
+          "pinned_score": -0.307795,
+          "public_score": -0.307795
+        },
+        {
+          "candidate_id": "V29",
+          "genomic_key": "7:152649025:A:G",
+          "matched_identity": "7:152649025:A:G",
+          "pinned_score": -0.0488665,
+          "public_score": -0.0488665
+        },
+        {
+          "candidate_id": "V30",
+          "genomic_key": "7:152649018:C:T",
+          "matched_identity": "7:152649018:C:T",
+          "pinned_score": -0.291643,
+          "public_score": -0.291643
+        },
+        {
+          "candidate_id": "V31",
+          "genomic_key": "7:152649014:TATC:T",
+          "matched_identity": "7:152649015:ATC:",
+          "pinned_score": -0.298215,
+          "public_score": -0.298215
+        },
+        {
+          "candidate_id": "V32",
+          "genomic_key": "7:152648958:CATT:C",
+          "matched_identity": "7:152648959:ATT:",
+          "pinned_score": -0.0981025,
+          "public_score": -0.0981025
+        },
+        {
+          "candidate_id": "V33",
+          "genomic_key": "7:152648948:GCAC:G",
+          "matched_identity": "7:152648949:CAC:",
+          "pinned_score": -0.211504,
+          "public_score": -0.211504
+        },
+        {
+          "candidate_id": "V34",
+          "genomic_key": "7:152648948:G:T",
+          "matched_identity": "7:152648948:G:T",
+          "pinned_score": -0.323333,
+          "public_score": -0.323333
+        },
+        {
+          "candidate_id": "V35",
+          "genomic_key": "7:152648934:A:T",
+          "matched_identity": "7:152648934:A:T",
+          "pinned_score": -0.153372,
+          "public_score": -0.153372
+        },
+        {
+          "candidate_id": "V36",
+          "genomic_key": "7:152648926:AGTC:A",
+          "matched_identity": "7:152648927:GTC:",
+          "pinned_score": -0.0909447,
+          "public_score": -0.0909447
+        },
+        {
+          "candidate_id": "V37",
+          "genomic_key": "7:152648918:CAGG:C",
+          "matched_identity": "7:152648919:AGG:",
+          "pinned_score": -0.184792,
+          "public_score": -0.184792
+        },
+        {
+          "candidate_id": "V38",
+          "genomic_key": "7:152648891:T:C",
+          "matched_identity": "7:152648891:T:C",
+          "pinned_score": 0.0183674,
+          "public_score": 0.0183674
+        },
+        {
+          "candidate_id": "V39",
+          "genomic_key": "7:152648884:T:A",
+          "matched_identity": "7:152648884:T:A",
+          "pinned_score": -0.333667,
+          "public_score": -0.333667
+        },
+        {
+          "candidate_id": "V40",
+          "genomic_key": "7:152648832:T:G",
+          "matched_identity": "7:152648832:T:G",
+          "pinned_score": 0.0136145,
+          "public_score": 0.0136145
+        },
+        {
+          "candidate_id": "V41",
+          "genomic_key": "7:152648825:GTCC:G",
+          "matched_identity": "7:152648826:TCC:",
+          "pinned_score": -0.00346591,
+          "public_score": -0.00346591
+        },
+        {
+          "candidate_id": "V42",
+          "genomic_key": "7:152648813:TCTG:T",
+          "matched_identity": "7:152648814:CTG:",
+          "pinned_score": -0.292918,
+          "public_score": -0.292918
+        },
+        {
+          "candidate_id": "V43",
+          "genomic_key": "7:152648793:C:T",
+          "matched_identity": "7:152648793:C:T",
+          "pinned_score": -0.205575,
+          "public_score": -0.205575
+        },
+        {
+          "candidate_id": "V44",
+          "genomic_key": "7:152648792:C:T",
+          "matched_identity": "7:152648792:C:T",
+          "pinned_score": -0.132955,
+          "public_score": -0.132955
+        },
+        {
+          "candidate_id": "V45",
+          "genomic_key": "7:152648769:A:T",
+          "matched_identity": "7:152648769:A:T",
+          "pinned_score": -0.002988,
+          "public_score": -0.002988
+        },
+        {
+          "candidate_id": "V46",
+          "genomic_key": "7:152648757:TTGG:T",
+          "matched_identity": "7:152648758:TGG:",
+          "pinned_score": -0.286068,
+          "public_score": -0.286068
+        },
+        {
+          "candidate_id": "V47",
+          "genomic_key": "7:152648727:A:G",
+          "matched_identity": "7:152648727:A:G",
+          "pinned_score": 0.00785598,
+          "public_score": 0.00785598
+        },
+        {
+          "candidate_id": "V48",
+          "genomic_key": "7:152648662:TTTC:T",
+          "matched_identity": "7:152648663:TTC:",
+          "pinned_score": -0.0547659,
+          "public_score": -0.0547659
+        },
+        {
+          "candidate_id": "V49",
+          "genomic_key": "7:152648658:C:A",
+          "matched_identity": "7:152648658:C:A",
+          "pinned_score": -0.152499,
+          "public_score": -0.152499
+        },
+        {
+          "candidate_id": "V50",
+          "genomic_key": "7:152648637:G:T",
+          "matched_identity": "7:152648637:G:T",
+          "pinned_score": 0.00316978,
+          "public_score": 0.00316978
+        }
+      ],
+      "max_absolute_score_difference": 0.0,
+      "metadata_sha256": "2ba45ee89a051b06652b28b89087bc302b61188983232f4565f59b7b77e5d2d4",
+      "missing_candidate_ids": [],
+      "public_date": "2026-01-10",
+      "registry": "MaveDB",
+      "scores_sha256": "634c4ac260028b6ca6ddb7147eed2ada25fb07340db996ee6e3fcec0648a2c76",
+      "selected_count": 50,
+      "url": "https://api.mavedb.org/api/v1/score-sets/urn%3Amavedb%3A00001264-a-1",
+      "within_1e_6_count": 50
+    }
+  ]
+}

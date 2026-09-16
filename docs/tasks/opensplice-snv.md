@@ -45,8 +45,11 @@ The task uses the CC BY 4.0
 [OpenSplice Figshare v5 dataset](https://doi.org/10.6084/m9.figshare.32337414.v5)
 for assay measurements and exon sequence geometry. Exact input identities live in
 [`source-pins.yaml`](../../tasks/opensplice-snv/config/source-pins.yaml).
-For explorer provenance, the assay's first indexed-public date is the Figshare
-article's initial publication date, 2026-05-24.
+Explorer provenance uses the [study's first preprint](https://www.biorxiv.org/content/10.64898/2026.05.22.727141v1),
+posted 2026-05-23, one day before the Figshare article's initial public release.
+This is study-level evidence; the audit did not establish byte identity between
+the first supplement and the pinned v5 measurements. See the
+[date policy](../assay-provenance.md).
 
 Rows must be measured, have finite experimental `delta_psi` and three finite
 replicate PSI values, and have complete identity and sequence fields. Missing

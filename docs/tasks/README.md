@@ -17,7 +17,7 @@ A task page should state:
 - the scientific question and what a model receives;
 - the answer space and scoring rule;
 - source datasets, provenance, and sampling method;
-- the assay's earliest verified indexed-publication evidence;
+- the assay's verified public evidence, including earlier versions and partial releases;
 - known limitations and the intended interpretation of scores;
 - reproducible preparation and validation instructions;
 - links to versioned sources, manifests, prompts, profiles, and published results.

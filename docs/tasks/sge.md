@@ -61,10 +61,11 @@ no other normalization, standardization, calibration, or rescaling.
 
 Exact source payload pins are in
 [`source-pins.yaml`](../../tasks/sge/config/source-pins.yaml).
-For explorer provenance, each question uses the earlier of its linked
-PubMed-indexed online publication and its MaveDB publication date. When MaveDB
-does not link a paper, its own published date is the verified indexed record;
-the explorer does not guess an earlier date.
+Explorer dates follow public scored-assay evidence across papers, preprints,
+archived files and superseded repository releases. Earlier versions count as
+prior evidence even if scores changed. Partial earlier coverage can make a
+panel span a model cutoff, in which case it is excluded from the two date groups.
+See the [audited evidence and date policy](../assay-provenance.md).
 
 ## Coordinate and reference validation
 

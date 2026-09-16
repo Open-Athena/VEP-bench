@@ -19,6 +19,8 @@ test("all introduction performance analyses use one frozen publication", () => {
   const specialist = read("specialist-comparison.json.gz");
   const plan = read("specialist-plan.json.gz");
   const cutoff = read("cutoff-analysis.json");
+  assert.equal(cutoff.assay_publications_sha256, sha(bytes("../../../config/assay-publications.yaml")));
+  assert.equal(cutoff.assay_provenance_audit_sha256, sha(bytes("assay-provenance-audit.json")));
   const external = read("comparisons-data/external.json");
   for (const analysis of [strata, specialist, cutoff.collection]) {
     assert.equal(analysis.manifest_sha256, sha(manifestBytes));

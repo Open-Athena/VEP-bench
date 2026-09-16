@@ -148,9 +148,9 @@ for check in \
   'task.dom.html|>Expression (satMutMPRA)</a></h1>' \
   'task.dom.html|published element panels' \
   'sge-task.dom.html|>Fitness (SGE)</a></h1>' \
-  'task.dom.html|>Assay first indexed<' \
-  'task.dom.html|>2019-08-08</a>' \
-  'task.dom.html|href="https://pubmed.ncbi.nlm.nih.gov/31395865/"' \
+  'task.dom.html|>Public assay evidence<' \
+  'task.dom.html|>2018-12-23</a>' \
+  'task.dom.html|href="https://www.biorxiv.org/content/10.1101/505362v1"' \
   'task.dom.html|>Spearman ρ<' \
   'task.dom.html|>Pearson r<' \
   'task.dom.html|>Cutoff relation<' \
@@ -160,7 +160,8 @@ for check in \
   'task.dom.html|Knowledge cutoff: ' \
   'task.dom.html|>May 2026</a>' \
   'sge-task.dom.html|published gene panels' \
-  'sge-task.dom.html|>2024-07-05</a>' \
+  'sge-task.dom.html|>2024-01-11</a>' \
+  'sge-task.dom.html|>Mixed availability</span>' \
   'sge-task.dom.html|class="vepbench-assay-date vepbench-assay-date-after"' \
   'sge-task.dom.html|>After cutoff</span>' \
   'sge-question.dom.html|>Prompt given to model<' \
