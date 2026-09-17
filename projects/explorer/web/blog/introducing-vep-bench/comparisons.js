@@ -2,31 +2,6 @@ import {overallLeaderboardRows} from "../../components/benchmark-data.js";
 
 const efforts = ["none", "minimal", "low", "medium", "high", "xhigh", "max"];
 
-function ranks(values) {
-  const sorted = values.map((value, index) => ({value, index}))
-    .sort((a, b) => a.value - b.value);
-  const result = Array(values.length);
-  for (let start = 0; start < sorted.length;) {
-    let end = start + 1;
-    while (end < sorted.length && sorted[end].value === sorted[start].value) end++;
-    for (let i = start; i < end; i++) result[sorted[i].index] = (start + end - 1) / 2 + 1;
-    start = end;
-  }
-  return result;
-}
-
-function pearson(x, y) {
-  const mean = (v) => v.reduce((a, b) => a + b, 0) / v.length;
-  const mx = mean(x), my = mean(y);
-  let covariance = 0, vx = 0, vy = 0;
-  for (let i = 0; i < x.length; i++) {
-    covariance += (x[i] - mx) * (y[i] - my);
-    vx += (x[i] - mx) ** 2;
-    vy += (y[i] - my) ** 2;
-  }
-  return vx > 0 && vy > 0 ? Math.max(-1, Math.min(1, covariance / Math.sqrt(vx * vy))) : null;
-}
-
 export function summarizePairs(pairs) {
   const models = [...new Set(pairs.map((row) => row.model_id))];
   const configurations = pairs.map((row) => JSON.stringify([row.model_id, row.effort]));
@@ -34,22 +9,7 @@ export function summarizePairs(pairs) {
   if (pairs.some((row) => !Number.isFinite(row.vep_score) || !Number.isFinite(row.external_score))) {
     throw new Error("Comparison contains a missing or nonfinite score");
   }
-  const summary = {n: models.length, points: pairs.length, models, spearman: null, pearson: null, leave_one_out: []};
-  if (models.length < 5) return {...summary, reason: "Fewer than five distinct matched models"};
-  if (pairs.length > models.length) return {...summary, reason: "Repeated efforts are not independent model observations"};
-  const x = pairs.map((row) => row.vep_score), y = pairs.map((row) => row.external_score);
-  summary.pearson = pearson(x, y);
-  summary.spearman = pearson(ranks(x), ranks(y));
-  if (summary.spearman === null) return {...summary, reason: "Constant score vector"};
-  // Every omission must still satisfy the five-model rule; recompute its ranks.
-  if (pairs.length >= 6) summary.leave_one_out = pairs.map((row, omitted) => {
-    const subset = pairs.filter((_, i) => i !== omitted);
-    const rho = pearson(ranks(subset.map((r) => r.vep_score)), ranks(subset.map((r) => r.external_score)));
-    return {omitted: row.model_id, n: subset.length, spearman: rho,
-      material_change: rho === null || Math.sign(rho) !== Math.sign(summary.spearman)
-        || Math.abs(rho - summary.spearman) >= 0.2};
-  });
-  return {...summary, reason: "Exploratory association"};
+  return {n: models.length, points: pairs.length, models};
 }
 
 export function vepConfigurations(snapshot) {

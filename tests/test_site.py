@@ -103,6 +103,9 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     assert not (output / "data/questions.jsonl").exists()
     assert not (output / "data/results").exists()
     leaderboard_source = (output / "index.md").read_text(encoding="utf-8")
+    leaderboard_plot_source = (output / "components/leaderboard-plot.js").read_text(
+        encoding="utf-8"
+    )
     helper_source = (output / "components/vepbench.js").read_text(encoding="utf-8")
     assert 'label: "Task"' in leaderboard_source
     assert 'label: "Metric"' in leaderboard_source
@@ -112,8 +115,9 @@ def test_site_stages_only_source_assets_and_official_main_config(tmp_path: Path)
     assert "? [null]" in leaderboard_source
     assert "value: allTasksAvailable ? null : taskOptions[0]" in leaderboard_source
     assert "macro-average ${scoreMetricLabel} correlation across tasks" in leaderboard_source
-    assert "Plot.barY(data" in leaderboard_source
-    assert "Plot.image(data.filter" in leaderboard_source
+    assert "leaderboardBarPlot(leaderboardData" in leaderboard_source
+    assert "Plot.barY(data" in leaderboard_plot_source
+    assert "Plot.image(data.filter" in leaderboard_plot_source
     assert "formatKnowledgeCutoff(row.knowledge_cutoff)" in leaderboard_source
     assert 'return "Not disclosed"' in helper_source
     assert 'release_date: "Release date"' not in leaderboard_source

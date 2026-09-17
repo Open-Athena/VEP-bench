@@ -406,11 +406,7 @@
           "openai/gpt-5.6-sol",
           "openai/gpt-5.6-terra",
           "openai/gpt-6-astra"
-        ],
-        "spearman": null,
-        "pearson": null,
-        "leave_one_out": [],
-        "reason": "Repeated efforts are not independent model observations"
+        ]
       }
     },
     {
@@ -818,11 +814,7 @@
           "openai/gpt-5.6-sol",
           "openai/gpt-5.6-terra",
           "openai/gpt-6-astra"
-        ],
-        "spearman": null,
-        "pearson": null,
-        "leave_one_out": [],
-        "reason": "Repeated efforts are not independent model observations"
+        ]
       }
     },
     {
@@ -1230,11 +1222,7 @@
           "openai/gpt-5.6-sol",
           "openai/gpt-5.6-terra",
           "openai/gpt-6-astra"
-        ],
-        "spearman": null,
-        "pearson": null,
-        "leave_one_out": [],
-        "reason": "Repeated efforts are not independent model observations"
+        ]
       }
     },
     {
@@ -1642,11 +1630,7 @@
           "openai/gpt-5.6-sol",
           "openai/gpt-5.6-terra",
           "openai/gpt-6-astra"
-        ],
-        "spearman": null,
-        "pearson": null,
-        "leave_one_out": [],
-        "reason": "Repeated efforts are not independent model observations"
+        ]
       }
     },
     {
@@ -2054,11 +2038,7 @@
           "openai/gpt-5.6-sol",
           "openai/gpt-5.6-terra",
           "openai/gpt-6-astra"
-        ],
-        "spearman": null,
-        "pearson": null,
-        "leave_one_out": [],
-        "reason": "Repeated efforts are not independent model observations"
+        ]
       }
     },
     {
@@ -2466,11 +2446,7 @@
           "openai/gpt-5.6-sol",
           "openai/gpt-5.6-terra",
           "openai/gpt-6-astra"
-        ],
-        "spearman": null,
-        "pearson": null,
-        "leave_one_out": [],
-        "reason": "Repeated efforts are not independent model observations"
+        ]
       }
     },
     {
@@ -2878,11 +2854,7 @@
           "openai/gpt-5.6-sol",
           "openai/gpt-5.6-terra",
           "openai/gpt-6-astra"
-        ],
-        "spearman": null,
-        "pearson": null,
-        "leave_one_out": [],
-        "reason": "Repeated efforts are not independent model observations"
+        ]
       }
     },
     {
@@ -3290,11 +3262,7 @@
           "openai/gpt-5.6-sol",
           "openai/gpt-5.6-terra",
           "openai/gpt-6-astra"
-        ],
-        "spearman": null,
-        "pearson": null,
-        "leave_one_out": [],
-        "reason": "Repeated efforts are not independent model observations"
+        ]
       }
     },
     {
@@ -3702,11 +3670,7 @@
           "openai/gpt-5.6-sol",
           "openai/gpt-5.6-terra",
           "openai/gpt-6-astra"
-        ],
-        "spearman": null,
-        "pearson": null,
-        "leave_one_out": [],
-        "reason": "Repeated efforts are not independent model observations"
+        ]
       }
     },
     {
@@ -4114,11 +4078,7 @@
           "openai/gpt-5.6-sol",
           "openai/gpt-5.6-terra",
           "openai/gpt-6-astra"
-        ],
-        "spearman": null,
-        "pearson": null,
-        "leave_one_out": [],
-        "reason": "Repeated efforts are not independent model observations"
+        ]
       }
     },
     {
@@ -4526,11 +4486,7 @@
           "openai/gpt-5.6-sol",
           "openai/gpt-5.6-terra",
           "openai/gpt-6-astra"
-        ],
-        "spearman": null,
-        "pearson": null,
-        "leave_one_out": [],
-        "reason": "Repeated efforts are not independent model observations"
+        ]
       }
     },
     {
@@ -4667,11 +4623,7 @@
           "openai/gpt-5.6-luna",
           "openai/gpt-5.6-sol",
           "openai/gpt-5.6-terra"
-        ],
-        "spearman": null,
-        "pearson": null,
-        "leave_one_out": [],
-        "reason": "Fewer than five distinct matched models"
+        ]
       }
     },
     {
@@ -4929,11 +4881,7 @@
           "openai/gpt-5.6-luna",
           "openai/gpt-5.6-sol",
           "openai/gpt-5.6-terra"
-        ],
-        "spearman": null,
-        "pearson": null,
-        "leave_one_out": [],
-        "reason": "Fewer than five distinct matched models"
+        ]
       }
     },
     {
@@ -4990,11 +4938,7 @@
         "points": 1,
         "models": [
           "openai/gpt-5.6-sol"
-        ],
-        "spearman": null,
-        "pearson": null,
-        "leave_one_out": [],
-        "reason": "Fewer than five distinct matched models"
+        ]
       }
     }
   ]
