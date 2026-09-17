@@ -156,6 +156,8 @@ Each model appears in the bar chart at its highest available reasoning effort
 with complete results for this view. “All tasks” requires the same configuration
 across every task. Equal-effort configurations use the latest results; selection
 does not depend on score.
+Stopped and otherwise incomplete evaluations are listed under
+[Unscored model attempts](#unscored-model-attempts).
 
 ```js
 const plotRow = (row) => ({
@@ -290,10 +292,12 @@ display(html`<section aria-label=${`${selectedTaskLabel} score comparisons`}>
 
 ## Unscored model attempts
 
-An attempt is reported here benchmark-wide when a refusal or content filter in
-any task prevents a complete, rankable model result. These attempts remain
+An attempt is reported here benchmark-wide when refusals, content filtering, or
+an early stop leave the evaluation without a complete, rankable model result.
+These attempts remain
 visible regardless of the task selected above and are not included in the
-leaderboard.
+leaderboard. Recorded responses may have individual scores, but an incomplete
+evaluation has no overall score or rank.
 
 ```js
 const unscoredAttempts = [
@@ -308,6 +312,12 @@ const unscoredAttempts = [
     organization: "anthropic",
     status: "Content filtered",
     evidence: "5/8 panels; run stopped and not ranked (Anthropic/OpenRouter Batch, 2026-09-03)"
+  },
+  {
+    model: "DeepSeek V4.1 Flash (max)",
+    organization: "deepseek",
+    status: "Stopped early",
+    evidence: "20/52 responses recorded; 9 reached 384K tokens without a final answer; not ranked (DeepSeek/OpenRouter, 2026-09-17)"
   }
 ];
 const unscoredAttemptsTable = Inputs.table(unscoredAttempts, {
@@ -335,6 +345,23 @@ const unscoredAttemptsTable = Inputs.table(unscoredAttempts, {
 ```js
 display(html`<div class="card">${unscoredAttemptsTable}</div>`);
 ```
+
+**DeepSeek V4.1 Flash (max), September 17, 2026.** We stopped this evaluation to
+avoid further spend after 9 of 16 Fitness (SGE) responses exhausted the
+384,000-token output allowance without a final answer; the other 7 were valid.
+Requests used DeepSeek's own provider route through OpenRouter, with maximum
+reasoning effort and provider fallback disabled. The allowance includes reasoning
+and final output and was the selected route's advertised maximum, rather than an
+OpenRouter-wide limit.
+
+The 20 recorded responses include all 16 fitness questions, 3 of 16 expression
+questions, and 1 of 20 splicing questions, including the initial pilot. Four
+additional requests were interrupted in flight and have no recorded outcome;
+they are not counted as model failures. Recorded response cost was $2.48,
+excluding any charges for those interrupted requests. At least one truncated
+response degenerated into repeated single letters. The cause is unconfirmed,
+and these observations do not establish performance on the unanswered questions
+or on other providers or reasoning settings. No retries were made.
 
 ## Output limits and usage
 

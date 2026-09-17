@@ -1,0 +1,11 @@
+# Extended output allowance for providers supporting 384000 completion tokens.
+# Question construction is identical to task.yaml; reasoning shares this budget.
+schema_version: "1.0"
+task_family: opensplice_snv
+question:
+  type: ranking
+  source: ../../../data/sources/opensplice-snv-figshare-v5.jsonl
+  prompt: prompt.yaml
+evaluation:
+  generation:
+    max_tokens: 384000

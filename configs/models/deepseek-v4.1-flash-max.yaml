@@ -1,0 +1,27 @@
+# User-requested maximum reasoning, with DeepSeek's evaluation sampling settings.
+# https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash (checked 2026-09-17)
+# The model card recommends >=256K output tokens. Use task-384k.yaml for the
+# provider's full 384000-token allowance, including reasoning and final output.
+# This is distinct from its 1048576-token context window. Route limit and prices:
+# https://openrouter.ai/api/v1/models/deepseek/deepseek-v4.1-flash/endpoints
+# Pin DeepSeek to avoid providers with smaller output caps or different defaults.
+# Price ceilings cover peak hours; off-peak prices may be lower.
+# No live OpenRouter batch endpoint on 2026-09-17; evaluate with --direct.
+schema_version: "1.0"
+label: deepseek-v4.1-flash-max
+model: deepseek/deepseek-v4.1-flash
+generation:
+  reasoning:
+    effort: max
+    exclude: false
+  temperature: 1.0
+  top_p: 0.95
+  provider:
+    only:
+      - deepseek
+    allow_fallbacks: false
+    require_parameters: true
+    max_price:
+      prompt: 0.30
+      completion: 1.20
+      request: 0

@@ -442,6 +442,73 @@ def test_api_error_is_valid_and_marks_run_incomplete(tmp_path: Path) -> None:
     assert result["error"]["status_code"] == 503
 
 
+@pytest.mark.parametrize("error_location", ["top_level", "choice", "finish_reason_only"])
+@pytest.mark.parametrize("use_http_transport", [False, True])
+def test_generation_failure_is_unscored_and_retains_partial_response(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    error_location: str,
+    use_http_transport: bool,
+) -> None:
+    error = {"code": 502, "message": "Network connection lost."}
+    raw: dict[str, Any] = {
+        "provider": "Example",
+        "choices": [
+            {
+                "finish_reason": "error",
+                "message": {"content": "FINAL: B", "reasoning": "Partial reasoning."},
+            }
+        ],
+        "usage": {"prompt_tokens": 10, "completion_tokens": 3, "cost": 0},
+    }
+    if error_location == "top_level":
+        raw["error"] = error
+    elif error_location == "choice":
+        raw["choices"][0]["error"] = error
+
+    class Response:
+        def __enter__(self) -> Response:
+            return self
+
+        def __exit__(self, *args: object) -> None:
+            return None
+
+        def read(self) -> bytes:
+            return json.dumps(raw).encode()
+
+    monkeypatch.setattr(urllib.request, "urlopen", lambda *args, **kwargs: Response())
+    output = tmp_path / "run.jsonl"
+    summary = evaluate_file(
+        questions_path=QUESTIONS,
+        question_schema_path=QUESTION_SCHEMA,
+        result_schema_path=RESULT_SCHEMA,
+        output=output,
+        run_id="interrupted-generation",
+        model_id="example/model",
+        api_key="test-secret",
+        transport=OpenRouterTransport() if use_http_transport else FakeTransport(raw),
+        now=lambda: FIXED_TIME,
+    )
+    result = _load_one(output)
+    _validate_result(result)
+
+    assert not summary.is_complete
+    assert summary.api_errors == 1
+    assert result["response"]["status"] == "api_error"
+    assert result["response"]["finish_reason"] is None
+    assert result["response"]["content"] is None
+    assert result["response"]["reasoning"] is None
+    assert result["response"]["raw"] == raw
+    assert result["model"]["upstream_provider"] == "Example"
+    assert result["usage"] == raw["usage"]
+    assert result["scoring"]["value"] is None
+    assert result["scoring"]["correct"] is None
+    assert result["scoring"]["result_type"] is None
+    assert result["error"]["status_code"] == (
+        None if error_location == "finish_reason_only" else 502
+    )
+
+
 def test_result_schema_rejects_api_error_with_score_or_missing_error() -> None:
     schema = json.loads(RESULT_SCHEMA.read_text(encoding="utf-8"))
     validator = Draft202012Validator(schema, format_checker=FormatChecker())

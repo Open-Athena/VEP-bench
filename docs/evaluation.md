@@ -59,6 +59,18 @@ used internally by the provider.
 
 Ad hoc evaluation leaves sampling controls unset unless explicitly supplied.
 
+For DeepSeek V4.1 Flash at maximum effort, select the task's `task-384k.yaml`
+descriptor alongside `configs/models/deepseek-v4.1-flash-max.yaml`. These
+descriptors preserve the questions while allowing 384,000 combined reasoning and
+final-output tokens, the verified DeepSeek route limit. Start with a small pilot
+and inspect completion usage and `finish_reason` before committing to a full run;
+even a valid answer ending with `length` indicates truncation. The model profile
+records the official guidance and route evidence. Other models require their own
+provider-limit check before using these descriptors.
+Use `--direct` for this model while it has no live OpenRouter batch endpoint;
+`--concurrency` controls overlapping direct API requests, separately from batch
+submission.
+
 A task profile requires a question file containing only that task family.
 The examples below use the satMutMPRA file generated above.
 

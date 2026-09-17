@@ -1,0 +1,24 @@
+# User-requested low effort on the official Moonshot AI route.
+# K3 supports low/high/max (no medium); max is its default, not the chosen mode.
+# https://platform.kimi.ai/docs/guide/use-reasoning-effort (checked 2026-09-17)
+# K3 fixes sampling controls; omit temperature/top_p instead of overriding them.
+# https://platform.kimi.ai/docs/guide/kimi-k3-quickstart
+# Pin the official route and listed prices; OpenRouter batch lists only Together.
+# https://openrouter.ai/api/v1/models/moonshotai/kimi-k3/endpoints
+# Route output maximum: 943718; context: 1048576. Task owns the actual allowance.
+schema_version: "1.0"
+label: kimi-k3-low
+model: moonshotai/kimi-k3
+generation:
+  reasoning:
+    effort: low
+    exclude: false
+  provider:
+    only:
+      - moonshotai/mxfp4
+    allow_fallbacks: false
+    require_parameters: true
+    max_price:
+      prompt: 3.0
+      completion: 15.0
+      request: 0

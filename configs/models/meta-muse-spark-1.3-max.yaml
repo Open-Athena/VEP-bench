@@ -1,0 +1,24 @@
+# User-requested maximum reasoning, supported by Meta as of 2026-09-17:
+# https://research.meta.ai/blog/introducing-muse-spark-1-3
+# Sampling controls remain at provider defaults; no applicable recommendation
+# for this exact model and task was verified. Effective values are unconfirmed.
+# Pin the official Meta route and its listed prices; use --direct (no batch route).
+# https://openrouter.ai/api/v1/models/meta/muse-spark-1.3/endpoints
+# Its advertised output maximum is 943718, separate from 1048576 context tokens.
+# The task descriptor owns the actual output allowance, including reasoning.
+schema_version: "1.0"
+label: muse-spark-1.3-max
+model: meta/muse-spark-1.3
+generation:
+  reasoning:
+    effort: max
+    exclude: false
+  provider:
+    only:
+      - meta
+    allow_fallbacks: false
+    require_parameters: true
+    max_price:
+      prompt: 1.25
+      completion: 4.25
+      request: 0
