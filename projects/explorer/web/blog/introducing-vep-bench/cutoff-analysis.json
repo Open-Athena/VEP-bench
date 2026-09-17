@@ -2,7 +2,7 @@
   "assay_provenance_audit_sha256": "1c490667778ceb0d6357e09f60ac030c96d2361df5059c5c75408bd1c6f833c7",
   "assay_publications_sha256": "384ac34c9576bcc64f73816c0185aa63be4e9dcb97245da77ecfa0b4079c18cd",
   "collection": {
-    "manifest_sha256": "e767dc31d8ce4af534f9077560bfede1b5675879888e5d7608b458c33d6ad6a6",
+    "manifest_sha256": "d0b396edf44bd21ec53459ec4d3728751b2fc57ce68deb6b7351c1e108ccd031",
     "method": "Local publication verified against the frozen manifest",
     "outcomes": [
       {
@@ -495,10 +495,10 @@
       "records": 52
     },
     "runs": {
-      "artifact_bytes": 106159,
-      "artifact_sha256": "e61fdaa36f4592c090458d9729937dd29dc1e673dbbfa19b5be53d081a5a2c3a",
-      "content_bytes": 106159,
-      "content_sha256": "e61fdaa36f4592c090458d9729937dd29dc1e673dbbfa19b5be53d081a5a2c3a",
+      "artifact_bytes": 108616,
+      "artifact_sha256": "42dffba3b08017aa564ff6aa82a013c8b9ff5d1771294f0ff6832b6fa6a2c49e",
+      "content_bytes": 108616,
+      "content_sha256": "42dffba3b08017aa564ff6aa82a013c8b9ff5d1771294f0ff6832b6fa6a2c49e",
       "path": "versions/main/runs.json",
       "records": 60
     }
@@ -506,7 +506,7 @@
   "comparison_count": 5,
   "data_base_url": "https://huggingface.co/buckets/open-athena/VEP-bench/resolve/versions/main",
   "question_set_sha256": "be62fd7b5f06656572a5150904758f04bb998590f63ce31ebbca13852a0bfab7",
-  "retrieved_at": "2026-09-17T22:29:18.752944+00:00",
+  "retrieved_at": "2026-09-17T23:22:40.835524+00:00",
   "scores": [
     {
       "assay_date": "2024-01-11",
