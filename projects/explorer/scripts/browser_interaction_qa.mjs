@@ -503,6 +503,44 @@ assert.equal(
 );
 
 await navigate("/blog/introducing-vep-bench.html");
+const blogBars = '.vepbench-leaderboard-chart g[aria-label="bar"] rect';
+const radarPlot = 'svg[aria-label="Model scores for fitness, expression, and splicing on a shared 0 to 1 scale"]';
+const radarDots = `${radarPlot} g[aria-label="dot"] circle`;
+await waitFor(`document.querySelectorAll(${JSON.stringify(blogBars)}).length === 8
+  && document.querySelectorAll(${JSON.stringify(radarDots)}).length === 24`, "blog bar and radar plots");
+assert.deepEqual(await evaluate(`[...document.querySelectorAll('#observablehq-toc li a')]
+  .map((link) => link.textContent)`), ["Dataset", "Results", "Comparison with specialist models",
+  "Comparison with other benchmarks", "Assay dates and model knowledge cutoffs", "Conclusion"]);
+assert.equal(await evaluate(`document.querySelectorAll('input[type="checkbox"]').length`), 8);
+await evaluate(`document.querySelector('input[type="checkbox"]').click()`);
+await waitFor(`document.querySelectorAll(${JSON.stringify(radarDots)}).length === 21`, "radar model toggle");
+assert.equal(await evaluate(`document.querySelectorAll(${JSON.stringify(blogBars)}).length`), 8,
+  "radar selection does not filter the fixed overall bar chart");
+await evaluate(`document.querySelectorAll('input[type="checkbox"]').forEach((input) => {
+  if (input.checked) input.click();
+})`);
+await waitFor(`document.querySelectorAll(${JSON.stringify(radarDots)}).length === 0`, "empty radar selection");
+await evaluate(`document.querySelectorAll('input[type="checkbox"]').forEach((input) => input.click())`);
+await waitFor(`document.querySelectorAll(${JSON.stringify(radarDots)}).length === 24`, "restored radar selection");
+const examplePrompt = await readFile(
+  new URL("../web/blog/introducing-vep-bench/msh6-e7-prompt.txt", import.meta.url), "utf8"
+);
+const exampleCard = '[aria-label="Complete example prompt for MSH6 exon 7"]';
+await waitFor(`document.querySelector(${JSON.stringify(exampleCard + ' code.language-vcf')})`, "complete example prompt");
+for (const language of ["fasta", "vcf"]) {
+  const fence = examplePrompt.split("```" + language + "\n")[1].split("```")[0];
+  assert.equal(await evaluate(`document.querySelector(${JSON.stringify(exampleCard + ` code.language-${language}`)}).textContent`), fence);
+}
+assert.equal(await evaluate(`document.querySelector(${JSON.stringify(exampleCard)}).closest('details')`), null,
+  "the example prompt is fully expanded");
+assert.equal(await evaluate(`new URL([...document.querySelectorAll('a')]
+  .find((link) => link.textContent === 'Explore this question and model responses').href)
+  .searchParams.get('question')`), "opensplice-snv-ranking-v2:E01");
+for (const id of ["snvs-indels-and-multibase-substitutions", "genomic-consequences",
+  "composition-counts-and-provenance", "allele-type", "functional-consequence", "subset-analysis-methods"]) {
+  assert.equal(await evaluate(`document.getElementById(${JSON.stringify(id)}).open`), false);
+}
+await evaluate(`for (const id of ['allele-type', 'functional-consequence']) document.getElementById(id).open = true`);
 const specialistSnapshot = JSON.parse(gunzipSync(await readFile(
   new URL("../web/blog/introducing-vep-bench/specialist-comparison.json.gz", import.meta.url)
 )));
@@ -654,10 +692,10 @@ await send("Emulation.setDeviceMetricsOverride", {
 });
 await saveDom("variant-strata.dom.html");
 
-// The post shows every exact effort with Overall scores and no selectors.
+// External comparisons show only the overall intelligence index, with VEP on y.
 await navigate("/blog/introducing-vep-bench.html");
-await waitFor(`document.querySelectorAll('svg[aria-label*="VEP-bench versus"]').length === 14`,
-  "all static external comparison plots");
+await waitFor(`document.querySelectorAll('svg[aria-label*="VEP-bench versus"]').length === 1`,
+  "overall intelligence comparison");
 assert.equal(await evaluate('document.querySelectorAll("select").length'), 0);
 assert.ok(await evaluate(`[...document.querySelectorAll('svg[aria-label*="VEP-bench versus"]')]
   .every((plot) => plot.getAttribute('aria-label').startsWith('Overall VEP-bench versus'))`));
@@ -666,16 +704,12 @@ for (const {domain, range} of await evaluate(`[...document.querySelectorAll('svg
   checkModelColors(domain, range);
 }
 assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="Intelligence Index"] [aria-label="dot"] > *').length`), 15);
-assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="GeneBench-Pro"] [aria-label="dot"] > *').length`), 9);
-assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="SciCode"] [aria-label="dot"] > *').length`), 15);
-assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="Terminal-Bench-Science"]').length`), 1);
-assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="Terminal-Bench-Science"] [aria-label="dot"] > *').length`), 4);
-assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="BixBench3"] [aria-label="dot"] > *').length`), 1);
-for (const [label, harness] of [["Terminal-Bench v4.0 (AA)", "mini-SWE-agent v2.4.6"], ["AA-Briefcase", "Stirrup"], ["GDPval-AA v2", "Stirrup"]]) {
-  const labels = await evaluate(`[...document.querySelectorAll('svg[aria-label*="${label}"] [aria-label="dot"] > *')]
-    .map((point) => point.getAttribute('aria-label'))`);
-  assert.equal(labels.length, 15);
-  assert.ok(labels.every((label) => label.includes(`Harness: ${harness}`)));
+for (const label of ["GeneBench-Pro", "SciCode", "Terminal-Bench-Science", "BixBench3"]) {
+  assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="${label}"]').length`), 0);
+}
+for (const [axis, label] of [["x", "Index points"], ["y", "Overall VEP-bench score (mean Spearman)"]]) {
+  assert.ok(await evaluate(`document.querySelector('svg[aria-label*="Intelligence Index"] g[aria-label="${axis}-axis label"]')
+    .textContent.includes(${JSON.stringify(label)})`));
 }
 for (const effort of ["low", "medium", "high"]) {
   assert.equal(await evaluate(`[...document.querySelectorAll('svg[aria-label*="Intelligence Index"] [aria-label="dot"] > *')]

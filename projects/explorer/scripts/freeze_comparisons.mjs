@@ -16,6 +16,13 @@ const read = (file) => readFileSync(resolve(input, file), "utf8");
 const json = (file) => JSON.parse(read(file));
 const sha = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const write = (file, value) => writeFileSync(new URL(file, output), JSON.stringify(value, null, 2) + "\n");
+const comparisonRule = "The external comparison is visual. Plot only the overall Artificial Analysis Intelligence Index, with every exact matched effort and separate configuration and model counts. Do not compute between-benchmark Pearson or Spearman coefficients, significance tests, or fitted trends. Retain component and biology benchmark pairs as source data; do not plot them in the post.";
+const surveyDecisions = {
+  tbs: "Not plotted; sparse model overlap",
+  gene: "Not plotted; sparse model overlap",
+  bix3: "Not plotted; sparse model overlap",
+  "aa-method": "Overall index plotted; components retained as source data"
+};
 if (process.argv[2] === "--replay") {
   exportAnalysis(JSON.parse(readFileSync(new URL("vep-runs.json", output))),
     JSON.parse(readFileSync(new URL("external.json", output))));
@@ -241,13 +248,18 @@ const external = {schema_version: "1.0", snapshot_date: "2026-09-12", aa_intelli
     "For each benchmark and metric, include every exact shared effort as a separate point. Choose one harness per model and effort by the comparison's fixed harness preference, falling back to alphabetical harness name. Use the latest published submission within that harness; timestamp ties require review. Never select by score.",
     "Use one comparison per benchmark metric and record the chosen harness for each paired score. These are model-plus-harness results, not a controlled model-only comparison. Other submissions remain in the source audit, never extra comparison points.",
     "Use only the Overall VEP score. Count matched configurations and distinct model versions separately; multiple efforts from one model are dependent observations.",
-    "The all-effort plots are descriptive. Never pool repeated efforts into a cross-model correlation. Correlation summaries require at least five distinct models with one observation each and nonconstant scores; no p-values or imputation.",
+    comparisonRule,
     "Use AAII v4.3, the latest methodology at retrieval. Components retain their published metrics. Do not combine index versions or invent unreported subset indices."
   ], sources, survey, comparisons, results};
 write("external.json", external);
 exportAnalysis(vep, external);
 
 function exportAnalysis(vep, external) {
+  // Replay refreshes analysis policy while preserving the frozen source evidence.
+  external.rules = external.rules.map((rule) => rule.startsWith("The all-effort plots are descriptive.")
+    || rule.startsWith("The external comparison is visual.") ? comparisonRule : rule);
+  external.survey = external.survey.map((row) => ({...row, decision: surveyDecisions[row.source_id] ?? row.decision}));
+  write("external.json", external);
   const primary = compareScores(vep, external);
   write("analysis.json", {snapshot_date: external.snapshot_date, primary: primary.comparisons});
   write("model-matches.json", primary.matches.map((r) => ({result_id: r.id, model_label: r.model_label,

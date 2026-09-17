@@ -3,6 +3,59 @@ import * as Plot from "npm:@observablehq/plot@0.6.17";
 const percent = (value) => `${(value * 100).toFixed(1)}%`;
 const integer = (value) => value.toLocaleString("en-US");
 
+export function resultsRadarFigure(rows, color, width) {
+  const tasks = [
+    {family: "sge", label: "Fitness"},
+    {family: "satmut_mpra", label: "Expression"},
+    {family: "opensplice_snv", label: "Splicing"}
+  ];
+  const position = (radius, index) => {
+    const angle = Math.PI / 2 - index * 2 * Math.PI / tasks.length;
+    return {x: radius * Math.cos(angle), y: radius * Math.sin(angle)};
+  };
+  const grid = [0.2, 0.4, 0.6, 0.8, 1].flatMap((score) =>
+    [...tasks, tasks[0]].map((_, index) => ({...position(score, index), score})));
+  const axes = tasks.flatMap((task, index) => [
+    {...position(0, index), task: task.label},
+    {...position(1, index), task: task.label}
+  ]);
+  const points = rows.flatMap((row) => tasks.map((task, index) => {
+    const score = row.task_scores.find((entry) => entry.task_family === task.family).score;
+    return {...position(score, index), family: row.family, model: row.model_cell.model,
+      task: task.label, score};
+  }));
+  const paths = rows.flatMap((row) => {
+    const vertices = points.filter((point) => point.family === row.family);
+    return [...vertices, vertices[0]];
+  });
+  const size = Math.min(620, width);
+  const chart = Plot.plot({
+    width: size, height: size,
+    margin: 30,
+    style: {fontSize: "12px", background: "transparent"},
+    ariaLabel: "Model scores for fitness, expression, and splicing on a shared 0 to 1 scale",
+    x: {domain: [-1.3, 1.3], axis: null},
+    y: {domain: [-1.05, 1.55], axis: null},
+    color,
+    marks: [
+      Plot.line(grid, {x: "x", y: "y", z: "score", stroke: "currentColor", strokeOpacity: 0.15}),
+      Plot.line(axes, {x: "x", y: "y", z: "task", stroke: "currentColor", strokeOpacity: 0.25}),
+      Plot.line(paths, {x: "x", y: "y", z: "family", stroke: "family", strokeWidth: 2}),
+      Plot.dot(points, {x: "x", y: "y", fill: "family", r: 4, tip: true,
+        title: (point) => `${point.model}\n${point.task}: ${point.score.toFixed(3)}`}),
+      Plot.text([0, 0.2, 0.4, 0.6, 0.8, 1].map((score) => ({...position(score, 0), score})), {
+        x: "x", y: "y", text: (point) => point.score.toFixed(1), dx: -8, textAnchor: "end",
+        fill: "currentColor", stroke: "var(--theme-background)", strokeWidth: 3
+      }),
+      Plot.text(tasks.map((task, index) => ({...position(1.18, index), ...task})), {
+        x: "x", y: "y", text: "label", fontWeight: "bold"
+      })
+    ]
+  });
+  chart.style.margin = "auto";
+  return chart;
+}
+
 function consequenceLabel(term) {
   return term.replace(/_variant$/, "").replaceAll("_", " ")
     .replace("3 prime", "3′").replace("5 prime", "5′");
@@ -128,34 +181,32 @@ export function comparisonFigure(comparison, color, width) {
   const figure = document.createElement("div");
   figure.className = "card";
   const caption = document.createElement("p");
-  caption.textContent = `${comparison.label} · ${comparison.subset} · ${comparison.summary.points} matched configurations · ${comparison.summary.n} distinct models. `
-    + (comparison.summary.spearman === null ? `${comparison.summary.reason}; descriptive only.`
-      : `Exploratory Spearman ρ = ${comparison.summary.spearman.toFixed(3)}; Pearson r = ${comparison.summary.pearson.toFixed(3)}.`);
+  caption.textContent = `${comparison.label} · ${comparison.subset} · ${comparison.summary.points} matched configurations · ${comparison.summary.n} distinct models.`;
   figure.append(caption);
   if (!comparison.pairs.length) return figure;
   const detail = (row) => `${row.label} (${row.effort})\nVEP-bench: ${row.vep_score.toFixed(4)}\n`
     + `${comparison.metric_label}: ${row.external_score.toFixed(4)}\nHarness: ${row.harness ?? comparison.harness}`;
-  const values = comparison.pairs.map((r) => r.vep_score);
+  const values = comparison.pairs.map((r) => r.external_score);
   const midpoint = (Math.min(...values) + Math.max(...values)) / 2;
   const labels = [...new Map(comparison.pairs.map((row) => [row.model_id, row])).values()];
   const effortSymbols = {none: "cross", minimal: "star", low: "circle", medium: "square",
     high: "triangle", xhigh: "diamond", max: "wye"};
   const shownEfforts = Object.keys(effortSymbols).filter((effort) => comparison.pairs.some((r) => r.effort === effort));
   const symbol = {domain: shownEfforts, range: shownEfforts.map((effort) => effortSymbols[effort]), label: "Reasoning effort"};
-  const labelOptions = {x: "vep_score", y: "external_score", text: "label",
+  const labelOptions = {x: "external_score", y: "vep_score", text: "label",
     fontSize: 11, dy: -14, lineWidth: 18};
   const chart = Plot.plot({
     width: Math.max(320, width - 34), height: 380, marginTop: 50, marginBottom: 55, marginLeft: 72, marginRight: 35,
     ariaLabel: `Overall VEP-bench versus ${comparison.label}; ${comparison.summary.points} configurations from ${comparison.summary.n} distinct models`,
-    x: {label: "Overall VEP-bench score (mean Spearman)", grid: true, nice: true, ticks: 5},
-    y: {label: comparison.metric_label, grid: true, nice: true, ticks: 5}, color, symbol,
+    x: {label: comparison.metric_label, grid: true, nice: true, ticks: 5},
+    y: {label: "Overall VEP-bench score (mean Spearman)", grid: true, nice: true, ticks: 5}, color, symbol,
     marks: [
-      Plot.line(comparison.pairs, {x: "vep_score", y: "external_score", stroke: "family",
+      Plot.line(comparison.pairs, {x: "external_score", y: "vep_score", stroke: "family",
         z: "model_id", strokeOpacity: 0.35, strokeWidth: 1.5}),
-      Plot.dot(comparison.pairs, {x: "vep_score", y: "external_score", fill: "family", symbol: "effort", r: 5,
+      Plot.dot(comparison.pairs, {x: "external_score", y: "vep_score", fill: "family", symbol: "effort", r: 5,
         stroke: "white", tip: true, title: detail, ariaLabel: detail}),
-      Plot.text(labels.filter((r) => r.vep_score <= midpoint), {...labelOptions, textAnchor: "start", dx: 7}),
-      Plot.text(labels.filter((r) => r.vep_score > midpoint), {...labelOptions, textAnchor: "end", dx: -7, dy: 16})
+      Plot.text(labels.filter((r) => r.external_score <= midpoint), {...labelOptions, textAnchor: "start", dx: 7}),
+      Plot.text(labels.filter((r) => r.external_score > midpoint), {...labelOptions, textAnchor: "end", dx: -7, dy: 16})
     ]
   });
   figure.append(chart);

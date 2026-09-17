@@ -9,7 +9,7 @@
     "For each benchmark and metric, include every exact shared effort as a separate point. Choose one harness per model and effort by the comparison's fixed harness preference, falling back to alphabetical harness name. Use the latest published submission within that harness; timestamp ties require review. Never select by score.",
     "Use one comparison per benchmark metric and record the chosen harness for each paired score. These are model-plus-harness results, not a controlled model-only comparison. Other submissions remain in the source audit, never extra comparison points.",
     "Use only the Overall VEP score. Count matched configurations and distinct model versions separately; multiple efforts from one model are dependent observations.",
-    "The all-effort plots are descriptive. Never pool repeated efforts into a cross-model correlation. Correlation summaries require at least five distinct models with one observation each and nonconstant scores; no p-values or imputation.",
+    "The external comparison is visual. Plot only the overall Artificial Analysis Intelligence Index, with every exact matched effort and separate configuration and model counts. Do not compute between-benchmark Pearson or Spearman coefficients, significance tests, or fitted trends. Retain component and biology benchmark pairs as source data; do not plot them in the post.",
     "Use AAII v4.3, the latest methodology at retrieval. Components retain their published metrics. Do not combine index versions or invent unreported subset indices."
   ],
   "sources": [
@@ -9050,19 +9050,19 @@
     {
       "benchmark": "Terminal-Bench-Science",
       "source_id": "tbs",
-      "decision": "Primary, descriptive",
+      "decision": "Not plotted; sparse model overlap",
       "rationale": "Agentic scientific workflows. The official result taxonomy exposes Life Sciences, including medical imaging; no narrower biology label is used. Choose Codex where available, otherwise mini-SWE-agent, for each exact model and effort; document the harness in each paired score."
     },
     {
       "benchmark": "GeneBench-Pro",
       "source_id": "gene",
-      "decision": "Primary, descriptive",
+      "decision": "Not plotted; sparse model overlap",
       "rationale": "Multistep quantitative biology in the published GeneBench Docker harness. Exact model and effort matches only; Pro systems excluded. Original GeneBench scores are not substituted."
     },
     {
       "benchmark": "BixBench3",
       "source_id": "bix3",
-      "decision": "Primary when exactly matched",
+      "decision": "Not plotted; sparse model overlap",
       "rationale": "Agentic research-scale computational biology using the published BixBench3 runner. Include only complete VEP configurations with an exact model and effort match."
     },
     {
@@ -9092,7 +9092,7 @@
     {
       "benchmark": "Artificial Analysis Intelligence Index and components",
       "source_id": "aa-method",
-      "decision": "Secondary, descriptive",
+      "decision": "Overall index plotted; components retained as source data",
       "rationale": "General intelligence comparison using latest v4.3 at retrieval and Artificial Analysis's published harnesses. All exact model and effort matches and all ten published component metrics are retained independently of their association; none is labeled an agentic biology score."
     },
     {

@@ -9,31 +9,531 @@ VEP-bench v0.1
 
 **Draft — dataset composition, model performance, and external comparisons.**
 
-VEP-bench asks language models to predict the effects of genetic variants from
-DNA sequence and experimental context, without tools or internet access. Its
-three tasks measure different outcomes: functional effects in
+Can general-purpose language models predict the effects of genetic variants
+from DNA sequence and experimental context? VEP-bench tests this directly,
+without tools or internet access.
+
+The first release covers fitness, gene expression, and splicing across 52
+experimental panels and 2,600 variant appearances. Performance varies across
+these tasks, providing a view of model capabilities that an overall score
+alone cannot capture.
+
+## Dataset
+
+### Prediction tasks and questions
+
+The three tasks measure different outcomes: functional effects in
 [saturation genome editing (SGE)](../tasks/sge.html), reporter activity in
 [satMutMPRA](../tasks/satmut-mpra.html), and exon inclusion in
 [OpenSplice](../tasks/opensplice-snv.html).
+
+Each question supplies sequence and assay context for a panel of 50 variants.
+Models predict an effect for every variant. We score the predicted ordering
+against the measurements using Spearman correlation within each panel, then
+average panels equally within each task. The overall score is the equally
+weighted mean of the three task scores.
 
 <figure style="max-width: 1080px;">
   <img src="./introducing-vep-bench/tasks-overview.svg" width="1080" height="826" style="display: block; width: 100%; height: auto;" alt="Three assay tasks share one workflow: DNA sequence, assay context, and 50 variants go to a language model. It predicts functional effects for SGE, with higher scores indicating greater impairment, reporter activity changes for satMutMPRA, or exon-inclusion changes for OpenSplice. Predicted and measured effects are compared by Spearman correlation within each panel, then panels are averaged equally within each task.">
   <figcaption>Each question is one panel from one assay. The biological target changes across tasks; the prediction and scoring workflow is shared. <a href="./introducing-vep-bench/tasks-overview.svg" download>Download the SVG</a> for a closer look.</figcaption>
 </figure>
 
-Before comparing model performance, we can ask what kinds of variants each
-task contains.
+### Example prompt: MSH6 exon 7
 
-## Comparison with AlphaGenome and AVI
+This is the complete prompt for **MSH6 exon 7**, the panel selected for our
+later response case study. The gene name identifies the example for readers;
+it is not included in the model's prompt.
+
+[Explore this question and model responses](../tasks/opensplice-snv.html?question=opensplice-snv-ranking-v2:E01).
+
+```js
+import MarkdownIt from "npm:markdown-it@14.1.0";
+const examplePrompt = await FileAttachment("./introducing-vep-bench/msh6-e7-prompt.txt").text();
+const examplePromptCard = document.createElement("div");
+examplePromptCard.className = "card vepbench-record-content";
+examplePromptCard.setAttribute("aria-label", "Complete example prompt for MSH6 exon 7");
+examplePromptCard.innerHTML = new MarkdownIt({html: false}).render(examplePrompt);
+display(examplePromptCard);
+```
+
+### Dataset composition
+
+```js
+import {variantComposition, compositionCsv} from "./introducing-vep-bench/analysis.js";
+import {distributionFigure} from "./introducing-vep-bench/plots.js";
+
+const metadata = await FileAttachment("../data/question-metadata.json").json();
+const composition = variantComposition(metadata);
+const complete = composition.tasks.every((task) => task.available);
+const percent = (value) => `${(value * 100).toFixed(1)}%`;
+const integer = (value) => value.toLocaleString("en-US");
+function share(family, dimension, category) {
+  const row = composition.rows.find((row) => row.task_family === family
+    && row.dimension === dimension && row.category === category);
+  return row ? `${percent(row.proportion)} (${integer(row.count)}/${integer(row.total)})` : "unavailable";
+}
+```
+
+Counts describe the selected benchmark panels. Each variant is counted once
+per panel; an allele appearing in two panels contributes twice.
+
+```js
+display(Inputs.table(composition.tasks.map((task) => ({
+  Task: task.label,
+  Panels: task.panels,
+  "Selected variants": task.available ? task.total : null
+})), {select: false, rows: 3}));
+if (!complete) {
+  display(html`<div class="warning" label="Incomplete snapshot">Variant metadata is missing for one or more tasks. The comparisons below are unavailable.</div>`);
+}
+```
+
+<details id="snvs-indels-and-multibase-substitutions">
+<summary>Variant type distribution</summary>
+
+We classify the complete REF-to-ALT edit after trimming shared flanking bases.
+An **SNV** substitutes one base; an **indel** changes sequence length, including
+unequal-length replacements; a **multibase substitution** replaces multiple
+bases without changing length. Each variant belongs to one category.
+
+```js
+if (complete) display(resize((width) => distributionFigure(composition, "type", width)));
+```
+
+Each task panel has its own automatically scaled percentage axis; compare the
+percentage labels across tasks. Hover over a bar for its count and denominator;
+zero labels indicate absent categories. On narrow screens, scroll horizontally
+to compare all three tasks.
+
+```js
+if (complete) display(html`<p>
+  Expression is predominantly SNVs: ${share("satmut_mpra", "type", "SNV")}.
+  Splicing has a majority of indels: ${share("opensplice_snv", "type", "Indel")}.
+  Fitness includes SNVs, indels, and a substantial multibase-substitution component:
+  ${share("sge", "type", "Multibase substitution")}.
+  The OpenSplice task therefore covers more than the SNVs suggested by its historical
+  <code>opensplice_snv</code> identifier.
+</p>`);
+```
+
+</details>
+
+<details id="genomic-consequences">
+<summary>Genomic consequence distribution</summary>
+
+For each complete allele, we use the saved Ensembl VEP
+`most_severe_consequence`: one highest-priority category per allele across the
+returned transcript and regulatory-feature annotations. Transcript consequences
+can differ between transcripts. The retained category is not an experimental
+measurement or a clinical interpretation.
+See Ensembl's [consequence definitions and severity ordering](https://www.ensembl.org/info/genome/variation/prediction/predicted_data.html).
+
+```js
+if (metadata.variant_annotation) display(html`<p class="muted">
+  Annotation snapshot: ${metadata.variant_annotation.provider}, release ${metadata.variant_annotation.software.release};
+  ${metadata.variant_annotation.assembly}; ${metadata.variant_annotation.transcripts};
+  upstream/downstream distance ${integer(metadata.variant_annotation.parameters.distance)} bp.
+</p>`);
+if (complete) display(resize((width) => distributionFigure(composition, "consequence", width)));
+```
+
+Consequence rows are alphabetical and aligned across the three tasks. All
+observed categories are retained, including rare consequences.
+
+```js
+if (complete && metadata.variant_annotation) display(html`<p>
+  Missense variants are the largest category in fitness (${share("sge", "consequence", "missense_variant")}).
+  Expression spans several genomic contexts, including intronic
+  (${share("satmut_mpra", "consequence", "intron_variant")}) and upstream-gene
+  (${share("satmut_mpra", "consequence", "upstream_gene_variant")}) annotations.
+  Splicing includes splice-region, splice-site, coding, and intronic consequences;
+  in-frame deletions account for ${share("opensplice_snv", "consequence", "inframe_deletion")}.
+</p>`);
+```
+
+The assay determines the prediction target. A variant labeled “missense” in its
+genomic context can still be evaluated for its effect on exon inclusion in a
+splicing reporter. Likewise, an intronic genomic annotation does not establish
+what a sequence will do in an expression reporter. These differences in
+composition provide context for model comparisons across tasks; they do not by
+themselves explain performance differences. The consequence annotations shown
+here are not supplied to the models.
+
+**Why are there so few intergenic variants in expression?**
+
+Our satMutMPRA subset contains nine promoter panels and seven enhancer panels,
+selected from the [source study's targeted regulatory-element assays](https://doi.org/10.1038/s41467-019-11526-w).
+Promoter sequences can receive upstream, UTR, or overlapping-transcript labels.
+Enhancers can also lie within genes: in this snapshot, every selected variant
+in the IRF4, TCF7L2, ZFAND3, and ZRS enhancer panels is labeled intronic. The MYC
+enhancer panel is labeled noncoding-transcript exon, and the SORT1 enhancer panel
+is labeled 3′ UTR. These names describe the assayed elements; VEP considers all
+annotated transcripts, including transcripts of other genes.
+
+```js
+if (complete && metadata.variant_annotation) display(html`<p>
+  The expression task's intergenic category contains ${share("satmut_mpra", "consequence", "intergenic_variant")},
+  all from the IRF6 enhancer panel. Its remaining 46 selected alleles receive the
+  regulatory-region label. The intergenic bar therefore counts only alleles whose
+  retained VEP label is <code>intergenic_variant</code>; it does not count every
+  allele outside annotated transcripts. Upstream and regulatory-feature annotations
+  can take precedence over that label.
+</p>`);
+```
+
+**What does “regulatory region” mean here?**
+
+`regulatory_region_variant` denotes overlap with a regulatory-feature interval
+in the saved Ensembl annotation. Ensembl identifies features such as promoters,
+enhancers, and CTCF-binding sites using genomic annotations and epigenomic
+evidence, including chromatin accessibility and ChIP-seq measurements of histone
+marks or protein binding. See [Ensembl Regulation](https://regulation.ensembl.org/)
+for the annotation methods. The 1,000 bp setting reported above controls
+upstream/downstream gene annotations; it does not define regulatory-region
+boundaries.
+
+This label does not establish that the variant changes regulatory activity or
+that the feature is active in the MPRA's cell line. The regulatory-region bar
+is not a count of all regulatory-feature overlaps: a variant that overlaps both
+a regulatory feature and a transcript can receive a higher-priority transcript
+consequence in this single-label view. “Regulatory” and “intronic,” for example,
+can describe different aspects of the same allele.
+
+</details>
+
+<details id="composition-counts-and-provenance">
+<summary>Composition counts and provenance</summary>
+
+Panel sampling spreads selections across the experimental score range. It
+does not impose variant-type or consequence quotas, and these distributions
+should not be read as frequencies in human populations or in the full source
+assays. See the [shared sampling protocol](https://github.com/Open-Athena/VEP-bench/blob/main/docs/task-construction.md).
+
+```js
+const csv = compositionCsv(composition.rows);
+if (complete) display(html`<p><a download="vepbench-variant-composition.csv"
+  href=${`data:text/csv;charset=utf-8,${encodeURIComponent(csv)}`}>Download all counts and proportions (CSV)</a>
+  · <a href=${await FileAttachment("../data/question-metadata.json").url()} download="question-metadata.json">Download source-linked annotation metadata (JSON)</a></p>`);
+```
+
+The metadata records each panel's source-record digest, complete genomic
+alleles, and VEP annotation provenance. The composition figures are recomputed
+from that bundled snapshot when the page loads.
+
+```js
+if (complete) display(Inputs.table(composition.rows, {
+  columns: ["task", "dimension", "category", "count", "total", "proportion"],
+  header: {task: "Task", dimension: "Distribution", category: "Category", count: "Count", total: "Task total", proportion: "Percent"},
+  format: {proportion: percent},
+  select: false,
+  rows: 12
+}));
+```
+
+</details>
+
+## Results
+
+We evaluate eight models at their highest available reasoning effort, using
+complete runs from the September 15, 2026 snapshot. Effort selection does not
+depend on score. The [publication note](./introducing-vep-bench/specialist-methods.html#publication-snapshot)
+documents recovered responses and replacements; the published DeepSeek
+configuration includes selective token-limit retries.
+
+```js
+import {displayScore, fetchGzipJson, highestEffortRows, overallLeaderboardRows, modelFamilyScale} from "../components/benchmark-data.js";
+import {leaderboardBarPlot} from "../components/leaderboard-plot.js";
+const vepSnapshot = await FileAttachment("./introducing-vep-bench/comparisons-data/vep-runs.json").json();
+const comparisonModelColors = await FileAttachment("../components/model-family-colors.json").json();
+const resultRows = highestEffortRows(overallLeaderboardRows(vepSnapshot.runs, vepSnapshot.leaderboard, "spearman"));
+const resultColor = modelFamilyScale(resultRows.map((row) => row.family), comparisonModelColors);
+const resultOrganizationIcons = {
+  openai: {name: "OpenAI", url: await FileAttachment("../icons/organizations/openai.svg").url()},
+  "z-ai": {name: "Z.ai", url: await FileAttachment("../icons/organizations/zai.svg").url()},
+  anthropic: {name: "Anthropic", url: await FileAttachment("../icons/organizations/anthropic.svg").url()},
+  google: {name: "Google", url: await FileAttachment("../icons/organizations/google.svg").url()},
+  meta: {name: "Meta", url: await FileAttachment("../icons/organizations/meta.svg").url()},
+  deepseek: {name: "DeepSeek", url: await FileAttachment("../icons/organizations/deepseek.svg").url()}
+};
+const resultPlotRows = resultRows.map((row) => ({
+  ...row,
+  key: row.runs[0].configuration_key,
+  model: row.model_cell.model,
+  score: displayScore(row.score),
+  organization: row.runs[0].model.model_id.split("/")[0]
+}));
+```
+
+```js
+display(html`<div class="card vepbench-leaderboard-chart" tabindex="0"
+  role="region" aria-label="Overall Spearman scores; scroll horizontally to see all models">
+  ${resize((width) => leaderboardBarPlot(resultPlotRows, {
+    width, color: resultColor, organizationIcons: resultOrganizationIcons,
+    formatScore: (value) => `${(value * 100).toFixed(1)}%`,
+    modelDetails: (row) => `${row.model}\nOverall Spearman: ${row.score.toFixed(3)}`,
+    ariaLabel: "All tasks leaderboard by Spearman score"
+  }))}
+</div>`);
+```
+
+The bar plot shows overall Spearman scores across all three tasks, displayed
+as percentages to match the leaderboard.
+GPT-6 Astra has the highest overall score (**0.599**), followed by Gemini 3.8
+Flash (**0.559**) and GPT-5.6 Sol (**0.558**).
+
+### Performance across tasks
+
+The radar plot compares fitness, expression, and splicing on the same 0–1
+Spearman scale.
+
+```js
+import {resultsRadarFigure} from "./introducing-vep-bench/plots.js";
+const selectedResultModels = view(Inputs.checkbox(resultRows.map((row) => row.family), {
+  label: "Models in radar plot",
+  value: resultRows.map((row) => row.family),
+  format: (family) => html`<span><span style=${{color: comparisonModelColors[family]}}>●</span>
+    ${resultRows.find((row) => row.family === family).model_cell.model}</span>`
+}));
+```
+
+```js
+display(resize((width) => resultsRadarFigure(
+  resultRows.filter((row) => selectedResultModels.includes(row.family)), resultColor, width
+)));
+```
+
+The models' strengths differ: Astra leads on fitness, Gemini on splicing, and
+Sol on expression. All eight models score highest on splicing and lowest on
+expression in this dataset.
+
+<details>
+<summary>View overall and task scores</summary>
+
+```js
+const resultTable = resultRows.map((row) => ({
+  Model: row.model_cell.model,
+  Overall: row.score,
+  Fitness: row.task_scores.find((task) => task.task_family === "sge").score,
+  Expression: row.task_scores.find((task) => task.task_family === "satmut_mpra").score,
+  Splicing: row.task_scores.find((task) => task.task_family === "opensplice_snv").score
+}));
+display(Inputs.table(resultTable, {
+  columns: ["Model", "Overall", "Fitness", "Expression", "Splicing"],
+  format: Object.fromEntries(["Overall", "Fitness", "Expression", "Splicing"]
+    .map((column) => [column, (value) => value.toFixed(3)])),
+  select: false, rows: resultRows.length
+}));
+```
+
+</details>
+
+[Explore all models and reasoning efforts on the leaderboard](../index.html).
+
+```js
+import {stratumCorrelationPlot} from "../components/correlation-plot.js";
+import {stratumRows, stratumCsv, stratumModelOrder} from "./introducing-vep-bench/strata-analysis.js";
+
+const strataSnapshot = await fetchGzipJson(
+  await FileAttachment("./introducing-vep-bench/strata-2026-09-15.json.gz").url(),
+  "frozen variant-stratum analysis"
+);
+const strataModelOrder = stratumModelOrder(strataSnapshot);
+const strataIntervals = await FileAttachment("./introducing-vep-bench/strata-2026-09-15.intervals.json").json();
+const strataScores = stratumRows(strataSnapshot, strataIntervals)
+  .sort((a, b) => strataModelOrder.indexOf(a.model) - strataModelOrder.indexOf(b.model));
+const strataTaskLabel = (family) => composition.tasks.find((task) => task.family === family)?.label ?? family;
+const strataAxisLabel = (axis) => axis === "allele_type" ? "Allele type" : "Functional consequence";
+function stratumFigure(axis) {
+  return resize((width) => stratumCorrelationPlot(strataScores.filter((row) => row.axis === axis), {
+    width, colors: strataSnapshot.family_colors, tasks: composition.tasks,
+    axis, coverage: strataSnapshot.coverage, modelOrder: strataModelOrder
+  }));
+}
+```
+
+<span id="performance-by-variant-type-and-consequence"></span>
+
+<details id="allele-type">
+<summary>Results by variant type</summary>
+
+Scores are recomputed within eligible panels, with at least 10 variants per
+panel and five panels per task. Bars show 95% confidence intervals; see the
+[subset analysis methods](#subset-analysis-methods) for coverage and interpretation.
+
+```js
+display(stratumFigure("allele_type"));
+```
+
+In **SGE**, all eight selected configurations have higher mean Spearman correlation for SNVs
+than deletions. The SNV analysis includes 478 variants in 15 panels; the
+deletion analysis includes 170 variants in 10 panels. Differences can reflect
+the different panel composition as well as variant class. Insertions lack
+enough eligible panels to report a score.
+
+In **satMutMPRA**, only SNVs clear both cutoffs. The 60 expression deletions are too dispersed:
+no panel has 10, so no deletion summary score is reported.
+
+In **OpenSplice**, deletions have higher mean Spearman correlation than SNVs for all eight selected
+configurations. Both strata retain all 20 panels, with 590 deletions and 410 SNVs.
+This still compares different selected variants and effect distributions within
+those panels.
+
+</details>
+
+<details id="functional-consequence">
+<summary>Results by functional consequence</summary>
+
+Scores are recomputed within eligible panels, with at least 10 variants per
+panel and five panels per task. Bars show 95% confidence intervals; see the
+[subset analysis methods](#subset-analysis-methods) for coverage and interpretation.
+
+```js
+display(stratumFigure("consequence"));
+```
+
+In **SGE**, missense variants and in-frame deletions clear both cutoffs. In
+**satMutMPRA**, the eligible consequences are 5′ UTR, intronic, and upstream-gene
+variants; each category covers a different selection of reporter panels. In
+**OpenSplice**, only in-frame deletions clear both cutoffs for this axis.
+
+Missense clears the cutoffs only in SGE; synonymous and stop-gained groups do
+not clear them in any task.
+
+These are exploratory observations about the selected panels and saved
+configurations. The coverage cutoffs do not remove differences in assay context,
+effect range, or panel composition, and these observations do not establish a
+general advantage for one variant class.
+
+</details>
+
+<details id="subset-analysis-methods">
+<summary>Subset analysis methods and coverage</summary>
+
+**Analysis snapshot: 15 September 2026.** We reused the saved answers from eight
+models across 52 panels, selecting the highest available reasoning effort for
+each model: max for GPT-5.6 Luna, Terra, and Sol; high for Gemini and GPT-6 Astra;
+medium for Muse; and low for GLM and DeepSeek.
+Selection uses complete runs and does not depend on score; ties at the same
+effort use the latest run. Before examining stratum performance,
+we fixed two coverage cutoffs: **at least 10 variants within an original panel**
+and **at least 5 eligible panels within a task**. These are pragmatic coverage
+requirements, not a claim of statistical significance.
+
+The snapshot includes the published DeepSeek configuration with selective
+token-limit retries and the recovered maximum-effort runs. Recovery metadata
+distinguishes available original responses, retries, and replacements.
+Completed invalid answers, including Luna’s invalid SGE answer, retain zero scores.
+
+Allele type and functional consequence are separate axes: an SNV can also be
+missense. For this finer allele breakdown, we trim shared REF/ALT flanks and
+distinguish SNVs, pure insertions, pure deletions, and other/complex edits.
+Other/complex includes multibase substitutions and unequal-length replacements.
+Unknown alleles and unknown or ambiguous consequences remain explicit categories.
+Consequences use the saved VEP release 114 annotation described above: the most
+severe consequence across all Ensembl transcripts and returned regulatory
+features, with no canonical-transcript selection. We do not infer missense from
+exon membership.
+
+Each dot is the unweighted mean of Spearman correlations recomputed **within the eligible
+original panels**, using the same candidate IDs and panel membership for every
+configuration in that stratum. We recompute ranks within each subset; raw assay
+values are never pooled across panels. Invalid original full-panel answers
+retain their zero penalty, even when their missing IDs fall outside the subset.
+Average ranks handle ties, and constant reference or prediction vectors score
+zero under the existing scorer. Both figures show signed Spearman correlations, including
+negative values. There is no combined score across these task-specific strata.
+
+Horizontal bars are **95% Student's t confidence intervals** for the mean across
+eligible panels: mean ± t(0.975, n − 1) × s / √n, using the sample standard
+deviation of panel scores. The unit is a gene panel in SGE and OpenSplice, or a
+regulatory-element panel in satMutMPRA. These are approximate, exploratory
+intervals: panel scores are bounded, some groups contain only five panels, and
+panels can share assay conditions. They are conditional on the saved answers
+and do not measure variability across repeated model runs. The intervals are
+pointwise; their overlap does not test differences between models or classes.
+We retain the full bounds without clipping to −1 or 1. Constant panel scores
+leave the interval unestimated. See the
+[interval methodology](./introducing-vep-bench/strata-methods.html#confidence-intervals)
+for assumptions and reproduction.
+
+Each figure aligns categories across the three task subplots. Models appear in
+the overall VEP-bench Spearman ranking order from the same saved publication,
+highest first, in both the dots and the legend. Each task subplot has an
+automatically scaled correlation axis; compare the tick values across tasks.
+Categories appear when at least one task clears
+both cutoffs; other task/category combinations are marked as insufficient
+coverage. Hover over a dot for its model, score, interval, and counts. On narrow screens,
+scroll horizontally to compare the task columns.
+
+### Coverage and exclusions
+
+```js
+display(Inputs.table(strataSnapshot.coverage, {
+  columns: ["task_family", "axis", "category", "variant_count", "eligible_variants", "eligible_panels", "total_panels", "excluded_panels", "below_cutoff_variants", "unsupported_variants", "status"],
+  header: {task_family: "Task", axis: "Group", category: "Category", variant_count: "All variants", eligible_variants: "Variants in eligible panels",
+    eligible_panels: "Eligible panels", total_panels: "All panels", excluded_panels: "Excluded panels",
+    below_cutoff_variants: "Variants below panel cutoff", unsupported_variants: "Unsupported variants", status: "Coverage"},
+  format: {task_family: strataTaskLabel, axis: strataAxisLabel},
+  select: false, rows: 10
+}));
+```
+
+Counts are panel appearances, as in the composition figures. A group can have
+eligible panels yet fail the five-panel cutoff; its counts remain visible but
+it receives no summary score. Excluded panels contain fewer than 10 supported
+variants of that class, including panels with none. Missing or stale
+source-linked consequences are retained as unknown.
+
+These variant-stratum figures and the AlphaGenome/AVI comparison use the same
+frozen LLM publication. The specialist comparison has a separate coverage plan:
+it compares complete eligible panels and does not apply these variant-class cutoffs.
+
+```js
+display(html`<p>
+  <a download="vepbench-variant-strata-2026-09-15.csv"
+    href=${`data:text/csv;charset=utf-8,${encodeURIComponent(stratumCsv(strataSnapshot, strataIntervals))}`}>Download scores, 95% intervals, coverage, and exclusions (CSV)</a>
+  · <a href=${await FileAttachment("./introducing-vep-bench/strata-2026-09-15.json.gz").url()} download>Download frozen analysis, panel membership, model settings, and provenance (JSON.gz)</a>
+  · <a href=${await FileAttachment("./introducing-vep-bench/strata-2026-09-15.intervals.json").url()} download>Download confidence intervals and method (JSON)</a>
+</p>`);
+```
+
+The performance figures read only the bundled snapshot, never the live
+leaderboard. It retains annotation provenance, question and input-artifact
+hashes, evaluated model settings, exact candidate membership, per-panel scores,
+invalid-answer counts, and the model-family color mapping. The
+[reproduction instructions](./introducing-vep-bench/strata-methods.html)
+describe the saved coverage plan and offline scoring command. This draft
+snapshot will accompany the dated analysis and immutable dataset release tracked
+in [issue #79](https://github.com/Open-Athena/VEP-bench/issues/79); it does not
+change the full benchmark leaderboard.
+
+### Exact scores and invalid-answer counts
+
+```js
+display(Inputs.table(strataScores, {
+  columns: ["task_family", "axis", "model", "category", "eligible_variants", "eligible_panels", "mean_spearman_rho", "spearman_ci_low", "spearman_ci_high", "invalid_panels"],
+  header: {task_family: "Task", axis: "Group", model: "Configuration", category: "Category", eligible_variants: "Variants", eligible_panels: "Panels",
+    mean_spearman_rho: "Mean Spearman ρ", spearman_ci_low: "95% CI lower", spearman_ci_high: "95% CI upper", invalid_panels: "Invalid panels (zero)"},
+  format: {task_family: strataTaskLabel, axis: strataAxisLabel, mean_spearman_rho: (value) => value.toFixed(3),
+    spearman_ci_low: (value) => value == null ? "—" : value.toFixed(3),
+    spearman_ci_high: (value) => value == null ? "—" : value.toFixed(3)},
+  select: false, rows: 12
+}));
+```
+
+
+</details>
+
+<span id="further-analysis"></span>
+
+<span id="comparison-with-alpha-genome-and-avi"></span>
+
+## Comparison with specialist models
 
 We compare AlphaGenome's signed molecular predictions for splicing and
 expression, and AlphaGenome Variant Impact (AVI) scores for fitness, with saved
 LLM answers on the same variants within each original panel. Each panel has
 equal weight. The full benchmark leaderboard retains its original variant set.
-All performance comparisons in this post use the public LLM snapshot frozen on
-September 15, 2026, including its recovered maximum-effort runs. The
-[publication note](./introducing-vep-bench/specialist-methods.html#publication-snapshot)
-describes the recovered responses and replacements.
 
 Coverage is **1,000/1,000 splicing variants**, **800/800 expression variants**,
 and **487/800 fitness variants**. The molecular predictions include indels;
@@ -43,7 +543,6 @@ covered variants as the specialist.
 ```js
 import {specialistRows, specialistCsv, specialistTasks, specialistModelOrder} from "./introducing-vep-bench/specialists.js";
 import {matchedCorrelationPlot} from "./introducing-vep-bench/specialist-plots.js";
-import {fetchGzipJson} from "../components/benchmark-data.js";
 const specialistSnapshot = await fetchGzipJson(
   await FileAttachment("./introducing-vep-bench/specialist-comparison.json.gz").url(), "specialist comparison"
 );
@@ -175,332 +674,28 @@ display(html`<p><a href=${await FileAttachment("./introducing-vep-bench/speciali
   Download frozen publication manifest (JSON)</a></p>`);
 ```
 
-```js
-import {variantComposition, compositionCsv} from "./introducing-vep-bench/analysis.js";
-import {distributionFigure} from "./introducing-vep-bench/plots.js";
+<span id="does-variant-effect-prediction-track-other-capabilities"></span>
 
-const metadata = await FileAttachment("../data/question-metadata.json").json();
-const composition = variantComposition(metadata);
-const complete = composition.tasks.every((task) => task.available);
-const percent = (value) => `${(value * 100).toFixed(1)}%`;
-const integer = (value) => value.toLocaleString("en-US");
-function share(family, dimension, category) {
-  const row = composition.rows.find((row) => row.task_family === family
-    && row.dimension === dimension && row.category === category);
-  return row ? `${percent(row.proportion)} (${integer(row.count)}/${integer(row.total)})` : "unavailable";
-}
-```
+<span id="comparison-with-general-intelligence"></span>
 
-## What is being counted?
+## Comparison with other benchmarks
 
-These plots describe the **selected benchmark panels** in the source snapshot
-bundled with this site. Each panel contains 50 complete assayed alleles. We count
-each allele once per panel, regardless of how many models evaluated it. An
-allele appearing in two panels contributes twice; the denominator is panel
-appearances, not unique genomic sites.
+The plot below compares overall VEP-bench scores with the
+[Artificial Analysis Intelligence Index v4.3](https://artificialanalysis.ai/methodology/intelligence-benchmarking).
 
 ```js
-display(Inputs.table(composition.tasks.map((task) => ({
-  Task: task.label,
-  Panels: task.panels,
-  "Selected variants": task.available ? task.total : null
-})), {select: false, rows: 3}));
-if (!complete) {
-  display(html`<div class="warning" label="Incomplete snapshot">Variant metadata is missing for one or more tasks. The comparisons below are unavailable.</div>`);
-}
+import {compareScores} from "./introducing-vep-bench/comparisons.js";
+import {comparisonFigure} from "./introducing-vep-bench/plots.js";
+const externalSnapshot = await FileAttachment("./introducing-vep-bench/comparisons-data/external.json").json();
+const externalAnalysis = compareScores(vepSnapshot, externalSnapshot);
+const comparisonColor = modelFamilyScale(externalAnalysis.configurations.map((c) => c.family), comparisonModelColors);
+const intelligenceComparison = externalAnalysis.comparisons.find((c) => c.id === "aa-intelligence");
+display(resize((width) => comparisonFigure(intelligenceComparison, comparisonColor, width)));
 ```
 
-Panel sampling spreads selections across the experimental score range. It
-does not impose variant-type or consequence quotas, and these distributions
-should not be read as frequencies in human populations or in the full source
-assays. See the [shared sampling protocol](https://github.com/Open-Athena/VEP-bench/blob/main/docs/task-construction.md).
+[Comparison methodology and sources](./introducing-vep-bench/comparison-methods.html).
 
-## SNVs, indels, and multibase substitutions
-
-We classify the complete REF-to-ALT edit after trimming shared flanking bases.
-An **SNV** substitutes one base; an **indel** changes sequence length, including
-unequal-length replacements; a **multibase substitution** replaces multiple
-bases without changing length. Each variant belongs to one category.
-
-```js
-if (complete) display(resize((width) => distributionFigure(composition, "type", width)));
-```
-
-Each task panel has its own automatically scaled percentage axis; compare the
-percentage labels across tasks. Hover over a bar for its count and denominator;
-zero labels indicate absent categories. On narrow screens, scroll horizontally
-to compare all three tasks.
-
-```js
-if (complete) display(html`<p>
-  Expression is predominantly SNVs: ${share("satmut_mpra", "type", "SNV")}.
-  Splicing has a majority of indels: ${share("opensplice_snv", "type", "Indel")}.
-  Fitness includes SNVs, indels, and a substantial multibase-substitution component:
-  ${share("sge", "type", "Multibase substitution")}.
-  The OpenSplice task therefore covers more than the SNVs suggested by its historical
-  <code>opensplice_snv</code> identifier.
-</p>`);
-```
-
-## Genomic consequences
-
-For each complete allele, we use the saved Ensembl VEP
-`most_severe_consequence`: one highest-priority category per allele across the
-returned transcript and regulatory-feature annotations. Transcript consequences
-can differ between transcripts. The retained category is not an experimental
-measurement or a clinical interpretation.
-See Ensembl's [consequence definitions and severity ordering](https://www.ensembl.org/info/genome/variation/prediction/predicted_data.html).
-
-```js
-if (metadata.variant_annotation) display(html`<p class="muted">
-  Annotation snapshot: ${metadata.variant_annotation.provider}, release ${metadata.variant_annotation.software.release};
-  ${metadata.variant_annotation.assembly}; ${metadata.variant_annotation.transcripts};
-  upstream/downstream distance ${integer(metadata.variant_annotation.parameters.distance)} bp.
-</p>`);
-if (complete) display(resize((width) => distributionFigure(composition, "consequence", width)));
-```
-
-Consequence rows are alphabetical and aligned across the three tasks. All
-observed categories are retained, including rare consequences.
-
-```js
-if (complete && metadata.variant_annotation) display(html`<p>
-  Missense variants are the largest category in fitness (${share("sge", "consequence", "missense_variant")}).
-  Expression spans several genomic contexts, including intronic
-  (${share("satmut_mpra", "consequence", "intron_variant")}) and upstream-gene
-  (${share("satmut_mpra", "consequence", "upstream_gene_variant")}) annotations.
-  Splicing includes splice-region, splice-site, coding, and intronic consequences;
-  in-frame deletions account for ${share("opensplice_snv", "consequence", "inframe_deletion")}.
-</p>`);
-```
-
-The assay determines the prediction target. A variant labeled “missense” in its
-genomic context can still be evaluated for its effect on exon inclusion in a
-splicing reporter. Likewise, an intronic genomic annotation does not establish
-what a sequence will do in an expression reporter. These differences in
-composition provide context for model comparisons across tasks; they do not by
-themselves explain performance differences. The consequence annotations shown
-here are not supplied to the models.
-
-### Why are there so few intergenic variants in expression?
-
-Our satMutMPRA subset contains nine promoter panels and seven enhancer panels,
-selected from the [source study's targeted regulatory-element assays](https://doi.org/10.1038/s41467-019-11526-w).
-Promoter sequences can receive upstream, UTR, or overlapping-transcript labels.
-Enhancers can also lie within genes: in this snapshot, every selected variant
-in the IRF4, TCF7L2, ZFAND3, and ZRS enhancer panels is labeled intronic. The MYC
-enhancer panel is labeled noncoding-transcript exon, and the SORT1 enhancer panel
-is labeled 3′ UTR. These names describe the assayed elements; VEP considers all
-annotated transcripts, including transcripts of other genes.
-
-```js
-if (complete && metadata.variant_annotation) display(html`<p>
-  The expression task's intergenic category contains ${share("satmut_mpra", "consequence", "intergenic_variant")},
-  all from the IRF6 enhancer panel. Its remaining 46 selected alleles receive the
-  regulatory-region label. The intergenic bar therefore counts only alleles whose
-  retained VEP label is <code>intergenic_variant</code>; it does not count every
-  allele outside annotated transcripts. Upstream and regulatory-feature annotations
-  can take precedence over that label.
-</p>`);
-```
-
-### What does “regulatory region” mean here?
-
-`regulatory_region_variant` denotes overlap with a regulatory-feature interval
-in the saved Ensembl annotation. Ensembl identifies features such as promoters,
-enhancers, and CTCF-binding sites using genomic annotations and epigenomic
-evidence, including chromatin accessibility and ChIP-seq measurements of histone
-marks or protein binding. See [Ensembl Regulation](https://regulation.ensembl.org/)
-for the annotation methods. The 1,000 bp setting reported above controls
-upstream/downstream gene annotations; it does not define regulatory-region
-boundaries.
-
-This label does not establish that the variant changes regulatory activity or
-that the feature is active in the MPRA's cell line. The regulatory-region bar
-is not a count of all regulatory-feature overlaps: a variant that overlaps both
-a regulatory feature and a transcript can receive a higher-priority transcript
-consequence in this single-label view. “Regulatory” and “intronic,” for example,
-can describe different aspects of the same allele.
-
-## Performance within variant classes
-
-**Analysis snapshot: 15 September 2026.** We reused the saved answers from eight
-models across 52 panels, selecting the highest available reasoning effort for
-each model: max for GPT-5.6 Luna, Terra, and Sol; high for Gemini and GPT-6 Astra;
-medium for Muse; and low for GLM and DeepSeek.
-Selection uses complete runs and does not depend on score; ties at the same
-effort use the latest run. Before examining stratum performance,
-we fixed two coverage cutoffs: **at least 10 variants within an original panel**
-and **at least 5 eligible panels within a task**. These are pragmatic coverage
-requirements, not a claim of statistical significance.
-
-The snapshot includes the published DeepSeek configuration with selective
-token-limit retries and the recovered maximum-effort runs. Recovery metadata
-distinguishes available original responses, retries, and replacements.
-Completed invalid answers, including Luna’s invalid SGE answer, retain zero scores.
-
-Allele type and functional consequence are separate axes: an SNV can also be
-missense. For this finer allele breakdown, we trim shared REF/ALT flanks and
-distinguish SNVs, pure insertions, pure deletions, and other/complex edits.
-Other/complex includes multibase substitutions and unequal-length replacements.
-Unknown alleles and unknown or ambiguous consequences remain explicit categories.
-Consequences use the saved VEP release 114 annotation described above: the most
-severe consequence across all Ensembl transcripts and returned regulatory
-features, with no canonical-transcript selection. We do not infer missense from
-exon membership.
-
-```js
-import {stratumCorrelationPlot} from "../components/correlation-plot.js";
-import {stratumRows, stratumCsv, stratumModelOrder} from "./introducing-vep-bench/strata-analysis.js";
-
-const strataSnapshot = await fetchGzipJson(
-  await FileAttachment("./introducing-vep-bench/strata-2026-09-15.json.gz").url(),
-  "frozen variant-stratum analysis"
-);
-const strataModelOrder = stratumModelOrder(strataSnapshot);
-const strataIntervals = await FileAttachment("./introducing-vep-bench/strata-2026-09-15.intervals.json").json();
-const strataScores = stratumRows(strataSnapshot, strataIntervals)
-  .sort((a, b) => strataModelOrder.indexOf(a.model) - strataModelOrder.indexOf(b.model));
-const strataTaskLabel = (family) => composition.tasks.find((task) => task.family === family)?.label ?? family;
-const strataAxisLabel = (axis) => axis === "allele_type" ? "Allele type" : "Functional consequence";
-function stratumFigure(axis) {
-  return resize((width) => stratumCorrelationPlot(strataScores.filter((row) => row.axis === axis), {
-    width, colors: strataSnapshot.family_colors, tasks: composition.tasks,
-    axis, coverage: strataSnapshot.coverage, modelOrder: strataModelOrder
-  }));
-}
-```
-
-Each dot is the unweighted mean of Spearman correlations recomputed **within the eligible
-original panels**, using the same candidate IDs and panel membership for every
-configuration in that stratum. We recompute ranks within each subset; raw assay
-values are never pooled across panels. Invalid original full-panel answers
-retain their zero penalty, even when their missing IDs fall outside the subset.
-Average ranks handle ties, and constant reference or prediction vectors score
-zero under the existing scorer. Both figures show signed Spearman correlations, including
-negative values. There is no combined score across these task-specific strata.
-
-Horizontal bars are **95% Student's t confidence intervals** for the mean across
-eligible panels: mean ± t(0.975, n − 1) × s / √n, using the sample standard
-deviation of panel scores. The unit is a gene panel in SGE and OpenSplice, or a
-regulatory-element panel in satMutMPRA. These are approximate, exploratory
-intervals: panel scores are bounded, some groups contain only five panels, and
-panels can share assay conditions. They are conditional on the saved answers
-and do not measure variability across repeated model runs. The intervals are
-pointwise; their overlap does not test differences between models or classes.
-We retain the full bounds without clipping to −1 or 1. Constant panel scores
-leave the interval unestimated. See the
-[interval methodology](./introducing-vep-bench/strata-methods.html#confidence-intervals)
-for assumptions and reproduction.
-
-Each figure aligns categories across the three task subplots. Models appear in
-the overall VEP-bench Spearman ranking order from the same saved publication,
-highest first, in both the dots and the legend. Each task subplot has an
-automatically scaled correlation axis; compare the tick values across tasks.
-Categories appear when at least one task clears
-both cutoffs; other task/category combinations are marked as insufficient
-coverage. Hover over a dot for its model, score, interval, and counts. On narrow screens,
-scroll horizontally to compare the task columns.
-
-### Allele type
-
-```js
-display(stratumFigure("allele_type"));
-```
-
-In **SGE**, all eight selected configurations have higher mean Spearman correlation for SNVs
-than deletions. The SNV analysis includes 478 variants in 15 panels; the
-deletion analysis includes 170 variants in 10 panels. Differences can reflect
-the different panel composition as well as variant class. Insertions lack
-enough eligible panels to report a score.
-
-In **satMutMPRA**, only SNVs clear both cutoffs. The 60 expression deletions are too dispersed:
-no panel has 10, so no deletion summary score is reported.
-
-In **OpenSplice**, deletions have higher mean Spearman correlation than SNVs for all eight selected
-configurations. Both strata retain all 20 panels, with 590 deletions and 410 SNVs.
-This still compares different selected variants and effect distributions within
-those panels.
-
-### Functional consequence
-
-```js
-display(stratumFigure("consequence"));
-```
-
-In **SGE**, missense variants and in-frame deletions clear both cutoffs. In
-**satMutMPRA**, the eligible consequences are 5′ UTR, intronic, and upstream-gene
-variants; each category covers a different selection of reporter panels. In
-**OpenSplice**, only in-frame deletions clear both cutoffs for this axis.
-
-Missense clears the cutoffs only in SGE; synonymous and stop-gained groups do
-not clear them in any task.
-
-These are exploratory observations about the selected panels and saved
-configurations. The coverage cutoffs do not remove differences in assay context,
-effect range, or panel composition, and these observations do not establish a
-general advantage for one variant class.
-
-### Coverage and exclusions
-
-```js
-display(Inputs.table(strataSnapshot.coverage, {
-  columns: ["task_family", "axis", "category", "variant_count", "eligible_variants", "eligible_panels", "total_panels", "excluded_panels", "below_cutoff_variants", "unsupported_variants", "status"],
-  header: {task_family: "Task", axis: "Group", category: "Category", variant_count: "All variants", eligible_variants: "Variants in eligible panels",
-    eligible_panels: "Eligible panels", total_panels: "All panels", excluded_panels: "Excluded panels",
-    below_cutoff_variants: "Variants below panel cutoff", unsupported_variants: "Unsupported variants", status: "Coverage"},
-  format: {task_family: strataTaskLabel, axis: strataAxisLabel},
-  select: false, rows: 10
-}));
-```
-
-Counts are panel appearances, as in the composition figures. A group can have
-eligible panels yet fail the five-panel cutoff; its counts remain visible but
-it receives no summary score. Excluded panels contain fewer than 10 supported
-variants of that class, including panels with none. Missing or stale
-source-linked consequences are retained as unknown.
-
-These variant-stratum figures and the AlphaGenome/AVI comparison use the same
-frozen LLM publication. The specialist comparison has a separate coverage plan:
-it compares complete eligible panels and does not apply these variant-class cutoffs.
-
-```js
-display(html`<p>
-  <a download="vepbench-variant-strata-2026-09-15.csv"
-    href=${`data:text/csv;charset=utf-8,${encodeURIComponent(stratumCsv(strataSnapshot, strataIntervals))}`}>Download scores, 95% intervals, coverage, and exclusions (CSV)</a>
-  · <a href=${await FileAttachment("./introducing-vep-bench/strata-2026-09-15.json.gz").url()} download>Download frozen analysis, panel membership, model settings, and provenance (JSON.gz)</a>
-  · <a href=${await FileAttachment("./introducing-vep-bench/strata-2026-09-15.intervals.json").url()} download>Download confidence intervals and method (JSON)</a>
-</p>`);
-```
-
-The performance figures read only the bundled snapshot, never the live
-leaderboard. It retains annotation provenance, question and input-artifact
-hashes, evaluated model settings, exact candidate membership, per-panel scores,
-invalid-answer counts, and the model-family color mapping. The
-[reproduction instructions](./introducing-vep-bench/strata-methods.html)
-describe the saved coverage plan and offline scoring command. This draft
-snapshot will accompany the dated analysis and immutable dataset release tracked
-in [issue #79](https://github.com/Open-Athena/VEP-bench/issues/79); it does not
-change the full benchmark leaderboard.
-
-<details>
-<summary>View exact stratum scores and invalid-answer counts</summary>
-
-```js
-display(Inputs.table(strataScores, {
-  columns: ["task_family", "axis", "model", "category", "eligible_variants", "eligible_panels", "mean_spearman_rho", "spearman_ci_low", "spearman_ci_high", "invalid_panels"],
-  header: {task_family: "Task", axis: "Group", model: "Configuration", category: "Category", eligible_variants: "Variants", eligible_panels: "Panels",
-    mean_spearman_rho: "Mean Spearman ρ", spearman_ci_low: "95% CI lower", spearman_ci_high: "95% CI upper", invalid_panels: "Invalid panels (zero)"},
-  format: {task_family: strataTaskLabel, axis: strataAxisLabel, mean_spearman_rho: (value) => value.toFixed(3),
-    spearman_ci_low: (value) => value == null ? "—" : value.toFixed(3),
-    spearman_ci_high: (value) => value == null ? "—" : value.toFixed(3)},
-  select: false, rows: 12
-}));
-```
-
-</details>
-
-## SGE performance before and after the knowledge cutoff
+## Assay dates and model knowledge cutoffs
 
 **Correction — September 16, 2026.** Our original **9 before / 7 after** split
 used recent MaveDB releases without following their predecessors, other public
@@ -663,18 +858,7 @@ display(Inputs.table(cutoffPanels, {
 
 </details>
 
-## Composition counts and provenance
-
-```js
-const csv = compositionCsv(composition.rows);
-if (complete) display(html`<p><a download="vepbench-variant-composition.csv"
-  href=${`data:text/csv;charset=utf-8,${encodeURIComponent(csv)}`}>Download all counts and proportions (CSV)</a>
-  · <a href=${await FileAttachment("../data/question-metadata.json").url()} download="question-metadata.json">Download source-linked annotation metadata (JSON)</a></p>`);
-```
-
-The metadata records each panel's source-record digest, complete genomic
-alleles, and VEP annotation provenance. The composition figures are recomputed
-from that bundled snapshot when the page loads. The cutoff analysis is a saved
+The cutoff analysis is a saved
 snapshot generated with SciPy from the published run and outcome indexes. Its
 CSV downloads retain run IDs, question-set digests, cutoffs, and assay-date
 sources for the displayed comparison.
@@ -686,221 +870,18 @@ display(html`<p class="muted">Cutoff analysis collected ${cutoffAnalysis.retriev
 </p>`);
 ```
 
-<details>
-<summary>View the exact counts</summary>
+## Conclusion
 
-```js
-if (complete) display(Inputs.table(composition.rows, {
-  columns: ["task", "dimension", "category", "count", "total", "proportion"],
-  header: {task: "Task", dimension: "Distribution", category: "Category", count: "Count", total: "Task total", proportion: "Percent"},
-  format: {proportion: percent},
-  select: false,
-  rows: 12
-}));
-```
+VEP-bench shows that general-purpose language models can recover part of the
+ordering of measured variant effects from sequence and experimental context.
+The strongest model depends on the task, and performance also varies across
+variant classes. These differences make the task and subset results useful
+alongside the overall ranking.
 
-</details>
-
-## Does variant-effect prediction track other capabilities?
-
-Do models that rank variant effects well also perform well at agentic biology?
-We surveyed published evaluations that require code execution, tool use, or
-multistep biological data analysis. General intelligence scores provide a
-secondary comparison. We selected sources for their scope and identifiable
-evaluation settings, before computing associations.
-
-**The comparisons remain descriptive.** Our frozen
-September 15, 2026 VEP snapshot has eight model versions with complete scores
-across all three tasks. After requiring the **same model release and exact
-reasoning effort**, the biology comparisons below contain at most four distinct
-models each. The latest Artificial Analysis Intelligence Index, **v4.3** at
-source retrieval on September 11, has **15 matched configurations across five models**:
-GPT-6 Astra and Gemini 3.8 Flash at low, medium, and high; GPT-5.6 Sol and Luna
-at low, medium, high, and max; and GPT-5.6 Terra at max.
-Every exact match appears in the plots. Multiple settings of a model
-do not increase the count of distinct models.
-
-These are descriptive paired scores. Multiple efforts from one model are
-dependent observations, so we do not pool the points into a cross-model
-correlation. Each biology comparison falls below our five-distinct-model
-threshold; AA has five models but repeated efforts.
-Sparse overlap does not establish either agreement or disagreement.
-The external benchmark results are reused from the September 11 source snapshot.
-
-```js
-import {compareScores} from "./introducing-vep-bench/comparisons.js";
-import {comparisonFigure} from "./introducing-vep-bench/plots.js";
-import {modelFamilyScale} from "../components/benchmark-data.js";
-const vepSnapshot = await FileAttachment("./introducing-vep-bench/comparisons-data/vep-runs.json").json();
-const externalSnapshot = await FileAttachment("./introducing-vep-bench/comparisons-data/external.json").json();
-const modelMatches = await FileAttachment("./introducing-vep-bench/comparisons-data/model-matches.json").json();
-const comparisonModelColors = await FileAttachment("../components/model-family-colors.json").json();
-const sourceById = new Map(externalSnapshot.sources.map((source) => [source.id, source]));
-```
-
-### Selection and interpretation
-
-We use only VEP-bench's **Overall score**, the unweighted mean of its three task scores; each
-task score is the mean Spearman correlation across its variant panels. We use
-the original scores, without the leaderboard's display clipping. For each
-external benchmark and metric, we show **one comparison**, including **every
-effort evaluated on both sides**. Each point represents one model and exact
-effort. We choose one harness for that combination using a fixed preference,
-then use its latest published submission, independently of score.
-Terminal-Bench-Science prefers Codex, then mini-SWE-agent; GeneBench-Pro,
-BixBench3, and Artificial Analysis use their respective published evaluation
-harnesses. Any additional harness names fall back to alphabetical order.
-The tooltips and downloadable paired scores record the chosen harness.
-Missing or ambiguous efforts are excluded; “max” never substitutes for “high”.
-
-Colors identify models, marker shapes identify efforts, and connecting lines
-join the efforts of the same model in order. These lines are guides to the
-evaluated configurations, not fitted trends. Each caption reports both the
-number of matched configurations and the number of distinct models.
-
-The matching table identifies named releases. VEP-bench and these external
-reports do not consistently disclose immutable checkpoint revisions, so we
-cannot establish identity beyond those named releases. An exact effort label
-also does not equalize tokens, tools, prompts, or execution budgets across tasks.
-
-```js
-const externalAnalysis = compareScores(vepSnapshot, externalSnapshot);
-const comparisonColor = modelFamilyScale(externalAnalysis.configurations.map((c) => c.family), comparisonModelColors);
-const visibleComparisons = externalAnalysis.comparisons;
-```
-
-### Published agentic biology results
-
-[GeneBench-Pro](https://cdn.openai.com/pdf/21938268-21af-442f-af93-3b2249afb241/genebench-pro.pdf)
-reports exact efforts in Supplementary Table 1. We use the full 129-problem
-suite, with nine matched configurations: GPT-5.6 Sol and GPT-5.6 Luna at low,
-medium, high, and max, plus GPT-5.6 Terra at max.
-Pro systems and the original GeneBench remain separate. Its pass rates
-exclude execution and format errors and average per-problem success over valid
-attempts; this differs from VEP-bench's treatment of completed invalid answers.
-
-For [Terminal-Bench-Science](https://www.terminal-bench-science.ai/?view=domains),
-we use its published **Life Sciences** domain: 19 tasks, three trials per task.
-The official leaderboard snapshot supplies this broader label, which includes
-medical imaging, rather than a separately labeled biology subset. Four models
-match: GPT-5.6 Luna, Terra, and Sol at max effort using Codex, and Gemini 3.8
-Flash at high effort using mini-SWE-agent. DeepSeek V4.1 Flash and GLM 5.3 are
-reported at max, while VEP has low. Other reported model releases have no
-complete VEP Overall score.
-The selected harnesses appear together in one comparison; the all-science
-aggregate is not used as a biology score.
-
-[BixBench3](https://github.com/EdisonScientific/BixBench3) now contributes one
-exact match: GPT-5.6 Sol at max effort in its published runner. Its mean artifact
-paper score summarizes 20 research workflows; one matched model cannot support
-a correlation.
-
-```js
-const biologyComparisons = visibleComparisons.filter((c) => c.tier === "primary" && c.pairs.length);
-for (const comparison of biologyComparisons) {
-  display(resize((width) => comparisonFigure(comparison, comparisonColor, width)));
-}
-```
-
-### General intelligence and its components
-
-Scores below are from [Artificial Analysis](https://artificialanalysis.ai/models),
-using [Intelligence Index v4.3](https://artificialanalysis.ai/methodology/intelligence-benchmarking).
-We retain all ten published component evaluations as secondary comparisons,
-including scientific reasoning and coding. They use different units and
-evaluation procedures; several test knowledge or reasoning without model tool
-access. None is presented as an agentic biology score. Component scores and
-the overall index are related measurements, not independent confirmations.
-We do not construct additional category indices from these values.
-
-AA reports scores for the other three model releases in our VEP snapshot, but
-their published effort settings do not match our completed runs:
-
-| Model | Completed VEP effort | Published AA efforts |
-| --- | --- | --- |
-| [Muse Spark 1.3](https://artificialanalysis.ai/models/muse-spark-1-3) | medium | max, xhigh |
-| [GLM-5.3](https://artificialanalysis.ai/models/glm-5-3) | low | max |
-| [DeepSeek V4.1 Flash](https://artificialanalysis.ai/models/deepseek-v4-1-flash) | low | max |
-
-These settings are excluded under the same exact-effort rule as every other
-model. The paired AAII and component plots therefore contain five model releases.
-
-```js
-const aaComparisons = visibleComparisons.filter((c) => c.tier === "secondary");
-display(resize((width) => comparisonFigure(aaComparisons.find((c) => c.id === "aa-intelligence"), comparisonColor, width)));
-```
-
-The ten component comparisons below use the same matched configurations and
-the same Overall VEP score.
-
-```js
-const componentGrid = document.createElement("div");
-componentGrid.className = "grid grid-cols-2";
-for (const comparison of aaComparisons.filter((c) => c.id !== "aa-intelligence")) {
-  componentGrid.append(resize((width) => comparisonFigure(comparison, comparisonColor, width)));
-}
-display(componentGrid);
-```
-
-Across both sections, a positive association would concern a model together
-with its evaluated harness, tools, effort, and budget. It would not show that
-variant-effect prediction causes, or can replace, agentic biology capability.
-
-### Survey and exact matching audit
-
-The survey records the specific reports inspected; an exclusion does not claim
-that no other evaluation exists. Unidentified models, multi-model systems,
-undocumented harnesses, and missing settings remain
-visible in the audit rather than receiving inferred matches.
-
-```js
-display(Inputs.table(externalSnapshot.survey, {
-  columns: ["benchmark", "decision", "rationale", "source_id"],
-  header: {benchmark: "Benchmark / report", decision: "Decision", rationale: "Reason and overlap", source_id: "Source"},
-  format: {source_id: (id) => html`<a href=${sourceById.get(id).url}>Official source</a>`},
-  select: false, rows: 10
-}));
-```
-
-<details>
-<summary>Explicit model-version and effort matching table</summary>
-
-```js
-display(Inputs.table(modelMatches, {
-  columns: ["model_label", "model_id", "effort", "vep_efforts", "harness", "submitter", "match_status", "selected_in", "source_id"],
-  header: {model_label: "External model label", model_id: "VEP model ID", effort: "External effort",
-    vep_efforts: "Completed VEP efforts", harness: "Harness", submitter: "Submitter", match_status: "Match / exclusion",
-    selected_in: "Primary comparisons", source_id: "Source"},
-  format: {vep_efforts: (v) => v.join(", "), selected_in: (v) => v.join(", "),
-    source_id: (id) => html`<a href=${sourceById.get(id).url}>Source</a>`},
-  select: false, rows: 15
-}));
-```
-
-</details>
-
-### Frozen comparison data
-
-These plots read only the bundled snapshot; updating a live leaderboard cannot
-silently change this post. Source extracts retain their retrieval times,
-original download digests, model labels, reported settings and scores. VEP run
-metadata is verified against its publication manifest and pins the complete
-52-panel question set. Missing external metadata is recorded as unknown.
-
-```js
-display(html`<p>
-  <a href=${await FileAttachment("./introducing-vep-bench/comparisons-data/paired-scores.csv").url()} download>Paired scores (CSV)</a> ·
-  <a href=${await FileAttachment("./introducing-vep-bench/comparisons-data/model-matches.json").url()} download>Matching table (JSON)</a> ·
-  <a href=${await FileAttachment("./introducing-vep-bench/comparisons-data/external.json").url()} download>Sources, settings, selection rules and survey (JSON)</a> ·
-  <a href=${await FileAttachment("./introducing-vep-bench/comparisons-data/analysis.json").url()} download>Analysis results (JSON)</a> ·
-  <a href=${await FileAttachment("./introducing-vep-bench/comparisons-data/vep-runs.json").url()} download>VEP run snapshot (JSON)</a>
-</p>`);
-```
-
-The [analysis code](https://github.com/Open-Athena/VEP-bench/blob/main/projects/explorer/web/blog/introducing-vep-bench/comparisons.js)
-and [source extraction script](https://github.com/Open-Athena/VEP-bench/blob/main/projects/explorer/scripts/freeze_comparisons.mjs)
-are versioned with the post. The saved comparisons retain the new max-effort
-results, the chosen harness for each point, and the remaining gaps in overlap.
+The specialist comparisons and broader analyses help put these results in
+context, but the limited set of models and assay panels leaves substantial
+uncertainty. This release provides a public starting point for evaluating
+progress across fitness, expression, and splicing.
 
 - [Explore the leaderboard](../index.html)
 - [Task methodology](../tasks.html)
