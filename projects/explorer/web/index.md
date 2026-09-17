@@ -212,7 +212,9 @@ display(html`<div class="card vepbench-leaderboard-chart" tabindex="0"
 Compare the selected task's score with benchmark cost and total token usage across
 all available reasoning efforts and configurations. Both plots share model colors
 and the score scale; each line connects configurations from the same family.
-Tokens include input and generated output, including reasoning.
+Tokens include input and generated output, including reasoning. Both cost and
+tokens count completed responses, including completed truncations before selective
+retries, and exclude serving errors.
 
 ```js
 const efficiencyMetrics = [
@@ -388,9 +390,9 @@ attempts remain in the section above.
   formatting failures and truncation can also overlap.
 
 Output tokens include reasoning. Answer rates and output figures describe the
-scored responses. Benchmark cost includes input and output for completed model
+scored responses. Benchmark cost and total tokens include input and output for completed model
 responses, including completed token-limit attempts before selective retries;
-serving errors are excluded. Total tokens include all recorded attempts. Retries
+serving errors are excluded. Retries
 keep recovered failures visible here. Selective retries replace every initially
 invalid truncated answer once at the larger listed limit; all retry outcomes,
 including failures, are retained. Other settings stay the same.

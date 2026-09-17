@@ -23,6 +23,7 @@ def test_execution_usage_counts_reasoning_and_truncation_with_a_valid_final_answ
         "max_output_tokens_used": 100,
         "truncated_outputs": 1,
         "completed_response_cost_usd": None,
+        "completed_response_total_tokens": None,
     }
 
 
@@ -43,6 +44,7 @@ def test_partial_output_usage_does_not_become_a_complete_total_or_maximum(missin
         "max_output_tokens_used": None,
         "truncated_outputs": 1,
         "completed_response_cost_usd": None,
+        "completed_response_total_tokens": None,
     }
 
 
@@ -60,6 +62,7 @@ def test_zero_usage_is_distinct_from_no_completed_responses() -> None:
         "max_output_tokens_used": 0,
         "truncated_outputs": 0,
         "completed_response_cost_usd": None,
+        "completed_response_total_tokens": None,
     }
 
 
@@ -90,3 +93,60 @@ def test_benchmark_cost_excludes_serving_errors_but_counts_completed_truncations
     assert execution_metrics(records)["completed_response_cost_usd"] == expected
     del records[1]["usage"]["cost"]
     assert execution_metrics(records)["completed_response_cost_usd"] is None
+
+
+@pytest.mark.parametrize("prior_status, expected", [("api_error", 50), ("completed", 120)])
+@pytest.mark.parametrize("failed_usage", [{}, {"total_tokens": 900}])
+def test_benchmark_tokens_exclude_serving_errors_but_count_completed_truncations(
+    prior_status: str, expected: int, failed_usage: dict[str, int]
+) -> None:
+    records = [
+        {
+            "response": {"status": "completed", "finish_reason": "stop"},
+            "usage": {
+                "total_tokens": 20,
+                "vepbench": {
+                    "retry": {
+                        "prior_attempt": {
+                            "response": {"status": prior_status, "finish_reason": "length"},
+                            "usage": {"total_tokens": 70},
+                        },
+                        "source_run_id": "retry",
+                        "source_record_sha256": "0" * 64,
+                    }
+                },
+            },
+        },
+        {
+            "response": {"status": "completed", "finish_reason": "stop"},
+            "usage": {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "completion_tokens_details": {"reasoning_tokens": 15},
+            },
+        },
+        {"response": {"status": "api_error", "finish_reason": None}, "usage": failed_usage},
+    ]
+    assert execution_metrics(records)["completed_response_total_tokens"] == expected
+    del records[1]["usage"]["prompt_tokens"]
+    assert execution_metrics(records)["completed_response_total_tokens"] is None
+
+
+@pytest.mark.parametrize("missing", [None, True, -1, "100", 10.5])
+def test_invalid_completed_token_usage_is_unknown(missing: object) -> None:
+    record = {
+        "response": {"status": "completed", "finish_reason": "stop"},
+        "usage": {"total_tokens": missing},
+    }
+    assert execution_metrics([record])["completed_response_total_tokens"] is None
+    record["usage"] = {"prompt_tokens": missing, "completion_tokens": 100}
+    assert execution_metrics([record])["completed_response_total_tokens"] is None
+
+
+def test_zero_completed_tokens_are_distinct_from_no_completed_usage() -> None:
+    assert execution_metrics([])["completed_response_total_tokens"] is None
+    record = {
+        "response": {"status": "completed", "finish_reason": "stop"},
+        "usage": {"prompt_tokens": 0, "completion_tokens": 0},
+    }
+    assert execution_metrics([record])["completed_response_total_tokens"] == 0

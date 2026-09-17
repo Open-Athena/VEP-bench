@@ -187,7 +187,8 @@ function rowForRun(run, scoreMetric = null) {
     retry_policy: run.retry_policy ?? null,
     release_date: run.model.release_date ?? null,
     knowledge_cutoff: run.model.knowledge_cutoff ?? null,
-    tokens: nonnegativeNumber(run.metrics.total_tokens),
+    tokens: nonnegativeNumber(Object.hasOwn(run.metrics, "completed_response_total_tokens")
+      ? run.metrics.completed_response_total_tokens : run.metrics.total_tokens),
     cost: nonnegativeNumber(Object.hasOwn(run.metrics, "completed_response_cost_usd")
       ? run.metrics.completed_response_cost_usd : run.metrics.total_cost_usd),
     score: leaderboardScore(run, scoreMetric),
@@ -387,13 +388,8 @@ export function overallLeaderboardRows(runs, leaderboard, scoreMetric = null) {
       ? row.score
       : null;
     row.primary_metric = "task_macro_average";
-    row.tokens = sumIfComplete(
-      taskRuns.map((run) => nonnegativeNumber(run.metrics.total_tokens))
-    );
-    row.cost = sumIfComplete(
-      taskRuns.map((run) => nonnegativeNumber(Object.hasOwn(run.metrics, "completed_response_cost_usd")
-        ? run.metrics.completed_response_cost_usd : run.metrics.total_cost_usd))
-    );
+    row.tokens = sumIfComplete(taskRows.map((taskRow) => taskRow.tokens));
+    row.cost = sumIfComplete(taskRows.map((taskRow) => taskRow.cost));
     row.format_failures = taskRuns.reduce(
       (total, run) => total + (nonnegativeNumber(run.metrics.format_failures) ?? 0),
       0

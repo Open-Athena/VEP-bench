@@ -229,6 +229,7 @@ def test_intermediate_retries_preserve_all_attempt_costs_and_publish(
     assert run["retry_count"] == 1  # Questions, not the number of requests.
     assert run["metrics"]["total_cost_usd"] == (pytest.approx(0.8) if known_usage else None)
     assert run["metrics"]["completed_response_cost_usd"] == pytest.approx(0.3)
+    assert run["metrics"]["completed_response_total_tokens"] == 200
     history[0]["record"]["usage"]["cost"] = 900
     with pytest.raises(BuildError, match="digest"):
         validate_retry_record(records[0])
@@ -340,6 +341,7 @@ def test_truncation_export_retains_all_outcomes_and_actual_requests(tmp_path: Pa
     assert run["retry_policy"]["retry_max_tokens"] == 200
     assert run["metrics"]["total_cost_usd"] == pytest.approx(0.5)
     assert run["metrics"]["total_tokens"] == 490
+    assert run["metrics"]["completed_response_total_tokens"] == 490
     assert run["metrics"]["total_output_tokens"] == 240
     assert run["metrics"]["format_failures"] == 1
     assert run["metrics"]["truncated_outputs"] == 3  # Valid answers can also end at length.
@@ -1298,7 +1300,13 @@ def test_validate_version_accepts_legacy_raw_archive_without_usage(tmp_path: Pat
 
 
 @pytest.mark.parametrize(
-    "metric", ["total_output_tokens", "max_output_tokens_used", "truncated_outputs"]
+    "metric",
+    [
+        "total_output_tokens",
+        "max_output_tokens_used",
+        "truncated_outputs",
+        "completed_response_total_tokens",
+    ],
 )
 def test_validate_version_rejects_incorrect_execution_metrics(tmp_path: Path, metric: str) -> None:
     output = tmp_path / "publication"
