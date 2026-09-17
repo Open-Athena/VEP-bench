@@ -231,8 +231,18 @@ test("execution summaries aggregate counts across unequal task sizes and preserv
   assert.equal(single.truncation_rate, 0.5);
 });
 
-test("benchmark costs use completed responses even when failed-request billing is missing", () => {
+test("benchmark usage uses completed responses even when failed-request usage is missing", () => {
   const value = run();
+  value.metrics.total_tokens = null;
+  value.metrics.completed_response_total_tokens = 100;
+  assert.equal(leaderboardRows([value])[0].tokens, 100);
+  value.metrics.completed_response_total_tokens = 0;
+  assert.equal(leaderboardRows([value])[0].tokens, 0);
+  value.metrics.total_tokens = 900;
+  value.metrics.completed_response_total_tokens = null;
+  assert.equal(leaderboardRows([value])[0].tokens, null);
+  delete value.metrics.completed_response_total_tokens;
+  assert.equal(leaderboardRows([value])[0].tokens, 900); // Legacy publication fallback.
   value.metrics.total_cost_usd = null;
   value.metrics.completed_response_cost_usd = 0.15;
   assert.equal(leaderboardRows([value])[0].cost, 0.15);
@@ -245,7 +255,7 @@ test("benchmark costs use completed responses even when failed-request billing i
   assert.equal(leaderboardRows([value])[0].cost, 9); // Legacy publication fallback.
 });
 
-test("overall benchmark cost sums completed-response costs and preserves missing values", () => {
+test("overall benchmark usage sums completed responses and preserves missing values", () => {
   const leaderboard = {
     aggregation_method: "task_score_macro_average_v1",
     evaluation_profiles: ["alpha", "beta"].map((task) => ({
@@ -254,13 +264,17 @@ test("overall benchmark cost sums completed-response costs and preserves missing
   };
   const runs = ["alpha", "beta"].map((task, index) => {
     const value = run({runId: task, evaluationProfile: `${task}:ranking-v1@1.0`,
-      configurationKey: `cfg-${String(index + 1).repeat(64)}`, cost: null});
+      configurationKey: `cfg-${String(index + 1).repeat(64)}`, cost: null, tokens: null});
     value.metrics.completed_response_cost_usd = index === 0 ? 0.1 : 0.2;
+    value.metrics.completed_response_total_tokens = index === 0 ? 100 : 200;
     return value;
   });
   assert.ok(Math.abs(overallLeaderboardRows(runs, leaderboard)[0].cost - 0.3) < 1e-12);
+  assert.equal(overallLeaderboardRows(runs, leaderboard)[0].tokens, 300);
   runs[1].metrics.completed_response_cost_usd = null;
+  runs[1].metrics.completed_response_total_tokens = null;
   assert.equal(overallLeaderboardRows(runs, leaderboard)[0].cost, null);
+  assert.equal(overallLeaderboardRows(runs, leaderboard)[0].tokens, null);
 });
 
 test("execution summaries keep unavailable or partially reported usage unknown", () => {

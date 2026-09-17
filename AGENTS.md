@@ -61,7 +61,7 @@ These instructions apply to the entire VEP-bench repository.
 - Never make paid or live model API calls from tests or CI.
 - Retry transient API errors within the authorized evaluation budget, preserving
   every attempt and the original inference settings. Exclude serving errors
-  from benchmark cost and scores; completed invalid or truncated responses still
+  from benchmark cost, token usage, and scores; completed invalid or truncated responses still
   count. See [failure semantics](docs/evaluation.md#completion-and-failure-semantics).
 - Keep evaluation an explicit local action. Tests must use an injected fake or
   offline mock transport.

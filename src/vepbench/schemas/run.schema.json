@@ -121,6 +121,7 @@
       "required": ["scored", "correct", "accuracy", "format_failures"],
       "properties": {
         "completed_response_cost_usd": {"type": ["number", "null"], "minimum": 0, "description": "Benchmark cost: input and output for all completed model responses, including completed truncations before selective retries. Excludes serving errors."},
+        "completed_response_total_tokens": {"type": ["integer", "null"], "minimum": 0, "description": "Benchmark tokens: input and generated output, including reasoning, for all completed model responses. Includes completed truncations before selective retries; excludes serving errors."},
         "scored": {"type": "integer", "minimum": 0},
         "correct": {"type": "integer", "minimum": 0},
         "accuracy": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
@@ -161,6 +162,7 @@
       ],
       "properties": {
         "completed_response_cost_usd": {"type": ["number", "null"], "minimum": 0, "description": "Benchmark cost: input and output for all completed model responses, including completed truncations before selective retries. Excludes serving errors."},
+        "completed_response_total_tokens": {"type": ["integer", "null"], "minimum": 0, "description": "Benchmark tokens: input and generated output, including reasoning, for all completed model responses. Includes completed truncations before selective retries; excludes serving errors."},
         "scored": {"type": "integer", "minimum": 0},
         "mean_spearman_rho": {"type": ["number", "null"], "minimum": -1, "maximum": 1},
         "mean_pearson_r": {"type": ["number", "null"], "minimum": -1, "maximum": 1},

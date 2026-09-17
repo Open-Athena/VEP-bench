@@ -60,8 +60,9 @@ This export retains the original failure inside the selected answer's
 and run ID. It rejects changes to the question, model, and generation parameters,
 and never replaces a completed answer based on its score. Both original inputs
 remain intact. The published run flags the retry and excludes the failed attempt
-from benchmark cost. When a rejected item lacks individual token usage, the complete batch
-receipt supplies the run's token total; unknown usage remains unknown.
+from benchmark cost and token usage. When a rejected item lacks individual token
+usage, the complete batch receipt can supply the archival all-attempt token total;
+it cannot supply the completed-response total because it may include failed attempts.
 Publish this task export directly with `version build`; do not pass it through
 `split-results`, which changes the identities covered by retry provenance.
 Retry resolution requires one task family; combined runs with retries are not
@@ -74,13 +75,15 @@ JSONL containing all failed retries between its original failures and selected
 responses. The export checks matching requests, chronological order, and unique
 attempts, and binds each additional record to its digest. Completed responses
 cannot be added as intermediate failures. Publish the resulting export directly.
-The run's retry count counts affected questions; total tokens include every
-attempt, and missing token usage keeps that total unknown.
-Benchmark costs use `completed_response_cost_usd`: input and output charges for
+The run's retry count counts affected questions.
+Benchmark costs use `completed_response_cost_usd` and token usage uses
+`completed_response_total_tokens`: input and output charges and token counts for
 all completed model responses, including completed truncations before selective
-retries. Serving errors are excluded from benchmark cost and do not become
-incorrect-answer penalties. The archival `total_cost_usd` retains all-attempt
-billing semantics and may be null when a failed attempt's charge is unavailable.
+retries. Output tokens include reasoning. Serving errors are excluded from both
+benchmark measurements and do not become incorrect-answer penalties. Missing usage
+on a completed response keeps the corresponding measurement unknown.
+The archival `total_cost_usd` and `total_tokens` retain all-attempt semantics and
+may be null when a failed attempt's usage is unavailable.
 
 To publish an explicitly authorized selective retry experiment, use
 `vepbench-publish resolve-truncations --original ORIGINAL --retry RETRIES --max-tokens LIMIT --output OUTPUT`.

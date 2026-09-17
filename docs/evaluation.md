@@ -166,8 +166,9 @@ response; never retry a completed answer just because its score is low.
 See [retry publication](publishing.md#build-and-validate-a-named-version) for
 preserving the failed attempts alongside the recovered answers.
 
-Benchmark cost is the input and output cost of completed model responses.
-Exclude API and serving errors, including failed retries, from this cost.
+Benchmark cost and token usage cover input and output of completed model responses,
+including reasoning tokens. Exclude API and serving errors, including failed retries,
+from both measurements.
 Completed invalid answers and token-limit stops still count, including a
 completed truncation before an explicitly authorized larger-limit retry.
 Retained reasoning is only what the provider exposes, not a claim of access to
@@ -179,9 +180,9 @@ selected tasks. Formatting failures count completed responses without a parseabl
 answer, including refusals or output-limit stops that leave no usable answer;
 this is not a diagnosis of the cause. The table distinguishes the configured
 ceiling from observed output, including reasoning. Output totals and maxima describe the
-retained completed responses; benchmark cost includes earlier completed
-attempts, and total tokens include all recorded attempts. Truncation counts any
-completed response with a provider finish reason of `length`, even when its final
+retained completed responses; benchmark cost and total tokens include earlier
+completed attempts. Archival all-attempt totals remain available separately.
+Truncation counts any completed response with a provider finish reason of `length`, even when its final
 answer is valid or reported usage is below the configured ceiling. Missing usage
 remains unknown, and older publications without these summaries display gaps
 until rebuilt from their original responses.
