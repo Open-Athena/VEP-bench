@@ -506,22 +506,22 @@ await navigate("/blog/introducing-vep-bench.html");
 const blogBars = '.vepbench-leaderboard-chart g[aria-label="bar"] rect';
 const radarPlot = 'svg[aria-label="Model scores for fitness, expression, and splicing on a shared 0 to 1 scale"]';
 const radarDots = `${radarPlot} g[aria-label="dot"] circle`;
-await waitFor(`document.querySelectorAll(${JSON.stringify(blogBars)}).length === 8
-  && document.querySelectorAll(${JSON.stringify(radarDots)}).length === 24`, "blog bar and radar plots");
+await waitFor(`document.querySelectorAll(${JSON.stringify(blogBars)}).length === 9
+  && document.querySelectorAll(${JSON.stringify(radarDots)}).length === 27`, "blog bar and radar plots");
 assert.deepEqual(await evaluate(`[...document.querySelectorAll('#observablehq-toc li a')]
   .map((link) => link.textContent)`), ["Dataset", "Results", "Comparison with specialist models",
   "Comparison with other benchmarks", "Assay dates and model knowledge cutoffs", "Conclusion"]);
-assert.equal(await evaluate(`document.querySelectorAll('#radar-models input[type="checkbox"]').length`), 8);
+assert.equal(await evaluate(`document.querySelectorAll('#radar-models input[type="checkbox"]').length`), 9);
 await evaluate(`document.querySelector('#radar-models input[type="checkbox"]').click()`);
-await waitFor(`document.querySelectorAll(${JSON.stringify(radarDots)}).length === 21`, "radar model toggle");
-assert.equal(await evaluate(`document.querySelectorAll(${JSON.stringify(blogBars)}).length`), 8,
+await waitFor(`document.querySelectorAll(${JSON.stringify(radarDots)}).length === 24`, "radar model toggle");
+assert.equal(await evaluate(`document.querySelectorAll(${JSON.stringify(blogBars)}).length`), 9,
   "radar selection does not filter the fixed overall bar chart");
 await evaluate(`document.querySelectorAll('#radar-models input[type="checkbox"]').forEach((input) => {
   if (input.checked) input.click();
 })`);
 await waitFor(`document.querySelectorAll(${JSON.stringify(radarDots)}).length === 0`, "empty radar selection");
 await evaluate(`document.querySelectorAll('#radar-models input[type="checkbox"]').forEach((input) => input.click())`);
-await waitFor(`document.querySelectorAll(${JSON.stringify(radarDots)}).length === 24`, "restored radar selection");
+await waitFor(`document.querySelectorAll(${JSON.stringify(radarDots)}).length === 27`, "restored radar selection");
 const examplePrompt = await readFile(
   new URL("../web/blog/introducing-vep-bench/msh6-e7-prompt.txt", import.meta.url), "utf8"
 );
@@ -576,22 +576,22 @@ async function checkSpecialistPlot() {
   }
 }
 const stratumSnapshot = JSON.parse(gunzipSync(await readFile(
-  new URL("../web/blog/introducing-vep-bench/strata-2026-09-15.json.gz", import.meta.url)
+  new URL("../web/blog/introducing-vep-bench/strata-2026-09-17.json.gz", import.meta.url)
 )));
 const expectedStratumModels = stratumModelOrder(stratumSnapshot);
 const stratumIntervals = JSON.parse(await readFile(
-  new URL("../web/blog/introducing-vep-bench/strata-2026-09-15.intervals.json", import.meta.url), "utf8"
+  new URL("../web/blog/introducing-vep-bench/strata-2026-09-17.intervals.json", import.meta.url), "utf8"
 ));
 const expectedStratumRows = stratumRows(stratumSnapshot, stratumIntervals);
 const stratumPlot = 'svg[aria-label="Within-panel Spearman correlations by variant stratum and task"]';
 const stratumGroups = [
-  ["sge", "allele_type", 24], ["sge", "consequence", 16],
-  ["satmut_mpra", "allele_type", 8], ["satmut_mpra", "consequence", 24],
-  ["opensplice_snv", "allele_type", 16], ["opensplice_snv", "consequence", 8]
+  ["sge", "allele_type", 27], ["sge", "consequence", 18],
+  ["satmut_mpra", "allele_type", 9], ["satmut_mpra", "consequence", 27],
+  ["opensplice_snv", "allele_type", 18], ["opensplice_snv", "consequence", 9]
 ];
 async function checkStratumPlots() {
   await waitFor(`document.querySelectorAll(${JSON.stringify(stratumPlot + ' g[aria-label="dot"] circle')})
-    .length === 96 && document.querySelectorAll(${JSON.stringify(stratumPlot)}).length === 2`,
+    .length === 108 && document.querySelectorAll(${JSON.stringify(stratumPlot)}).length === 2`,
   "two grouped stratum figures");
   assert.equal(await evaluate(`document.querySelectorAll('select').length`), 0, "blog has no data selectors");
   assert.equal(await evaluate(`document.querySelectorAll('figure.vepbench-stratum-figure').length`), 2);
@@ -703,7 +703,7 @@ for (const {domain, range} of await evaluate(`[...document.querySelectorAll('svg
   .map((plot) => ({domain: plot.scale('color').domain, range: plot.scale('color').range}))`)) {
   checkModelColors(domain, range);
 }
-assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="Intelligence Index"] [aria-label="dot"] > *').length`), 15);
+assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="Intelligence Index"] [aria-label="dot"] > *').length`), 16);
 for (const label of ["GeneBench-Pro", "SciCode", "Terminal-Bench-Science", "BixBench3"]) {
   assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="${label}"]').length`), 0);
 }
@@ -716,7 +716,7 @@ for (const effort of ["low", "medium", "high"]) {
     .filter((point) => point.getAttribute('aria-label').includes('(${effort})')).length`), 4);
 }
 assert.equal(await evaluate(`[...document.querySelectorAll('svg[aria-label*="Intelligence Index"] [aria-label="dot"] > *')]
-  .filter((point) => point.getAttribute('aria-label').includes('(max)')).length`), 3);
+  .filter((point) => point.getAttribute('aria-label').includes('(max)')).length`), 4);
 assert.deepEqual(await evaluate(`[...document.querySelectorAll('.observablehq--error')].map((node) => node.textContent)`), []);
 
 socket.close();

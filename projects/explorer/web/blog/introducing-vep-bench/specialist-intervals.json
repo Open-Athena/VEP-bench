@@ -75,10 +75,20 @@
     {
       "category": "all_covered",
       "eligible_panels": 20,
-      "mean_spearman_rho": 0.7267627240296053,
-      "run_id": "muse-spark-1.3-medium-opensplice-snv-20260910T151518Z",
-      "spearman_ci_high": 0.7821935475981402,
-      "spearman_ci_low": 0.6713319004610704,
+      "mean_spearman_rho": 0.6547877213992117,
+      "run_id": "kimi-k3-low-opensplice-snv-128k-20260917",
+      "spearman_ci_high": 0.7089375532246457,
+      "spearman_ci_low": 0.6006378895737777,
+      "spearman_ci_status": "estimated",
+      "task_family": "opensplice_snv"
+    },
+    {
+      "category": "all_covered",
+      "eligible_panels": 20,
+      "mean_spearman_rho": 0.7474615637646742,
+      "run_id": "muse-spark-1.3-max-opensplice-snv-128k-20260917",
+      "spearman_ci_high": 0.7873878992024954,
+      "spearman_ci_low": 0.707535228326853,
       "spearman_ci_status": "estimated",
       "task_family": "opensplice_snv"
     },
@@ -165,10 +175,20 @@
     {
       "category": "excluding_avi_model_selection",
       "eligible_panels": 20,
-      "mean_spearman_rho": 0.7267627240296053,
-      "run_id": "muse-spark-1.3-medium-opensplice-snv-20260910T151518Z",
-      "spearman_ci_high": 0.7821935475981402,
-      "spearman_ci_low": 0.6713319004610704,
+      "mean_spearman_rho": 0.6547877213992117,
+      "run_id": "kimi-k3-low-opensplice-snv-128k-20260917",
+      "spearman_ci_high": 0.7089375532246457,
+      "spearman_ci_low": 0.6006378895737777,
+      "spearman_ci_status": "estimated",
+      "task_family": "opensplice_snv"
+    },
+    {
+      "category": "excluding_avi_model_selection",
+      "eligible_panels": 20,
+      "mean_spearman_rho": 0.7474615637646742,
+      "run_id": "muse-spark-1.3-max-opensplice-snv-128k-20260917",
+      "spearman_ci_high": 0.7873878992024954,
+      "spearman_ci_low": 0.707535228326853,
       "spearman_ci_status": "estimated",
       "task_family": "opensplice_snv"
     },
@@ -255,10 +275,20 @@
     {
       "category": "all_covered",
       "eligible_panels": 16,
-      "mean_spearman_rho": 0.2623112025403731,
-      "run_id": "muse-spark-1.3-medium-satmut-mpra-20260910T151518Z-retry1",
-      "spearman_ci_high": 0.3805195766300783,
-      "spearman_ci_low": 0.1441028284506679,
+      "mean_spearman_rho": 0.15242890925340244,
+      "run_id": "kimi-k3-low-satmut-mpra-128k-20260917",
+      "spearman_ci_high": 0.2391181032061981,
+      "spearman_ci_low": 0.06573971530060677,
+      "spearman_ci_status": "estimated",
+      "task_family": "satmut_mpra"
+    },
+    {
+      "category": "all_covered",
+      "eligible_panels": 16,
+      "mean_spearman_rho": 0.22040722426151477,
+      "run_id": "muse-spark-1.3-max-satmut-mpra-128k-20260917",
+      "spearman_ci_high": 0.3267068442455806,
+      "spearman_ci_low": 0.11410760427744894,
       "spearman_ci_status": "estimated",
       "task_family": "satmut_mpra"
     },
@@ -345,10 +375,20 @@
     {
       "category": "excluding_avi_model_selection",
       "eligible_panels": 16,
-      "mean_spearman_rho": 0.2623112025403731,
-      "run_id": "muse-spark-1.3-medium-satmut-mpra-20260910T151518Z-retry1",
-      "spearman_ci_high": 0.3805195766300783,
-      "spearman_ci_low": 0.1441028284506679,
+      "mean_spearman_rho": 0.15242890925340244,
+      "run_id": "kimi-k3-low-satmut-mpra-128k-20260917",
+      "spearman_ci_high": 0.2391181032061981,
+      "spearman_ci_low": 0.06573971530060677,
+      "spearman_ci_status": "estimated",
+      "task_family": "satmut_mpra"
+    },
+    {
+      "category": "excluding_avi_model_selection",
+      "eligible_panels": 16,
+      "mean_spearman_rho": 0.22040722426151477,
+      "run_id": "muse-spark-1.3-max-satmut-mpra-128k-20260917",
+      "spearman_ci_high": 0.3267068442455806,
+      "spearman_ci_low": 0.11410760427744894,
       "spearman_ci_status": "estimated",
       "task_family": "satmut_mpra"
     },
@@ -435,10 +475,20 @@
     {
       "category": "all_covered",
       "eligible_panels": 16,
-      "mean_spearman_rho": 0.2975108578151545,
-      "run_id": "muse-spark-1.3-medium-sge-20260910T151518Z",
-      "spearman_ci_high": 0.4488322506572662,
-      "spearman_ci_low": 0.1461894649730429,
+      "mean_spearman_rho": 0.07615642975840393,
+      "run_id": "kimi-k3-low-sge-128k-pilot-20260917",
+      "spearman_ci_high": 0.26581103831053127,
+      "spearman_ci_low": -0.11349817879372341,
+      "spearman_ci_status": "estimated",
+      "task_family": "sge"
+    },
+    {
+      "category": "all_covered",
+      "eligible_panels": 16,
+      "mean_spearman_rho": 0.5201047318892614,
+      "run_id": "muse-spark-1.3-max-sge-128k-pilot-20260917",
+      "spearman_ci_high": 0.6579404636229965,
+      "spearman_ci_low": 0.38226900015552634,
       "spearman_ci_status": "estimated",
       "task_family": "sge"
     },
@@ -525,10 +575,20 @@
     {
       "category": "excluding_avi_model_selection",
       "eligible_panels": 13,
-      "mean_spearman_rho": 0.2927922049447519,
-      "run_id": "muse-spark-1.3-medium-sge-20260910T151518Z",
-      "spearman_ci_high": 0.4658497953188495,
-      "spearman_ci_low": 0.11973461457065426,
+      "mean_spearman_rho": 0.02266307262829568,
+      "run_id": "kimi-k3-low-sge-128k-pilot-20260917",
+      "spearman_ci_high": 0.23884689872813575,
+      "spearman_ci_low": -0.1935207534715444,
+      "spearman_ci_status": "estimated",
+      "task_family": "sge"
+    },
+    {
+      "category": "excluding_avi_model_selection",
+      "eligible_panels": 13,
+      "mean_spearman_rho": 0.48284698817649985,
+      "run_id": "muse-spark-1.3-max-sge-128k-pilot-20260917",
+      "spearman_ci_high": 0.6468204450988189,
+      "spearman_ci_low": 0.3188735312541808,
       "spearman_ci_status": "estimated",
       "task_family": "sge"
     },
@@ -544,7 +604,7 @@
     }
   ],
   "schema_version": 1,
-  "snapshot_sha256": "240dad5d2e7e141170714936239e9801be32ba862fc01a0419879846863f0b7e",
+  "snapshot_sha256": "d453dde1cd061e1a88b46db15c4646aa56b4f58c3626bac49ea1603c6689c5e4",
   "statistics": {
     "adjustment": "none; pointwise intervals, not simultaneous or pairwise tests",
     "alternative": "two-sided",

@@ -59,6 +59,18 @@ used internally by the provider.
 
 Ad hoc evaluation leaves sampling controls unset unless explicitly supplied.
 
+For DeepSeek V4.1 Flash at maximum effort, select the task's `task-384k.yaml`
+descriptor alongside `configs/models/deepseek-v4.1-flash-max.yaml`. These
+descriptors preserve the questions while allowing 384,000 combined reasoning and
+final-output tokens, the verified DeepSeek route limit. Start with a small pilot
+and inspect completion usage and `finish_reason` before committing to a full run;
+even a valid answer ending with `length` indicates truncation. The model profile
+records the official guidance and route evidence. Other models require their own
+provider-limit check before using these descriptors.
+Use `--direct` for this model while it has no live OpenRouter batch endpoint;
+`--concurrency` controls overlapping direct API requests, separately from batch
+submission.
+
 A task profile requires a question file containing only that task family.
 The examples below use the satMutMPRA file generated above.
 
@@ -146,8 +158,20 @@ The shared evaluator also supports exact-match multiple-choice scoring.
 refusal, token-limit, and format-error classification.
 
 For either question type, API failures have null scores and make the run
-incomplete; they cannot appear in the official leaderboard. Retained reasoning
-is only what the provider exposes, not a claim of access to private reasoning.
+incomplete; they cannot appear in the official leaderboard. Retry transient
+serving errors with backoff, keeping the question, model, and inference settings
+unchanged and retaining every attempt. Stop for a permanent request error or
+when the authorized spending limit is reached. An API retry recovers a missing
+response; never retry a completed answer just because its score is low.
+See [retry publication](publishing.md#build-and-validate-a-named-version) for
+preserving the failed attempts alongside the recovered answers.
+
+Benchmark cost is the input and output cost of completed model responses.
+Exclude API and serving errors, including failed retries, from this cost.
+Completed invalid answers and token-limit stops still count, including a
+completed truncation before an explicitly authorized larger-limit retry.
+Retained reasoning is only what the provider exposes, not a claim of access to
+private reasoning.
 
 The leaderboard's output and usage table shows only configurations with recorded
 formatting failures, refusals, output-limit stops, or retried failures in the
@@ -155,8 +179,8 @@ selected tasks. Formatting failures count completed responses without a parseabl
 answer, including refusals or output-limit stops that leave no usable answer;
 this is not a diagnosis of the cause. The table distinguishes the configured
 ceiling from observed output, including reasoning. Output totals and maxima describe the
-retained completed responses; run cost and total tokens also include recorded
-earlier attempts, including selective truncation retries. Truncation counts any
+retained completed responses; benchmark cost includes earlier completed
+attempts, and total tokens include all recorded attempts. Truncation counts any
 completed response with a provider finish reason of `length`, even when its final
 answer is valid or reported usage is below the configured ceiling. Missing usage
 remains unknown, and older publications without these summaries display gaps

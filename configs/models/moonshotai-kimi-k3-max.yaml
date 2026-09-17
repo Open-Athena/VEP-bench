@@ -1,0 +1,26 @@
+# User-requested maximum reasoning on the official Moonshot AI route.
+# https://platform.kimi.ai/docs/guide/kimi-k3-quickstart (checked 2026-09-17)
+# K3 fixes sampling controls; omit temperature/top_p instead of sending overrides.
+# The model card's single-step benchmark recipe uses temperature=1 and top_p=0.95:
+# https://github.com/MoonshotAI/Kimi-K3
+# That recipe is benchmark-specific; omitted controls use serving defaults.
+# Pin the route and listed prices; use --direct (batch only lists Together).
+# https://openrouter.ai/api/v1/models/moonshotai/kimi-k3/endpoints
+# Its advertised output maximum is 943718, separate from 1048576 context tokens.
+# The task descriptor owns the actual output allowance, including reasoning.
+schema_version: "1.0"
+label: kimi-k3-max
+model: moonshotai/kimi-k3
+generation:
+  reasoning:
+    effort: max
+    exclude: false
+  provider:
+    only:
+      - moonshotai/mxfp4
+    allow_fallbacks: false
+    require_parameters: true
+    max_price:
+      prompt: 3.0
+      completion: 15.0
+      request: 0

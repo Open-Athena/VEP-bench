@@ -156,6 +156,8 @@ Each model appears in the bar chart at its highest available reasoning effort
 with complete results for this view. “All tasks” requires the same configuration
 across every task. Equal-effort configurations use the latest results; selection
 does not depend on score.
+Stopped and otherwise incomplete evaluations are listed under
+[Unscored model attempts](#unscored-model-attempts).
 
 ```js
 const plotRow = (row) => ({
@@ -185,7 +187,7 @@ function modelDetails(row) {
     `Knowledge cutoff: ${formatKnowledgeCutoff(row.knowledge_cutoff)}`,
     ...(row.retry_policy
       ? [`${row.retry_count} of ${row.question_count} initial responses were truncated without a valid answer. Each was retried once at ${formatInteger(row.retry_policy.retry_max_tokens)} tokens, up from ${formatInteger(row.retry_policy.initial_max_tokens)}. Scores retain every retry outcome, including failures; cost includes both attempts.`]
-      : row.retry_count ? [`${row.retry_count} of ${row.question_count} initial requests had an API error. One unchanged retry succeeded for each; scores use the retry and cost includes both attempts.`] : [])
+      : row.retry_count ? [`${row.retry_count} of ${row.question_count} questions required unchanged retries after API errors. Scores and benchmark cost use completed model responses.`] : [])
   ].join("\n");
 }
 function leaderboardPlot({width}) {
@@ -207,7 +209,7 @@ display(html`<div class="card vepbench-leaderboard-chart" tabindex="0"
 
 ## Score by cost and token usage
 
-Compare the selected task's score with total run cost and total token usage across
+Compare the selected task's score with benchmark cost and total token usage across
 all available reasoning efforts and configurations. Both plots share model colors
 and the score scale; each line connects configurations from the same family.
 Tokens include input and generated output, including reasoning.
@@ -290,10 +292,12 @@ display(html`<section aria-label=${`${selectedTaskLabel} score comparisons`}>
 
 ## Unscored model attempts
 
-An attempt is reported here benchmark-wide when a refusal or content filter in
-any task prevents a complete, rankable model result. These attempts remain
+An attempt is reported here benchmark-wide when refusals, content filtering, or
+an early stop leave the evaluation without a complete, rankable model result.
+These attempts remain
 visible regardless of the task selected above and are not included in the
-leaderboard.
+leaderboard. Recorded responses may have individual scores, but an incomplete
+evaluation has no overall score or rank.
 
 ```js
 const unscoredAttempts = [
@@ -308,6 +312,12 @@ const unscoredAttempts = [
     organization: "anthropic",
     status: "Content filtered",
     evidence: "5/8 panels; run stopped and not ranked (Anthropic/OpenRouter Batch, 2026-09-03)"
+  },
+  {
+    model: "DeepSeek V4.1 Flash (max)",
+    organization: "deepseek",
+    status: "Stopped early",
+    evidence: "20/52 responses recorded; 9 reached 384K tokens without a final answer; not ranked (DeepSeek/OpenRouter, 2026-09-17)"
   }
 ];
 const unscoredAttemptsTable = Inputs.table(unscoredAttempts, {
@@ -336,6 +346,26 @@ const unscoredAttemptsTable = Inputs.table(unscoredAttempts, {
 display(html`<div class="card">${unscoredAttemptsTable}</div>`);
 ```
 
+**DeepSeek V4.1 Flash (max), September 17, 2026.** We stopped this evaluation to
+avoid further spend after 9 of 16 Fitness (SGE) responses exhausted the
+384,000-token output allowance without a final answer; the other 7 were valid.
+Requests used DeepSeek's own provider route through OpenRouter, with maximum
+reasoning effort and provider fallback disabled. The allowance includes reasoning
+and final output and was the selected route's advertised maximum, rather than an
+OpenRouter-wide limit.
+
+The 20 recorded responses include all 16 fitness questions, 3 of 16 expression
+questions, and 1 of 20 splicing questions, including the initial pilot. Four
+additional requests were interrupted in flight and have no recorded outcome;
+they are not counted as model failures. Completed response cost was $2.48.
+At least one truncated
+response degenerated into repeated single letters. The cause is unconfirmed,
+and these observations do not establish performance on the unanswered questions
+or on other providers or reasoning settings. No retries were made.
+
+The saved responses are retained in the
+[September 17 audit publication](https://huggingface.co/buckets/open-athena/VEP-bench/tree/versions/sept17-evaluation-audit).
+
 ## Output limits and usage
 
 Across all reasoning efforts, only configurations with recorded formatting
@@ -358,7 +388,9 @@ attempts remain in the section above.
   formatting failures and truncation can also overlap.
 
 Output tokens include reasoning. Answer rates and output figures describe the
-scored responses; total tokens and cost include all recorded attempts. Retries
+scored responses. Benchmark cost includes input and output for completed model
+responses, including completed token-limit attempts before selective retries;
+serving errors are excluded. Total tokens include all recorded attempts. Retries
 keep recovered failures visible here. Selective retries replace every initially
 invalid truncated answer once at the larger listed limit; all retry outcomes,
 including failures, are retained. Other settings stay the same.
@@ -373,7 +405,7 @@ const executionTable = Inputs.table(executionData, {
   header: {
     model: "Model",
     questions: "Questions",
-    retries: "Retries",
+    retries: "Questions retried",
     valid_rate: "Valid answers",
     format_failure_rate: "Formatting failures",
     truncation_rate: "Truncated",

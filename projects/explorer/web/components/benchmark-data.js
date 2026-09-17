@@ -63,7 +63,8 @@ export function modelName(modelId, generationParameters) {
     "gpt-5.6-sol": "GPT 5.6 Sol",
     "gpt-5.6-terra": "GPT 5.6 Terra",
     "gpt-6-astra": "GPT 6 Astra",
-    "muse-spark-1.3": "Muse Spark 1.3"
+    "muse-spark-1.3": "Muse Spark 1.3",
+    "kimi-k3": "Kimi K3"
   }[name] ?? name;
   const effort = generationParameters?.reasoning?.effort;
   return effort ? `${displayName} (${effort})` : displayName;
@@ -187,7 +188,8 @@ function rowForRun(run, scoreMetric = null) {
     release_date: run.model.release_date ?? null,
     knowledge_cutoff: run.model.knowledge_cutoff ?? null,
     tokens: nonnegativeNumber(run.metrics.total_tokens),
-    cost: nonnegativeNumber(run.metrics.total_cost_usd),
+    cost: nonnegativeNumber(Object.hasOwn(run.metrics, "completed_response_cost_usd")
+      ? run.metrics.completed_response_cost_usd : run.metrics.total_cost_usd),
     score: leaderboardScore(run, scoreMetric),
     accuracy: nonnegativeNumber(run.metrics.accuracy),
     pearson: finiteNumber(run.metrics.mean_pearson_r),
@@ -389,7 +391,8 @@ export function overallLeaderboardRows(runs, leaderboard, scoreMetric = null) {
       taskRuns.map((run) => nonnegativeNumber(run.metrics.total_tokens))
     );
     row.cost = sumIfComplete(
-      taskRuns.map((run) => nonnegativeNumber(run.metrics.total_cost_usd))
+      taskRuns.map((run) => nonnegativeNumber(Object.hasOwn(run.metrics, "completed_response_cost_usd")
+        ? run.metrics.completed_response_cost_usd : run.metrics.total_cost_usd))
     );
     row.format_failures = taskRuns.reduce(
       (total, run) => total + (nonnegativeNumber(run.metrics.format_failures) ?? 0),

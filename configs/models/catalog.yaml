@@ -12,6 +12,13 @@ models:
     release_date: "2026-09-02"
     knowledge_cutoff: null
     knowledge_cutoff_url: null
+  moonshotai/kimi-k3:
+    family: Kimi K3
+    # Release: https://openrouter.ai/moonshotai/kimi-k3 (checked 2026-09-17).
+    release_date: "2026-07-16"
+    # No cutoff documented in https://platform.kimi.ai/docs/guide/kimi-k3-quickstart.
+    knowledge_cutoff: null
+    knowledge_cutoff_url: null
   anthropic/claude-fable-5.1:
     family: Claude Fable 5.1
     release_date: "2026-09-01"

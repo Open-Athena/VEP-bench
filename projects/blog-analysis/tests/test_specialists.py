@@ -74,6 +74,37 @@ class FakeClient:
         return {"status": "scored", "score": float(request["variant"]["pos"])}
 
 
+def test_publication_refresh_reuses_identical_inference_without_changing_its_session(tmp_path):
+    original = plan([question("gene", [1, 2, 3])])
+    original.update(
+        question_set_sha256="questions",
+        question_set_size=1,
+        annotation_sha256="annotations",
+        manifest_sha256="old-publication",
+    )
+    client = FakeClient()
+    s.predict(original, tmp_path, client)
+    predictions = s.collect(original, tmp_path)
+    refreshed = copy.deepcopy(original)
+    refreshed["manifest_sha256"] = "new-publication"
+    refreshed["runs"].append({"run_id": "new-model", "task_family": "sge"})
+    reused = s.reuse_predictions(original, refreshed, predictions)
+    assert len(client.calls) == 3
+    assert reused["panels"] == predictions["panels"]
+    assert reused["session"] == predictions["session"]
+    assert reused["runtime_seconds"] == predictions["runtime_seconds"]
+    assert reused["plan_sha256"] == sha256_json(refreshed)
+    assert reused["publication_reuse"]["source_predictions_sha256"] == sha256_json(predictions)
+    changed = copy.deepcopy(refreshed)
+    changed["panels"][0]["candidates"][0]["request"]["variant"]["alt"] = "C"
+    with pytest.raises(ValueError, match="panels"):
+        s.reuse_predictions(original, changed, predictions)
+    tampered = copy.deepcopy(predictions)
+    tampered["panels"]["gene"]["predictions"]["V0"] = 100
+    with pytest.raises(ValueError, match="summary"):
+        s.reuse_predictions(original, refreshed, tampered)
+
+
 def test_partial_run_cannot_be_compared_and_resume_reuses_verified_cache(tmp_path):
     p, client = plan([question("gene", [1, 2, 3])]), FakeClient()
     s.predict(p, tmp_path, client, limit=1)
@@ -272,7 +303,7 @@ def test_committed_plan_and_blog_status_match_the_reviewed_implementation(tmp_pa
     snapshot = s.read_json(s.POST / "specialist-comparison.json.gz")
     assert snapshot["plan_sha256"] == sha256_json(p)
     assert p["manifest_sha256"] == s.STRATA.file_sha256(
-        s.POST / "specialist-2026-09-15.manifest.json"
+        s.POST / "specialist-2026-09-17.manifest.json"
     )
     if snapshot["status"] == "awaiting_inference":
         assert snapshot == s.planned_summary(p)
@@ -287,4 +318,12 @@ def test_committed_plan_and_blog_status_match_the_reviewed_implementation(tmp_pa
                 path = s.cache_path(tmp_path, row["request"])
                 if not path.exists():
                     s.write_new(path, row)
-        assert s.collect(p, tmp_path) == predictions
+        if "publication_reuse" in predictions:
+            original_plan = s.read_json(s.POST / "specialist-plan-2026-09-15.json.gz")
+            original_predictions = copy.deepcopy(predictions)
+            reuse = original_predictions.pop("publication_reuse")
+            original_predictions["plan_sha256"] = reuse["source_plan_sha256"]
+            assert sha256_json(original_predictions) == reuse["source_predictions_sha256"]
+            assert s.reuse_predictions(original_plan, p, original_predictions) == predictions
+        else:
+            assert s.collect(p, tmp_path) == predictions

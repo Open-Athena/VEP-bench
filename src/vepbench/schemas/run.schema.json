@@ -37,7 +37,7 @@
     "evaluation_profile": {"type": ["string", "null"]},
     "started_at": {"type": "string", "format": "date-time"},
     "completed_at": {"type": "string", "format": "date-time"},
-    "retry_count": {"type": "integer", "minimum": 1, "description": "Questions with one retained retry; prior attempts remain in answer usage provenance. Without retry_policy, retries replace API errors with unchanged requests."},
+    "retry_count": {"type": "integer", "minimum": 1, "description": "Questions with a retained retry response; all prior attempts remain in answer usage provenance. Without retry_policy, retries replace API errors with unchanged requests."},
     "retry_policy": {
       "type": "object",
       "additionalProperties": false,
@@ -120,6 +120,7 @@
       "additionalProperties": false,
       "required": ["scored", "correct", "accuracy", "format_failures"],
       "properties": {
+        "completed_response_cost_usd": {"type": ["number", "null"], "minimum": 0, "description": "Benchmark cost: input and output for all completed model responses, including completed truncations before selective retries. Excludes serving errors."},
         "scored": {"type": "integer", "minimum": 0},
         "correct": {"type": "integer", "minimum": 0},
         "accuracy": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
@@ -159,6 +160,7 @@
         "format_failures"
       ],
       "properties": {
+        "completed_response_cost_usd": {"type": ["number", "null"], "minimum": 0, "description": "Benchmark cost: input and output for all completed model responses, including completed truncations before selective retries. Excludes serving errors."},
         "scored": {"type": "integer", "minimum": 0},
         "mean_spearman_rho": {"type": ["number", "null"], "minimum": -1, "maximum": 1},
         "mean_pearson_r": {"type": ["number", "null"], "minimum": -1, "maximum": 1},

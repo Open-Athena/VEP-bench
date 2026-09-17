@@ -70,7 +70,8 @@ class OpenRouterTransport:
             except TimeoutError, http.client.HTTPException, OSError:
                 payload = b""
             raw = _decode_json_object(payload)
-            message = _provider_error_message(raw) or f"OpenRouter returned HTTP {exc.code}"
+            error = _provider_error(raw)
+            message = str(error) if error else f"OpenRouter returned HTTP {exc.code}"
             raise ProviderError(message, status_code=exc.code, raw_response=raw) from exc
         except urllib.error.URLError as exc:
             raise ProviderError(f"OpenRouter request failed: {exc.reason}") from exc
@@ -80,8 +81,8 @@ class OpenRouterTransport:
         raw = _decode_json_object(payload)
         if raw is None:
             raise ProviderError("OpenRouter returned a non-object JSON response")
-        if error := _provider_error_message(raw):
-            raise ProviderError(error, raw_response=raw)
+        if error := _provider_error(raw):
+            raise error
         return raw
 
 
@@ -874,13 +875,15 @@ def error_result(
     evaluated_at: datetime,
     latency_seconds: float | None,
 ) -> dict[str, Any]:
+    body = _completion_payload(error.raw_response) if error.raw_response is not None else {}
+    usage = body.get("usage")
     return _result_base(
         question=question,
         question_set_sha256=question_set_sha256,
         question_set_size=question_set_size,
         run_id=run_id,
         model_id=model_id,
-        upstream_provider=None,
+        upstream_provider=_extract_provider(body),
         generation_parameters=generation_parameters,
         evaluated_at=evaluated_at,
         response={
@@ -895,7 +898,7 @@ def error_result(
             **_null_scoring(question),
             **({"result_type": None} if question["task_type"] == "multiple_choice" else {}),
         },
-        usage={},
+        usage=usage if isinstance(usage, dict) else {},
         error={
             "type": "provider_error",
             "message": str(error),
@@ -967,6 +970,8 @@ def provider_response_snapshot(raw: Any) -> dict[str, Any]:
     """Extract normalized completion fields from a direct or batch payload."""
 
     body = _completion_payload(raw)
+    if error := _provider_error(body):
+        raise error
     choice, message = _first_choice(body)
     content = message.get("content")
     if content is not None and not isinstance(content, str):
@@ -1065,12 +1070,25 @@ def _decode_json_object(payload: bytes) -> dict[str, Any] | None:
     return value if isinstance(value, dict) else None
 
 
-def _provider_error_message(raw: Mapping[str, Any] | None) -> str | None:
-    if not raw or "error" not in raw:
+def _provider_error(raw: Mapping[str, Any] | None) -> ProviderError | None:
+    if not raw:
         return None
-    error = raw["error"]
+    if "error" in raw:
+        error = raw["error"]
+    else:
+        # A provider can fail after generation starts while HTTP still returns 200.
+        choices = raw.get("choices")
+        if not isinstance(choices, list) or not choices or not isinstance(choices[0], Mapping):
+            return None
+        choice = choices[0]
+        if choice.get("error") is None and choice.get("finish_reason") != "error":
+            return None
+        error = choice.get("error")
+    message = "OpenRouter returned an API error"
     if isinstance(error, str):
-        return error
-    if isinstance(error, dict) and isinstance(error.get("message"), str):
-        return error["message"]
-    return "OpenRouter returned an API error"
+        message = error or message
+    elif isinstance(error, Mapping) and isinstance(error.get("message"), str):
+        message = error["message"] or message
+    code = error.get("code") if isinstance(error, Mapping) else None
+    status_code = code if type(code) is int and 100 <= code <= 599 else None
+    return ProviderError(message, status_code=status_code, raw_response=dict(raw))

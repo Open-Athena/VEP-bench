@@ -2,7 +2,7 @@
   "assay_provenance_audit_sha256": "1c490667778ceb0d6357e09f60ac030c96d2361df5059c5c75408bd1c6f833c7",
   "assay_publications_sha256": "384ac34c9576bcc64f73816c0185aa63be4e9dcb97245da77ecfa0b4079c18cd",
   "collection": {
-    "manifest_sha256": "0dfd0a545c77d8393ed89a8ae899aa8f1356a2dfd3feb06e9a550a0babc7c562",
+    "manifest_sha256": "e767dc31d8ce4af534f9077560bfede1b5675879888e5d7608b458c33d6ad6a6",
     "method": "Local publication verified against the frozen manifest",
     "outcomes": [
       {
@@ -414,6 +414,54 @@
         "records": 16
       },
       {
+        "artifact_bytes": 807,
+        "artifact_sha256": "069ffe52177d7c18925ed54850c80b051053fc437ec6b42c2cba321ad33b6abd",
+        "content_bytes": 3254,
+        "content_sha256": "245d3116154cd3903076a49b923d0613fcba7090b92126ef79c88677fa8fe395",
+        "path": "versions/main/outcomes/kimi-k3-low-opensplice-snv-128k-20260917.json.gz",
+        "records": 20
+      },
+      {
+        "artifact_bytes": 779,
+        "artifact_sha256": "2013e2e2be818f169892699333bdc1154fc6da7be99027a504fd2f7e038575fd",
+        "content_bytes": 2672,
+        "content_sha256": "8f07e0ec35cf3f95335371740daccbcc2fb7581aab0c8ed0196abf47131306f0",
+        "path": "versions/main/outcomes/kimi-k3-low-satmut-mpra-128k-20260917.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 767,
+        "artifact_sha256": "75914690f43dc82b65c2107953ec2dc2b03c3d6071e2b1a8d3bd253bc051d22a",
+        "content_bytes": 2532,
+        "content_sha256": "d0c3ee0a8b16e6ef67002cd6f87bc0e6654fc42b72609600e2cbd48fc4f02885",
+        "path": "versions/main/outcomes/kimi-k3-low-sge-128k-pilot-20260917.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 810,
+        "artifact_sha256": "f324202b91cc3dd6a9d93f6ebc13036a49299771273760cdedb25d545f26eb0f",
+        "content_bytes": 3259,
+        "content_sha256": "a5068aa781deab89d9bae8a95b424a4d4801efd98de17b312f0e2204eb272185",
+        "path": "versions/main/outcomes/muse-spark-1.3-max-opensplice-snv-128k-20260917.json.gz",
+        "records": 20
+      },
+      {
+        "artifact_bytes": 781,
+        "artifact_sha256": "c2d5f47001147d6e37098da6d83410cc33c4c86d0925dcca2b6fb76afb97351f",
+        "content_bytes": 2669,
+        "content_sha256": "365f3c97dd4bd579eac6bd5df9a7f1c6bdff45f1b454e96b7afca9cc33475f26",
+        "path": "versions/main/outcomes/muse-spark-1.3-max-satmut-mpra-128k-20260917.json.gz",
+        "records": 16
+      },
+      {
+        "artifact_bytes": 752,
+        "artifact_sha256": "301052a4cf8e265bb443ed902a7b7b24ea4d5cd5b1563ddc4afd8cde85d4da89",
+        "content_bytes": 2508,
+        "content_sha256": "221060bfdb71867bc762db6c8e2cbd2d9cf4f7649032a498bbed17fddc759b66",
+        "path": "versions/main/outcomes/muse-spark-1.3-max-sge-128k-pilot-20260917.json.gz",
+        "records": 16
+      },
+      {
         "artifact_bytes": 818,
         "artifact_sha256": "7376a786a433dc4ec8cdd4797296d30fd6842adcb60483feb804463bb674d6df",
         "content_bytes": 3268,
@@ -422,18 +470,18 @@
         "records": 20
       },
       {
-        "artifact_bytes": 780,
-        "artifact_sha256": "dd2bf3a892a58432604a09125e60a01b28b96de78ef161314138de32fa46e65a",
-        "content_bytes": 2634,
-        "content_sha256": "121b8382c04ccd3de1c8e750062d24ae8787618fa0725d0dab5bd6cb79f9b5e3",
+        "artifact_bytes": 791,
+        "artifact_sha256": "655c27190990e201f18e2f6b5e97b1d86aaacd29effa756232110a9e8254a87e",
+        "content_bytes": 2680,
+        "content_sha256": "ddbc9876cf3f07a3eab21bf9f1c230c8ad91a51fd5f9393ca285625bc5559f37",
         "path": "versions/main/outcomes/muse-spark-1.3-medium-satmut-mpra-20260910T151518Z-retry1.json.gz",
         "records": 16
       },
       {
-        "artifact_bytes": 699,
-        "artifact_sha256": "6b8b627c49d85a4f8ca32bfb335dc5a0c18728a21aa40feca846a1a9515118c3",
-        "content_bytes": 2389,
-        "content_sha256": "d08469cd0f738b49c2ef83935d4ea035b73a972c727a2a250a339d4fad7590cb",
+        "artifact_bytes": 748,
+        "artifact_sha256": "7c7006d5bc0844b6ba12ab5376ce402e74f38a070e752282b965bbed93aa9fbb",
+        "content_bytes": 2477,
+        "content_sha256": "1b2d75a75380e73d5b6bcd7061985450ddde7dfd6d214e3e837f16249457f2c6",
         "path": "versions/main/outcomes/muse-spark-1.3-medium-sge-20260910T151518Z.json.gz",
         "records": 16
       }
@@ -447,18 +495,18 @@
       "records": 52
     },
     "runs": {
-      "artifact_bytes": 93027,
-      "artifact_sha256": "6d514ed517275344db729b16fb59a5221c51248d1dd98d2388103b83c325240a",
-      "content_bytes": 93027,
-      "content_sha256": "6d514ed517275344db729b16fb59a5221c51248d1dd98d2388103b83c325240a",
+      "artifact_bytes": 106159,
+      "artifact_sha256": "e61fdaa36f4592c090458d9729937dd29dc1e673dbbfa19b5be53d081a5a2c3a",
+      "content_bytes": 106159,
+      "content_sha256": "e61fdaa36f4592c090458d9729937dd29dc1e673dbbfa19b5be53d081a5a2c3a",
       "path": "versions/main/runs.json",
-      "records": 54
+      "records": 60
     }
   },
   "comparison_count": 5,
   "data_base_url": "https://huggingface.co/buckets/open-athena/VEP-bench/resolve/versions/main",
   "question_set_sha256": "be62fd7b5f06656572a5150904758f04bb998590f63ce31ebbca13852a0bfab7",
-  "retrieved_at": "2026-09-16T17:42:30.238366+00:00",
+  "retrieved_at": "2026-09-17T22:29:18.752944+00:00",
   "scores": [
     {
       "assay_date": "2024-01-11",

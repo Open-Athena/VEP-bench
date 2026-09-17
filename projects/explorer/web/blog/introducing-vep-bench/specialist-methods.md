@@ -10,7 +10,7 @@ with saved LLM answers on identical eligible variants within original panels.
 ## Publication snapshot
 
 All performance analyses in the post use the public LLM publication frozen on
-September 15, 2026 in `specialist-2026-09-15.manifest.json`. The name reflects its
+September 17, 2026 in `specialist-2026-09-17.manifest.json`. The name reflects its
 initial use for this comparison; it is also the manifest for the stratum,
 SGE cutoff, and external-benchmark comparisons.
 
@@ -22,6 +22,20 @@ No new LLM requests were made for this analysis. Recovery metadata distinguishes
 original responses, retries, and replacements; unrecoverable attempts are not
 invented. SGE runs were unaffected. The complete question-set digest and source
 alleles are unchanged.
+
+The September 17 update adds complete Muse Spark 1.3 maximum-effort and Kimi K3
+low-effort evaluations. It also corrects three provider connection errors in
+the older Muse medium-effort runs: CTCF and DDX3X in SGE and HBB in satMutMPRA.
+Those requests were retried with unchanged inference settings; their failures
+remain in the recovered answers' provenance and receive no score or benchmark
+cost. Completed invalid answers and truncations still count.
+
+Specialist predictions reuse the original saved AlphaGenome and AVI inference.
+The question sets, alleles, eligibility policy, and biological requests are
+unchanged. The saved prediction artifact retains its original inference session
+and links the old plan and predictions by digest; only the compared LLM
+publication changes. `specialist-plan-2026-09-15.json.gz` retains that original
+plan. This refresh makes no new specialist calls.
 
 The blog rescores existing answers on each comparison's eligible variants. It
 does not modify the official leaderboard. The previous snapshot remains in Git
@@ -176,10 +190,22 @@ the website reads compact exports and never calls a model. Its
 Install with `uv sync --locked --all-packages --extra alphagenome --group test`.
 
 Use a local publication mirror containing the exact artifacts in
-`specialist-2026-09-15.manifest.json`. The existing `fetch-strata-inputs.py`
+`specialist-2026-09-17.manifest.json`. The existing `fetch-strata-inputs.py`
 downloader verifies public files against that manifest; if a mutable `main`
 artifact has changed, restore its frozen copy rather than weakening the hash
 check.
+
+To reproduce the published comparison without inference, use the committed
+`specialist-plan.json.gz` and `specialist-predictions.json.gz` as the `compare`
+inputs below. To refresh only the compared LLM runs, make a new plan and use
+`reuse --original-plan ORIGINAL --plan NEW --predictions SAVED --output REUSED`.
+Use the original inference predictions from Git history for `SAVED`; reuse
+exports cannot be chained into another reuse operation.
+Reuse verifies identical biological requests and policy, checks saved evidence,
+and preserves the original inference session. It refuses changed alleles or
+specialist inference settings.
+
+The following workflow starts a new specialist inference session:
 
 ```bash
 uv run --no-sync vepbench-blog-specialists plan \

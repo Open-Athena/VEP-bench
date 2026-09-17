@@ -231,6 +231,38 @@ test("execution summaries aggregate counts across unequal task sizes and preserv
   assert.equal(single.truncation_rate, 0.5);
 });
 
+test("benchmark costs use completed responses even when failed-request billing is missing", () => {
+  const value = run();
+  value.metrics.total_cost_usd = null;
+  value.metrics.completed_response_cost_usd = 0.15;
+  assert.equal(leaderboardRows([value])[0].cost, 0.15);
+  value.metrics.completed_response_cost_usd = 0;
+  assert.equal(leaderboardRows([value])[0].cost, 0);
+  value.metrics.total_cost_usd = 9;
+  value.metrics.completed_response_cost_usd = null;
+  assert.equal(leaderboardRows([value])[0].cost, null);
+  delete value.metrics.completed_response_cost_usd;
+  assert.equal(leaderboardRows([value])[0].cost, 9); // Legacy publication fallback.
+});
+
+test("overall benchmark cost sums completed-response costs and preserves missing values", () => {
+  const leaderboard = {
+    aggregation_method: "task_score_macro_average_v1",
+    evaluation_profiles: ["alpha", "beta"].map((task) => ({
+      task_family: task, evaluation_profile: `${task}:ranking-v1@1.0`
+    }))
+  };
+  const runs = ["alpha", "beta"].map((task, index) => {
+    const value = run({runId: task, evaluationProfile: `${task}:ranking-v1@1.0`,
+      configurationKey: `cfg-${String(index + 1).repeat(64)}`, cost: null});
+    value.metrics.completed_response_cost_usd = index === 0 ? 0.1 : 0.2;
+    return value;
+  });
+  assert.ok(Math.abs(overallLeaderboardRows(runs, leaderboard)[0].cost - 0.3) < 1e-12);
+  runs[1].metrics.completed_response_cost_usd = null;
+  assert.equal(overallLeaderboardRows(runs, leaderboard)[0].cost, null);
+});
+
 test("execution summaries keep unavailable or partially reported usage unknown", () => {
   const first = run({taskType: "ranking"});
   const second = run({taskType: "ranking"});
@@ -324,7 +356,7 @@ test("the refreshed publication selects Luna, Terra and Sol max in every leaderb
   const snapshot = JSON.parse(readFileSync(new URL("../blog/introducing-vep-bench/comparisons-data/vep-runs.json", import.meta.url)));
   for (const scope of [null, "sge", "satmut_mpra", "opensplice_snv"]) {
     const rows = highestEffortRows(leaderboardRowsForScope(snapshot.runs, snapshot.leaderboard, scope, "spearman"));
-    assert.equal(rows.length, 8);
+    assert.equal(rows.length, 9);
     for (const name of ["luna", "terra", "sol"]) {
       const matched = rows.filter((row) => (row.runs?.[0] ?? row.run).model.model_id === `openai/gpt-5.6-${name}`);
       assert.equal(matched.length, 1);

@@ -21,6 +21,7 @@ from vepbench_publishing.publication import (
     validate_version_name,
 )
 from vepbench_publishing.retry import (
+    attach_retry_history,
     attempt_totals,
     resolve_retry,
     resolve_truncations,
@@ -191,6 +192,78 @@ def test_retry_export_rejects_changed_request(tmp_path: Path, field: str) -> Non
     retry.write_text(canonical_json(record) + "\n")
     with pytest.raises(BuildError, match="retry changed"):
         resolve_retry(original=original, retry=retry, output=tmp_path / "output.jsonl")
+
+
+@pytest.mark.parametrize("known_usage", [True, False])
+def test_intermediate_retries_preserve_all_attempt_costs_and_publish(
+    tmp_path: Path, known_usage: bool
+) -> None:
+    questions, original, retry = retry_fixture(tmp_path)
+    resolved = tmp_path / "resolved.jsonl"
+    resolve_retry(original=original, retry=retry, output=resolved)
+    failure = json.loads(original.read_text().splitlines()[0])
+    failure["run_id"] = "failed-retry"
+    failure["usage"] = {"cost": 0.3, "total_tokens": 40} if known_usage else {}
+    attempts = tmp_path / "attempts.jsonl"
+    attempts.write_text(canonical_json(failure) + "\n")
+    before = resolved.read_bytes(), attempts.read_bytes()
+    output = tmp_path / "complete" / "run.jsonl"
+    attach_retry_history(results=resolved, attempts=attempts, output=output)
+    assert before == (resolved.read_bytes(), attempts.read_bytes())
+    records = [json.loads(line) for line in output.read_text().splitlines()]
+    assert records[0]["scoring"] == json.loads(retry.read_text())["scoring"]
+    history = records[0]["usage"]["vepbench"]["retry"]["intermediate_attempts"]
+    assert history == [{"record": failure, "record_sha256": sha256_json(failure)}]
+    assert attempt_totals(records) == ((240, pytest.approx(0.8)) if known_usage else (None, None))
+    root = tmp_path / "publication"
+    manifest = build_version(
+        questions_path=questions,
+        results_dir=output.parent,
+        result_schema_path=RESULT_SCHEMA,
+        schemas_dir=SCHEMAS,
+        output=root,
+        version_name="candidate",
+    )
+    assert validate_version(root, version_name="candidate") == manifest
+    run = json.loads((root / "versions/candidate/runs.json").read_text())["runs"][0]
+    assert run["retry_count"] == 1  # Questions, not the number of requests.
+    assert run["metrics"]["total_cost_usd"] == (pytest.approx(0.8) if known_usage else None)
+    assert run["metrics"]["completed_response_cost_usd"] == pytest.approx(0.3)
+    history[0]["record"]["usage"]["cost"] = 900
+    with pytest.raises(BuildError, match="digest"):
+        validate_retry_record(records[0])
+
+
+@pytest.mark.parametrize(
+    "mutation", ["completed", "duplicate", "request", "model", "late", "early"]
+)
+def test_intermediate_retry_history_rejects_changed_or_selected_answers(
+    tmp_path: Path, mutation: str
+) -> None:
+    _, original, retry = retry_fixture(tmp_path)
+    resolved = tmp_path / "resolved.jsonl"
+    resolve_retry(original=original, retry=retry, output=resolved)
+    failure = json.loads(original.read_text().splitlines()[0])
+    failure["run_id"] = "failed-retry"
+    failure["usage"] = {}
+    if mutation == "completed":
+        failure = json.loads(retry.read_text())
+    elif mutation == "duplicate":
+        failure["run_id"] = "combined"
+    elif mutation == "request":
+        failure["generation_parameters"]["reasoning"]["effort"] = "high"
+    elif mutation == "model":
+        failure["model"]["model_id"] = "different/model"
+    elif mutation == "late":
+        failure["evaluated_at"] = "2026-09-10T00:00:00Z"
+    else:
+        failure["evaluated_at"] = "2026-09-08T00:00:00Z"
+    attempts = tmp_path / "attempts.jsonl"
+    attempts.write_text(canonical_json(failure) + "\n")
+    output = tmp_path / "output.jsonl"
+    with pytest.raises(BuildError):
+        attach_retry_history(results=resolved, attempts=attempts, output=output)
+    assert not output.exists()
 
 
 def truncation_fixture(tmp_path: Path, *, ranking: bool = False) -> tuple[Path, Path, Path]:

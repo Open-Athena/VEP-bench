@@ -8,7 +8,9 @@ title: Blog
 
 VEP-bench v0.1
 
-**Draft.** Variant composition across fitness, expression, and splicing, plus
-SGE performance before and after each model's knowledge cutoff.
+**Draft.** Nine language models across fitness, expression, and splicing,
+including Muse at maximum effort and Kimi K3 at low effort. Explore variant
+composition, specialist comparisons, and performance by variant type and
+knowledge cutoff.
 
 [Read draft](./blog/introducing-vep-bench.html)
