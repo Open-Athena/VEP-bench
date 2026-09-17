@@ -199,6 +199,8 @@ To reproduce the published comparison without inference, use the committed
 `specialist-plan.json.gz` and `specialist-predictions.json.gz` as the `compare`
 inputs below. To refresh only the compared LLM runs, make a new plan and use
 `reuse --original-plan ORIGINAL --plan NEW --predictions SAVED --output REUSED`.
+Use the original inference predictions from Git history for `SAVED`; reuse
+exports cannot be chained into another reuse operation.
 Reuse verifies identical biological requests and policy, checks saved evidence,
 and preserves the original inference session. It refuses changed alleles or
 specialist inference settings.
