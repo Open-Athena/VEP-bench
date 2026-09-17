@@ -288,12 +288,14 @@ Spearman scale.
 
 ```js
 import {resultsRadarFigure} from "./introducing-vep-bench/plots.js";
-const selectedResultModels = view(Inputs.checkbox(resultRows.map((row) => row.family), {
+const radarModelInput = Inputs.checkbox(resultRows.map((row) => row.family), {
   label: "Models in radar plot",
   value: resultRows.map((row) => row.family),
   format: (family) => html`<span><span style=${{color: comparisonModelColors[family]}}>●</span>
     ${resultRows.find((row) => row.family === family).model_cell.model}</span>`
-}));
+});
+radarModelInput.id = "radar-models";
+const selectedResultModels = view(radarModelInput);
 ```
 
 ```js

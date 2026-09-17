@@ -511,16 +511,16 @@ await waitFor(`document.querySelectorAll(${JSON.stringify(blogBars)}).length ===
 assert.deepEqual(await evaluate(`[...document.querySelectorAll('#observablehq-toc li a')]
   .map((link) => link.textContent)`), ["Dataset", "Results", "Comparison with specialist models",
   "Comparison with other benchmarks", "Assay dates and model knowledge cutoffs", "Conclusion"]);
-assert.equal(await evaluate(`document.querySelectorAll('input[type="checkbox"]').length`), 8);
-await evaluate(`document.querySelector('input[type="checkbox"]').click()`);
+assert.equal(await evaluate(`document.querySelectorAll('#radar-models input[type="checkbox"]').length`), 8);
+await evaluate(`document.querySelector('#radar-models input[type="checkbox"]').click()`);
 await waitFor(`document.querySelectorAll(${JSON.stringify(radarDots)}).length === 21`, "radar model toggle");
 assert.equal(await evaluate(`document.querySelectorAll(${JSON.stringify(blogBars)}).length`), 8,
   "radar selection does not filter the fixed overall bar chart");
-await evaluate(`document.querySelectorAll('input[type="checkbox"]').forEach((input) => {
+await evaluate(`document.querySelectorAll('#radar-models input[type="checkbox"]').forEach((input) => {
   if (input.checked) input.click();
 })`);
 await waitFor(`document.querySelectorAll(${JSON.stringify(radarDots)}).length === 0`, "empty radar selection");
-await evaluate(`document.querySelectorAll('input[type="checkbox"]').forEach((input) => input.click())`);
+await evaluate(`document.querySelectorAll('#radar-models input[type="checkbox"]').forEach((input) => input.click())`);
 await waitFor(`document.querySelectorAll(${JSON.stringify(radarDots)}).length === 24`, "restored radar selection");
 const examplePrompt = await readFile(
   new URL("../web/blog/introducing-vep-bench/msh6-e7-prompt.txt", import.meta.url), "utf8"
