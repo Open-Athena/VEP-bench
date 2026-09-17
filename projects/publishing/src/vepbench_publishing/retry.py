@@ -23,10 +23,23 @@ def retry_metadata(usage: Mapping[str, Any]) -> dict[str, Any] | None:
     metadata = provenance.get("retry")
     if metadata is not None and (
         not isinstance(metadata, dict)
-        or set(metadata) != {"prior_attempt", "source_run_id", "source_record_sha256"}
+        or set(metadata) - {"intermediate_attempts"}
+        != {"prior_attempt", "source_run_id", "source_record_sha256"}
         or not isinstance(metadata["prior_attempt"], dict)
     ):
         raise BuildError("invalid retry provenance")
+    if metadata is not None and "intermediate_attempts" in metadata:
+        intermediates = metadata["intermediate_attempts"]
+        if not isinstance(intermediates, list) or not intermediates:
+            raise BuildError("invalid intermediate retry attempts")
+        for entry in intermediates:
+            if (
+                not isinstance(entry, dict)
+                or set(entry) != {"record", "record_sha256"}
+                or not isinstance(entry["record"], dict)
+                or sha256_json(entry["record"]) != entry["record_sha256"]
+            ):
+                raise BuildError("intermediate retry digest does not match")
     return metadata
 
 
@@ -110,6 +123,39 @@ def validate_retry_record(record: Mapping[str, Any]) -> None:
         prior["evaluated_at"]
     ):
         raise BuildError("retry predates the original attempt")
+    intermediates = metadata.get("intermediate_attempts", [])
+    if intermediates and policy is not None:
+        raise BuildError("selective truncation retries allow only one retry")
+    seen = {prior["run_id"], metadata["source_run_id"]}
+    previous_time = datetime.fromisoformat(prior["evaluated_at"])
+    for entry in intermediates:
+        attempt = entry["record"]
+        validate_result(attempt, validator)
+        if retry_metadata(attempt["usage"]) is not None or retry_policy(attempt["usage"]):
+            raise BuildError("nested retries are not supported")
+        if attempt["response"]["status"] != "api_error":
+            raise BuildError("intermediate retries must be API errors, never completed answers")
+        for field in (
+            "question",
+            "question_id",
+            "question_sha256",
+            "question_set_sha256",
+            "question_set_size",
+            "completion_index",
+            "generation_parameters",
+        ):
+            if attempt[field] != prior[field]:
+                raise BuildError(f"intermediate retry changed {field}")
+        for field in ("gateway", "model_id", "model_revision"):
+            if attempt["model"].get(field) != prior["model"].get(field):
+                raise BuildError("intermediate retry changed model")
+        if attempt["run_id"] in seen:
+            raise BuildError("duplicate retry attempt")
+        seen.add(attempt["run_id"])
+        evaluated_at = datetime.fromisoformat(attempt["evaluated_at"])
+        if not previous_time <= evaluated_at <= datetime.fromisoformat(record["evaluated_at"]):
+            raise BuildError("intermediate retry is out of chronological order")
+        previous_time = evaluated_at
     source = deepcopy(dict(record))
     source["run_id"] = metadata["source_run_id"]
     del source["usage"]["vepbench"]["retry"]
@@ -126,19 +172,25 @@ def attempt_records(records: Iterable[Mapping[str, Any]]) -> list[dict[str, Any]
     for record in records:
         metadata = retry_metadata(record["usage"])
         if metadata is not None:
-            prior = metadata["prior_attempt"]
-            attempts.append(
-                {
-                    "run_id": record["run_id"],
-                    "question_id": record["question_id"],
-                    "usage": prior["usage"],
-                }
-            )
+            history = [
+                metadata["prior_attempt"],
+                *(entry["record"] for entry in metadata.get("intermediate_attempts", [])),
+            ]
+            for prior in history:
+                attempts.append(
+                    {
+                        "run_id": record["run_id"],
+                        "question_id": record["question_id"],
+                        "usage": prior["usage"],
+                        "status": prior.get("response", {}).get("status"),
+                    }
+                )
         attempts.append(
             {
                 "run_id": record["run_id"],
                 "question_id": record["question_id"],
                 "usage": record["usage"],
+                "status": record.get("response", {}).get("status"),
             }
         )
     return attempts
@@ -188,6 +240,69 @@ def attempt_totals(records: Iterable[Mapping[str, Any]]) -> tuple[int | None, fl
         else None
     )
     return tokens, cost
+
+
+def attach_retry_history(*, results: Path, attempts: Path, output: Path) -> None:
+    """Attach intervening API failures to a recovered task without changing its answers."""
+    if output.exists():
+        raise BuildError(f"refusing to overwrite {output}")
+    records = read_jsonl(results)
+    history = read_jsonl(attempts)
+    if not records or not history:
+        raise BuildError("provide a recovered task and its intermediate failed retries")
+    validator = Draft202012Validator(
+        json.loads(RESULT_SCHEMA.read_text()), format_checker=FormatChecker()
+    )
+    first = records[0]
+    ids = [record["question_id"] for record in records]
+    if len(records) != first["question_set_size"] or ids != sorted(set(ids)):
+        raise BuildError("recovered task must cover its complete ordered question set")
+    for record in records:
+        validate_result(record, validator)
+        validate_retry_record(record)
+        if (
+            record["response"]["status"] != "completed"
+            or any(
+                record[field] != first[field]
+                for field in (
+                    "run_id",
+                    "question_set_sha256",
+                    "question_set_size",
+                    "generation_parameters",
+                )
+            )
+            or record["question"]["metadata"]["task_family"]
+            != first["question"]["metadata"]["task_family"]
+        ):
+            raise BuildError("provide one complete recovered task run")
+        if (
+            retry_metadata(record["usage"])
+            and "intermediate_attempts" in record["usage"]["vepbench"]["retry"]
+        ):
+            raise BuildError("source already contains intermediate retries")
+    by_question: dict[str, list[dict[str, Any]]] = {}
+    for attempt in history:
+        validate_result(attempt, validator)
+        by_question.setdefault(attempt["question_id"], []).append(attempt)
+    for record in records:
+        additions = by_question.pop(record["question_id"], [])
+        if not additions:
+            continue
+        metadata = retry_metadata(record["usage"])
+        if metadata is None:
+            raise BuildError("intermediate retry has no recovered answer")
+        metadata["intermediate_attempts"] = [
+            {"record": attempt, "record_sha256": sha256_json(attempt)}
+            for attempt in sorted(additions, key=lambda r: (r["evaluated_at"], r["run_id"]))
+        ]
+        validate_retry_record(record)
+    if by_question:
+        raise BuildError("intermediate retry question is absent from the task")
+    validate_attempt_allocations(records, context=str(output))
+    output.parent.mkdir(parents=True, exist_ok=True)
+    with output.open("x", encoding="utf-8", newline="\n") as target:
+        for record in records:
+            target.write(canonical_json(record) + "\n")
 
 
 def resolve_retry(*, original: Path, retry: Path, output: Path) -> None:

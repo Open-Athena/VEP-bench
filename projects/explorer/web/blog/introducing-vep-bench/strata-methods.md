@@ -1,4 +1,4 @@
-# Reproducing the 15 September 2026 variant-stratum snapshot
+# Reproducing the 17 September 2026 variant-stratum snapshot
 
 The analysis uses the original question panels and saved OpenRouter completions.
 It does not make model calls. The 10-variant and 5-panel cutoffs were selected
@@ -19,13 +19,13 @@ request and response hashes.
 Only the highest available named reasoning effort for each model and task is
 included, using the latest complete run to break ties. Unrecognized or absent
 effort labels are rejected instead of guessing how an implicit default compares
-with a named effort. This snapshot selects eight models: Luna, Terra, and Sol
-at max; Gemini and Astra at high; Muse at medium; and GLM and DeepSeek at low.
+with a named effort. This snapshot selects nine models: Luna, Terra, Sol, and
+Muse at max; Gemini and Astra at high; and GLM, DeepSeek, and Kimi K3 at low.
 Lower-effort runs remain in the
 publication and are listed as excluded from this analysis. Selection never uses
 performance, cost, or response length.
 
-The post uses one public LLM snapshot frozen on 15 September 2026, including
+The post uses one public LLM snapshot frozen on 17 September 2026, including
 the recovered maximum-effort runs described in the
 [publication note](specialist-methods.html#publication-snapshot). The coverage
 cutoffs and panel memberships are unchanged. Completed invalid answers keep
@@ -47,19 +47,19 @@ Use the repository's `uv` environment. From the repository root:
 post=projects/explorer/web/blog/introducing-vep-bench
 mkdir -p .vepbench/strata-replay
 uv run --locked python "$post/fetch-strata-inputs.py" \
-  --manifest "$post/specialist-2026-09-15.manifest.json" \
+  --manifest "$post/specialist-2026-09-17.manifest.json" \
   --output .vepbench/strata-replay
 uv run --locked python "$post/strata.py" coverage \
   --publication .vepbench/strata-replay \
-  --manifest "$post/specialist-2026-09-15.manifest.json" \
+  --manifest "$post/specialist-2026-09-17.manifest.json" \
   --annotations projects/explorer/data/variant-annotations.json \
   --plan .vepbench/strata-replay-plan.json
 uv run --locked python "$post/fetch-strata-inputs.py" \
-  --manifest "$post/specialist-2026-09-15.manifest.json" \
+  --manifest "$post/specialist-2026-09-17.manifest.json" \
   --output .vepbench/strata-replay --answers
 uv run --locked python "$post/strata.py" score \
   --publication .vepbench/strata-replay \
-  --manifest "$post/specialist-2026-09-15.manifest.json" \
+  --manifest "$post/specialist-2026-09-17.manifest.json" \
   --annotations projects/explorer/data/variant-annotations.json \
   --plan .vepbench/strata-replay-plan.json \
   --output .vepbench/strata-replayed.json.gz
@@ -110,7 +110,7 @@ installing SciPy. Reproduce it offline after the scoring step:
 
 ```bash
 uv run --locked --all-packages vepbench-blog-strata-intervals \
-  --input projects/explorer/web/blog/introducing-vep-bench/strata-2026-09-15.json.gz \
+  --input projects/explorer/web/blog/introducing-vep-bench/strata-2026-09-17.json.gz \
   --output .vepbench/strata-intervals-replayed.json
 ```
 

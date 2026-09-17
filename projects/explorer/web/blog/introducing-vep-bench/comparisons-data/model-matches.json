@@ -92,11 +92,24 @@
     "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
     "submitter": "Artificial Analysis",
     "source_id": "aa-muse-spark-1-3",
-    "match_status": "No exact effort match",
+    "match_status": "Exact version and effort match",
     "vep_efforts": [
-      "medium"
+      "medium",
+      "max"
     ],
-    "selected_in": []
+    "selected_in": [
+      "aa-intelligence",
+      "aa-briefcase",
+      "aa-gdpval",
+      "aa-automation",
+      "aa-terminal",
+      "aa-scicode",
+      "aa-omniscience",
+      "aa-gdp-pdf",
+      "aa-lcr",
+      "aa-hle",
+      "aa-critpt"
+    ]
   },
   {
     "result_id": "aa-claude-opus-5",

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import gzip
 import importlib.util
 import json
@@ -490,6 +491,63 @@ def overall_results(results: list, runs: list) -> list:
     return overall
 
 
+def reuse_predictions(original_plan: dict, plan: dict, specialist: dict) -> dict:
+    """Reuse saved specialist inference when only the compared LLM publication changes."""
+    validate_plan(plan)
+    original_digest = sha256_json(original_plan)
+    if (
+        specialist["plan_sha256"] != original_digest
+        or specialist["session"]["plan_sha256"] != original_digest
+    ):
+        raise ValueError("predictions do not belong to the original inference plan")
+    for field in (
+        "schema_version",
+        "policy",
+        "question_set_sha256",
+        "question_set_size",
+        "annotation_sha256",
+        "source_sha256",
+        "panels",
+    ):
+        if original_plan[field] != plan[field]:
+            raise ValueError(f"cannot reuse predictions after changing {field}")
+    if original_plan["implementation"]["client"] != plan["implementation"]["client"]:
+        raise ValueError("specialist inference client changed")
+    if set(specialist["panels"]) != {p["question_id"] for p in plan["panels"]}:
+        raise ValueError("prediction panels do not match the plan")
+    for panel in plan["panels"]:
+        saved = specialist["panels"][panel["question_id"]]
+        if saved["question_sha256"] != panel["question_sha256"]:
+            raise ValueError("prediction question digest changed")
+        predictions, exclusions, evidence_ids = {}, {}, set()
+        for candidate in panel["candidates"]:
+            cid = candidate["candidate_id"]
+            if candidate["exclusion_reason"]:
+                exclusions[cid] = candidate["exclusion_reason"]
+                continue
+            row = saved["evidence"][cid]
+            validate_prediction(row, candidate["request"], specialist["session"])
+            evidence_ids.add(cid)
+            if row["status"] == "scored":
+                predictions[cid] = row["score"]
+            else:
+                exclusions[cid] = row["reason"]
+        if (
+            predictions != saved["predictions"]
+            or exclusions != saved["exclusions"]
+            or evidence_ids != set(saved["evidence"])
+        ):
+            raise ValueError("prediction summary does not match the saved inference evidence")
+    result = copy.deepcopy(specialist)
+    result["plan_sha256"] = sha256_json(plan)
+    result["publication_reuse"] = {
+        "source_plan_sha256": original_digest,
+        "source_predictions_sha256": sha256_json(specialist),
+        "source_manifest_sha256": original_plan["manifest_sha256"],
+    }
+    return result
+
+
 def compare(plan: dict, specialist: dict, publication: Path, manifest_path: Path) -> dict:
     validate_plan(plan)
     if (
@@ -535,11 +593,11 @@ def compare(plan: dict, specialist: dict, publication: Path, manifest_path: Path
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("mode", choices=["plan", "predict", "collect", "compare"])
+    parser.add_argument("mode", choices=["plan", "predict", "collect", "compare", "reuse"])
     parser.add_argument("--plan", type=Path, required=True)
     parser.add_argument("--publication", type=Path)
     parser.add_argument(
-        "--manifest", type=Path, default=POST / "specialist-2026-09-15.manifest.json"
+        "--manifest", type=Path, default=POST / "specialist-2026-09-17.manifest.json"
     )
     parser.add_argument("--policy", type=Path, default=POST / "specialist-policy.json")
     parser.add_argument(
@@ -547,6 +605,7 @@ def main() -> None:
     )
     parser.add_argument("--cache", type=Path)
     parser.add_argument("--predictions", type=Path)
+    parser.add_argument("--original-plan", type=Path)
     parser.add_argument("--output", type=Path)
     parser.add_argument(
         "--limit", type=int, help="Maximum new requests; partial runs cannot be compared"
@@ -557,7 +616,7 @@ def main() -> None:
         parser.error("--publication is required")
     if args.mode in {"predict", "collect"} and args.cache is None:
         parser.error("--cache is required")
-    if args.mode in {"collect", "compare"} and args.output is None:
+    if args.mode in {"collect", "compare", "reuse"} and args.output is None:
         parser.error("--output is required")
     if args.limit is not None and (args.limit < 1 or args.mode != "predict"):
         parser.error("--limit must be positive and used with predict")
@@ -575,7 +634,14 @@ def main() -> None:
             print(task, status, count)
         return
     plan = read_json(args.plan)
-    if args.mode == "predict":
+    if args.mode == "reuse":
+        if args.original_plan is None or args.predictions is None:
+            parser.error("--original-plan and --predictions are required for reuse")
+        write_new(
+            args.output,
+            reuse_predictions(read_json(args.original_plan), plan, read_json(args.predictions)),
+        )
+    elif args.mode == "predict":
         validate_plan(plan)
         key = os.environ.get("ALPHAGENOME_API_KEY")
         if not key:

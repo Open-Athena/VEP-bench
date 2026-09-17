@@ -59,6 +59,10 @@ These instructions apply to the entire VEP-bench repository.
   not a reason to leave capacity idle. Prefer reporting completed results over
   intermediate progress counts.
 - Never make paid or live model API calls from tests or CI.
+- Retry transient API errors within the authorized evaluation budget, preserving
+  every attempt and the original inference settings. Exclude serving errors
+  from benchmark cost and scores; completed invalid or truncated responses still
+  count. See [failure semantics](docs/evaluation.md#completion-and-failure-semantics).
 - Keep evaluation an explicit local action. Tests must use an injected fake or
   offline mock transport.
 - Read the OpenRouter credential only from `OPENROUTER_API_KEY`. Never write

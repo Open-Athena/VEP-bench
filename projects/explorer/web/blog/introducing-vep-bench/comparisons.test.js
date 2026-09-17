@@ -72,12 +72,12 @@ test("frozen snapshot includes every exact effort and documents the chosen harne
   const analysis = compareScores(vep, external);
   assert.deepEqual(analysis.comparisons, readSnapshot("analysis.json").primary);
   const aa = analysis.comparisons.find((c) => c.id === "aa-intelligence" && c.scope === "overall");
-  assert.equal(aa.pairs.length, 15);
-  assert.equal(aa.summary.n, 5);
+  assert.equal(aa.pairs.length, 16);
+  assert.equal(aa.summary.n, 6);
   for (const effort of ["low", "medium", "high"]) {
     assert.equal(aa.pairs.filter((p) => p.effort === effort).length, 4);
   }
-  assert.equal(aa.pairs.filter((p) => p.effort === "max").length, 3);
+  assert.equal(aa.pairs.filter((p) => p.effort === "max").length, 4);
   for (const c of analysis.comparisons) {
     assert.equal(c.scope, "overall");
     assert.deepEqual(Object.keys(c.summary).sort(), ["models", "n", "points"]);
@@ -111,10 +111,10 @@ test("AA points and CSV identify each metric's harness while TBS keeps each sele
   const {comparisons} = compareScores(readSnapshot("vep-runs.json"), readSnapshot("external.json"));
   for (const [id, harness] of [["aa-terminal", "mini-SWE-agent v2.4.6"], ["aa-briefcase", "Stirrup"], ["aa-gdpval", "Stirrup"]]) {
     const comparison = comparisons.find((c) => c.id === id);
-    assert.equal(comparison.pairs.length, 15);
+    assert.equal(comparison.pairs.length, 16);
     assert.ok(comparison.pairs.every((p) => p.harness === harness));
     const csvRows = pairedScoresCsv([comparison]).trim().split("\n").slice(1);
-    assert.equal(csvRows.length, 15);
+    assert.equal(csvRows.length, comparison.pairs.length);
     assert.ok(csvRows.every((row) => row.includes(`,"${harness}",`)));
   }
   const tbs = comparisons.find((c) => c.id === "tbs");

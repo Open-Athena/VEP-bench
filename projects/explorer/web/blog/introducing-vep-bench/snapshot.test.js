@@ -9,13 +9,13 @@ import {sgeCutoffModels} from "./cutoff.js";
 const bytes = (file) => readFileSync(new URL(file, import.meta.url));
 const read = (file) => JSON.parse(file.endsWith(".gz") ? gunzipSync(bytes(file)) : bytes(file));
 const sha = (value) => createHash("sha256").update(value).digest("hex");
-const manifestBytes = bytes("specialist-2026-09-15.manifest.json");
+const manifestBytes = bytes("specialist-2026-09-17.manifest.json");
 const manifest = JSON.parse(manifestBytes);
 const runsBytes = bytes("comparisons-data/vep-runs.json");
 const runs = JSON.parse(runsBytes);
 
 test("all introduction performance analyses use one frozen publication", () => {
-  const strata = read("strata-2026-09-15.json.gz");
+  const strata = read("strata-2026-09-17.json.gz");
   const specialist = read("specialist-comparison.json.gz");
   const plan = read("specialist-plan.json.gz");
   const cutoff = read("cutoff-analysis.json");
@@ -37,7 +37,7 @@ test("all introduction performance analyses use one frozen publication", () => {
   const vep = external.sources.find((source) => source.id === "vep");
   assert.equal(vep.downloaded_sha256, sha(manifestBytes));
   assert.deepEqual(vep.evidence.runs, manifest.artifacts.runs);
-  assert.equal(external.snapshot_date, "2026-09-15");
+  assert.equal(external.snapshot_date, "2026-09-17");
 });
 
 test("refreshing VEP preserves external measurements and rejects mismatched publication bytes", () => {

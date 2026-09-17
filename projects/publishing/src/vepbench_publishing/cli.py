@@ -14,7 +14,7 @@ from vepbench.resources import RESULT_SCHEMA, SCHEMAS_DIR
 
 from .config import load_publishing_config
 from .publication import build_version, promote_version, validate_version
-from .retry import resolve_retry, resolve_truncations
+from .retry import attach_retry_history, resolve_retry, resolve_truncations
 from .split import split_results
 
 app = App(
@@ -37,6 +37,14 @@ bucket_app = App(
 )
 app.command(version_app)
 app.command(bucket_app)
+
+
+@app.command(name="attach-retry-history")
+def results_retry_history(*, results: Path, attempts: Path, output: Path) -> int:
+    """Retain every intervening API failure in an already recovered task export."""
+    attach_retry_history(results=results, attempts=attempts, output=output)
+    print(f"exported complete retry history at {output}")
+    return 0
 
 
 @app.command(name="resolve-retry")

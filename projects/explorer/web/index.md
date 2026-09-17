@@ -187,7 +187,7 @@ function modelDetails(row) {
     `Knowledge cutoff: ${formatKnowledgeCutoff(row.knowledge_cutoff)}`,
     ...(row.retry_policy
       ? [`${row.retry_count} of ${row.question_count} initial responses were truncated without a valid answer. Each was retried once at ${formatInteger(row.retry_policy.retry_max_tokens)} tokens, up from ${formatInteger(row.retry_policy.initial_max_tokens)}. Scores retain every retry outcome, including failures; cost includes both attempts.`]
-      : row.retry_count ? [`${row.retry_count} of ${row.question_count} initial requests had an API error. One unchanged retry succeeded for each; scores use the retry and cost includes both attempts.`] : [])
+      : row.retry_count ? [`${row.retry_count} of ${row.question_count} questions required unchanged retries after API errors. Scores and benchmark cost use completed model responses.`] : [])
   ].join("\n");
 }
 function leaderboardPlot({width}) {
@@ -209,7 +209,7 @@ display(html`<div class="card vepbench-leaderboard-chart" tabindex="0"
 
 ## Score by cost and token usage
 
-Compare the selected task's score with total run cost and total token usage across
+Compare the selected task's score with benchmark cost and total token usage across
 all available reasoning efforts and configurations. Both plots share model colors
 and the score scale; each line connects configurations from the same family.
 Tokens include input and generated output, including reasoning.
@@ -357,11 +357,14 @@ OpenRouter-wide limit.
 The 20 recorded responses include all 16 fitness questions, 3 of 16 expression
 questions, and 1 of 20 splicing questions, including the initial pilot. Four
 additional requests were interrupted in flight and have no recorded outcome;
-they are not counted as model failures. Recorded response cost was $2.48,
-excluding any charges for those interrupted requests. At least one truncated
+they are not counted as model failures. Completed response cost was $2.48.
+At least one truncated
 response degenerated into repeated single letters. The cause is unconfirmed,
 and these observations do not establish performance on the unanswered questions
 or on other providers or reasoning settings. No retries were made.
+
+The saved responses are retained in the
+[September 17 audit publication](https://huggingface.co/buckets/open-athena/VEP-bench/tree/versions/sept17-evaluation-audit).
 
 ## Output limits and usage
 
@@ -385,7 +388,9 @@ attempts remain in the section above.
   formatting failures and truncation can also overlap.
 
 Output tokens include reasoning. Answer rates and output figures describe the
-scored responses; total tokens and cost include all recorded attempts. Retries
+scored responses. Benchmark cost includes input and output for completed model
+responses, including completed token-limit attempts before selective retries;
+serving errors are excluded. Total tokens include all recorded attempts. Retries
 keep recovered failures visible here. Selective retries replace every initially
 invalid truncated answer once at the larger listed limit; all retry outcomes,
 including failures, are retained. Other settings stay the same.
@@ -400,7 +405,7 @@ const executionTable = Inputs.table(executionData, {
   header: {
     model: "Model",
     questions: "Questions",
-    retries: "Retries",
+    retries: "Questions retried",
     valid_rate: "Valid answers",
     format_failure_rate: "Formatting failures",
     truncation_rate: "Truncated",

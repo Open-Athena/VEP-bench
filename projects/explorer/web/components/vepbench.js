@@ -446,25 +446,27 @@ export function questionRecord(entry) {
   const retry = result?.usage?.vepbench?.retry;
   if (retry) {
     const prior = retry.prior_attempt;
+    const attempts = [prior, ...(retry.intermediate_attempts ?? []).map((entry) => entry.record)];
     const policy = result.usage.vepbench.retry_policy;
     const note = element("details", "vepbench-retry-note");
     note.append(element("summary", null, policy
-      ? "1 retry — initial answer truncated" : "1 retry — initial API rejection"));
+      ? "1 retry — initial answer truncated" : `${attempts.length} ${attempts.length === 1 ? "retry" : "retries"} — API errors`));
     note.append(element("p", null,
       (policy
         ? `The initial answer was invalid and truncated at a ${policy.initial_max_tokens.toLocaleString("en-US")}-token limit. It was retried once with a ${policy.retry_max_tokens.toLocaleString("en-US")}-token limit and otherwise unchanged settings. `
-        : "The initial request was rejected. One unchanged retry completed. ")
-      + "The score uses this response; run cost includes both attempts."));
+        : `After ${attempts.length} failed ${attempts.length === 1 ? "request" : "requests"}, an unchanged retry completed. `)
+      + "The score uses this response. Benchmark cost counts completed model responses and excludes serving errors; all attempts remain available below."));
     note.append(element("p", "muted", `Initial attempt: ${policy
       ? prior.scoring.parse_error : prior.error?.message ?? "API error"}`));
     const raw = element("pre");
-    raw.textContent = JSON.stringify({
-      evaluated_at: prior.evaluated_at,
-      generation_parameters: prior.generation_parameters,
-      response: prior.response.raw,
-      usage: prior.usage,
-      error: prior.error
-    }, null, 2);
+    raw.textContent = JSON.stringify(attempts.map((attempt) => ({
+      run_id: attempt.run_id,
+      evaluated_at: attempt.evaluated_at,
+      generation_parameters: attempt.generation_parameters,
+      response: attempt.response.raw,
+      usage: attempt.usage,
+      error: attempt.error
+    })), null, 2);
     note.append(raw);
     answerSections.append(note);
   }

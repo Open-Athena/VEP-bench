@@ -1,5 +1,5 @@
 {
-  "snapshot_date": "2026-09-15",
+  "snapshot_date": "2026-09-17",
   "primary": [
     {
       "id": "aa-intelligence",
@@ -92,6 +92,42 @@
             "max_tokens": 65536,
             "reasoning": {
               "effort": "high",
+              "exclude": false
+            }
+          }
+        },
+        {
+          "model_id": "meta/muse-spark-1.3",
+          "family": "Muse Spark 1.3",
+          "effort": "max",
+          "label": "Muse Spark 1.3",
+          "external_model": "Muse Spark 1.3 (max)",
+          "external_score": 48.1690107719685,
+          "vep_score": 0.4942365493035452,
+          "external_result_id": "aa-muse-spark-1-3",
+          "source_id": "aa-muse-spark-1-3",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+          "run_ids": [
+            "muse-spark-1.3-max-opensplice-snv-128k-20260917",
+            "muse-spark-1.3-max-satmut-mpra-128k-20260917",
+            "muse-spark-1.3-max-sge-128k-pilot-20260917"
+          ],
+          "generation_parameters": {
+            "max_tokens": 128000,
+            "provider": {
+              "allow_fallbacks": false,
+              "max_price": {
+                "completion": 4.25,
+                "prompt": 1.25,
+                "request": 0
+              },
+              "only": [
+                "meta"
+              ],
+              "require_parameters": true
+            },
+            "reasoning": {
+              "effort": "max",
               "exclude": false
             }
           }
@@ -398,10 +434,11 @@
         }
       ],
       "summary": {
-        "n": 5,
-        "points": 15,
+        "n": 6,
+        "points": 16,
         "models": [
           "google/gemini-3.8-flash",
+          "meta/muse-spark-1.3",
           "openai/gpt-5.6-luna",
           "openai/gpt-5.6-sol",
           "openai/gpt-5.6-terra",
@@ -500,6 +537,42 @@
             "max_tokens": 65536,
             "reasoning": {
               "effort": "high",
+              "exclude": false
+            }
+          }
+        },
+        {
+          "model_id": "meta/muse-spark-1.3",
+          "family": "Muse Spark 1.3",
+          "effort": "max",
+          "label": "Muse Spark 1.3",
+          "external_model": "Muse Spark 1.3 (max)",
+          "external_score": 1589.18,
+          "vep_score": 0.4942365493035452,
+          "external_result_id": "aa-muse-spark-1-3",
+          "source_id": "aa-muse-spark-1-3",
+          "harness": "Stirrup",
+          "run_ids": [
+            "muse-spark-1.3-max-opensplice-snv-128k-20260917",
+            "muse-spark-1.3-max-satmut-mpra-128k-20260917",
+            "muse-spark-1.3-max-sge-128k-pilot-20260917"
+          ],
+          "generation_parameters": {
+            "max_tokens": 128000,
+            "provider": {
+              "allow_fallbacks": false,
+              "max_price": {
+                "completion": 4.25,
+                "prompt": 1.25,
+                "request": 0
+              },
+              "only": [
+                "meta"
+              ],
+              "require_parameters": true
+            },
+            "reasoning": {
+              "effort": "max",
               "exclude": false
             }
           }
@@ -806,10 +879,11 @@
         }
       ],
       "summary": {
-        "n": 5,
-        "points": 15,
+        "n": 6,
+        "points": 16,
         "models": [
           "google/gemini-3.8-flash",
+          "meta/muse-spark-1.3",
           "openai/gpt-5.6-luna",
           "openai/gpt-5.6-sol",
           "openai/gpt-5.6-terra",
@@ -908,6 +982,42 @@
             "max_tokens": 65536,
             "reasoning": {
               "effort": "high",
+              "exclude": false
+            }
+          }
+        },
+        {
+          "model_id": "meta/muse-spark-1.3",
+          "family": "Muse Spark 1.3",
+          "effort": "max",
+          "label": "Muse Spark 1.3",
+          "external_model": "Muse Spark 1.3 (max)",
+          "external_score": 1703.34,
+          "vep_score": 0.4942365493035452,
+          "external_result_id": "aa-muse-spark-1-3",
+          "source_id": "aa-muse-spark-1-3",
+          "harness": "Stirrup",
+          "run_ids": [
+            "muse-spark-1.3-max-opensplice-snv-128k-20260917",
+            "muse-spark-1.3-max-satmut-mpra-128k-20260917",
+            "muse-spark-1.3-max-sge-128k-pilot-20260917"
+          ],
+          "generation_parameters": {
+            "max_tokens": 128000,
+            "provider": {
+              "allow_fallbacks": false,
+              "max_price": {
+                "completion": 4.25,
+                "prompt": 1.25,
+                "request": 0
+              },
+              "only": [
+                "meta"
+              ],
+              "require_parameters": true
+            },
+            "reasoning": {
+              "effort": "max",
               "exclude": false
             }
           }
@@ -1214,10 +1324,11 @@
         }
       ],
       "summary": {
-        "n": 5,
-        "points": 15,
+        "n": 6,
+        "points": 16,
         "models": [
           "google/gemini-3.8-flash",
+          "meta/muse-spark-1.3",
           "openai/gpt-5.6-luna",
           "openai/gpt-5.6-sol",
           "openai/gpt-5.6-terra",
@@ -1316,6 +1427,42 @@
             "max_tokens": 65536,
             "reasoning": {
               "effort": "high",
+              "exclude": false
+            }
+          }
+        },
+        {
+          "model_id": "meta/muse-spark-1.3",
+          "family": "Muse Spark 1.3",
+          "effort": "max",
+          "label": "Muse Spark 1.3",
+          "external_model": "Muse Spark 1.3 (max)",
+          "external_score": 0.5785343786538614,
+          "vep_score": 0.4942365493035452,
+          "external_result_id": "aa-muse-spark-1-3",
+          "source_id": "aa-muse-spark-1-3",
+          "harness": "AutomationBench multi-turn environment, dataset 1.0.6",
+          "run_ids": [
+            "muse-spark-1.3-max-opensplice-snv-128k-20260917",
+            "muse-spark-1.3-max-satmut-mpra-128k-20260917",
+            "muse-spark-1.3-max-sge-128k-pilot-20260917"
+          ],
+          "generation_parameters": {
+            "max_tokens": 128000,
+            "provider": {
+              "allow_fallbacks": false,
+              "max_price": {
+                "completion": 4.25,
+                "prompt": 1.25,
+                "request": 0
+              },
+              "only": [
+                "meta"
+              ],
+              "require_parameters": true
+            },
+            "reasoning": {
+              "effort": "max",
               "exclude": false
             }
           }
@@ -1622,10 +1769,11 @@
         }
       ],
       "summary": {
-        "n": 5,
-        "points": 15,
+        "n": 6,
+        "points": 16,
         "models": [
           "google/gemini-3.8-flash",
+          "meta/muse-spark-1.3",
           "openai/gpt-5.6-luna",
           "openai/gpt-5.6-sol",
           "openai/gpt-5.6-terra",
@@ -1724,6 +1872,42 @@
             "max_tokens": 65536,
             "reasoning": {
               "effort": "high",
+              "exclude": false
+            }
+          }
+        },
+        {
+          "model_id": "meta/muse-spark-1.3",
+          "family": "Muse Spark 1.3",
+          "effort": "max",
+          "label": "Muse Spark 1.3",
+          "external_model": "Muse Spark 1.3 (max)",
+          "external_score": 0.333333333333333,
+          "vep_score": 0.4942365493035452,
+          "external_result_id": "aa-muse-spark-1-3",
+          "source_id": "aa-muse-spark-1-3",
+          "harness": "mini-SWE-agent v2.4.6",
+          "run_ids": [
+            "muse-spark-1.3-max-opensplice-snv-128k-20260917",
+            "muse-spark-1.3-max-satmut-mpra-128k-20260917",
+            "muse-spark-1.3-max-sge-128k-pilot-20260917"
+          ],
+          "generation_parameters": {
+            "max_tokens": 128000,
+            "provider": {
+              "allow_fallbacks": false,
+              "max_price": {
+                "completion": 4.25,
+                "prompt": 1.25,
+                "request": 0
+              },
+              "only": [
+                "meta"
+              ],
+              "require_parameters": true
+            },
+            "reasoning": {
+              "effort": "max",
               "exclude": false
             }
           }
@@ -2030,10 +2214,11 @@
         }
       ],
       "summary": {
-        "n": 5,
-        "points": 15,
+        "n": 6,
+        "points": 16,
         "models": [
           "google/gemini-3.8-flash",
+          "meta/muse-spark-1.3",
           "openai/gpt-5.6-luna",
           "openai/gpt-5.6-sol",
           "openai/gpt-5.6-terra",
@@ -2132,6 +2317,42 @@
             "max_tokens": 65536,
             "reasoning": {
               "effort": "high",
+              "exclude": false
+            }
+          }
+        },
+        {
+          "model_id": "meta/muse-spark-1.3",
+          "family": "Muse Spark 1.3",
+          "effort": "max",
+          "label": "Muse Spark 1.3",
+          "external_model": "Muse Spark 1.3 (max)",
+          "external_score": 0.587962962962963,
+          "vep_score": 0.4942365493035452,
+          "external_result_id": "aa-muse-spark-1-3",
+          "source_id": "aa-muse-spark-1-3",
+          "harness": "AA scientist-background prompting; SciCode dataset 1.0.1",
+          "run_ids": [
+            "muse-spark-1.3-max-opensplice-snv-128k-20260917",
+            "muse-spark-1.3-max-satmut-mpra-128k-20260917",
+            "muse-spark-1.3-max-sge-128k-pilot-20260917"
+          ],
+          "generation_parameters": {
+            "max_tokens": 128000,
+            "provider": {
+              "allow_fallbacks": false,
+              "max_price": {
+                "completion": 4.25,
+                "prompt": 1.25,
+                "request": 0
+              },
+              "only": [
+                "meta"
+              ],
+              "require_parameters": true
+            },
+            "reasoning": {
+              "effort": "max",
               "exclude": false
             }
           }
@@ -2438,10 +2659,11 @@
         }
       ],
       "summary": {
-        "n": 5,
-        "points": 15,
+        "n": 6,
+        "points": 16,
         "models": [
           "google/gemini-3.8-flash",
+          "meta/muse-spark-1.3",
           "openai/gpt-5.6-luna",
           "openai/gpt-5.6-sol",
           "openai/gpt-5.6-terra",
@@ -2540,6 +2762,42 @@
             "max_tokens": 65536,
             "reasoning": {
               "effort": "high",
+              "exclude": false
+            }
+          }
+        },
+        {
+          "model_id": "meta/muse-spark-1.3",
+          "family": "Muse Spark 1.3",
+          "effort": "max",
+          "label": "Muse Spark 1.3",
+          "external_model": "Muse Spark 1.3 (max)",
+          "external_score": 25,
+          "vep_score": 0.4942365493035452,
+          "external_result_id": "aa-muse-spark-1-3",
+          "source_id": "aa-muse-spark-1-3",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+          "run_ids": [
+            "muse-spark-1.3-max-opensplice-snv-128k-20260917",
+            "muse-spark-1.3-max-satmut-mpra-128k-20260917",
+            "muse-spark-1.3-max-sge-128k-pilot-20260917"
+          ],
+          "generation_parameters": {
+            "max_tokens": 128000,
+            "provider": {
+              "allow_fallbacks": false,
+              "max_price": {
+                "completion": 4.25,
+                "prompt": 1.25,
+                "request": 0
+              },
+              "only": [
+                "meta"
+              ],
+              "require_parameters": true
+            },
+            "reasoning": {
+              "effort": "max",
               "exclude": false
             }
           }
@@ -2846,10 +3104,11 @@
         }
       ],
       "summary": {
-        "n": 5,
-        "points": 15,
+        "n": 6,
+        "points": 16,
         "models": [
           "google/gemini-3.8-flash",
+          "meta/muse-spark-1.3",
           "openai/gpt-5.6-luna",
           "openai/gpt-5.6-sol",
           "openai/gpt-5.6-terra",
@@ -2948,6 +3207,42 @@
             "max_tokens": 65536,
             "reasoning": {
               "effort": "high",
+              "exclude": false
+            }
+          }
+        },
+        {
+          "model_id": "meta/muse-spark-1.3",
+          "family": "Muse Spark 1.3",
+          "effort": "max",
+          "label": "Muse Spark 1.3",
+          "external_model": "Muse Spark 1.3 (max)",
+          "external_score": 0.266,
+          "vep_score": 0.4942365493035452,
+          "external_result_id": "aa-muse-spark-1-3",
+          "source_id": "aa-muse-spark-1-3",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+          "run_ids": [
+            "muse-spark-1.3-max-opensplice-snv-128k-20260917",
+            "muse-spark-1.3-max-satmut-mpra-128k-20260917",
+            "muse-spark-1.3-max-sge-128k-pilot-20260917"
+          ],
+          "generation_parameters": {
+            "max_tokens": 128000,
+            "provider": {
+              "allow_fallbacks": false,
+              "max_price": {
+                "completion": 4.25,
+                "prompt": 1.25,
+                "request": 0
+              },
+              "only": [
+                "meta"
+              ],
+              "require_parameters": true
+            },
+            "reasoning": {
+              "effort": "max",
               "exclude": false
             }
           }
@@ -3254,10 +3549,11 @@
         }
       ],
       "summary": {
-        "n": 5,
-        "points": 15,
+        "n": 6,
+        "points": 16,
         "models": [
           "google/gemini-3.8-flash",
+          "meta/muse-spark-1.3",
           "openai/gpt-5.6-luna",
           "openai/gpt-5.6-sol",
           "openai/gpt-5.6-terra",
@@ -3356,6 +3652,42 @@
             "max_tokens": 65536,
             "reasoning": {
               "effort": "high",
+              "exclude": false
+            }
+          }
+        },
+        {
+          "model_id": "meta/muse-spark-1.3",
+          "family": "Muse Spark 1.3",
+          "effort": "max",
+          "label": "Muse Spark 1.3",
+          "external_model": "Muse Spark 1.3 (max)",
+          "external_score": 0.83,
+          "vep_score": 0.4942365493035452,
+          "external_result_id": "aa-muse-spark-1-3",
+          "source_id": "aa-muse-spark-1-3",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+          "run_ids": [
+            "muse-spark-1.3-max-opensplice-snv-128k-20260917",
+            "muse-spark-1.3-max-satmut-mpra-128k-20260917",
+            "muse-spark-1.3-max-sge-128k-pilot-20260917"
+          ],
+          "generation_parameters": {
+            "max_tokens": 128000,
+            "provider": {
+              "allow_fallbacks": false,
+              "max_price": {
+                "completion": 4.25,
+                "prompt": 1.25,
+                "request": 0
+              },
+              "only": [
+                "meta"
+              ],
+              "require_parameters": true
+            },
+            "reasoning": {
+              "effort": "max",
               "exclude": false
             }
           }
@@ -3662,10 +3994,11 @@
         }
       ],
       "summary": {
-        "n": 5,
-        "points": 15,
+        "n": 6,
+        "points": 16,
         "models": [
           "google/gemini-3.8-flash",
+          "meta/muse-spark-1.3",
           "openai/gpt-5.6-luna",
           "openai/gpt-5.6-sol",
           "openai/gpt-5.6-terra",
@@ -3764,6 +4097,42 @@
             "max_tokens": 65536,
             "reasoning": {
               "effort": "high",
+              "exclude": false
+            }
+          }
+        },
+        {
+          "model_id": "meta/muse-spark-1.3",
+          "family": "Muse Spark 1.3",
+          "effort": "max",
+          "label": "Muse Spark 1.3",
+          "external_model": "Muse Spark 1.3 (max)",
+          "external_score": 0.487025023169602,
+          "vep_score": 0.4942365493035452,
+          "external_result_id": "aa-muse-spark-1-3",
+          "source_id": "aa-muse-spark-1-3",
+          "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
+          "run_ids": [
+            "muse-spark-1.3-max-opensplice-snv-128k-20260917",
+            "muse-spark-1.3-max-satmut-mpra-128k-20260917",
+            "muse-spark-1.3-max-sge-128k-pilot-20260917"
+          ],
+          "generation_parameters": {
+            "max_tokens": 128000,
+            "provider": {
+              "allow_fallbacks": false,
+              "max_price": {
+                "completion": 4.25,
+                "prompt": 1.25,
+                "request": 0
+              },
+              "only": [
+                "meta"
+              ],
+              "require_parameters": true
+            },
+            "reasoning": {
+              "effort": "max",
               "exclude": false
             }
           }
@@ -4070,10 +4439,11 @@
         }
       ],
       "summary": {
-        "n": 5,
-        "points": 15,
+        "n": 6,
+        "points": 16,
         "models": [
           "google/gemini-3.8-flash",
+          "meta/muse-spark-1.3",
           "openai/gpt-5.6-luna",
           "openai/gpt-5.6-sol",
           "openai/gpt-5.6-terra",
@@ -4172,6 +4542,42 @@
             "max_tokens": 65536,
             "reasoning": {
               "effort": "high",
+              "exclude": false
+            }
+          }
+        },
+        {
+          "model_id": "meta/muse-spark-1.3",
+          "family": "Muse Spark 1.3",
+          "effort": "max",
+          "label": "Muse Spark 1.3",
+          "external_model": "Muse Spark 1.3 (max)",
+          "external_score": 0.248571428571429,
+          "vep_score": 0.4942365493035452,
+          "external_result_id": "aa-muse-spark-1-3",
+          "source_id": "aa-muse-spark-1-3",
+          "harness": "AA two-step reasoning/formatting; official CritPt grader",
+          "run_ids": [
+            "muse-spark-1.3-max-opensplice-snv-128k-20260917",
+            "muse-spark-1.3-max-satmut-mpra-128k-20260917",
+            "muse-spark-1.3-max-sge-128k-pilot-20260917"
+          ],
+          "generation_parameters": {
+            "max_tokens": 128000,
+            "provider": {
+              "allow_fallbacks": false,
+              "max_price": {
+                "completion": 4.25,
+                "prompt": 1.25,
+                "request": 0
+              },
+              "only": [
+                "meta"
+              ],
+              "require_parameters": true
+            },
+            "reasoning": {
+              "effort": "max",
               "exclude": false
             }
           }
@@ -4478,10 +4884,11 @@
         }
       ],
       "summary": {
-        "n": 5,
-        "points": 15,
+        "n": 6,
+        "points": 16,
         "models": [
           "google/gemini-3.8-flash",
+          "meta/muse-spark-1.3",
           "openai/gpt-5.6-luna",
           "openai/gpt-5.6-sol",
           "openai/gpt-5.6-terra",

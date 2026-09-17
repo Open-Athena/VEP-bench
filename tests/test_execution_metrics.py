@@ -22,6 +22,7 @@ def test_execution_usage_counts_reasoning_and_truncation_with_a_valid_final_answ
         "total_output_tokens": 130,
         "max_output_tokens_used": 100,
         "truncated_outputs": 1,
+        "completed_response_cost_usd": None,
     }
 
 
@@ -41,6 +42,7 @@ def test_partial_output_usage_does_not_become_a_complete_total_or_maximum(missin
         "total_output_tokens": None,
         "max_output_tokens_used": None,
         "truncated_outputs": 1,
+        "completed_response_cost_usd": None,
     }
 
 
@@ -53,4 +55,38 @@ def test_zero_usage_is_distinct_from_no_completed_responses() -> None:
                 "usage": {"completion_tokens": 0},
             },
         ]
-    ) == {"total_output_tokens": 0, "max_output_tokens_used": 0, "truncated_outputs": 0}
+    ) == {
+        "total_output_tokens": 0,
+        "max_output_tokens_used": 0,
+        "truncated_outputs": 0,
+        "completed_response_cost_usd": None,
+    }
+
+
+@pytest.mark.parametrize("prior_status, expected", [("api_error", 0.5), ("completed", 1.2)])
+def test_benchmark_cost_excludes_serving_errors_but_counts_completed_truncations(
+    prior_status: str, expected: float
+) -> None:
+    records = [
+        {
+            "response": {"status": "completed", "finish_reason": "stop"},
+            "usage": {
+                "cost": 0.2,
+                "vepbench": {
+                    "retry": {
+                        "prior_attempt": {
+                            "response": {"status": prior_status},
+                            "usage": {"cost": 0.7},
+                        },
+                        "source_run_id": "retry",
+                        "source_record_sha256": "0" * 64,
+                    }
+                },
+            },
+        },
+        {"response": {"status": "completed", "finish_reason": "stop"}, "usage": {"cost": 0.3}},
+        {"response": {"status": "api_error", "finish_reason": None}, "usage": {"cost": 0.7}},
+    ]
+    assert execution_metrics(records)["completed_response_cost_usd"] == expected
+    del records[1]["usage"]["cost"]
+    assert execution_metrics(records)["completed_response_cost_usd"] is None
