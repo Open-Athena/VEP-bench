@@ -242,9 +242,10 @@ configuration includes selective token-limit retries.
 
 This snapshot adds Muse Spark 1.3 at maximum effort and Kimi K3 at low effort,
 each with 52 valid answers under a 128,000-token output cap. Their completed
-responses cost **$9.33** and **$2.66**, respectively, including input and output.
+responses cost **$9.33** and **$2.66**, respectively, and used **2,234,542** and
+**227,908** tokens, including input and generated output with reasoning.
 Serving errors were retried with unchanged settings and are excluded from
-benchmark cost. Neither configuration's retained responses reached the cap.
+benchmark cost and token usage. Neither configuration's retained responses reached the cap.
 The interrupted DeepSeek maximum-effort evaluation is documented on the
 [leaderboard](../index.html#unscored-model-attempts) and is excluded
 from these comparisons.

@@ -27,8 +27,14 @@ The September 17 update adds complete Muse Spark 1.3 maximum-effort and Kimi K3
 low-effort evaluations. It also corrects three provider connection errors in
 the older Muse medium-effort runs: CTCF and DDX3X in SGE and HBB in satMutMPRA.
 Those requests were retried with unchanged inference settings; their failures
-remain in the recovered answers' provenance and receive no score or benchmark
-cost. Completed invalid answers and truncations still count.
+remain in the recovered answers' provenance and are excluded from benchmark
+scores, cost, and token usage. Completed invalid answers and truncations still count.
+
+The September 17 token-accounting correction refreshes this frozen publication
+to count input and output tokens from completed responses, including reasoning,
+on the same basis as benchmark cost. Serving errors no longer make completed-response
+token totals unavailable. Saved answers, scores, panel memberships, and statistical
+results are unchanged.
 
 Specialist predictions reuse the original saved AlphaGenome and AVI inference.
 The question sets, alleles, eligibility policy, and biological requests are
