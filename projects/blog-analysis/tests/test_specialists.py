@@ -303,7 +303,7 @@ def test_committed_plan_and_blog_status_match_the_reviewed_implementation(tmp_pa
     snapshot = s.read_json(s.POST / "specialist-comparison.json.gz")
     assert snapshot["plan_sha256"] == sha256_json(p)
     assert p["manifest_sha256"] == s.STRATA.file_sha256(
-        s.POST / "specialist-2026-09-17.manifest.json"
+        s.POST / "specialist-2026-09-18.manifest.json"
     )
     if snapshot["status"] == "awaiting_inference":
         assert snapshot == s.planned_summary(p)

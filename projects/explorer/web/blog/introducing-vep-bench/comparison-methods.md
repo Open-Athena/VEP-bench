@@ -31,12 +31,12 @@ other harness names fall back to alphabetical order. Artificial Analysis,
 GeneBench-Pro, and BixBench3 use their respective published evaluation harnesses.
 Tooltips and paired-score downloads record the selected harness.
 
-The VEP snapshot is frozen on September 17, 2026, with complete scores on all
+The VEP snapshot is frozen on September 18, 2026, with complete scores on all
 three tasks for nine model releases. Artificial Analysis results come from the
 September 11 source snapshot, using [Intelligence Index v4.3](https://artificialanalysis.ai/methodology/intelligence-benchmarking).
-There are 16 matched configurations across six model releases: GPT-6 Astra and
-Gemini 3.8 Flash at low, medium, and high; GPT-5.6 Sol and Luna at low, medium,
-high, and max; and GPT-5.6 Terra and Muse Spark 1.3 at max. Efforts from the same model are related
+There are 17 matched configurations across six model releases: GPT-6 Astra,
+GPT-5.6 Sol, and Luna at low, medium, high, and max; Gemini 3.8 Flash at low,
+medium, and high; and GPT-5.6 Terra and Muse Spark 1.3 at max. Efforts from the same model are related
 observations and do not increase the number of distinct models.
 
 The remaining complete VEP releases have no exact AA effort match:

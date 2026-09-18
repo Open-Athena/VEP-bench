@@ -235,17 +235,17 @@ if (complete) display(Inputs.table(composition.rows, {
 ## Results
 
 We evaluate nine models at their highest available reasoning effort, using
-complete runs from the September 17, 2026 snapshot. Effort selection does not
+complete runs from the September 18, 2026 snapshot. Effort selection does not
 depend on score. The [publication note](./introducing-vep-bench/specialist-methods.html#publication-snapshot)
 documents recovered responses and replacements; the published DeepSeek
 configuration includes selective token-limit retries.
 
-This snapshot adds Muse Spark 1.3 at maximum effort and Kimi K3 at low effort,
-each with 52 valid answers under a 128,000-token output cap. Their completed
-responses cost **$9.33** and **$2.66**, respectively, and used **2,234,542** and
-**227,908** tokens, including input and generated output with reasoning.
-Serving errors were retried with unchanged settings and are excluded from
-benchmark cost and token usage. Neither configuration's retained responses reached the cap.
+This snapshot adds GPT-6 Astra at maximum effort, with 52 valid answers under
+a 128,000-token output cap. Its completed responses cost **$37.54** and used
+**1,610,754** tokens, including input and generated output with reasoning.
+Three OpenSplice serving errors were retried with unchanged settings; their
+original attempts remain in provenance and are excluded from benchmark cost
+and token usage. None of Astra's retained responses reached the cap.
 The interrupted DeepSeek maximum-effort evaluation is documented on the
 [leaderboard](../index.html#unscored-model-attempts) and is excluded
 from these comparisons.
@@ -288,7 +288,7 @@ display(html`<div class="card vepbench-leaderboard-chart" tabindex="0"
 
 The bar plot shows overall Spearman scores across all three tasks, displayed
 as percentages to match the leaderboard.
-GPT-6 Astra has the highest overall score (**0.599**), followed by Gemini 3.8
+GPT-6 Astra has the highest overall score (**0.610**), followed by Gemini 3.8
 Flash (**0.559**) and GPT-5.6 Sol (**0.558**).
 
 ### Performance across tasks
@@ -314,9 +314,9 @@ display(resize((width) => resultsRadarFigure(
 )));
 ```
 
-The models' strengths differ: Astra leads on fitness, Gemini on splicing, and
-Sol on expression. All nine models score highest on splicing and lowest on
-expression in this dataset.
+Astra max has the highest observed score on all three tasks. Its splicing
+score is close to Gemini's (**0.773 versus 0.770**). All nine models score
+highest on splicing and lowest on expression in this dataset.
 
 <details>
 <summary>View overall and task scores</summary>
@@ -346,11 +346,11 @@ import {stratumCorrelationPlot} from "../components/correlation-plot.js";
 import {stratumRows, stratumCsv, stratumModelOrder} from "./introducing-vep-bench/strata-analysis.js";
 
 const strataSnapshot = await fetchGzipJson(
-  await FileAttachment("./introducing-vep-bench/strata-2026-09-17.json.gz").url(),
+  await FileAttachment("./introducing-vep-bench/strata-2026-09-18.json.gz").url(),
   "frozen variant-stratum analysis"
 );
 const strataModelOrder = stratumModelOrder(strataSnapshot);
-const strataIntervals = await FileAttachment("./introducing-vep-bench/strata-2026-09-17.intervals.json").json();
+const strataIntervals = await FileAttachment("./introducing-vep-bench/strata-2026-09-18.intervals.json").json();
 const strataScores = stratumRows(strataSnapshot, strataIntervals)
   .sort((a, b) => strataModelOrder.indexOf(a.model) - strataModelOrder.indexOf(b.model));
 const strataTaskLabel = (family) => composition.tasks.find((task) => task.family === family)?.label ?? family;
@@ -421,10 +421,10 @@ general advantage for one variant class.
 <details id="subset-analysis-methods">
 <summary>Subset analysis methods and coverage</summary>
 
-**Analysis snapshot: 17 September 2026.** We reused the saved answers from nine
+**Analysis snapshot: 18 September 2026.** We reused the saved answers from nine
 models across 52 panels, selecting the highest available reasoning effort for
-each model: max for GPT-5.6 Luna, Terra, Sol, and Muse; high for Gemini and
-GPT-6 Astra; and low for GLM, DeepSeek, and Kimi K3.
+each model: max for GPT-5.6 Luna, Terra, Sol, GPT-6 Astra, and Muse; high for
+Gemini; and low for GLM, DeepSeek, and Kimi K3.
 Selection uses complete runs and does not depend on score; ties at the same
 effort use the latest run. Before examining stratum performance,
 we fixed two coverage cutoffs: **at least 10 variants within an original panel**
@@ -502,10 +502,10 @@ it compares complete eligible panels and does not apply these variant-class cuto
 
 ```js
 display(html`<p>
-  <a download="vepbench-variant-strata-2026-09-17.csv"
+  <a download="vepbench-variant-strata-2026-09-18.csv"
     href=${`data:text/csv;charset=utf-8,${encodeURIComponent(stratumCsv(strataSnapshot, strataIntervals))}`}>Download scores, 95% intervals, coverage, and exclusions (CSV)</a>
-  · <a href=${await FileAttachment("./introducing-vep-bench/strata-2026-09-17.json.gz").url()} download>Download frozen analysis, panel membership, model settings, and provenance (JSON.gz)</a>
-  · <a href=${await FileAttachment("./introducing-vep-bench/strata-2026-09-17.intervals.json").url()} download>Download confidence intervals and method (JSON)</a>
+  · <a href=${await FileAttachment("./introducing-vep-bench/strata-2026-09-18.json.gz").url()} download>Download frozen analysis, panel membership, model settings, and provenance (JSON.gz)</a>
+  · <a href=${await FileAttachment("./introducing-vep-bench/strata-2026-09-18.intervals.json").url()} download>Download confidence intervals and method (JSON)</a>
 </p>`);
 ```
 
@@ -581,9 +581,9 @@ if (specialistSnapshot.status === "awaiting_inference") {
 }
 ```
 
-Astra's fitness score is **0.625**, compared with **0.586** for AVI, on the
+Astra's fitness score is **0.611**, compared with **0.586** for AVI, on the
 same **487 SNVs across 16 genes**. Excluding AVI model-selection studies gives
-**0.604 versus 0.557** on **382 SNVs across 13 genes**. These are higher observed
+**0.589 versus 0.557** on **382 SNVs across 13 genes**. These are higher observed
 scores on the matched SNV subsets; they do not establish an advantage on indels
 or statistically conclusive superiority.
 
@@ -592,7 +592,7 @@ or statistically conclusive superiority.
 
 **Matched comparison.** AlphaGenome/AVI and each LLM are evaluated on identical
 variants within each original panel, with equal weight per panel. LLM answers
-come from the frozen September 17 publication; rescoring makes no new LLM calls.
+come from the frozen September 18 publication; rescoring makes no new LLM calls.
 Invalid original LLM answers retain their zero penalty, even if their missing
 variants fall outside the matched set.
 
@@ -682,7 +682,7 @@ display(html`<p><a href=${await FileAttachment("./introducing-vep-bench/speciali
   Download confidence intervals (JSON)</a> ·
   <a href=${await FileAttachment("./introducing-vep-bench/specialist-predictions.json.gz").url()} download>
   Download cached prediction evidence (JSON.gz)</a> ·
-  <a href=${await FileAttachment("./introducing-vep-bench/specialist-2026-09-17.manifest.json").url()} download>
+  <a href=${await FileAttachment("./introducing-vep-bench/specialist-2026-09-18.manifest.json").url()} download>
   Download frozen publication manifest (JSON)</a></p>`);
 ```
 
@@ -832,7 +832,7 @@ establish equivalence. Groups with fewer than two genes are not tested.
 
 No model has a detected before-cutoff advantage at the per-model 0.05 threshold
 after this correction. The one-sided p-values are 0.781 for Luna, 0.695 for
-Terra, 0.429 for Sol, 0.781 for Astra, and 0.886 for Gemini.
+Terra, 0.429 for Sol, 0.619 for Astra, and 0.886 for Gemini.
 This small, uneven comparison provides little evidence about memorization;
 it should not be read as validation of a contamination-free evaluation.
 
@@ -886,8 +886,9 @@ display(html`<p class="muted">Cutoff analysis collected ${cutoffAnalysis.retriev
 
 VEP-bench shows that general-purpose language models can recover part of the
 ordering of measured variant effects from sequence and experimental context.
-The strongest model depends on the task, and performance also varies across
-variant classes. These differences make the task and subset results useful
+Astra max leads the selected configurations on all three tasks; the rankings
+below it vary by task, and performance also varies across variant classes.
+These differences make the task and subset results useful
 alongside the overall ranking.
 
 The specialist comparisons and broader analyses help put these results in

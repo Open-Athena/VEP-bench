@@ -1,0 +1,12 @@
+# User-requested maximum reasoning; supported effort and output ceiling verified:
+# https://developers.openai.com/api/docs/models/gpt-6-astra (2026-09-16).
+# Sampling controls remain unset; these are provider defaults, not a benchmark recipe.
+# Seed matches the existing comparison profiles. Submit through the Batch API.
+schema_version: "1.0"
+label: gpt-6-astra-max
+model: openai/gpt-6-astra
+generation:
+  seed: 20260829
+  reasoning:
+    effort: max
+    exclude: false

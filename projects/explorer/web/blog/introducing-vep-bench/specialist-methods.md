@@ -10,7 +10,7 @@ with saved LLM answers on identical eligible variants within original panels.
 ## Publication snapshot
 
 All performance analyses in the post use the public LLM publication frozen on
-September 17, 2026 in `specialist-2026-09-17.manifest.json`. The name reflects its
+September 18, 2026 in `specialist-2026-09-18.manifest.json`. The name reflects its
 initial use for this comparison; it is also the manifest for the stratum,
 SGE cutoff, and external-benchmark comparisons.
 
@@ -35,6 +35,13 @@ to count input and output tokens from completed responses, including reasoning,
 on the same basis as benchmark cost. Serving errors no longer make completed-response
 token totals unavailable. Saved answers, scores, panel memberships, and statistical
 results are unchanged.
+
+The September 18 update adds all three GPT-6 Astra maximum-effort task runs,
+with 52 valid answers. Three OpenSplice provider failures were retried with
+unchanged settings. Every failed attempt is retained in the recovered answer's
+provenance and excluded from benchmark scores, cost, and token usage. Astra's
+maximum-effort runs replace its high-effort runs in the highest-effort analyses;
+the earlier runs remain in the publication.
 
 Specialist predictions reuse the original saved AlphaGenome and AVI inference.
 The question sets, alleles, eligibility policy, and biological requests are
@@ -196,7 +203,7 @@ the website reads compact exports and never calls a model. Its
 Install with `uv sync --locked --all-packages --extra alphagenome --group test`.
 
 Use a local publication mirror containing the exact artifacts in
-`specialist-2026-09-17.manifest.json`. The existing `fetch-strata-inputs.py`
+`specialist-2026-09-18.manifest.json`. The existing `fetch-strata-inputs.py`
 downloader verifies public files against that manifest; if a mutable `main`
 artifact has changed, restore its frozen copy rather than weakening the hash
 check.
