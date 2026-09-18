@@ -510,7 +510,8 @@ await waitFor(`document.querySelectorAll(${JSON.stringify(blogBars)}).length ===
   && document.querySelectorAll(${JSON.stringify(radarDots)}).length === 27`, "blog bar and radar plots");
 assert.deepEqual(await evaluate(`[...document.querySelectorAll('#observablehq-toc li a')]
   .map((link) => link.textContent)`), ["Dataset", "Results", "Comparison with specialist models",
-  "Comparison with other benchmarks", "Assay dates and model knowledge cutoffs", "Conclusion"]);
+  "Comparison with other benchmarks", "Assay dates and model knowledge cutoffs",
+  "Do explanations match the measured biology?", "Conclusion"]);
 assert.equal(await evaluate(`document.querySelectorAll('#radar-models input[type="checkbox"]').length`), 9);
 await evaluate(`document.querySelector('#radar-models input[type="checkbox"]').click()`);
 await waitFor(`document.querySelectorAll(${JSON.stringify(radarDots)}).length === 24`, "radar model toggle");
