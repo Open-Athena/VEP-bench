@@ -1,0 +1,100 @@
+Predict the signed change in exon inclusion caused by every candidate variant in this minigene panel.
+
+**Assay context:**
+- The displayed sequence is the complete wild-type three-exon splicing cassette in reporter-construct orientation. It includes the fixed FAS reporter exons and introns plus the mutagenized native insert; the unreported plasmid backbone is not included.
+- The minigene library was assayed in human embryonic-kidney 293T (HEK293T) cells.
+- Exon inclusion was quantified as percentage spliced in (PSI).
+
+**Cassette geometry:** The cassette is 485 nt long. The mutagenized native insert occupies positions 147--331, inclusive.
+
+| Segment | 1-based inclusive interval | Length |
+| --- | ---: | ---: |
+| FAS exon 5 | 1--62 | 62 nt |
+| FAS intron 5 | 63--146 | 84 nt |
+| native upstream intron | 147--216 | 70 nt |
+| tested alternative exon | 217--306 | 90 nt |
+| native downstream intron | 307--331 | 25 nt |
+| FAS intron 6 | 332--438 | 107 nt |
+| FAS exon 7 | 439--485 | 47 nt |
+
+**Complete wild-type splicing cassette:**
+
+Sequence lines contain 80 bases except the final line.
+
+```fasta
+>element
+ATGTGAACATGGAATCATCAAGGAATGCACACTCACCAGCAACACCAAGTGCAAAGAGGAAGGTAATTATTTTTTTACGG
+TTATATTCTCCTTTCCCCCAACCCCATGGAAAGATGTGAAGAAAAACCAATCACTCTTGATTACTAACCTAGAAGATGAA
+TTTATGTAATATGATTTGCAAAATGAGTATTCATTTGTGATTTTTTTTTTTTTAAGGTGAAAGTACATTTTTTGTTGAAT
+TAAGTGAAACTGCCAGCATACTCATGCATGCAACAGCACATTCTCTGGTGCTTGTGGATGAATTAGGTAAGACATTAAAC
+TTCTCATTTGACAGATTGAAATAACTTGGGAAGTAGTTTCTCTTAGTGTGAAAGTATGTTCTCACATGCATTCTACAAGG
+CTGAGACCTGAGTTGATAAAATTTCTTTGTTCTTTCAGTGAAGAGAAAGGAAGTACAGAAAACATGCAGAAAGCACAGAA
+AGGAA
+```
+
+**Candidate variants:**
+
+```vcf
+##fileformat=VCFv4.3
+#CHROM	POS	ID	REF	ALT
+element	160	V01	A	T
+element	166	V02	G	C
+element	173	V03	GATTTGC	G
+element	179	V04	C	G
+element	181	V05	A	G
+element	183	V06	A	C
+element	183	V07	ATGAGTATTCATTTGTGATTTT	A
+element	184	V08	T	C
+element	185	V09	GAGTATTCATTTGTGATTTTTT	G
+element	196	V10	TGTGATTTTTTTTTTTTTAAGG	T
+element	204	V11	TTTTTTTTTTAAGGTGAAAGTA	T
+element	206	V12	TTTTTTTTAAGGTGAAAGTACA	T
+element	209	V13	TTTTTAA	T
+element	211	V14	TTTAAGG	T
+element	213	V15	TAAG	T
+element	215	V16	A	G
+element	215	V17	AG	A
+element	215	V18	AGGTGAAAGTACATTTTTTGTT	A
+element	216	V19	G	A
+element	216	V20	G	T
+element	217	V21	G	T
+element	222	V22	A	T
+element	234	V23	G	A
+element	240	V24	TTAAGTGAAACTGCCAGCATAC	T
+element	244	V25	GTGAAAC	G
+element	251	V26	TGCCAGC	T
+element	259	V27	T	C
+element	260	V28	ACTCATGCATGCAACAGCACAT	A
+element	264	V29	A	C
+element	275	V30	AGCACATTCTCTGGTGCTTGTG	A
+element	282	V31	TCTC	T
+element	285	V32	CTGGTGCTTGTGGATGAATTAG	C
+element	287	V33	GGTGCTTGTGGATGAATTAGGT	G
+element	289	V34	TGCTTGTGGATGAATTAGGTAA	T
+element	291	V35	CTTG	C
+element	291	V36	CTTGTGGATGAATTAGGTAAGA	C
+element	293	V37	TGTGGATGAATTAGGTAAGACA	T
+element	294	V38	GTGGATGAATTAGGTAAGACAT	G
+element	303	V39	TTAG	T
+element	305	V40	AG	A
+element	306	V41	G	A
+element	306	V42	G	T
+element	306	V43	GGTAAGACATTAAACTTCTCAT	G
+element	307	V44	G	C
+element	308	V45	TAAG	T
+element	308	V46	TAAGACA	T
+element	309	V47	A	C
+element	309	V48	AAGACAT	A
+element	309	V49	AAGACATTAAACTTCTCATTTG	A
+element	328	V50	T	A
+```
+
+For each candidate ID, predict one finite signed change in percentage spliced in (PSI), in percentage points, relative to the wild-type construct. Positive values mean increased exon inclusion, negative values mean decreased exon inclusion, and zero means no predicted change. Numerical distances should reflect predicted differences in effect magnitude, although exact calibration is not required.
+
+Ground your predictions in the supplied sequence and assay context, using established biological knowledge. Tie proposed mechanisms to specific sequence features and candidate alleles. Do not substitute assumed gene identities or remembered experimental results for this justification. Where the input does not support a mechanistic explanation, say so rather than inventing one.
+
+Provide a substantive biological justification for your predictions, tied to candidate IDs. Identify relevant sequence features and their positions, connect the candidate alleles to those features, and explain how the proposed mechanisms would produce the predicted direction and relative magnitude of effects. You may group candidates that share a mechanism, but explain exceptions and materially different effects. Distinguish confident sequence-based conclusions from hypotheses, state uncertainty and plausible alternative interpretations, and identify claims that would require additional experimental evidence.
+
+Use as much detail as needed; there is no brevity requirement or fixed word limit. Then provide the required FINAL answer. Your final line must contain only `FINAL: ` followed by one strict JSON object with every candidate ID exactly once and no additional keys. Values must be finite JSON numbers.
+
+Example form: `FINAL: {"V01": -12.4, "V02": 3.1}`

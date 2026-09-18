@@ -1,0 +1,52 @@
+{
+  "schema_version": "1.0",
+  "analysis_timing": "Post-response literature audit, 2026-09-18; not the pre-inference selection",
+  "coordinate_system": "1-based inclusive positions in the submitted 318-base reporter insert",
+  "genomic_position_offset": 11089230,
+  "transcript_position_offset": -319,
+  "scope": "FP1 uses the experimentally footprinted sequence. The other intervals are the exact sequence cores discussed by Astra, localized within the literature's promoter repeats; they are not complete experimentally defined footprints. All 50 candidates remain in the analysis, including positions outside these intervals.",
+  "elements": [
+    {
+      "id": "fp1",
+      "label": "FP1",
+      "start": 81,
+      "end": 100,
+      "sequence": "GAGCTTCACGGGTTAAAAAG",
+      "evidence": "Mehta et al. 1996: in vivo footprinting, reporter mutagenesis and EMSA; induction experiments involved sterol depletion, unlike this untreated MPRA. The footprint does not identify a specific TF.",
+      "source": "https://pubmed.ncbi.nlm.nih.gov/8969230/"
+    },
+    {
+      "id": "repeat1",
+      "label": "Repeat 1 core (SREBP1 figure label)",
+      "start": 126,
+      "end": 136,
+      "sequence": "CTCCTCCTCTT",
+      "evidence": "SatMutMPRA Supplementary Table 12 calls the upstream region SREBP1 and defines the labels as SRE repeats. Peeters et al. 1998 identifies repeat 1 as a distal Sp1 site. These labels do not establish SREBP-1 isoform-specific occupancy.",
+      "source": "https://pubmed.ncbi.nlm.nih.gov/9610768/"
+    },
+    {
+      "id": "sre",
+      "label": "SRE core (SREBP2 figure label)",
+      "start": 161,
+      "end": 170,
+      "sequence": "ATCACCCCAC",
+      "evidence": "Canonical SRE-1 within repeat 2; SREBP/Sp1 cooperation is experimentally supported, but this assay does not separately determine SREBP-1 versus SREBP-2 binding.",
+      "source": "https://pubmed.ncbi.nlm.nih.gov/7836375/"
+    },
+    {
+      "id": "sp1",
+      "label": "SP1 / repeat 3 core",
+      "start": 177,
+      "end": 187,
+      "sequence": "CTCCTCCCCCT",
+      "evidence": "The c.-142C>T allele is V34 at reporter base 177. Mozas et al. 2002 tested this allele directly; SatMutMPRA Supplementary Table 12 independently maps its coordinates and reports the two MPRA replicates.",
+      "source": "https://pubmed.ncbi.nlm.nih.gov/11792717/"
+    }
+  ],
+  "paper_context": [
+    "https://www.nature.com/articles/s41467-019-11526-w",
+    "https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fs41467-019-11526-w/MediaObjects/41467_2019_11526_MOESM1_ESM.pdf",
+    "https://pmc.ncbi.nlm.nih.gov/articles/PMC12458161/",
+    "https://github.com/songlab-cal/gpn/blob/30dee6cf45849dfdcfc043ca8baf44fd6ba51d74/analysis/gpn-star/interpretation/workflow/notebooks/LDLR.ipynb"
+  ]
+}

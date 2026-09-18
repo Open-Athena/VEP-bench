@@ -502,6 +502,36 @@ assert.equal(
   "model selection did not preserve the highlighted row"
 );
 
+await navigate("/blog/introducing-vep-bench/mechanism-methods.html");
+for (const panel of ["MSH6", "LDLR"]) {
+  for (const series of ["measured", "baseline", "explanation"]) {
+    const plot = `svg[aria-label="${panel} ${series} effects by reporter position"]`;
+    await waitFor(`document.querySelectorAll(${JSON.stringify(plot + ' g[aria-label="dot"] circle')}).length === 50`,
+      `all 50 ${panel} ${series} values`);
+  }
+  if (outputDir) {
+    const clip = await evaluate(`(() => {
+      const box = document.querySelector('[aria-label="${panel} element comparison"]').getBoundingClientRect();
+      return {x: box.x + scrollX, y: box.y + scrollY, width: box.width, height: box.height, scale: 1};
+    })()`);
+    const screenshot = await send("Page.captureScreenshot", {clip, captureBeyondViewport: true});
+    await writeFile(join(outputDir, `${panel.toLowerCase()}-element-comparison.png`), Buffer.from(screenshot.data, "base64"));
+  }
+}
+for (const panel of ["MSH6", "LDLR"]) {
+  const responseLink = `a[data-mechanism-response="${panel}"]`;
+  await waitFor(`Boolean(document.querySelector(${JSON.stringify(responseLink)}))`, `${panel} response download`);
+  const savedResponse = await readFile(new URL(
+    `../web/blog/introducing-vep-bench/mechanism-evidence/${panel.toLowerCase()}-response.txt`, import.meta.url
+  ), "utf8");
+  assert.equal(await evaluate(`fetch(document.querySelector(${JSON.stringify(responseLink)}).href).then((r) => r.text())`),
+    savedResponse, `${panel} response download preserves the complete saved text`);
+  const responseCard = `[aria-label="Complete ${panel} explanation response"]`;
+  await waitFor(`Boolean(document.querySelector(${JSON.stringify(responseCard)}))`, `${panel} rendered response`);
+  assert.ok((await evaluate(`document.querySelector(${JSON.stringify(responseCard)}).textContent`)).includes("FINAL:"),
+    `${panel} rendered response includes its final predictions`);
+}
+
 await navigate("/blog/introducing-vep-bench.html");
 const blogBars = '.vepbench-leaderboard-chart g[aria-label="bar"] rect';
 const radarPlot = 'svg[aria-label="Model scores for fitness, expression, and splicing on a shared 0 to 1 scale"]';
@@ -510,7 +540,8 @@ await waitFor(`document.querySelectorAll(${JSON.stringify(blogBars)}).length ===
   && document.querySelectorAll(${JSON.stringify(radarDots)}).length === 27`, "blog bar and radar plots");
 assert.deepEqual(await evaluate(`[...document.querySelectorAll('#observablehq-toc li a')]
   .map((link) => link.textContent)`), ["Dataset", "Results", "Comparison with specialist models",
-  "Comparison with other benchmarks", "Assay dates and model knowledge cutoffs", "Conclusion"]);
+  "Comparison with other benchmarks", "Assay dates and model knowledge cutoffs",
+  "Do explanations match the measured biology?", "Conclusion"]);
 assert.equal(await evaluate(`document.querySelectorAll('#radar-models input[type="checkbox"]').length`), 9);
 await evaluate(`document.querySelector('#radar-models input[type="checkbox"]').click()`);
 await waitFor(`document.querySelectorAll(${JSON.stringify(radarDots)}).length === 24`, "radar model toggle");

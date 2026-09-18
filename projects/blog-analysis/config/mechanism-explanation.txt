@@ -1,0 +1,5 @@
+Ground your predictions in the supplied sequence and assay context, using established biological knowledge. Tie proposed mechanisms to specific sequence features and candidate alleles. Do not substitute assumed gene identities or remembered experimental results for this justification. Where the input does not support a mechanistic explanation, say so rather than inventing one.
+
+Provide a substantive biological justification for your predictions, tied to candidate IDs. Identify relevant sequence features and their positions, connect the candidate alleles to those features, and explain how the proposed mechanisms would produce the predicted direction and relative magnitude of effects. You may group candidates that share a mechanism, but explain exceptions and materially different effects. Distinguish confident sequence-based conclusions from hypotheses, state uncertainty and plausible alternative interpretations, and identify claims that would require additional experimental evidence.
+
+Use as much detail as needed; there is no brevity requirement or fixed word limit. Then provide the required FINAL answer.

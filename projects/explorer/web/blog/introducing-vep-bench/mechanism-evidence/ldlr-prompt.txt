@@ -1,0 +1,87 @@
+Predict the signed regulatory-activity effect of every candidate variant in this saturation-mutagenesis MPRA panel.
+
+**Assay context:**
+- Reporter configuration: The complete mutagenized insert shown below directly drives a firefly luciferase reporter from an episomal plasmid. Linked random barcodes are in the reporter transcript's 3-prime UTR.
+- Cellular context: HepG2 cells.
+- Measurement: Reporter activity was measured 24 hours after transfection. No additional treatment was applied. Activity effects are signed log2-scale regression coefficients from barcode-linked reporter quantification.
+
+**Complete mutagenized insert (reporter-construct orientation):**
+
+Sequence lines contain 80 bases except the final line.
+
+```fasta
+>element
+AGCTCTTCACCGGAGACCCAAATACAACAAATCAAGTCGCCTGCCCTGGCGACACTTTCGAAGGACTGGAGTGGGAATCA
+GAGCTTCACGGGTTAAAAAGCCGATGTCACATCGGCCGTTCGAAACTCCTCCTCTTGCAGTGAGGTGAAGACATTTGAAA
+ATCACCCCACTGCAAACTCCTCCCCCTGCTAGAAACCTCACATTGAAATGCTGTAAATGACGTGGGCCCCGAGTGCAATC
+GCGGGAAGCCAGGGTTTCCAGCTAGGACACAGCAGGTCGTGATCCGGGTCGGGACACTGCCTGGCAGAGGCTGCGAGC
+```
+
+**Reporter interface:** The mutagenized insert directly drives the reporter; no separate minimal promoter is present.
+
+**Candidate variants:**
+
+```vcf
+##fileformat=VCFv4.3
+#CHROM	POS	ID	REF	ALT
+element	20	V01	A	T
+element	23	V02	T	C
+element	46	V03	C	T
+element	51	V04	G	T
+element	66	V05	C	G
+element	74	V06	G	C
+element	81	V07	G	A
+element	86	V08	T	A
+element	93	V09	T	C
+element	93	V10	T	G
+element	95	V11	A	C
+element	95	V12	A	G
+element	106	V13	G	C
+element	106	V14	G	T
+element	107	V15	T	C
+element	107	V16	T	G
+element	112	V17	T	C
+element	126	V18	C	T
+element	127	V19	TC	T
+element	129	V20	C	A
+element	131	V21	C	A
+element	131	V22	C	G
+element	132	V23	C	T
+element	135	V24	T	G
+element	141	V25	T	A
+element	143	V26	A	T
+element	162	V27	T	A
+element	164	V28	A	C
+element	164	V29	A	T
+element	165	V30	C	A
+element	169	V31	A	G
+element	171	V32	T	C
+element	175	V33	A	T
+element	177	V34	C	T
+element	182	V35	C	A
+element	182	V36	C	T
+element	185	V37	C	G
+element	186	V38	C	G
+element	190	V39	T	A
+element	191	V40	A	G
+element	204	V41	T	A
+element	212	V42	T	G
+element	242	V43	CG	C
+element	264	V44	AG	A
+element	271	V45	A	G
+element	277	V46	T	A
+element	290	V47	C	A
+element	290	V48	C	T
+element	302	V49	T	G
+element	303	V50	G	C
+```
+
+For each candidate ID, predict one finite signed log2 reporter-activity effect. Positive values mean increased activity, negative values mean decreased activity, and zero means no predicted activity change. Numerical distances should reflect predicted differences in effect magnitude, although exact calibration is not required.
+
+Ground your predictions in the supplied sequence and assay context, using established biological knowledge. Tie proposed mechanisms to specific sequence features and candidate alleles. Do not substitute assumed gene identities or remembered experimental results for this justification. Where the input does not support a mechanistic explanation, say so rather than inventing one.
+
+Provide a substantive biological justification for your predictions, tied to candidate IDs. Identify relevant sequence features and their positions, connect the candidate alleles to those features, and explain how the proposed mechanisms would produce the predicted direction and relative magnitude of effects. You may group candidates that share a mechanism, but explain exceptions and materially different effects. Distinguish confident sequence-based conclusions from hypotheses, state uncertainty and plausible alternative interpretations, and identify claims that would require additional experimental evidence.
+
+Use as much detail as needed; there is no brevity requirement or fixed word limit. Then provide the required FINAL answer. Your final line must contain only `FINAL: ` followed by one strict JSON object with every candidate ID exactly once and no additional keys. Values must be finite JSON numbers.
+
+Example form: `FINAL: {"V01": -0.42, "V02": 0.08}`
