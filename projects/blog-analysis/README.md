@@ -61,6 +61,11 @@ The export records library versions and data provenance. Run the package's
 offline tests with `uv run --locked --all-packages --extra alphagenome --group test pytest
 projects/blog-analysis/tests`.
 
+The [MSH6 and LDLR explanation experiment](../explorer/web/blog/introducing-vep-bench/mechanism-methods.md)
+has an offline preparation and comparison script at `scripts/mechanism_case.py`.
+Its frozen selection and explanation instruction live under `config/`; generated
+questions and full model responses remain outside Git and the baseline leaderboard.
+
 For the variant-stratum figures, generate pointwise intervals directly from the
 frozen per-panel scores with `vepbench-blog-strata-intervals`. The sampling unit
 is an eligible original gene or regulatory-element panel, keeping invalid

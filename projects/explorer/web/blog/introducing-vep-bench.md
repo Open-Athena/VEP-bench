@@ -882,6 +882,58 @@ display(html`<p class="muted">Cutoff analysis collected ${cutoffAnalysis.retriev
 </p>`);
 ```
 
+## Do explanations match the measured biology?
+
+For supplementary case studies, we selected **MSH6 exon 7** and the **LDLR
+promoter** before inspecting model explanations because the source papers
+describe their regulatory structures.
+We asked Astra Max for a substantive biological justification grounded in the
+supplied sequence, followed by predictions for the same 50 variants per panel. The prompt
+added no measured effects or paper annotations. This is a deliberately chosen
+pair of examples, and each explanation is the model's stated justification rather than a
+verified account of its internal reasoning.
+
+For MSH6, Astra correctly located the splice signals and reconstructed sequence changes,
+but a plausible mechanism did not always predict the measured effect:
+
+| Variant | Explanation prediction, ΔPSI | Measured ΔPSI | Interpretation |
+| --- | ---: | ---: | --- |
+| V41, G306A | −25 | −26.4 | Correctly distinguishes a weakened final exonic donor base from destruction of the intronic GT. |
+| V19, G216A | −10 | −87.5 | Predicts rescue through a newly created, shifted acceptor; the measured loss is much larger. |
+| V24, deletion 241–261 | −16 | +0.3 | Proposes loss of enhancer motifs, although this substantial interior deletion is tolerated. |
+
+The V19 discrepancy also exposes a limitation in our question. Astra explicitly
+warned that its rescue prediction depends on whether shifted splice products
+count toward inclusion. The [paper's Methods](https://www.biorxiv.org/content/10.64898/2026.05.22.727141v1)
+classify expected inclusion and skipping sequences by exact matching. Our prompt
+does not specify that counting rule. We therefore cannot attribute the mismatch
+solely to biological reasoning; defining the assay's measured target precisely
+matters alongside supplying the sequence.
+
+For LDLR, Astra correctly located the sterol-response motif and predicted losses
+for all five selected substitutions within it. But proposed gains from newly
+created ETS-like motifs sometimes contradicted the measurements: V34 was predicted
+to increase activity by **0.15 log2 units**, while its measured effect was
+**−3.09**. The short motif is present; productive binding and a favorable net effect
+do not follow from its presence alone. The provider-exposed summary also names
+the LDL receptor promoter, so the sequence-focused instruction does not establish
+that recognition or recall was absent.
+
+| Panel | Baseline Spearman | Explanation Spearman | Baseline Pearson | Explanation Pearson |
+| --- | ---: | ---: | ---: | ---: |
+| MSH6 | 0.800 | 0.803 | 0.740 | 0.714 |
+| LDLR | 0.473 | 0.499 | 0.608 | 0.451 |
+
+Each score uses all 50 variants. One completion per condition does not establish
+a benefit from requesting explanations: ordering improved slightly in both cases,
+while Pearson correlation decreased. The detailed responses are useful for
+locating unsupported assumptions and gaps in the task definition. These
+supplementary predictions remain separate from the baseline leaderboard.
+
+The [case-study analysis](./introducing-vep-bench/mechanism-methods.html#primary-result-msh6)
+contains the preselected illustrations, additional claim checks, paper
+interpretations, prompt protocol, cost accounting, and limitations.
+
 ## Conclusion
 
 VEP-bench shows that general-purpose language models can recover part of the
