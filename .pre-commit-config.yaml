@@ -17,6 +17,8 @@ repos:
       - id: debug-statements
       - id: detect-private-key
       - id: end-of-file-fixer
+        # These evidence extracts preserve the exact request/provider text bytes.
+        exclude: ^projects/explorer/web/blog/introducing-vep-bench/mechanism-evidence/.*\.txt$
       - id: mixed-line-ending
         args: [--fix=lf]
       - id: trailing-whitespace
