@@ -31,6 +31,7 @@ INSTRUCTION = ROOT / "projects/blog-analysis/config/mechanism-explanation.txt"
 SELECTION = ROOT / "projects/blog-analysis/config/mechanism-selection.json"
 PAIR_SELECTION = ROOT / "projects/blog-analysis/config/mechanism-pair-selection.json"
 LDLR_ELEMENTS = ROOT / "projects/blog-analysis/config/ldlr-elements.json"
+MSH6_ELEMENTS = ROOT / "projects/blog-analysis/config/msh6-elements.json"
 QUESTION_ID = "opensplice-snv-ranking-v2:E01"
 QUESTION_SHA256 = "fc2923445b96c5d5ee56932daf3f1dd81361d60b5fd14e639b979b087654738d"
 PANELS = {
@@ -635,6 +636,91 @@ def ldlr_elements(comparison):
     return {"annotation": annotation, "groups": groups, "variants": rows}
 
 
+def msh6_elements(comparison):
+    """Audit sequence features and all allele footprints without inferring binding."""
+    annotation = json.loads(MSH6_ELEMENTS.read_text())
+    source = next(
+        s
+        for s in read_jsonl(ROOT / "data/sources/opensplice-snv-figshare-v5.jsonl")
+        if s["source_record_id"] == "E01"
+    )
+    sequence = source["source_metadata"]["construct"]["complete_wild_type_cassette"]
+    for feature in annotation["features"]:
+        if sequence[feature["start"] - 1 : feature["end"]] != feature["sequence"]:
+            raise ValueError("MSH6 feature differs from the submitted cassette")
+    rows = []
+    rescue_pairs = {"V16": (214, 215), "V17": (215, 217), "V18": (215, 237), "V19": (216, 217)}
+    for candidate in comparison["candidates"]:
+        cid, pos = candidate["candidate_id"], candidate["pos"]
+        ref, alt = candidate["ref"], candidate["alt"]
+        if sequence[pos - 1 : pos - 1 + len(ref)] != ref:
+            raise ValueError("MSH6 allele REF disagrees with the cassette")
+        if len(ref) == len(alt) == 1:
+            start = end = pos
+        elif len(alt) == 1 and ref.startswith(alt):
+            start, end = pos + 1, pos + len(ref) - 1
+        else:
+            raise ValueError("Expected a substitution or anchored deletion")
+        mutant = sequence[: pos - 1] + alt + sequence[pos - 1 + len(ref) :]
+        # Retain original coordinates through a deletion to check claimed new junctions.
+        positions = [*range(1, pos), pos, *range(pos + len(ref), len(sequence) + 1)]
+        if len(positions) != len(mutant):
+            raise ValueError("Mutant coordinate reconstruction failed")
+        overlaps = [
+            f["id"] for f in annotation["features"] if start <= f["end"] and end >= f["start"]
+        ]
+        if "acceptor" in overlaps:
+            region = "acceptor"
+        elif "donor" in overlaps:
+            region = "donor"
+        elif end < annotation["exon_start"]:
+            region = "upstream"
+        elif start > annotation["exon_end"]:
+            region = "downstream"
+        else:
+            region = "interior"
+        new_acceptor = None
+        if cid in rescue_pairs:
+            pair = rescue_pairs[cid]
+            index = positions.index(pair[0])
+            if positions[index + 1] != pair[1] or mutant[index : index + 2] != "AG":
+                raise ValueError("Proposed reconstructed acceptor is absent")
+            new_acceptor = list(pair)
+        donor = None
+        if 307 in positions:
+            index = positions.index(307)
+            donor = mutant[index - 3 : index] + "|" + mutant[index : index + 6]
+        rows.append(
+            {
+                **candidate,
+                "changed_start": start,
+                "changed_end": end,
+                "region": region,
+                "overlapping_features": overlaps,
+                "reconstructed_acceptor_original_positions": new_acceptor,
+                "donor_context_at_original_307": donor,
+                "baseline": comparison["baseline"]["predictions"][cid],
+                "explanation": comparison["explanation"]["predictions"][cid],
+            }
+        )
+    groups = []
+    for region in ["upstream", "acceptor", "interior", "donor", "downstream"]:
+        members = [r for r in rows if r["region"] == region]
+        groups.append(
+            {
+                "region": region,
+                "candidate_ids": [r["candidate_id"] for r in members],
+                "n": len(members),
+                "mean_measured": sum(r["reference_score"] for r in members) / len(members),
+                **{
+                    f"mean_{condition}": sum(r[condition] for r in members) / len(members)
+                    for condition in ["baseline", "explanation"]
+                },
+            }
+        )
+    return {"annotation": annotation, "groups": groups, "variants": rows}
+
+
 def export_evidence(experiment, baseline, output):
     """Export exact readable responses and sufficient data for offline reanalysis."""
     output.mkdir(parents=True, exist_ok=False)
@@ -659,6 +745,8 @@ def export_evidence(experiment, baseline, output):
                 (output / f"{panel}-{name}.txt").write_bytes(content.encode("utf-8"))
         if panel == "ldlr":
             write_json(output / "ldlr-elements.json", ldlr_elements(summary))
+        else:
+            write_json(output / "msh6-elements.json", msh6_elements(summary))
     write_json(
         output / "manifest.json",
         {
@@ -670,6 +758,7 @@ def export_evidence(experiment, baseline, output):
             ),
             "selection_sha256": sha256_file(experiment / "selection.json"),
             "ldlr_annotation_sha256": sha256_file(LDLR_ELEMENTS),
+            "msh6_annotation_sha256": sha256_file(MSH6_ELEMENTS),
             "files": [
                 {"path": p.name, "bytes": p.stat().st_size, "sha256": sha256_file(p)}
                 for p in sorted(output.iterdir())

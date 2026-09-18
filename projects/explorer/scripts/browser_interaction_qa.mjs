@@ -503,18 +503,20 @@ assert.equal(
 );
 
 await navigate("/blog/introducing-vep-bench/mechanism-methods.html");
-for (const series of ["measured", "baseline", "explanation"]) {
-  const plot = `svg[aria-label="LDLR ${series} effects by reporter position"]`;
-  await waitFor(`document.querySelectorAll(${JSON.stringify(plot + ' g[aria-label="dot"] circle')}).length === 50`,
-    `all 50 LDLR ${series} values`);
-}
-if (outputDir) {
-  const clip = await evaluate(`(() => {
-    const box = document.querySelector('[aria-label="LDLR element comparison"]').getBoundingClientRect();
-    return {x: box.x + scrollX, y: box.y + scrollY, width: box.width, height: box.height, scale: 1};
-  })()`);
-  const screenshot = await send("Page.captureScreenshot", {clip, captureBeyondViewport: true});
-  await writeFile(join(outputDir, "ldlr-element-comparison.png"), Buffer.from(screenshot.data, "base64"));
+for (const panel of ["MSH6", "LDLR"]) {
+  for (const series of ["measured", "baseline", "explanation"]) {
+    const plot = `svg[aria-label="${panel} ${series} effects by reporter position"]`;
+    await waitFor(`document.querySelectorAll(${JSON.stringify(plot + ' g[aria-label="dot"] circle')}).length === 50`,
+      `all 50 ${panel} ${series} values`);
+  }
+  if (outputDir) {
+    const clip = await evaluate(`(() => {
+      const box = document.querySelector('[aria-label="${panel} element comparison"]').getBoundingClientRect();
+      return {x: box.x + scrollX, y: box.y + scrollY, width: box.width, height: box.height, scale: 1};
+    })()`);
+    const screenshot = await send("Page.captureScreenshot", {clip, captureBeyondViewport: true});
+    await writeFile(join(outputDir, `${panel.toLowerCase()}-element-comparison.png`), Buffer.from(screenshot.data, "base64"));
+  }
 }
 for (const panel of ["MSH6", "LDLR"]) {
   const responseLink = `a[data-mechanism-response="${panel}"]`;

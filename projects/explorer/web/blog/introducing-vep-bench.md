@@ -910,6 +910,17 @@ does not specify that counting rule. We therefore cannot attribute the mismatch
 solely to biological reasoning; defining the assay's measured target precisely
 matters alongside supplying the sequence.
 
+This pattern extends across the panel: the 12 alleles overlapping the acceptor
+average **−86.4 measured ΔPSI**, versus **−18.2 predicted** with explanation.
+All 11 interior alleles are within 1.2 points of zero, despite predictions as
+large as −16 or +8. Earlier [branchpoint experiments](https://doi.org/10.1016/j.gim.2021.09.020)
+support the upstream `TTCAT` motif, with partial skipping after substitutions and
+evidence compatible with alternative branchpoints. They do not validate the
+model's specific enhancer and silencer assignments inside the exon. The
+[expanded MSH6 analysis](./introducing-vep-bench/mechanism-methods.html#what-the-full-msh6-panel-reveals)
+maps all 50 alleles, reconstructs the proposed rescue sites and mutant donors,
+and distinguishes those earlier experiments from this reporter's measurements.
+
 For LDLR, the established promoter architecture gives a more demanding test than
 recognizing isolated motifs. [SatMutMPRA](https://www.nature.com/articles/s41467-019-11526-w)
 maps large activity losses to known regulatory elements, and

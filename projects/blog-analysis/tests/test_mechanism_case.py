@@ -157,6 +157,7 @@ def test_committed_evidence_replays_predictions_and_coordinates():
         assert case.sha256_file(path) == file["sha256"]
         assert path.stat().st_size == file["bytes"]
     assert case.sha256_file(case.LDLR_ELEMENTS) == manifest["ldlr_annotation_sha256"]
+    assert case.sha256_file(case.MSH6_ELEMENTS) == manifest["msh6_annotation_sha256"]
     for panel in case.PANELS:
         original, explained = case.make_questions(panel)
         assert (evidence / f"{panel}-prompt.txt").read_text() == explained["prompt"]
@@ -173,6 +174,15 @@ def test_committed_evidence_replays_predictions_and_coordinates():
             assert case.ldlr_elements(summary) == json.loads(
                 (evidence / "ldlr-elements.json").read_text()
             )
+        else:
+            audit = case.msh6_elements(summary)
+            assert audit == json.loads((evidence / "msh6-elements.json").read_text())
+            rows = {r["candidate_id"]: r for r in audit["variants"]}
+            assert rows["V18"]["reconstructed_acceptor_original_positions"] == [215, 237]
+            assert rows["V44"]["donor_context_at_original_307"] == "TAG|CTAAGA"
+            assert rows["V49"]["donor_context_at_original_307"] == "TAG|GTAACA"
+            assert rows["V35"]["region"] == "interior"
+            assert [g["n"] for g in audit["groups"]] == [9, 12, 11, 17, 1]
 
 
 def test_paired_batch_caps_spend_and_cannot_repeat(tmp_path):

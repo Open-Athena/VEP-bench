@@ -73,6 +73,10 @@ RNA-binding-protein validation for MSH6's upstream segment was identified in
 the retrieved main text. Calling that segment a proven branchpoint would exceed
 the available evidence.
 
+That paragraph records the reference available before model inspection. The
+[expanded literature audit below](#earlier-experiments-on-this-exon), added on
+September 18, identifies earlier functional evidence for the branchpoint motif.
+
 The assay uses a FAS three-exon minigene in HEK293T cells. The supplied sequence
 is in construct orientation. The 185-nt native insert occupies cassette bases
 147–331; the tested exon is 217–306. Add 146 to native-insert coordinates to
@@ -252,10 +256,14 @@ acceptor, predicting only −10 points despite the measured −87.466. This is a
 plausible sequence hypothesis with an unsuccessful prediction, not evidence that
 the alternative junction forms. The model explicitly identifies uncertainty about
 whether shifted products count toward PSI. A post-response check of the paper's
-**Methods, “Read counting with DiMSum”**, finds that isoforms were classified by
+**Methods, “PSI per barcode”**, finds that isoforms were classified by
 exact matching to expected inclusion or skipping sequences, with expected exonic
 deletions incorporated into the inclusion sequence. Arbitrary boundary shifts
-therefore cannot simply be assumed to rescue the scored inclusion target. Our
+therefore cannot simply be assumed to rescue the scored inclusion target. Such
+products can be excluded from both inclusion and skipping counts: the reported
+PSI is inclusion divided by inclusion plus skipping, not inclusion divided by
+all possible products. A low measured PSI does not prove that no shifted product
+formed. Our
 prompt gives the geometry and PSI target but omits this exact-match counting
 rule. This target ambiguity limits attribution of the discrepancy to biological
 reasoning alone; the frozen experiment is not changed after seeing the result.
@@ -272,6 +280,189 @@ The completed response used 47,597 output tokens, of which the provider reports
 is separate from the unresolved interrupted attempt. The baseline's per-panel
 cost is allocated from a batch receipt, so a cost difference cannot be attributed
 solely to the explanation instruction.
+
+### What the full MSH6 panel reveals
+
+This expansion is a **post-response audit**, added on September 18. The six
+examples above remain the original illustrations. Here we examine every allele,
+with coordinates in the submitted cassette and deletion anchors excluded.
+The exon spans 217–306. The upstream enhancer-state segment from OpenSplice
+maps to 193–196; the sequence-defined acceptor `AG|G` is 215–217 and donor
+`TAG|GTAAGA` is 304–312. These short recognition sequences are not claimed to
+be the full boundaries of the paper's 21-nt and 15-nt enhancer-state segments.
+An enhancer state inferred from mutagenesis also does not identify an SR protein.
+
+The following groups partition all 50 alleles by affected bases. Acceptor and
+donor overlaps take priority over interior or intronic location. A deletion can
+extend beyond its assigned region. These are descriptive means for the selected
+panel, not estimates of how all mutations in each region behave.
+
+| Region | Alleles | Mean measured ΔPSI | Mean baseline | Mean explanation |
+| --- | ---: | ---: | ---: | ---: |
+| Upstream, without acceptor overlap | 9 | −12.494 | −4.889 | −5.889 |
+| Acceptor `AG|G` overlap | 12 | −86.382 | −29.000 | −18.167 |
+| Interior, without either junction overlap | 11 | −0.048 | −3.545 | −1.636 |
+| Donor `TAG|GTAAGA` overlap | 17 | −68.499 | −61.000 | −48.941 |
+| Downstream, without donor overlap | 1 | −0.477 | −2.000 | −2.000 |
+
+The model captures the broad concentration of damaging variants at the junctions,
+which is consistent with its high rank correlation. It substantially compresses
+the acceptor losses, and the explanation completion moves both junction means
+closer to zero than the baseline. Interior means conceal opposing predictions
+of enhancer loss and silencer loss; individual measurements are more informative.
+
+```js
+const msh6ElementAudit = await FileAttachment("./mechanism-evidence/msh6-elements.json").json();
+const msh6Bands = [
+  {start: 193, end: 196, label: "Upstream"},
+  {start: 215, end: 217, label: "Acceptor"},
+  {start: 304, end: 312, label: "Donor"}
+];
+display(resize((width) => {
+  const charts = document.createElement("div");
+  charts.setAttribute("aria-label", "MSH6 element comparison");
+  for (const series of effectSeries) {
+    charts.append(Plot.plot({
+      width, height: 185, marginLeft: 64, marginTop: 22,
+      ariaLabel: `MSH6 ${series.label.toLowerCase()} effects by reporter position`,
+      style: {background: "transparent"},
+      x: {domain: [147, 331], label: "Cassette position (1-based)", ticks: 8},
+      y: {domain: [-101, 14], label: `${series.label} (ΔPSI)`, grid: true},
+      marks: [
+        Plot.rect(msh6Bands, {
+          x1: (d) => d.start - 0.5, x2: (d) => d.end + 0.5,
+          y1: -101, y2: 14, fill: "currentColor", fillOpacity: 0.07
+        }),
+        Plot.ruleX([216.5, 306.5], {stroke: "currentColor", strokeOpacity: 0.4, strokeDasharray: "3,3"}),
+        Plot.ruleY([0], {stroke: "currentColor", strokeOpacity: 0.4}),
+        Plot.text(msh6Bands, {
+          x: (d) => (d.start + d.end) / 2, y: 11,
+          text: "label", fontSize: 10, fill: "currentColor"
+        }),
+        Plot.ruleY(msh6ElementAudit.variants, {
+          x1: "changed_start", x2: "changed_end", y: series.key,
+          stroke: series.color, strokeOpacity: 0.5, strokeWidth: 2
+        }),
+        Plot.dot(msh6ElementAudit.variants, {
+          x: (d) => (d.changed_start + d.changed_end) / 2, y: series.key,
+          fill: series.color, r: 3, tip: true,
+          title: (d) => `${d.candidate_id}: ${d.ref}>${d.alt} at ${d.pos}\nAffected: ${d.changed_start}–${d.changed_end}\n${series.label}: ${d[series.key].toFixed(3)}\n${d.region}`
+        })
+      ]
+    }));
+  }
+  return charts;
+}));
+display(html`<p class="muted">All 50 alleles on shared axes. Dots mark substitution positions or deletion midpoints;
+  horizontal segments span removed bases. Dashed lines bound the exon. Shading marks the upstream
+  enhancer-state segment and the two short junction features, not the full paper SpliceMap.
+  <a href=${await FileAttachment("./mechanism-evidence/msh6-elements.json").url()} download>Download the complete sequence and region audit</a>.</p>`);
+```
+
+### Earlier experiments on this exon
+
+Additional literature changes the evidential status of the proposed branchpoint.
+[Canson et al. (2022), Fig. 3D](https://doi.org/10.1016/j.gim.2021.09.020)
+tested MSH6 exon 7 in pSPL3 minigenes in Ishikawa cells. Within `TTCAT`,
+T191G, C192G, and A193G correspond to c.3557−26, −25, and −24;
+they reported 35%, 1%, and 6% skipping, respectively. Combined T191G/A193G
+gave 46%. They also discussed alternative branchpoints, including an
+experimentally inferred site at −28. This supports the motif's functional
+relevance and possible redundancy, without establishing A193 as the sole
+branchpoint in OpenSplice's different reporter and cell line. None of these
+three substitutions is in our 50-allele panel.
+
+OpenSplice cites [Mercer et al. (2015)](https://doi.org/10.1101/gr.182899.114)
+and [Taggart et al. (2017)](https://doi.org/10.1101/gr.202820.115) as references
+34 and 35. Canson connects those mapping datasets to this exon and supplies the
+targeted functional experiment; Canson itself is not cited in the retrieved
+OpenSplice reference list. Thus the literature connection is through the earlier
+branchpoint studies, rather than a prior MSH6 experiment cited in its exon example.
+
+There is also evidence in endogenous patient RNA.
+[Šetrajčič Dragoš et al. (2022), Table 1 and Fig. 1G](https://pmc.ncbi.nlm.nih.gov/articles/PMC9267136/)
+reported **6.8% exon-7-skipping reads** for c.3646+5G>A, with none detected in
+controls. Its deleted transcript interval, r.3557_3646, is the same 90-nt exon;
+the donor substitution maps to cassette G311A. That exact substitution is absent
+from our panel, although several deletions remove G311. This independently
+supports donor sensitivity outside the GT dinucleotide. The patient read fraction
+is not a mutant-only ΔPSI, and should not be substituted for an OpenSplice effect
+or used to calibrate a different allele. Neither study validates the model's
+specific SRSF2, RBFOX, or PTBP assignments in the exon interior.
+
+### Upstream losses cannot be assigned to one branchpoint
+
+V07 removes 184–204 and V09 removes 186–206. Both remove the `TTCAT` motif,
+including A193, and the entire 193–196 enhancer-state segment. Yet their measured
+losses differ by **54.747 points**: −29.249 versus −83.996. Astra predicts −22
+and −30, getting the order but missing most of the separation. The reference
+poly-T run occupies 201–213; these deletions leave nine versus seven of its Ts.
+That offers a plausible contributor, alongside changed spacing and deletion
+junctions. The two alleles do not isolate tract length or a single branchpoint,
+so their difference cannot establish any one of those mechanisms.
+
+### New AG sequences do not demonstrate scored rescue
+
+Reconstructing each mutant confirms four nearby AGs discussed by the model.
+Positions below refer to original cassette bases even when deletion brings them
+together. Sequence creation is directly checkable; splice usage is a hypothesis.
+
+| Allele | Proposed AG bases | Explanation ΔPSI | Measured ΔPSI |
+| --- | --- | ---: | ---: |
+| V16, A215G | 214 and 215 | +2 | −27.564 |
+| V17, deletion G216 | 215 and 217 | −7 | −90.182 |
+| V18, deletion 216–236 | 215 and 237 | −6 | −91.585 |
+| V19, G216A | 216 and 217 | −10 | −87.466 |
+
+The shared failure is treating a plausible nearby site as sufficient rescue of
+the assay's expected inclusion product. The counting limitation described above
+prevents deciding from these ΔPSIs whether shifted products actually formed.
+V21 provides a complementary example: G217T preserves the canonical intronic AG
+but yields −60.673, versus Astra's −6. Acceptor recognition extends beyond the
+dinucleotide, and correctly finding the AG does not quantify its strength.
+
+### The interior tolerates the model's proposed motif losses
+
+All **11 interior alleles** have measured effects between −1.120 and +0.624.
+V24, V28, and V30 each remove 21 bases, leaving a 69-nt exon, yet measure
++0.297, +0.488, and +0.415. Astra instead predicts −16, +8, and +6, invoking
+an SR-associated enhancer (`CCAG`, 253–256), an RBFOX-like motif (`TGCATG`,
+265–270), and a PTBP-like pyrimidine motif (`TCTCT`, 282–286).
+These net effects do not support the predicted magnitudes. They do not prove
+absence of binding, or exclude compensating effects of a long deletion.
+The 21-nt deletions were excluded from fitting the paper's SpliceMap, but still
+come from the same assay; they are not independent biological replication.
+
+The paper's approximately 97% wild-type PSI also leaves only about **3 points**
+of possible inclusion gain. Predictions of +8 and +6 exceed that available
+range. Wild-type PSI was withheld from the prompt, making this a limitation in
+effect-size calibration with missing information. It does not by itself negate
+the ranking score or establish why the model chose those values.
+
+### Mutant donor reconstruction is informative, but incomplete
+
+Some of the strongest reasoning is about the actual sequence left after deletion.
+Here the bar marks the original exon–intron boundary, retained through the edit.
+
+| Allele | Reconstructed donor context | Explanation ΔPSI | Measured ΔPSI |
+| --- | --- | ---: | ---: |
+| V39, deletion 304–306 | `AAT\|GTAAGA` | −19 | −22.460 |
+| V40, deletion G306 | `TTA\|GTAAGA` | −43 | −68.912 |
+| V41, G306A | `TAA\|GTAAGA` | −25 | −26.389 |
+| V44, G307C | `TAG\|CTAAGA` | −72 | −97.003 |
+| V45, deletion 309–311 | `TAG\|GTACAT` | −39 | −44.307 |
+| V46, deletion 309–314 | `TAG\|GTTTAA` | −63 | −97.047 |
+| V47, A309C | `TAG\|GTCAGA` | −24 | −77.079 |
+| V49, deletion 310–330 | `TAG\|GTAACA` | −35 | −29.863 |
+
+Astra correctly orders the one-base V40 deletion as worse than the three-base
+V39 deletion, and the six-base V46 deletion as worse than the 21-base V49
+deletion. In V49, donor position +5 is now the C at original cassette position
+332, in the fixed FAS intron. This is a concrete reason to supply the complete
+reporter context: the deletion draws on sequence outside the native insert.
+The sizeable V47 miss, despite retaining GT, shows the limit of assigning a
+moderate penalty from a recognizable donor alone. The broad spatial pattern is
+convincing; several detailed rescue and motif-strength predictions remain wrong.
 
 ## Secondary result: LDLR
 
@@ -379,7 +570,7 @@ and does not mean biologically unimportant sequence.
 ```js
 import * as Plot from "npm:@observablehq/plot@0.6.17";
 const ldlrElementAudit = await FileAttachment("./mechanism-evidence/ldlr-elements.json").json();
-const ldlrSeries = [
+const effectSeries = [
   {key: "reference_score", label: "Measured", color: "#238b6b"},
   {key: "baseline", label: "Baseline", color: "#5278b8"},
   {key: "explanation", label: "Explanation", color: "#9951a7"}
@@ -387,7 +578,7 @@ const ldlrSeries = [
 display(resize((width) => {
   const charts = document.createElement("div");
   charts.setAttribute("aria-label", "LDLR element comparison");
-  for (const series of ldlrSeries) {
+  for (const series of effectSeries) {
     charts.append(Plot.plot({
       width, height: 185, marginLeft: 64, marginTop: 22,
       ariaLabel: `LDLR ${series.label.toLowerCase()} effects by reporter position`,

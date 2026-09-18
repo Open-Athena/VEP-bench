@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "analysis_timing": "Post-response whole-panel audit, 2026-09-18",
+  "coordinate_system": "1-based inclusive positions in the submitted 485-base cassette; native-insert coordinates plus 146",
+  "exon_start": 217,
+  "exon_end": 306,
+  "paper_wild_type_psi_approximate": 97,
+  "paper": "https://www.biorxiv.org/content/10.64898/2026.05.22.727141v1",
+  "additional_literature": ["https://doi.org/10.1016/j.gim.2021.09.020", "https://pmc.ncbi.nlm.nih.gov/articles/PMC9267136/"],
+  "scope": "The paper's upstream enhancer interval is explicitly located. Acceptor/donor intervals below are sequence recognition features, not reconstructed boundaries of the paper's 21-nt and 15-nt enhancer-state segments. RBP motif labels are model hypotheses, not binding annotations. Region summaries use all 50 alleles and classify deletions by removed bases, excluding anchors.",
+  "features": [
+    {"id": "upstream_enhancer", "start": 193, "end": 196, "sequence": "ATTT", "support": "Paper Fig. 6a group 6 and MSH6 Results: insert positions 47–50; mutational state, not direct branchpoint mapping"},
+    {"id": "branchpoint_motif", "start": 190, "end": 194, "sequence": "TTCAT", "support": "Model proposes A193 (c.3557-24). Canson et al. 2022 Fig. 3D tests this motif in MSH6 exon 7 minigenes; A193 is not established as the sole branchpoint in the OpenSplice cassette"},
+    {"id": "ppt", "start": 201, "end": 213, "sequence": "TTTTTTTTTTTTT", "support": "Sequence-defined polypyrimidine tract"},
+    {"id": "acceptor", "start": 215, "end": 217, "sequence": "AGG", "support": "Canonical acceptor AG and first exonic G"},
+    {"id": "donor", "start": 304, "end": 312, "sequence": "TAGGTAAGA", "support": "Last three exon bases and first six intron bases"},
+    {"id": "sr_hypothesis", "start": 253, "end": 256, "sequence": "CCAG", "support": "Model's SRSF2-like enhancer hypothesis; no occupancy evidence here"},
+    {"id": "rbfox_hypothesis", "start": 265, "end": 270, "sequence": "TGCATG", "support": "Model's RBFOX-associated silencer hypothesis; no occupancy evidence here"},
+    {"id": "ptbp_hypothesis", "start": 282, "end": 286, "sequence": "TCTCT", "support": "Model's PTBP-associated silencer hypothesis; no occupancy evidence here"}
+  ]
+}
