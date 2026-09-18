@@ -306,13 +306,13 @@ def attach_retry_history(*, results: Path, attempts: Path, output: Path) -> None
 
 
 def resolve_retry(*, original: Path, retry: Path, output: Path) -> None:
-    """Export a full task using one explicit retry; never select by score."""
+    """Replace each API failure with its explicit retry; never select by score."""
     if output.exists():
         raise BuildError(f"refusing to overwrite {output}")
     records = read_jsonl(original)
     retried = read_jsonl(retry)
-    if len(retried) != 1 or not records:
-        raise BuildError("provide one retry response and a full original task run")
+    if not retried or not records:
+        raise BuildError("provide retry responses and a full original task run")
     validator = Draft202012Validator(
         json.loads(RESULT_SCHEMA.read_text()), format_checker=FormatChecker()
     )
@@ -329,24 +329,32 @@ def resolve_retry(*, original: Path, retry: Path, output: Path) -> None:
     identity = ("run_id", "question_set_sha256", "question_set_size", "generation_parameters")
     if any(any(record[field] != first[field] for field in identity) for record in records):
         raise BuildError("original records do not share a run identity")
-    failures = [record for record in records if record["response"]["status"] == "api_error"]
-    if len(failures) != 1 or failures[0]["question_id"] != retried[0]["question_id"]:
-        raise BuildError("retry must target the original run's single API error")
+    failures = {
+        record["question_id"]: record
+        for record in records
+        if record["response"]["status"] == "api_error"
+    }
+    replacements = {record["question_id"]: record for record in retried}
+    if set(replacements) != set(failures) or len(replacements) != len(retried):
+        raise BuildError("provide exactly one retry for every original API error")
     validate_batch_usage_allocations(records, context=str(original))
     validate_batch_usage_allocations(retried, context=str(retry))
-    selected = deepcopy(retried[0])
-    selected["run_id"] = first["run_id"]
-    selected["usage"].setdefault("vepbench", {})["retry"] = {
-        "prior_attempt": failures[0],
-        "source_run_id": retried[0]["run_id"],
-        "source_record_sha256": sha256_json(retried[0]),
-    }
-    validate_result(selected, validator)
-    validate_retry_record(selected)
-    resolved = [
-        selected if record["question_id"] == selected["question_id"] else record
-        for record in records
-    ]
+    resolved = []
+    for record in records:
+        source = replacements.get(record["question_id"])
+        if source is None:
+            resolved.append(record)
+            continue
+        selected = deepcopy(source)
+        selected["run_id"] = first["run_id"]
+        selected["usage"].setdefault("vepbench", {})["retry"] = {
+            "prior_attempt": record,
+            "source_run_id": source["run_id"],
+            "source_record_sha256": sha256_json(source),
+        }
+        validate_result(selected, validator)
+        validate_retry_record(selected)
+        resolved.append(selected)
     validate_attempt_allocations(resolved, context=str(output))
     output.parent.mkdir(parents=True, exist_ok=True)
     with output.open("x", encoding="utf-8", newline="\n") as target:

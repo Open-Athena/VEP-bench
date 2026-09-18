@@ -49,7 +49,7 @@ def results_retry_history(*, results: Path, attempts: Path, output: Path) -> int
 
 @app.command(name="resolve-retry")
 def results_retry(*, original: Path, retry: Path, output: Path) -> int:
-    """Resolve one unchanged retry of a task's single API error, retaining both attempts."""
+    """Resolve one unchanged retry per API error, retaining every original attempt."""
     resolve_retry(original=original, retry=retry, output=output)
     print(f"exported retry-resolved task at {output}")
     return 0

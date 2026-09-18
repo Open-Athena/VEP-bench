@@ -5,7 +5,7 @@ import {readFileSync, writeFileSync} from "node:fs";
 
 if (!process.argv[2]) throw new Error("Expected the downloaded question-index.json path");
 const directory = new URL("../web/blog/introducing-vep-bench/", import.meta.url);
-const manifest = JSON.parse(readFileSync(new URL("specialist-2026-09-17.manifest.json", directory)));
+const manifest = JSON.parse(readFileSync(new URL("specialist-2026-09-18.manifest.json", directory)));
 const bytes = readFileSync(process.argv[2]);
 const index = JSON.parse(bytes);
 const descriptor = manifest.artifacts.question_index;

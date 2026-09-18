@@ -46,14 +46,14 @@ For a frozen local publication, pass `--publication ROOT --manifest FILE` when
 collecting. Download its compact outcome indexes with the post's
 `fetch-strata-inputs.py --outcomes`; their bytes are checked against the manifest
 before analysis. All performance figures in the introduction use
-`specialist-2026-09-17.manifest.json`.
+`specialist-2026-09-18.manifest.json`.
 
 Refresh external comparisons against that same publication while retaining
 the external measurements and retrieval dates:
 
 ```bash
 node projects/explorer/scripts/freeze_comparisons.mjs --refresh-vep \
-  projects/explorer/web/blog/introducing-vep-bench/specialist-2026-09-17.manifest.json \
+  projects/explorer/web/blog/introducing-vep-bench/specialist-2026-09-18.manifest.json \
   ROOT/versions/main/runs.json 2026-09-17
 ```
 

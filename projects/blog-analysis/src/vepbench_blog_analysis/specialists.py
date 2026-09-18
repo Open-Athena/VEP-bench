@@ -597,7 +597,7 @@ def main() -> None:
     parser.add_argument("--plan", type=Path, required=True)
     parser.add_argument("--publication", type=Path)
     parser.add_argument(
-        "--manifest", type=Path, default=POST / "specialist-2026-09-17.manifest.json"
+        "--manifest", type=Path, default=POST / "specialist-2026-09-18.manifest.json"
     )
     parser.add_argument("--policy", type=Path, default=POST / "specialist-policy.json")
     parser.add_argument(

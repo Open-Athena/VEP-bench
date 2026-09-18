@@ -142,7 +142,7 @@ scores; it does not apply newer metadata.
 ```bash
 uv run --locked vepbench-blog-sge-cutoff \
   --publication /path/to/publication-root \
-  --manifest projects/explorer/web/blog/introducing-vep-bench/specialist-2026-09-17.manifest.json \
+  --manifest projects/explorer/web/blog/introducing-vep-bench/specialist-2026-09-18.manifest.json \
   --output projects/explorer/web/blog/introducing-vep-bench/cutoff-analysis.json
 ```
 

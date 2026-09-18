@@ -65,10 +65,10 @@
     {
       "category": "all_covered",
       "eligible_panels": 20,
-      "mean_spearman_rho": 0.7577100403929314,
-      "run_id": "gpt-6-astra-high-opensplice-snv-v2-20260908",
-      "spearman_ci_high": 0.7960039711401111,
-      "spearman_ci_low": 0.7194161096457518,
+      "mean_spearman_rho": 0.7726487994515945,
+      "run_id": "gpt-6-astra-max-opensplice-snv-20260916",
+      "spearman_ci_high": 0.8043552963790872,
+      "spearman_ci_low": 0.7409423025241018,
       "spearman_ci_status": "estimated",
       "task_family": "opensplice_snv"
     },
@@ -165,10 +165,10 @@
     {
       "category": "excluding_avi_model_selection",
       "eligible_panels": 20,
-      "mean_spearman_rho": 0.7577100403929314,
-      "run_id": "gpt-6-astra-high-opensplice-snv-v2-20260908",
-      "spearman_ci_high": 0.7960039711401111,
-      "spearman_ci_low": 0.7194161096457518,
+      "mean_spearman_rho": 0.7726487994515945,
+      "run_id": "gpt-6-astra-max-opensplice-snv-20260916",
+      "spearman_ci_high": 0.8043552963790872,
+      "spearman_ci_low": 0.7409423025241018,
       "spearman_ci_status": "estimated",
       "task_family": "opensplice_snv"
     },
@@ -265,10 +265,10 @@
     {
       "category": "all_covered",
       "eligible_panels": 16,
-      "mean_spearman_rho": 0.3829445804925783,
-      "run_id": "gpt-6-astra-high-satmut-mpra-v2-20260908",
-      "spearman_ci_high": 0.4996870006492331,
-      "spearman_ci_low": 0.2662021603359235,
+      "mean_spearman_rho": 0.40288502909262436,
+      "run_id": "gpt-6-astra-max-satmut-mpra-20260916",
+      "spearman_ci_high": 0.4913364535787265,
+      "spearman_ci_low": 0.3144336046065222,
       "spearman_ci_status": "estimated",
       "task_family": "satmut_mpra"
     },
@@ -365,10 +365,10 @@
     {
       "category": "excluding_avi_model_selection",
       "eligible_panels": 16,
-      "mean_spearman_rho": 0.3829445804925783,
-      "run_id": "gpt-6-astra-high-satmut-mpra-v2-20260908",
-      "spearman_ci_high": 0.4996870006492331,
-      "spearman_ci_low": 0.2662021603359235,
+      "mean_spearman_rho": 0.40288502909262436,
+      "run_id": "gpt-6-astra-max-satmut-mpra-20260916",
+      "spearman_ci_high": 0.4913364535787265,
+      "spearman_ci_low": 0.3144336046065222,
       "spearman_ci_status": "estimated",
       "task_family": "satmut_mpra"
     },
@@ -465,10 +465,10 @@
     {
       "category": "all_covered",
       "eligible_panels": 16,
-      "mean_spearman_rho": 0.6249129063886325,
-      "run_id": "gpt-6-astra-high-sge-v2-20260908",
-      "spearman_ci_high": 0.7658557270169859,
-      "spearman_ci_low": 0.4839700857602791,
+      "mean_spearman_rho": 0.611021038642785,
+      "run_id": "gpt-6-astra-max-sge-20260916",
+      "spearman_ci_high": 0.7512537223512503,
+      "spearman_ci_low": 0.4707883549343197,
       "spearman_ci_status": "estimated",
       "task_family": "sge"
     },
@@ -565,10 +565,10 @@
     {
       "category": "excluding_avi_model_selection",
       "eligible_panels": 13,
-      "mean_spearman_rho": 0.6039939192665644,
-      "run_id": "gpt-6-astra-high-sge-v2-20260908",
-      "spearman_ci_high": 0.7769522686759489,
-      "spearman_ci_low": 0.43103556985717995,
+      "mean_spearman_rho": 0.5886812486242587,
+      "run_id": "gpt-6-astra-max-sge-20260916",
+      "spearman_ci_high": 0.7614319502732843,
+      "spearman_ci_low": 0.41593054697523324,
       "spearman_ci_status": "estimated",
       "task_family": "sge"
     },
@@ -604,7 +604,7 @@
     }
   ],
   "schema_version": 1,
-  "snapshot_sha256": "888655abfe6b801133df927ded338e6a0354e5f79313635861eb12e865f4ca40",
+  "snapshot_sha256": "9620b344753cdb5839ddad25ca89e98bd15db90a065285fc5d45be676f856b96",
   "statistics": {
     "adjustment": "none; pointwise intervals, not simultaneous or pairwise tests",
     "alternative": "two-sided",

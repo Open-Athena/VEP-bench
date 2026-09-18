@@ -53,8 +53,9 @@ and cost allocation ledger, together with its task membership. Its run cost
 includes only that task's allocated charges. A shared token receipt cannot fill
 missing token usage for an individual task.
 
-For a full task with one API error and one explicitly authorized unchanged retry,
+For a full task with API errors and one explicitly authorized unchanged retry per error,
 use `vepbench-publish resolve-retry --original ORIGINAL --retry RETRY --output OUTPUT`.
+The retry file must contain exactly one completed response for every failed question.
 This export retains the original failure inside the selected answer's
 `usage.vepbench.retry` metadata, along with the selected source record's digest
 and run ID. It rejects changes to the question, model, and generation parameters,

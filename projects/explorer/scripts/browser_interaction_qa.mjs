@@ -576,11 +576,11 @@ async function checkSpecialistPlot() {
   }
 }
 const stratumSnapshot = JSON.parse(gunzipSync(await readFile(
-  new URL("../web/blog/introducing-vep-bench/strata-2026-09-17.json.gz", import.meta.url)
+  new URL("../web/blog/introducing-vep-bench/strata-2026-09-18.json.gz", import.meta.url)
 )));
 const expectedStratumModels = stratumModelOrder(stratumSnapshot);
 const stratumIntervals = JSON.parse(await readFile(
-  new URL("../web/blog/introducing-vep-bench/strata-2026-09-17.intervals.json", import.meta.url), "utf8"
+  new URL("../web/blog/introducing-vep-bench/strata-2026-09-18.intervals.json", import.meta.url), "utf8"
 ));
 const expectedStratumRows = stratumRows(stratumSnapshot, stratumIntervals);
 const stratumPlot = 'svg[aria-label="Within-panel Spearman correlations by variant stratum and task"]';
@@ -703,7 +703,7 @@ for (const {domain, range} of await evaluate(`[...document.querySelectorAll('svg
   .map((plot) => ({domain: plot.scale('color').domain, range: plot.scale('color').range}))`)) {
   checkModelColors(domain, range);
 }
-assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="Intelligence Index"] [aria-label="dot"] > *').length`), 16);
+assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="Intelligence Index"] [aria-label="dot"] > *').length`), 17);
 for (const label of ["GeneBench-Pro", "SciCode", "Terminal-Bench-Science", "BixBench3"]) {
   assert.equal(await evaluate(`document.querySelectorAll('svg[aria-label*="${label}"]').length`), 0);
 }
@@ -716,7 +716,7 @@ for (const effort of ["low", "medium", "high"]) {
     .filter((point) => point.getAttribute('aria-label').includes('(${effort})')).length`), 4);
 }
 assert.equal(await evaluate(`[...document.querySelectorAll('svg[aria-label*="Intelligence Index"] [aria-label="dot"] > *')]
-  .filter((point) => point.getAttribute('aria-label').includes('(max)')).length`), 4);
+  .filter((point) => point.getAttribute('aria-label').includes('(max)')).length`), 5);
 assert.deepEqual(await evaluate(`[...document.querySelectorAll('.observablehq--error')].map((node) => node.textContent)`), []);
 
 socket.close();

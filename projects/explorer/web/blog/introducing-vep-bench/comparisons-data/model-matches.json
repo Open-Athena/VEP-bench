@@ -7,13 +7,26 @@
     "harness": "Artificial Analysis evaluation suite (benchmark-specific harnesses)",
     "submitter": "Artificial Analysis",
     "source_id": "aa-gpt-6-astra",
-    "match_status": "No exact effort match",
+    "match_status": "Exact version and effort match",
     "vep_efforts": [
       "low",
       "medium",
-      "high"
+      "high",
+      "max"
     ],
-    "selected_in": []
+    "selected_in": [
+      "aa-intelligence",
+      "aa-briefcase",
+      "aa-gdpval",
+      "aa-automation",
+      "aa-terminal",
+      "aa-scicode",
+      "aa-omniscience",
+      "aa-gdp-pdf",
+      "aa-lcr",
+      "aa-hle",
+      "aa-critpt"
+    ]
   },
   {
     "result_id": "aa-claude-fable-5-1",
@@ -218,7 +231,8 @@
     "vep_efforts": [
       "low",
       "medium",
-      "high"
+      "high",
+      "max"
     ],
     "selected_in": [
       "aa-intelligence",
@@ -304,7 +318,8 @@
     "vep_efforts": [
       "low",
       "medium",
-      "high"
+      "high",
+      "max"
     ],
     "selected_in": [
       "aa-intelligence",
@@ -390,7 +405,8 @@
     "vep_efforts": [
       "low",
       "medium",
-      "high"
+      "high",
+      "max"
     ],
     "selected_in": [
       "aa-intelligence",

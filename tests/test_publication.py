@@ -179,6 +179,67 @@ def test_retry_export_preserves_failure_costs_and_publishes(tmp_path: Path) -> N
         resolve_retry(original=original, retry=retry, output=output)
 
 
+def test_retry_export_recovers_multiple_failures_and_keeps_batch_receipts(tmp_path: Path) -> None:
+    questions, original, retry = retry_fixture(tmp_path)
+    records = [json.loads(line) for line in original.read_text().splitlines()]
+    retried = [json.loads(retry.read_text()), deepcopy(records[1])]
+    retried[1]["run_id"] = "one-retry"
+    prior = records[1]
+    records[1] = error_result(
+        error=ProviderError("Provider returned a malformed result line"),
+        question=prior["question"],
+        question_set_sha256=prior["question_set_sha256"],
+        question_set_size=2,
+        run_id=prior["run_id"],
+        model_id=prior["model"]["model_id"],
+        generation_parameters=prior["generation_parameters"],
+        evaluated_at=datetime(2026, 9, 9, tzinfo=UTC),
+        latency_seconds=None,
+    )
+    records[1]["usage"] = prior["usage"]
+    for record in retried:
+        record["usage"] = {
+            "cost": 0.1,
+            "total_tokens": 100,
+            "vepbench": {
+                "batch_id": "retry-batch",
+                "batch_question_ids": [r["question_id"] for r in retried],
+                "batch_usage": {"cost": 0.2, "total_tokens": 200},
+                "cost_allocation": "equal",
+                "cost_source": "allocated_batch_total",
+            },
+        }
+    original.write_text("".join(canonical_json(r) + "\n" for r in records))
+    retry.write_text("".join(canonical_json(r) + "\n" for r in reversed(retried)))
+    before = original.read_bytes(), retry.read_bytes()
+    output = tmp_path / "resolved" / "run.jsonl"
+    resolve_retry(original=original, retry=retry, output=output)
+    assert before == (original.read_bytes(), retry.read_bytes())
+    resolved = [json.loads(line) for line in output.read_text().splitlines()]
+    for selected, initial, source in zip(resolved, records, retried, strict=True):
+        assert selected["usage"]["vepbench"]["retry"]["prior_attempt"] == initial
+        assert selected["scoring"] == source["scoring"]
+    root = tmp_path / "publication"
+    build_version(
+        questions_path=questions,
+        results_dir=output.parent,
+        result_schema_path=RESULT_SCHEMA,
+        schemas_dir=SCHEMAS,
+        output=root,
+        version_name="candidate",
+    )
+    run = json.loads((root / "versions/candidate/runs.json").read_text())["runs"][0]
+    assert run["retry_count"] == 2
+    assert run["metrics"]["total_cost_usd"] == pytest.approx(0.6)
+    assert run["metrics"]["completed_response_cost_usd"] == pytest.approx(0.2)
+    assert run["metrics"]["completed_response_total_tokens"] == 200
+    assert run["coverage"]["complete"] is True
+    for invalid in (retried[:1], [*retried, retried[0]]):
+        retry.write_text("".join(canonical_json(r) + "\n" for r in invalid))
+        with pytest.raises(BuildError, match="exactly one retry"):
+            resolve_retry(original=original, retry=retry, output=tmp_path / "invalid.jsonl")
+
+
 @pytest.mark.parametrize("field", ["generation_parameters", "model", "question_set_sha256"])
 def test_retry_export_rejects_changed_request(tmp_path: Path, field: str) -> None:
     _, original, retry = retry_fixture(tmp_path)

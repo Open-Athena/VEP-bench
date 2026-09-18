@@ -6,11 +6,11 @@ import test from "node:test";
 import {stratumRows, stratumCsv, stratumModelOrder} from "./strata-analysis.js";
 import {modelFamilyScale} from "../../components/benchmark-data.js";
 
-const snapshot = JSON.parse(gunzipSync(readFileSync(new URL("./strata-2026-09-17.json.gz", import.meta.url))));
-const intervals = JSON.parse(readFileSync(new URL("./strata-2026-09-17.intervals.json", import.meta.url)));
+const snapshot = JSON.parse(gunzipSync(readFileSync(new URL("./strata-2026-09-18.json.gz", import.meta.url))));
+const intervals = JSON.parse(readFileSync(new URL("./strata-2026-09-18.intervals.json", import.meta.url)));
 
 test("intervals are tied to the exact frozen scores and remain available in downloads", () => {
-  const raw = readFileSync(new URL("./strata-2026-09-17.json.gz", import.meta.url));
+  const raw = readFileSync(new URL("./strata-2026-09-18.json.gz", import.meta.url));
   assert.equal(intervals.snapshot_sha256, createHash("sha256").update(raw).digest("hex"));
   assert.equal(intervals.statistics.method, "Student's t");
   assert.equal(intervals.statistics.confidence_level, 0.95);
@@ -42,7 +42,7 @@ test("missing, duplicate or mismatched intervals fail instead of being silently 
 });
 
 test("model order follows the frozen overall leaderboard, independently of stratum scores", () => {
-  const expected = ["GPT 6 Astra (high)", "Gemini 3.8 Flash (high)", "GPT 5.6 Sol (max)",
+  const expected = ["GPT 6 Astra (max)", "Gemini 3.8 Flash (high)", "GPT 5.6 Sol (max)",
     "Muse Spark 1.3 (max)", "GPT 5.6 Terra (max)", "GPT 5.6 Luna (max)",
     "GLM 5.3 (low)", "DeepSeek V4.1 Flash (low)", "Kimi K3 (low)"];
   assert.deepEqual(stratumModelOrder(snapshot), expected);
