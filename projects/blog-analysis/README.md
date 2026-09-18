@@ -54,7 +54,7 @@ the external measurements and retrieval dates:
 ```bash
 node projects/explorer/scripts/freeze_comparisons.mjs --refresh-vep \
   projects/explorer/web/blog/introducing-vep-bench/specialist-2026-09-18.manifest.json \
-  ROOT/versions/main/runs.json 2026-09-17
+  ROOT/versions/main/runs.json 2026-09-18
 ```
 
 The export records library versions and data provenance. Run the package's
