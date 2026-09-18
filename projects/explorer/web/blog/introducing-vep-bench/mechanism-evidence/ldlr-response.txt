@@ -1,0 +1,183 @@
+## Basis of the predictions
+
+These are **sequence-based point predictions, not measured effects**. I assign the largest negative effects to disruption of the clearest activator motif, intermediate effects to plausible promoter-binding elements, and values close to zero where the sequence does not support a reliable mechanism. The small numerical differences among low-confidence predictions should not be interpreted as precisely resolved affinity differences.
+
+All positions below refer to the **unmodified, 318-bp insert**. The deletion alleles retain their VCF anchor bases:
+
+- **V19:** deletes **C128**.
+- **V43:** deletes **G243**.
+- **V44:** deletes **G265**.
+
+The absence of a separate minimal promoter matters: this insert must itself support transcription initiation. Consequently, mutations affecting promoter-factor recruitment could reduce both basal transcription and activation. Conversely, without a mapped transcription start site, it would be unsafe to label every downstream base as either promoter DNA or transcribed 5′ UTR.
+
+The most informative sequence feature is the exact **sterol-response element `ATCACCCCAC` at 161–170**. Nearby C/T-rich elements provide a plausible cooperative promoter architecture. HepG2 cells make SREBP- and Sp-family mechanisms biologically credible, although the assay description does not establish nuclear SREBP abundance or activation by lipid depletion.
+
+## 1. Canonical sterol-response element: strongest predicted losses
+
+The sequence at **161–170, `ATCACCCCAC`**, is a well-established SREBP-recognition sequence. Its two `CAC` segments, at **163–165** and **168–170**, make the substitutions at 164, 165, and 169 especially concerning.
+
+Disrupting this element is expected to reduce activator occupancy and its cooperation with neighboring promoter-bound factors. These are my most confident directional predictions, although their magnitudes depend on basal SREBP activity in the particular HepG2 culture.
+
+| ID | Allele | Predicted effect | Rationale |
+|---|---|---:|---|
+| V27 | T162A | -0.95 | Alters the 5′ portion of the canonical SRE. Likely detrimental, but less severe than changing the central bases of a `CAC` segment. |
+| V28 | A164C | -1.65 | Changes the first `CAC` to `CCC`, disrupting an important recognition feature. The additional C-rich character could conceivably support alternative binding, so I make this slightly less negative than V29. |
+| V29 | A164T | -1.90 | Changes the first `CAC` to `CTC`; a substantial predicted loss of SREBP recognition. |
+| V30 | C165A | -2.10 | Changes the first `CAC` to `CAA`, disrupting another important base in the same recognition segment. |
+| V31 | A169G | -1.60 | Changes the second `CAC` to `CGC`; expected to weaken recognition of the other portion of the SRE. |
+| V32 | T171C | 0.00 | Immediately outside the ten-base SRE. It could affect flanking contacts, but the recognizable core remains intact. |
+| V33 | A175T | 0.00 | In the short interval between the SRE and the downstream C-rich element. No clear binding-site gain or loss supports a directional prediction. |
+
+The exact ordering of V28–V31 is less secure than their shared prediction of substantial loss. If nuclear SREBP is scarce under the untreated assay conditions, these effects could be appreciably smaller.
+
+## 2. Flanking C/T-rich promoter elements
+
+Two related sequences flank the SRE:
+
+- **126–136:** `CTCCTCCTCTT`
+- **177–187:** `CTCCTCCCCCT`
+
+Their reverse complements are purine-rich, and the second contains a particularly conspicuous **C run at 182–186**. These are compatible with noncanonical Sp-family/pyrimidine-box recognition. They are **not both textbook `GGGCGG` GC boxes**, so identifying the bound protein specifically as SP1 would require experimental evidence.
+
+My working model is that these elements recruit activating promoter factors and cooperate with the SRE-bound factor. Under that model, interrupting their sequence organization is usually detrimental.
+
+### Upstream element
+
+| ID | Allele | Predicted effect | Rationale |
+|---|---|---:|---|
+| V18 | C126T | +0.15 | Alters the element’s edge and creates **`TTCC` at 126–129**, an ETS core on the opposite strand. A weak potential gain rather than a confident increase. |
+| V19 | del C128 | -0.45 | Shortens the element and disrupts its repeated C/T pattern. It can also change the spacing of contacts within this promoter module. |
+| V20 | C129A | -0.55 | Introduces a purine into the C/T-rich recognition sequence and removes a C from its repeated pattern. |
+| V21 | C131A | -0.70 | A similar interruption nearer the middle of the element; predicted to be more damaging than an edge substitution. |
+| V22 | C131G | -0.65 | Retains total GC content but changes the strand-specific recognition sequence. GC-content preservation does not preserve a binding site. |
+| V23 | C132T | -0.20 | Preserves pyrimidine character but changes the C pattern. Unlike V18, it does not create an exact `TTCC` core. |
+| V24 | T135G | -0.15 | Changes a base near the element’s downstream edge. The principal repeated sequence remains, so I predict only a small loss. |
+
+### Downstream element and its immediate flank
+
+| ID | Allele | Predicted effect | Rationale |
+|---|---|---:|---|
+| V34 | C177T | +0.15 | Creates **`TTCC` at 177–180**, while leaving the 182–186 C run intact. A possible ETS gain at the edge of the C-rich module. |
+| V35 | C182A | -0.85 | Interrupts the longer C run and the central portion of the downstream element. |
+| V36 | C182T | -0.10 | Also changes the C run, but preserves pyrimidine character and creates **`TTCC` at 181–184**. Potential ETS recruitment offsets much of the predicted loss. |
+| V37 | C185G | -0.95 | Introduces an opposite-strand identity within the C run. Predicted to disrupt C-rich-site recognition despite unchanged GC content. |
+| V38 | C186G | -0.65 | Similar to V37, but at the end of the C run, giving a somewhat smaller predicted loss. |
+| V39 | T190A | 0.00 | Outside the conspicuous C-rich core. No specific mechanism establishes the sign. |
+| V40 | A191G | +0.25 | Creates a forward-strand **`GGAA` core at 191–194**, in the context `CTGGAAAC` at 189–196, without disrupting the upstream C run. |
+
+**Important qualification for V18, V34, V36, and V40:** creating `GGAA` or its reverse complement is not sufficient to prove ETS binding. Flanking sequence, factor availability, and competition with existing proteins matter. I therefore assign only modest gains, or—in V36—a near-zero net effect. V36 could be negative if loss of C-rich-site binding dominates, or positive if the newly created ETS site is productive.
+
+## 3. Existing ETS-like sites and the G243 deletion
+
+### V06: loss of an existing core
+
+**V06, G74C: −0.45.**
+
+The reference contains **`GGAA` at 74–77**. G74C changes it to `CGAA`, eliminating that ETS core. ETS-family activators, including broadly expressed promoter-associated ETS proteins, provide a plausible mechanism for reduced reporter activity.
+
+The core disruption is unambiguous; occupancy and functional importance are not. This is why its predicted loss is smaller than the losses assigned to the exact SRE.
+
+### V43: improved flank without deletion of the core
+
+**V43, del G243: +0.35.**
+
+The reference sequence at **241–249** is:
+
+```text
+GCGGGAAGC
+```
+
+Deleting G243 gives:
+
+```text
+GCGGAAGC
+```
+
+The existing **`GGAA` at reference positions 244–247 remains intact**. The deletion instead places C immediately before it, producing the extended `CGGAAG` sequence characteristic of many ETS-binding sites. This is a more persuasive potential affinity improvement than creation of an isolated four-base core.
+
+The opposite-strand ETS core **`TTCC` at 256–259** also remains intact. Because the deletion is upstream of both cores, their mutual spacing is unchanged.
+
+The positive prediction remains conditional: binding measurements would be needed to establish that the altered flank actually improves occupancy in this construct.
+
+## 4. Weak nuclear-receptor-like sequences
+
+Several sequences resemble nuclear-receptor half-sites, but none warrants a strong factor assignment:
+
+- **104–109:** `ATGTCA`, a near match to `AGGTCA`.
+- **143–148:** `AGGTGA`, another near match.
+- **264–279:** `AGGACA-CAGC-AGGTCG`, two imperfect half-sites separated by four bases.
+
+The last arrangement is compatible in spacing with some nuclear-receptor dimers, but both half-sites are imperfect. It is not evidence by itself for an occupied LXR/RXR site, and it is not a canonical HNF4-style DR1 arrangement. I use these observations only for weak directional priors.
+
+| ID | Allele | Predicted effect | Rationale |
+|---|---|---:|---|
+| V13 | G106C | -0.18 | Further degrades the `ATGTCA` half-site-like sequence. |
+| V14 | G106T | -0.10 | Also changes that sequence, but G/T variation at this half-site position is tolerated by some nuclear receptors. |
+| V15 | T107C | -0.15 | Removes the T corresponding to a generally preferred half-site position. |
+| V16 | T107G | -0.22 | Similarly removes that T; a weak predicted loss. The precise difference from V15 is uncertain. |
+| V17 | T112C | 0.00 | Outside the half-site-like sequence; no clear separate mechanism. |
+| V25 | T141A | 0.00 | Outside the `AGGTGA` near match. |
+| V26 | A143T | -0.10 | Changes the leading purine of the near match to a pyrimidine, making it less receptor-like. |
+| V44 | del G265 | -0.30 | Removes a G within the first imperfect half-site at 264–269, disrupting both its sequence and the local arrangement. |
+| V45 | A271G | 0.00 | Changes the four-base spacer from `CAGC` to `CGGC`, without changing its length or either half-site. Spacer preferences are possible but not established here. |
+| V46 | T277A | -0.30 | Removes the preferred T from the second half-site-like sequence, `AGGTCG` at 274–279. |
+
+These are low-confidence predictions. A receptor bound in a repressive rather than activating state could reverse the direction of a binding-loss effect.
+
+There is also an important alternative interpretation around V13–V16: **104–106 is an `ATG`**. V13/V14 remove it, and V16 changes its following base to G, potentially improving a translation-initiation context. However, this requires transcription to start upstream of that ATG. The supplied construct information does not establish that, and a translation effect would not automatically produce the same change in barcode-linked RNA output. I therefore do **not** treat these variants as established upstream-ORF mutations.
+
+## 5. Other GC-rich regions: small effects only
+
+These predictions are weaker than those for the central SRE/C-rich module.
+
+| ID | Allele | Predicted effect | Sequence-based rationale |
+|---|---|---:|---|
+| V03 | C46T | -0.08 | Changes the `CCC` run at 44–46 to `CCT` within `GCCCTGGCG` at 43–51. Possible weak loss of C-rich recognition, but no definitive site assignment. |
+| V04 | G51T | -0.12 | Changes `GGCG` at 48–51 to `GGCT`. A small negative bias for weakening this GC-rich patch. |
+| V47 | C290A | -0.35 | Alters the C within **`GGGTCGGGA` at 286–294**, a plausible noncanonical GC/GT-box-like sequence. |
+| V48 | C290T | -0.20 | Changes the same position, but T can be compatible with some GC/GT-box-binding preferences; predicted to be less damaging than A. |
+| V49 | T302G | +0.15 | Changes **302–307 from `TGGCAG` to `GGGCAG`**, bringing it closer to the common GC-box core `GGGCGG`. |
+| V50 | G303C | -0.12 | Breaks the adjacent G pair at 303–304 and makes the same local region less G-run-like. |
+
+These are affinity hypotheses, not consequences of GC content alone. In particular, I do not assume that creating or removing a CpG causes a methylation-mediated effect on a newly transfected episomal reporter.
+
+## 6. A/T-rich tract and variants without a supported directional mechanism
+
+### V09–V12: near-zero estimates for the A/T-rich tract
+
+The sequence at **93–99 is `TTAAAAA`**.
+
+| ID | Allele | Predicted effect |
+|---|---|---:|
+| V09 | T93C | -0.04 |
+| V10 | T93G | -0.06 |
+| V11 | A95C | -0.10 |
+| V12 | A95G | -0.10 |
+
+These substitutions interrupt the A/T-rich tract; changing A95 splits it more centrally than changing T93. Nevertheless, this is **not an unambiguous canonical TATA box**, and no initiation site or relevant factor occupancy is supplied. The small negative biases should therefore not be read as claims of established TBP-site disruption. Their signs are essentially unresolved.
+
+### Neutral point predictions
+
+For the following candidates, I do not find sufficient evidence for a directional effect:
+
+- **V01 A20T and V02 T23C:** in an upstream A/T-rich region without a compelling complete binding motif. V01 creates `TAAT` at 20–23, but that short core alone is insufficient to infer productive homeodomain-factor recruitment in HepG2.
+- **V05 C66G:** changes `GGAC` at 63–66 to `GGAG`; neither is the standard `GGAA`/`GGAT` ETS core, so I do not infer a functional ETS gain.
+- **V07 G81A:** outside the recognizable 74–77 ETS core; no reliable effect follows from this more distant flank.
+- **V08 T86A:** no well-supported motif mechanism.
+- **V41 T204A and V42 T212G:** no clearly assigned occupied site or mapped initiation feature supports a sign.
+
+I assign **0.00** to each. Zero here means *no predicted net change given the available evidence*, not demonstrated biological neutrality.
+
+## Uncertainty and evidence needed
+
+The strongest conclusion is the expected negative direction for mutations disrupting **161–170**. The main uncertainties are:
+
+1. **Actual factor activity:** untreated HepG2 culture conditions do not establish how much active nuclear SREBP is present.
+2. **Occupancy and factor identity:** the C-rich, ETS-like, and receptor-like sites require binding or factor-perturbation evidence.
+3. **Competition and cooperation:** a newly created ETS site could enhance transcription, compete with another activator, or recruit a different ETS-family member.
+4. **Transcription-start placement:** TSS mapping is needed before assigning initiator, 5′-UTR, or upstream-ORF mechanisms.
+5. **Magnitude:** the numerical coefficients require the reporter measurements themselves for calibration.
+
+Thus, the large SRE-disrupting losses are more defensible than the small peripheral effects, and the weak gain-of-site predictions are particularly liable to change sign.
+
+FINAL: {"V01": 0.0, "V02": 0.0, "V03": -0.08, "V04": -0.12, "V05": 0.0, "V06": -0.45, "V07": 0.0, "V08": 0.0, "V09": -0.04, "V10": -0.06, "V11": -0.1, "V12": -0.1, "V13": -0.18, "V14": -0.1, "V15": -0.15, "V16": -0.22, "V17": 0.0, "V18": 0.15, "V19": -0.45, "V20": -0.55, "V21": -0.7, "V22": -0.65, "V23": -0.2, "V24": -0.15, "V25": 0.0, "V26": -0.1, "V27": -0.95, "V28": -1.65, "V29": -1.9, "V30": -2.1, "V31": -1.6, "V32": 0.0, "V33": 0.0, "V34": 0.15, "V35": -0.85, "V36": -0.1, "V37": -0.95, "V38": -0.65, "V39": 0.0, "V40": 0.25, "V41": 0.0, "V42": 0.0, "V43": 0.35, "V44": -0.3, "V45": 0.0, "V46": -0.3, "V47": -0.35, "V48": -0.2, "V49": 0.15, "V50": -0.12}

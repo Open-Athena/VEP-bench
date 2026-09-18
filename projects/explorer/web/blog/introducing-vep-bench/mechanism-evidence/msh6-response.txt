@@ -1,0 +1,157 @@
+## Interpretation and numerical scale
+
+These are **sequence-based point predictions**, not measurements. The strongest conclusions concern changes to the splice-site dinucleotides and their immediate recognition sequences. Predictions involving branchpoint choice, cryptic splice sites, or exonic regulatory motifs are less certain.
+
+The absolute percentage-point scale is especially uncertain because wild-type PSI is not supplied. I use large negative values for likely near-loss-of-function alleles, intermediate negatives for weakened sites with plausible rescue, and small changes for unvalidated regulatory-motif effects.
+
+A consequential assay ambiguity is how **boundary-shifted inclusion products** were counted. I allow plausible nearby splice sites to reduce the predicted severity of a lesion. If the PSI calculation counts only the exact wild-type junctions, several rescue-based predictions below would be substantially more negative.
+
+All deletion intervals below describe the bases actually removed, **excluding the retained VCF anchor**.
+
+## Relevant sequence features
+
+### Acceptor and upstream intron
+
+The tested exon begins at 217. Its wild-type acceptor is:
+
+```text
+201–213        214–216   217 onward
+TTTTTTTTTTTTT  AAG       GTGAAAG...
+                  AG | G
+```
+
+Important features are:
+
+- **AG215–216**, the canonical acceptor dinucleotide.
+- **T201–213**, a 13-nt uninterrupted polypyrimidine tract.
+- **A193**, in the branchpoint-like sequence `TTCAT` at 190–194, 23 nt before acceptor G216. This is a plausible branchpoint, **not an experimentally established one**.
+- Other possible branchpoint contexts remain upstream. These include `GTAAT` at 166–170, potentially branching at A169, and a weaker context around A174.
+- The complete cassette also contains `TACTAAC` at **142–148**, with a strong-looking branchpoint context around A147. It is relatively distant from the wild-type acceptor, but becomes closer after upstream deletions.
+
+Potential downstream acceptor dinucleotides include:
+
+- **AG222–223**, which could produce an exon beginning at 224.
+- **AG243–244**, which could produce an exon beginning at 245.
+
+Their presence does not prove use, but they are important alternatives when the normal acceptor is damaged.
+
+### Donor
+
+The wild-type donor is:
+
+```text
+304–306 | 307–312
+   TAG  | GTAAGA
+```
+
+The essential intronic **GT307–308** is intact in wild type. The site also has favorable +3 A, +4 A, and +5 G, although exonic −3 T and intronic +6 A are not optimal consensus bases. Thus, both the terminal exonic bases and intronic positions +3 through +6 can materially affect recognition.
+
+### Internal regulatory sequences
+
+Several internal sequences support weaker, testable regulatory hypotheses:
+
+- Purine-rich `GAAAG` at **219–223** and `AAGTGAAA` at **242–249** could contribute enhancer activity.
+- `CCAG` at **253–256** matches a short SRSF2-like enhancer consensus. Such a short match is not proof of binding.
+- `TGCATG` at **265–270**, or RNA `UGCAUG`, is a recognizable **RBFOX-family binding motif**. Exonic RBFOX binding can repress inclusion, although activity here depends on factor expression and occupancy in HEK293T cells.
+- `TCTCT` at **282–286**, or RNA `UCUCU`, is a plausible **PTBP-family-associated silencer motif**.
+
+The complete upstream and downstream introns are **154 nt and 132 nt**, respectively. Consequently, the intronic deletions should not be penalized simply because the *native* flanks become short: the fixed reporter introns remain part of the substrates.
+
+## 1. Upstream intronic variants: V01–V09
+
+| Candidate | Predicted ΔPSI | Biological justification |
+|---|---:|---|
+| **V01** | **0** | A160T is well upstream of the acceptor and does not alter an identified core splice signal. It increases local pyrimidine content, but that alone does not support a directional effect. |
+| **V02** | **+3** | G166C changes `GTAAT` to `CTAAT`, improving a branchpoint-like context around A169. This candidate is relatively distal, and an adequate nearer branchpoint may already exist, so only a small gain is predicted. |
+| **V03** | **−4** | Deletion of 174–179 removes A174 and its surrounding weaker branchpoint-like context. The candidate around A193 and the terminal polypyrimidine tract remain intact. A small loss is plausible, but neutrality or a spacing benefit is also possible. |
+| **V04** | **0** | C179G does not alter a clearly identifiable essential motif. A specific functional mechanism is not supported by the supplied sequence alone. |
+| **V05** | **0** | A181G changes one adenine in the A-rich region. It also creates AG180–181, but that dinucleotide lacks a convincing local acceptor context and lies upstream of candidate branchpoint A193. I do not predict substantial competing-acceptor use. |
+| **V06** | **0** | A183C could affect an unrecognized branchpoint or regulatory element, but no strong branchpoint context centered on A183 is evident. The better-positioned `TTCAT` candidate remains intact. |
+| **V07** | **−22** | Deletion of 184–204 removes the region containing candidate A193 and the beginning of the terminal T tract. Nevertheless, **nine consecutive Ts remain at 205–213**, and upstream branchpoint candidates remain. This supports a moderate loss rather than obligatory abolition. |
+| **V08** | **0** | T184C preserves pyrimidine character and does not alter the identified acceptor, terminal T tract, or `TTCAT` candidate. There is insufficient evidence for a directional regulatory effect. |
+| **V09** | **−30** | Deletion of 186–206 also removes candidate A193, but leaves only **seven consecutive Ts at 207–213**. I therefore predict a somewhat larger loss than V07. Upstream branchpoint use could still rescue substantial inclusion. |
+
+The branchpoint-deletion predictions are less confident than direct splice-site predictions. In particular, the upstream `TACTAAC` context and candidates around A169/A174 could make V07 and V09 less damaging than predicted.
+
+## 2. Acceptor-region variants: V10–V21
+
+A major distinction here is between **removing the annotated AG** and **actually leaving the mutant sequence without a usable nearby AG**.
+
+| Candidate | Predicted ΔPSI | Biological justification |
+|---|---:|---|
+| **V10** | **−55** | Deletion of 197–217 removes the entire T201–213 tract, AG215–216, and the first exon base. AG222–223 remains available, but candidate A193 would then be only nine nucleotides before that acceptor in the mutant sequence—too close for a conventional branchpoint arrangement. Rescue would require a more upstream branchpoint and a substantially weaker pyrimidine tract. |
+| **V11** | **−30** | Deletion of 205–225 removes both AG215–216 and AG222–223. AG243–244 remains, preceded by the exonic T-rich sequence around 228–241. Retained upstream branchpoint candidates have plausible spacing to this alternative site. Partial rescue is therefore plausible, producing a 62-nt retained exon. |
+| **V12** | **−22** | Deletion of 207–227 also leaves AG243–244 as the next plausible acceptor. Importantly, it joins T201–206 to T228–233, creating **12 consecutive Ts** in the mutant allele. This is a stronger potential rescue context than V11, although the exon would again begin at 245. |
+| **V13** | **−23** | Deletion of 210–215 removes the acceptor A and part of the T tract. AG222–223 could rescue inclusion, but several purines separate it from the remaining main T tract. |
+| **V14** | **−14** | Deletion of 212–217 removes the original AG and first exon G. However, T201–211 becomes adjacent to T218, giving a long T run upstream of surviving AG222–223. This is a relatively favorable shifted-acceptor rescue configuration. |
+| **V15** | **−17** | Deletion of 214–216 removes `AAG`, but leaves the entire 13-T tract and AG222–223. Rescue at the latter would retain an 83-nt exon. The intervening sequence is somewhat less favorable than for V14. |
+| **V16** | **+2** | A215G destroys AG215–216 but simultaneously creates **AG214–215**. The local acceptor becomes `TAG|GGT...`, shifting the boundary one base upstream. Preserved pyrimidines and a more conventional terminal `TAG` support near-neutrality or a small gain, rather than a severe loss. |
+| **V17** | **−7** | Deleting G216 joins retained A215 to **G217**, recreating an AG acceptor. The likely exon would begin at T218. Loss of the preferred first-exon G and altered local context justify a small decrease, not a knockout. |
+| **V18** | **−6** | Deletion of 216–236 joins retained **A215 to G237**, again reconstructing an acceptor AG. The T tract is untouched, and an exon beginning at 238 would be 69 nt long. The small negative estimate reflects changed exon-start context and regulatory content; the allele does **not** necessarily abolish acceptor recognition. |
+| **V19** | **−10** | G216A creates **AG216–217**, allowing a one-base downstream acceptor shift. The T tract remains, but the extra intervening A and loss of the original first-exon G make this somewhat less favorable than wild type. |
+| **V20** | **−30** | G216T does not recreate an immediately adjacent AG. Rescue would instead require AG222–223, with a less favorable tract-to-acceptor arrangement. I predict a larger loss than V19, but not necessarily complete skipping. |
+| **V21** | **−6** | G217T leaves the essential AG intact but changes the first exonic nucleotide from G to T. This can weaken the extended acceptor context without destroying the core site. |
+
+These rescue predictions concern **retention of most of the tested exon**, sometimes with a shifted boundary. Junction-resolved RNA measurements are needed to establish whether those products form and whether they contribute to the reported PSI.
+
+## 3. Internal exonic variants: V22–V31 and V35
+
+These predictions are lower-confidence than direct splice-site effects. I do not impose a uniform negative effect on every exon-shortening deletion: a deletion can remove an enhancer, a silencer, both, or neither.
+
+| Candidate | Predicted ΔPSI | Biological justification |
+|---|---:|---|
+| **V22** | **−4** | A222T disrupts the purine-rich `GAAAG` sequence at 219–223, supporting a weak enhancer-loss hypothesis. It also removes AG222–223, which could instead reduce cryptic-site competition. With the normal acceptor intact, the net effect is likely small. |
+| **V23** | **0** | G234A lies just after the six-T stretch at 228–233. Neither essential splice site is changed, and the supplied sequence does not establish a directional regulatory mechanism. |
+| **V24** | **−16** | Deletion of 241–261 removes the purine-rich 242–249 region and `CCAG`253–256, together with other potential enhancer context. This gives a plausible moderate enhancer-loss effect. The remaining 69-nt exon is not intrinsically too short to splice. |
+| **V25** | **−7** | Deletion of `TGAAAC`245–250 removes part of the same putative enhancer-rich region. Its smaller size and preservation of the `CCAG` motif support a smaller effect than V24. |
+| **V26** | **−8** | Deletion of `GCCAGC`252–257 removes `CCAG`253–256. Loss of a short SR-protein-associated enhancer is plausible, but actual binding and enhancer activity are unproven. |
+| **V27** | **0** | T259C does not alter a core splice signal or the RBFOX hexamer. Possible changes in local CA-rich recognition or RNA structure are not sufficiently constrained to assign a direction. |
+| **V28** | **+8** | Deletion of 261–281 removes the **UGCAUG motif at 265–270**. If it functions as an exonic RBFOX-dependent silencer in these cells, deletion should increase inclusion. This is a motif-based hypothesis, not a confident gain-of-function conclusion. |
+| **V29** | **0** | A264C changes the base immediately before the RBFOX hexamer but preserves its core sequence. A consequential affinity change is possible, but not established by the input. |
+| **V30** | **+6** | Deletion of 276–296 removes the **UCUCU region at 282–286**, while preserving the terminal donor recognition sequence. Relief of exonic pyrimidine-rich silencing is plausible. Loss of other positive elements could offset or reverse this effect. |
+| **V31** | **+3** | Deletion of CTC283–285 directly disrupts the same UCUCU motif with a much smaller sequence change. A modest silencer-loss gain is predicted. |
+| **V35** | **0** | Deletion of TTG292–294 leaves both splice junctions and their immediate recognition sequences intact. No sufficiently specific enhancer or silencer change supports a confident direction. |
+
+The positive predictions for **V28, V30, and V31** require functional regulatory binding. HEK293T context makes such mechanisms biologically possible, but the cell-line label does not establish occupancy of these particular sites. These alleles could be neutral—or negative if enhancer loss dominates.
+
+## 4. Donor-region variants: V32–V49
+
+For this group, it is essential to reconstruct the **mutant junction**, including bases exposed by a deletion.
+
+In the table, “candidate” means a possible cryptic rescue donor, **not a claim that it will be used**.
+
+| Candidate | Predicted ΔPSI | Mutant donor context and interpretation |
+|---|---:|---|
+| **V32** | **−46** | Deletion of 286–306 leaves **`CTC|GTAAGA`**. The intronic GT remains, but the favorable terminal exonic AG is lost. This should substantially weaken U1-dependent recognition. |
+| **V33** | **−70** | Deletion of 288–308 removes the canonical donor GT and does not create a promising local replacement. Strong loss is predicted. |
+| **V34** | **−54** | Deletion of 290–310 removes the canonical donor, but retained G288–T289 can form candidate **`CTG|GTGACA`**. Its +5 C and other nonoptimal positions make it weak, but it offers more plausible rescue than a lesion with no nearby GT. |
+| **V36** | **−68** | Deletion of 292–312 removes the canonical donor. The nearby candidate becomes **`CTG|GTGCCA`**, with poor +4/+5 positions. Little effective rescue is expected. |
+| **V37** | **−66** | Deletion of 294–314 removes the canonical donor. The residual upstream candidate **`CTG|GTGCTT`** has unfavorable +4 C and +5 T. A severe decrease is predicted. |
+| **V38** | **−64** | Deletion of 295–315 joins G294 to T316, making candidate **`CTT|GTAAAC`**. It has GT and favorable +3/+4 As, but poor terminal exonic bases and +5/+6 context. Rescue is possible but likely inefficient. |
+| **V39** | **−19** | Deletion of 304–306 produces **`AAT|GTAAGA`**. Terminal exonic G is lost, but −3 A and −2 A remain favorable. This should be less damaging than alleles that disrupt both −2 and −1. |
+| **V40** | **−43** | Deleting G306 produces **`TTA|GTAAGA`**, weakening both exonic −2 and −1 relative to wild type. Thus, a one-base deletion can be more damaging than V39’s three-base deletion. |
+| **V41** | **−25** | G306A gives **`TAA|GTAAGA`**. The intronic site remains intact, but replacing terminal exonic G weakens the extended donor. |
+| **V42** | **−29** | G306T gives **`TAT|GTAAGA`**. This also removes the strongly preferred terminal exonic G; I predict a slightly larger loss than V41, though that fine ranking is uncertain. |
+| **V43** | **−71** | Deletion of 307–327 removes the normal intronic donor. G306 joined to T328 could make **`TTA|GTTGAC`**, but its surrounding sequence is very poor. The presence of a newly juxtaposed GT does not imply an effective rescue site. |
+| **V44** | **−72** | G307C changes the normal donor to **`TAG|CTAAGA`**. This destroys the essential +1 G. It is **CT**, not the occasionally functional GC donor class. Strong loss is predicted. |
+| **V45** | **−39** | Deletion of 309–311 produces **`TAG|GTACAT`**. GT is retained, but +4 A and +5 G are lost. A favorable new +6 T provides some compensation, not full restoration. |
+| **V46** | **−63** | Deletion of 309–314 produces **`TAG|GTTTAA`**. Multiple important positions beyond GT become unfavorable, supporting a severe decrease despite retention of the dinucleotide. |
+| **V47** | **−24** | A309C produces **`TAG|GTCAGA`**. The +3 position changes from a preferred purine to C, weakening recognition while preserving the rest of the core donor. |
+| **V48** | **−44** | Deletion of 310–315 produces **`TAG|GTATAA`**, disrupting +4 and +5 without the favorable +6 T gained by V45. |
+| **V49** | **−35** | Deletion of 310–330 produces **`TAG|GTAACA`**. The site retains GT, +3 A, and +4 A, but places **C332 from the fixed FAS intron at donor +5**. Thus, its principal predicted defect is a strong +5 mismatch, not simply intron shortening. |
+
+The exact ordering within the severe-loss group is not robust. The confident conclusions are that the canonical donor is removed or strongly weakened; residual inclusion will depend on cryptic-site choice and competition with exon skipping.
+
+### V50
+
+**V50: −2 PSI points.** T328A is at intronic +22, outside the core donor. It breaks a short T-rich segment in a generally pyrimidine-rich proximal downstream region. A small reduction in a U-rich intronic enhancer is plausible, but no specific binding event is established. A neutral effect is a credible alternative.
+
+## What would resolve the main uncertainties?
+
+- **Measured wild-type PSI** is needed to calibrate the absolute percentage-point scale and its floor/ceiling.
+- **Junction-resolved RT-PCR or RNA sequencing** is needed to test the proposed acceptor and donor shifts, particularly for V10–V20 and the donor-spanning deletions.
+- **Branchpoint mapping** would distinguish use of A193 from upstream alternatives and substantially improve predictions for V02, V03, V07, and V09.
+- **Targeted motif substitutions, factor perturbation, or binding measurements in HEK293T cells** would test the enhancer/silencer hypotheses for V22–V31.
+- Zero-valued predictions mean **no defensible directional effect from the supplied sequence**, not experimentally demonstrated neutrality.
+
+FINAL: {"V01": 0, "V02": 3, "V03": -4, "V04": 0, "V05": 0, "V06": 0, "V07": -22, "V08": 0, "V09": -30, "V10": -55, "V11": -30, "V12": -22, "V13": -23, "V14": -14, "V15": -17, "V16": 2, "V17": -7, "V18": -6, "V19": -10, "V20": -30, "V21": -6, "V22": -4, "V23": 0, "V24": -16, "V25": -7, "V26": -8, "V27": 0, "V28": 8, "V29": 0, "V30": 6, "V31": 3, "V32": -46, "V33": -70, "V34": -54, "V35": 0, "V36": -68, "V37": -66, "V38": -64, "V39": -19, "V40": -43, "V41": -25, "V42": -29, "V43": -71, "V44": -72, "V45": -39, "V46": -63, "V47": -24, "V48": -44, "V49": -35, "V50": -2}

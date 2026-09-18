@@ -1,0 +1,11 @@
+**Crafting sequence predictions**
+
+I need to create predictions based on the sequence and possible exon variations for the PSI directions. I should carefully analyze how to map sequences and splice sites while considering deletion effects. I have a budget of around 60k tokens, but I should avoid wasting any. It’s essential to approach this as an analytical task rather than an experimental one. I can mentally visualize the sequence I have, keeping in mind its genomic orientation.**Validating sequence positions**
+
+I need to validate the sequence positions, deletion endpoints, and the branchpoint motif, particularly focusing on the polyT tract acceptor AG215-216. The exon sequence spans a long range of nucleotides, and I'll make sure to validate those along with the intron. It’s crucial to verify everything thoroughly while using the 80 lines of information I have. I want to ensure that all elements align correctly in the analysis.**Verifying sequence lengths**
+
+I need to verify the sequence lengths across the different lines, which include the Fas exon ends. The breakdown is by line, from 1 to 7, covering specific ranges. I need to focus on the exact positions from 147 to 216 and identify the branchpoints. I’ll enumerate the sequence at the end of line 2 to confirm and structure it properly. This process includes indexing in block 10 for better reference.**Counting candidate lengths**
+
+I need to ensure I carefully count the candidate sequence for V10, specifically "TGTGATTTTTTTTTTTTTAAGG." They say the reference includes all sizes, which makes me wonder about the total length — maybe 22? It seems like I should also consider that the other candidates are likely 21 base pair windows, with the exception of 4 or 7. I want to be thorough in calculating this!**Evaluating weight estimates**
+
+I think it's best to explain any unknown weights and provide approximate values. I could give a range, with a maximum of 72 and a minimum of 8, creating a clear baseline. There's really no need to claim a weight of 75 unless there's a physical concern involved. I want to avoid making cumbersome assumptions about the weights without being explicit, just to keep things straightforward for everyone!

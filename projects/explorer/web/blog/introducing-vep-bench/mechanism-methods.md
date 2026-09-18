@@ -13,6 +13,49 @@ performance sample or a case selected for model failure.
 On September 17, the user also requested the older LDLR promoter example below,
 retaining its full 50-allele panel before model-trace inspection.
 
+## Complete prompts and responses
+
+The exact final responses, including their original Markdown and all 50 final
+predictions, are committed with this article. Expand either response to read it
+here. The downloads also include the exact prompts, baseline answers, and data
+needed to recompute both correlations. The separate provider-exposed summaries
+are partial records, not complete or verified accounts of internal reasoning.
+
+```js
+import MarkdownIt from "npm:markdown-it@14.1.0";
+const mechanismCases = [
+  {name: "MSH6", prompt: FileAttachment("./mechanism-evidence/msh6-prompt.txt"),
+    response: FileAttachment("./mechanism-evidence/msh6-response.txt"),
+    summary: FileAttachment("./mechanism-evidence/msh6-reasoning-summary.txt"),
+    baseline: FileAttachment("./mechanism-evidence/msh6-baseline-response.txt"),
+    comparison: FileAttachment("./mechanism-evidence/msh6-comparison.json")},
+  {name: "LDLR", prompt: FileAttachment("./mechanism-evidence/ldlr-prompt.txt"),
+    response: FileAttachment("./mechanism-evidence/ldlr-response.txt"),
+    summary: FileAttachment("./mechanism-evidence/ldlr-reasoning-summary.txt"),
+    baseline: FileAttachment("./mechanism-evidence/ldlr-baseline-response.txt"),
+    comparison: FileAttachment("./mechanism-evidence/ldlr-comparison.json")}
+];
+for (const example of mechanismCases) {
+  display(html`<p><strong>${example.name}:</strong>
+    <a href=${await example.prompt.url()} download>Prompt</a> ·
+    <a href=${await example.response.url()} data-mechanism-response=${example.name} download>Complete response</a> ·
+    <a href=${await example.baseline.url()} download>Baseline response</a> ·
+    <a href=${await example.summary.url()} download>Provider-exposed summary</a> ·
+    <a href=${await example.comparison.url()} download>Comparison data</a></p>`);
+  const responseDetails = document.createElement("details");
+  const responseSummary = document.createElement("summary");
+  responseSummary.textContent = `Read the complete ${example.name} explanation response`;
+  const responseCard = document.createElement("div");
+  responseCard.className = "card vepbench-record-content";
+  responseCard.setAttribute("aria-label", `Complete ${example.name} explanation response`);
+  responseCard.innerHTML = new MarkdownIt({html: false}).render(await example.response.text());
+  responseDetails.append(responseSummary, responseCard);
+  display(responseDetails);
+}
+display(html`<p><a href=${await FileAttachment("./mechanism-evidence/manifest.json").url()} download>Download the evidence manifest</a>
+  with file sizes and SHA-256 hashes.</p>`);
+```
+
 ## Reference interpretation, fixed before model explanations
 
 The [OpenSplice preprint](https://www.biorxiv.org/content/10.64898/2026.05.22.727141v1)
@@ -258,6 +301,132 @@ it predicts A164T to be more damaging than A164C, whereas A164C has the larger
 measured loss. The C/T-rich flanking elements are also correctly localized, with
 Sp-family binding presented as a hypothesis requiring evidence.
 
+### What the established LDLR elements reveal
+
+This expanded audit was added **after inspecting the responses**, on September 18.
+It does not change the five preselected illustrations or the 50 scored variants.
+The reference is now more specific than a search for plausible short motifs:
+[satMutMPRA Fig. 1d and Supplementary Table 12](https://www.nature.com/articles/s41467-019-11526-w)
+connect the activity landscape to previously studied promoter elements and alleles.
+The [GPN-Star paper, Fig. 4D](https://pmc.ncbi.nlm.nih.gov/articles/PMC12458161/)
+labels four blocks **FP1, SREBP1, SREBP2, and SP1** and examines dependencies
+within and between them.
+
+The nomenclature needs care. The [satMutMPRA supplement, Table 12, pp. 92–93](https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fs41467-019-11526-w/MediaObjects/41467_2019_11526_MOESM1_ESM.pdf)
+defines the numbered labels as SRE repeats (with a duplicated “SREBP1” in the
+caption). They should not be treated as proof that SREBP-1 and SREBP-2 bind
+different sites. Classic functional studies identify a distal **Sp1 site in
+repeat 1**, the **SRE within repeat 2**, and a proximal **Sp1 site in repeat 3**.
+For example, [Peeters et al.](https://pubmed.ncbi.nlm.nih.gov/9610768/) found that
+a repeat-1 deletion abolished Sp1 binding in a footprint assay and reduced
+reporter activity to about 10% of normal. Astra's Sp-family hypothesis for the
+upstream C/T-rich sequence is therefore compatible with established biology,
+despite the figure's SREBP1 label.
+
+The following mapping uses the submitted insert's **1-based, inclusive**
+coordinates. Genomic GRCh38 position is reporter position + 11,089,230;
+the corresponding NM_000527.4 upstream coordinate is position − 319.
+The latter is relative to translation, not a transcription-start coordinate.
+These offsets are checked against every selected source allele; V34, for example,
+is reporter C177T = chr19:11089407 C>T = c.-142C>T.
+FP1 uses the experimentally footprinted sequence. The other three intervals
+are the precise cores discussed by Astra, within the known regulatory modules;
+they do not define complete binding footprints or classify their flanks as inert.
+
+| Literature element | Reporter sequence interval | Selected variants | What Astra recognized |
+| --- | --- | --- | --- |
+| FP1 | 81–100, `GAGCTTCACGGGTTAAAAAG` | V07–V12 | Does not identify the footprint; treats G81A/T86A as without a supported direction and the A/T-rich tract as nearly neutral. |
+| Repeat 1, “SREBP1” figure label | 126–136, `CTCCTCCTCTT` | V18–V24 | Locates the C/T-rich core and proposes Sp-family cooperation, but assigns much smaller losses than measured. |
+| Repeat 2 / SRE, “SREBP2” figure label | 161–170, `ATCACCCCAC` | V27–V31 | Correctly recognizes the canonical SRE and shared negative direction. |
+| Repeat 3 / SP1 | 177–187, `CTCCTCCCCCT` | V34–V38 | Locates the core but underweights its importance, especially when proposing compensating ETS recruitment. |
+
+**FP1 is a missed regulatory element, not merely a missing name.**
+[Mehta et al.](https://pubmed.ncbi.nlm.nih.gov/8969230/) footprinted this exact
+20-base sequence, tested substitutions in reporters, and observed sequence-specific
+nuclear-protein binding. Their induction experiments involved sterol depletion;
+we do not transfer that treatment or its effect size to this untreated MPRA,
+nor infer the identity of the bound protein. The independent benchmark
+measurements nevertheless show losses for all six selected FP1 variants.
+V07 (G81A) is the most damaging allele in our entire 50-variant panel at
+**−3.784**, but both baseline (−0.03) and explanation (0.00) effectively miss it.
+V09–V12, the four substitutions in the tract Astra discusses at 93–99,
+measure −1.692 to −2.083 despite predictions of only −0.04 to −0.10.
+Declining to call this a canonical TATA box is reasonable; treating that lack
+of a TATA match as insufficient evidence for a substantial effect misses FP1.
+
+**Recognition of the SRE is better than recognition of the whole promoter.**
+Every selected variant in each of these four intervals reduces activity.
+The means below include every selected allele in each interval, including the
+C128 deletion in repeat 1; the deletion's retained VCF anchor is excluded when
+assigning its position. These are descriptive summaries of this deliberately
+selected panel, not new benchmark scores or evidence of a prompt effect.
+
+| Interval | Alleles | Mean measured | Mean baseline | Mean explanation |
+| --- | ---: | ---: | ---: | ---: |
+| FP1 | 6 | −2.078 | −0.032 | −0.050 |
+| Repeat 1 core | 7 | −2.408 | −0.820 | −0.364 |
+| SRE core | 5 | −2.317 | −1.410 | −1.640 |
+| SP1 / repeat 3 core | 5 | −2.691 | −0.570 | −0.480 |
+| All other sampled positions | 27 | −0.229 | −0.097 | −0.071 |
+
+The explanation singles out the SRE as its strongest loss region, although the
+sampled FP1 and Sp1-associated variants can be equally or more damaging.
+It also moves the repeat-1 and repeat-3 means closer to zero than the baseline.
+That pattern helps explain the weaker Pearson correlation without claiming a
+causal effect of the explanation instruction. “Other” includes regulatory flanks
+and does not mean biologically unimportant sequence.
+
+```js
+import * as Plot from "npm:@observablehq/plot@0.6.17";
+const ldlrElementAudit = await FileAttachment("./mechanism-evidence/ldlr-elements.json").json();
+const ldlrSeries = [
+  {key: "reference_score", label: "Measured", color: "#238b6b"},
+  {key: "baseline", label: "Baseline", color: "#5278b8"},
+  {key: "explanation", label: "Explanation", color: "#9951a7"}
+];
+display(resize((width) => {
+  const charts = document.createElement("div");
+  for (const series of ldlrSeries) {
+    charts.append(Plot.plot({
+      width, height: 185, marginLeft: 64, marginTop: 22,
+      ariaLabel: `LDLR ${series.label.toLowerCase()} effects by reporter position`,
+      style: {background: "transparent"},
+      x: {domain: [1, 318], label: "Reporter position (1-based)", ticks: 8},
+      y: {domain: [-4.1, 1.05], label: `${series.label} (log2)`, grid: true},
+      marks: [
+        Plot.rect(ldlrElementAudit.annotation.elements, {
+          x1: (d) => d.start - 0.5, x2: (d) => d.end + 0.5,
+          y1: -4.1, y2: 1.05, fill: "currentColor", fillOpacity: 0.07
+        }),
+        Plot.ruleY([0], {stroke: "currentColor", strokeOpacity: 0.4}),
+        Plot.text(ldlrElementAudit.annotation.elements, {
+          x: (d) => (d.start + d.end) / 2, y: 0.8,
+          text: (d) => ({fp1: "FP1", repeat1: "R1", sre: "SRE", sp1: "SP1"}[d.id]),
+          fontSize: 10, fill: "currentColor"
+        }),
+        Plot.dot(ldlrElementAudit.variants, {
+          x: "changed_position", y: series.key, fill: series.color, r: 3, tip: true,
+          title: (d) => `${d.candidate_id}: ${d.ref}>${d.alt} at ${d.pos}\n${series.label}: ${d[series.key].toFixed(3)}\n${d.element}`
+        })
+      ]
+    }));
+  }
+  return charts;
+}));
+display(html`<p class="muted">All 50 alleles on shared axes; variants at the same position can overlap.
+  Shading marks the four intervals above. Hover for individual values.
+  <a href=${await FileAttachment("./mechanism-evidence/ldlr-elements.json").url()} download>Download the complete element audit</a>.</p>`);
+```
+
+### Cooperation changes the interpretation of motif gains
+
+[Sanchez et al.](https://pubmed.ncbi.nlm.nih.gov/7836375/) experimentally showed
+that SREBP and Sp1 cooperate, that Sp1 orientation matters, and that other
+tested TF sites could not simply replace the adjacent Sp1 site. An intact SRE
+therefore does not imply preserved promoter activity after damage to a cooperating
+element. This is a more constrained reference model than adding independent
+benefits for every newly created short motif.
+
 The following **post-response illustrations** examine the complete group for
 which the explanation proposes beneficial ETS-site changes. They were not part
 of the preselected five motif substitutions above, and do not change the scored
@@ -278,6 +447,38 @@ loss. V40/V43 agree in direction; that agreement does not demonstrate the propos
 ETS mechanism. The explanation itself cautions that binding, cooperation, and
 competition require experimental evidence. These are uncertain mechanistic
 assignments and unsuccessful predictions, rather than fabricated sequence motifs.
+
+V34 is particularly informative because the literature tests **the same allele**.
+Table 12 identifies c.-142C>T in the SP1 region and reports −3.09 for LDLR.2,
+matching our pinned value. In the older transcription-start numbering this is
+−49C>T: [Mozas et al.](https://pubmed.ncbi.nlm.nih.gov/11792717/) measured an
+80% reduction in HepG2 reporter activity and severely impaired Sp1 binding in
+gel-shift assays. Those older measurements use a different construct and are not
+interchangeable with our numerical target, but they independently support
+loss of an established activator site. Astra notices the new `TTCC`, yet its
+proposed +0.15 net effect fails to account for that documented loss mechanism.
+There is no evidence here that ETS binds the new sequence or rescues activity.
+
+### What GPN-Star adds, and what it cannot establish
+
+GPN-Star's Fig. 4D and Supplementary Fig. 14 provide a useful complementary
+analysis: the model's nucleotide-dependency map resolves the four named regions
+and connections between them, including the SREBP2-labelled region and SP1.
+It changes the question from “does this short motif look plausible?” to “has the
+model captured the interacting regulatory architecture?” Astra's final answer
+mentions cooperation but misses FP1 and gives unsupported compensation substantial
+weight at known activator elements. This is our interpretation of its stated
+explanation, not an observation of its internal computation.
+
+The GPN-Star map is **model-derived**, not a new binding or double-mutant assay.
+Its MPRA track also reuses the Kircher measurements: the authors filter by barcode
+support and significance, average absolute allele effects by position, fill missing
+positions with zero, and smooth over five positions. The
+[archived LDLR notebook](https://github.com/songlab-cal/gpn/blob/30dee6cf45849dfdcfc043ca8baf44fd6ba51d74/analysis/gpn-star/interpretation/workflow/notebooks/LDLR.ipynb)
+preserves that construction. The track therefore neither supplies independent
+experimental replication nor tests signed predictions for our 50 alleles.
+We use it to motivate checking elements and interactions, not to claim a
+quantitative GPN-Star-versus-Astra performance comparison or experimental epistasis.
 
 Assay handling is generally careful: the model retains deletion anchors,
 recognizes that no separate minimal promoter is present, and does not assume
@@ -312,9 +513,10 @@ uv run --locked python projects/blog-analysis/scripts/mechanism_case.py prepare-
 Preparation is offline and refuses to overwrite the experiment directory. It
 verifies the selected question against the frozen digest and saves both question
 snapshots, the exact proposed request, and the selection record before inference.
-Production responses use the existing evaluator and stay outside Git, with
-their complete provider payloads, usage, reasoning, failures, and costs. Preparing
-these files does not submit a request.
+Production records use the existing evaluator and retain complete provider
+payloads, usage, reasoning, failures, and costs outside Git. The small, exact
+readable responses and comparison extracts are committed beside this article.
+Preparing these files does not submit a request.
 
 The explicit `run --experiment PATH` subcommand submits the two-request batch
 once, reading only `OPENROUTER_API_KEY` for authentication. Use the existing
@@ -345,3 +547,22 @@ uv run --locked python projects/blog-analysis/scripts/mechanism_case.py compare 
 ```
 
 Repeat with `--panel ldlr` and a distinct output path for the secondary case.
+
+The committed evidence is generated from those saved records, without model calls:
+
+```bash
+uv run --locked python projects/blog-analysis/scripts/mechanism_case.py export-evidence \
+  --experiment .vepbench/experiments/issue97-msh6-ldlr-20260917 \
+  --baseline .vepbench/experiments/issue97-msh6-ldlr-20260917/baseline-20260918/results.jsonl \
+  --output /tmp/vepbench-mechanism-evidence
+```
+
+Use a fresh output directory; the exporter refuses replacement. The committed
+evidence is sufficient for offline score and element-audit replay via
+`uv run --locked pytest projects/blog-analysis/tests/test_mechanism_case.py`.
+This checks the exact prompts, file hashes, all predictions, both correlations,
+allele mappings and interval summaries without access to private local records.
+The annotation intervals are defined in
+`projects/blog-analysis/config/ldlr-elements.json`; no literature labels were
+added to the model prompt after inference. Full provider payloads, opaque provider
+data, and attempt receipts remain archived separately from these readable extracts.

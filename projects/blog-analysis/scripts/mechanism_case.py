@@ -1,7 +1,7 @@
 """Freeze and replay the two-panel explanation experiment for issue #97.
 
-Preparation and comparison are offline. Inference uses the existing evaluator;
-generated questions and complete responses remain outside Git.
+Preparation, comparison, and evidence export are offline. Inference uses the
+existing evaluator; full provider payloads remain outside Git.
 """
 
 import argparse
@@ -30,6 +30,7 @@ POST = ROOT / "projects/explorer/web/blog/introducing-vep-bench"
 INSTRUCTION = ROOT / "projects/blog-analysis/config/mechanism-explanation.txt"
 SELECTION = ROOT / "projects/blog-analysis/config/mechanism-selection.json"
 PAIR_SELECTION = ROOT / "projects/blog-analysis/config/mechanism-pair-selection.json"
+LDLR_ELEMENTS = ROOT / "projects/blog-analysis/config/ldlr-elements.json"
 QUESTION_ID = "opensplice-snv-ranking-v2:E01"
 QUESTION_SHA256 = "fc2923445b96c5d5ee56932daf3f1dd81361d60b5fd14e639b979b087654738d"
 PANELS = {
@@ -572,6 +573,111 @@ def compare(experiment, baseline, results, output, panel="msh6"):
     return summary
 
 
+def ldlr_elements(comparison):
+    """Describe every selected allele using explicit, post-response intervals."""
+    annotation = json.loads(LDLR_ELEMENTS.read_text())
+    source = next(
+        s
+        for s in read_jsonl(ROOT / "data/sources/satmut-mpra-cadd-v1.7.jsonl")
+        if s["source_record_id"] == "LDLR"
+    )
+    sequence = source["reference_sequence"]
+    source_alleles = {
+        c["candidate_id"]: c for c in source["source_metadata"]["selected_candidates"]
+    }
+    for feature in annotation["elements"]:
+        if sequence[feature["start"] - 1 : feature["end"]] != feature["sequence"]:
+            raise ValueError("LDLR element sequence differs from the submitted insert")
+    rows = []
+    for candidate in comparison["candidates"]:
+        cid, pos = candidate["candidate_id"], candidate["pos"]
+        ref, alt = candidate["ref"], candidate["alt"]
+        if len(ref) == len(alt) == 1:
+            changed = pos
+        elif len(ref) == 2 and alt == ref[0]:
+            changed = pos + 1  # Do not classify a deletion by its retained VCF anchor.
+        else:
+            raise ValueError("Expected a substitution or anchored single-base deletion")
+        genomic_pos = pos + annotation["genomic_position_offset"]
+        if source_alleles[cid]["vcf_key"] != f"19:{genomic_pos}:{ref}:{alt}":
+            raise ValueError("LDLR genomic and reporter coordinates disagree")
+        matches = [f["id"] for f in annotation["elements"] if f["start"] <= changed <= f["end"]]
+        if len(matches) > 1:
+            raise ValueError("Overlapping analysis intervals")
+        rows.append(
+            {
+                **candidate,
+                "changed_position": changed,
+                "genomic_position": genomic_pos,
+                "transcript_position": changed + annotation["transcript_position_offset"],
+                "element": matches[0] if matches else "other",
+                "baseline": comparison["baseline"]["predictions"][cid],
+                "explanation": comparison["explanation"]["predictions"][cid],
+            }
+        )
+    groups = []
+    for name in [f["id"] for f in annotation["elements"]] + ["other"]:
+        members = [r for r in rows if r["element"] == name]
+        if not members:
+            continue
+        groups.append(
+            {
+                "element": name,
+                "candidate_ids": [r["candidate_id"] for r in members],
+                "n": len(members),
+                "mean_measured": sum(r["reference_score"] for r in members) / len(members),
+                **{
+                    f"mean_{condition}": sum(r[condition] for r in members) / len(members)
+                    for condition in ["baseline", "explanation"]
+                },
+            }
+        )
+    return {"annotation": annotation, "groups": groups, "variants": rows}
+
+
+def export_evidence(experiment, baseline, output):
+    """Export exact readable responses and sufficient data for offline reanalysis."""
+    output.mkdir(parents=True, exist_ok=False)
+    result_paths = {
+        "msh6": experiment / "direct-resumed-results.jsonl",
+        "ldlr": experiment / "ldlr-direct-flex/results.jsonl",
+    }
+    for panel, results in result_paths.items():
+        original, explained = make_questions(panel)
+        summary = compare(
+            experiment, baseline, results, output / f"{panel}-comparison.json", panel=panel
+        )
+        after = selected_result(results, explained)
+        before = selected_result(baseline, original)
+        for name, content in {
+            "prompt": explained["prompt"],
+            "response": after["response"]["content"],
+            "reasoning-summary": after["response"]["reasoning"],
+            "baseline-response": before["response"]["content"],
+        }.items():
+            if content is not None:
+                (output / f"{panel}-{name}.txt").write_bytes(content.encode("utf-8"))
+        if panel == "ldlr":
+            write_json(output / "ldlr-elements.json", ldlr_elements(summary))
+    write_json(
+        output / "manifest.json",
+        {
+            "schema_version": "1.0",
+            "scope": (
+                "Exact final responses, nullable provider-exposed reasoning summaries, "
+                "prompts, baseline final responses, and deterministic comparisons. "
+                "Full provider payloads and failed-attempt receipts remain in the experiment."
+            ),
+            "selection_sha256": sha256_file(experiment / "selection.json"),
+            "ldlr_annotation_sha256": sha256_file(LDLR_ELEMENTS),
+            "files": [
+                {"path": p.name, "bytes": p.stat().st_size, "sha256": sha256_file(p)}
+                for p in sorted(output.iterdir())
+            ],
+        },
+    )
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
@@ -591,6 +697,9 @@ def main():
     comparison.add_argument("--panel", choices=PANELS, default="msh6")
     for name in ["experiment", "baseline", "results", "output"]:
         comparison.add_argument(f"--{name}", type=Path, required=True)
+    evidence = commands.add_parser("export-evidence")
+    for name in ["experiment", "baseline", "output"]:
+        evidence.add_argument(f"--{name}", type=Path, required=True)
     args = parser.parse_args()
     if args.command == "prepare-pair":
         prepare_pair(args.output)
@@ -612,6 +721,9 @@ def main():
     elif args.command == "finish-ldlr-direct":
         result = finish_ldlr_direct(args.experiment, api_key=os.environ.get("OPENROUTER_API_KEY"))
         print(f"LDLR direct: {result.completed} completed, {result.api_errors} API errors")
+    elif args.command == "export-evidence":
+        export_evidence(args.experiment, args.baseline, args.output)
+        print(args.output)
     else:
         compare(args.experiment, args.baseline, args.results, args.output, panel=args.panel)
         print(args.output)

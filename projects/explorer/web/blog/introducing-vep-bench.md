@@ -910,14 +910,39 @@ does not specify that counting rule. We therefore cannot attribute the mismatch
 solely to biological reasoning; defining the assay's measured target precisely
 matters alongside supplying the sequence.
 
-For LDLR, Astra correctly located the sterol-response motif and predicted losses
-for all five selected substitutions within it. But proposed gains from newly
-created ETS-like motifs sometimes contradicted the measurements: V34 was predicted
-to increase activity by **0.15 log2 units**, while its measured effect was
-**−3.09**. The short motif is present; productive binding and a favorable net effect
-do not follow from its presence alone. The provider-exposed summary also names
-the LDL receptor promoter, so the sequence-focused instruction does not establish
-that recognition or recall was absent.
+For LDLR, the established promoter architecture gives a more demanding test than
+recognizing isolated motifs. [SatMutMPRA](https://www.nature.com/articles/s41467-019-11526-w)
+maps large activity losses to known regulatory elements, and
+[GPN-Star Fig. 4D](https://pmc.ncbi.nlm.nih.gov/articles/PMC12458161/)
+examines dependencies among regions labelled **FP1, SREBP1, SREBP2, and SP1**.
+The numbered labels refer to promoter repeats in the SatMutMPRA supplement;
+they do not establish separate occupancy by the SREBP-1 and SREBP-2 protein isoforms.
+Classic experiments support cooperating Sp1 sites flanking the SRE.
+
+Astra identifies the canonical SRE and predicts losses for all five selected
+substitutions within it. It also recognizes the flanking C/T-rich sequences and
+proposes cooperation. But it misses FP1 and substantially underestimates losses
+in the cooperating Sp1-associated elements:
+
+| LDLR element and example | Explanation prediction | Measured log2 effect | Interpretation |
+| --- | ---: | ---: | --- |
+| FP1: V07, G81A | 0.00 | −3.784 | Misses the most damaging allele in the panel, inside an experimentally footprinted element. |
+| SRE: V28, A164C | −1.65 | −2.798 | Recognizes disruption of the canonical sterol-response element and the negative direction. |
+| SP1 / repeat 3: V34, C177T | +0.15 | −3.090 | Proposes an ETS-site gain at an allele already shown to impair Sp1 binding. |
+
+For FP1, all six sampled variants reduce activity; the mean measured effect is
+−2.08, versus Astra's −0.05. For V34, the known c.-142C>T allele,
+[earlier experiments](https://pubmed.ncbi.nlm.nih.gov/11792717/) directly observed
+impaired Sp1 binding and reduced reporter activity. Creating a short ETS-like
+core does not establish compensation for losing a cooperating activator.
+GPN-Star's dependencies are model-derived and its MPRA track reuses the Kircher
+measurements; we use it as a reference for examining architecture, not as an
+independent experiment or a quantitative comparison with Astra.
+
+The provider-exposed summary also names the LDL receptor promoter, so the
+sequence-focused instruction does not establish that recognition or recall
+was absent. This expanded element audit was performed after reading the responses;
+it leaves the original selection and all 50 scored alleles unchanged.
 
 | Panel | Baseline Spearman | Explanation Spearman | Baseline Pearson | Explanation Pearson |
 | --- | ---: | ---: | ---: | ---: |
@@ -930,9 +955,11 @@ while Pearson correlation decreased. The detailed responses are useful for
 locating unsupported assumptions and gaps in the task definition. These
 supplementary predictions remain separate from the baseline leaderboard.
 
-The [case-study analysis](./introducing-vep-bench/mechanism-methods.html#primary-result-msh6)
-contains the preselected illustrations, additional claim checks, paper
-interpretations, prompt protocol, cost accounting, and limitations.
+The [case-study analysis](./introducing-vep-bench/mechanism-methods.html#what-the-established-ldlr-elements-reveal)
+maps the literature to the exact sequence, compares all four LDLR elements, and
+plots every allele against both sets of predictions. The
+[complete prompts and responses](./introducing-vep-bench/mechanism-methods.html#complete-prompts-and-responses)
+are readable and downloadable, with committed data for offline replay.
 
 ## Conclusion
 

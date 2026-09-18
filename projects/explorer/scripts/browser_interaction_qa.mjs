@@ -502,6 +502,26 @@ assert.equal(
   "model selection did not preserve the highlighted row"
 );
 
+await navigate("/blog/introducing-vep-bench/mechanism-methods.html");
+for (const series of ["measured", "baseline", "explanation"]) {
+  const plot = `svg[aria-label="LDLR ${series} effects by reporter position"]`;
+  await waitFor(`document.querySelectorAll(${JSON.stringify(plot + ' g[aria-label="dot"] circle')}).length === 50`,
+    `all 50 LDLR ${series} values`);
+}
+for (const panel of ["MSH6", "LDLR"]) {
+  const responseLink = `a[data-mechanism-response="${panel}"]`;
+  await waitFor(`Boolean(document.querySelector(${JSON.stringify(responseLink)}))`, `${panel} response download`);
+  const savedResponse = await readFile(new URL(
+    `../web/blog/introducing-vep-bench/mechanism-evidence/${panel.toLowerCase()}-response.txt`, import.meta.url
+  ), "utf8");
+  assert.equal(await evaluate(`fetch(document.querySelector(${JSON.stringify(responseLink)}).href).then((r) => r.text())`),
+    savedResponse, `${panel} response download preserves the complete saved text`);
+  const responseCard = `[aria-label="Complete ${panel} explanation response"]`;
+  await waitFor(`Boolean(document.querySelector(${JSON.stringify(responseCard)}))`, `${panel} rendered response`);
+  assert.ok((await evaluate(`document.querySelector(${JSON.stringify(responseCard)}).textContent`)).includes("FINAL:"),
+    `${panel} rendered response includes its final predictions`);
+}
+
 await navigate("/blog/introducing-vep-bench.html");
 const blogBars = '.vepbench-leaderboard-chart g[aria-label="bar"] rect';
 const radarPlot = 'svg[aria-label="Model scores for fitness, expression, and splicing on a shared 0 to 1 scale"]';

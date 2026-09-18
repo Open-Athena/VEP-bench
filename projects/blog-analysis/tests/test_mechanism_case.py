@@ -110,6 +110,71 @@ def test_comparison_rejects_wrong_panel_even_with_reused_identifier(tmp_path):
         case.selected_result(result_path, original)
 
 
+def test_evidence_export_preserves_text_and_excludes_provider_payloads(tmp_path):
+    experiment = tmp_path / "experiment"
+    case.prepare_pair(experiment)
+    baseline = tmp_path / "baseline.jsonl"
+    baseline_rows = []
+    for panel, relative in [
+        ("msh6", "direct-resumed-results.jsonl"),
+        ("ldlr", "ldlr-direct-flex/results.jsonl"),
+    ]:
+        original, explained = case.make_questions(panel)
+        baseline_rows.append(fake_result(original))
+        result = fake_result(explained)
+        result["response"]["raw"]["opaque_provider_data"] = "not-a-public-extract"
+        path = experiment / relative
+        path.parent.mkdir(exist_ok=True)
+        case.write_json(path, result)
+    baseline.write_text("".join(canonical_json(r) + "\n" for r in baseline_rows))
+    output = tmp_path / "evidence"
+    case.export_evidence(experiment, baseline, output)
+    for panel, relative in [
+        ("msh6", "direct-resumed-results.jsonl"),
+        ("ldlr", "ldlr-direct-flex/results.jsonl"),
+    ]:
+        result = json.loads((experiment / relative).read_text())
+        assert (output / f"{panel}-response.txt").read_bytes() == (
+            result["response"]["content"].encode("utf-8")
+        )
+    assert all("not-a-public-extract" not in p.read_text() for p in output.iterdir())
+    analysis = json.loads((output / "ldlr-elements.json").read_text())
+    variants = {r["candidate_id"]: r for r in analysis["variants"]}
+    assert variants["V07"]["element"] == "fp1"
+    assert variants["V19"]["changed_position"] == 128
+    assert variants["V34"]["transcript_position"] == -142
+    assert variants["V34"]["genomic_position"] == 11089407
+    assert sum(g["n"] for g in analysis["groups"]) == 50
+    with pytest.raises(FileExistsError):
+        case.export_evidence(experiment, baseline, output)
+
+
+def test_committed_evidence_replays_predictions_and_coordinates():
+    evidence = case.POST / "mechanism-evidence"
+    manifest = json.loads((evidence / "manifest.json").read_text())
+    for file in manifest["files"]:
+        path = evidence / file["path"]
+        assert case.sha256_file(path) == file["sha256"]
+        assert path.stat().st_size == file["bytes"]
+    assert case.sha256_file(case.LDLR_ELEMENTS) == manifest["ldlr_annotation_sha256"]
+    for panel in case.PANELS:
+        original, explained = case.make_questions(panel)
+        assert (evidence / f"{panel}-prompt.txt").read_text() == explained["prompt"]
+        summary = json.loads((evidence / f"{panel}-comparison.json").read_text())
+        assert summary["candidates"] == original["candidates"]
+        reference = {c["candidate_id"]: c["reference_score"] for c in summary["candidates"]}
+        for condition, suffix in [("baseline", "baseline-response"), ("explanation", "response")]:
+            score = case.score_ranking((evidence / f"{panel}-{suffix}.txt").read_text(), reference)
+            assert score.valid
+            assert score.parsed_answer == summary[condition]["predictions"]
+            assert score.spearman_rho == pytest.approx(summary[condition]["spearman_rho"])
+            assert score.pearson_r == pytest.approx(summary[condition]["pearson_r"])
+        if panel == "ldlr":
+            assert case.ldlr_elements(summary) == json.loads(
+                (evidence / "ldlr-elements.json").read_text()
+            )
+
+
 def test_paired_batch_caps_spend_and_cannot_repeat(tmp_path):
     experiment = tmp_path / "experiment"
     case.prepare_pair(experiment)
