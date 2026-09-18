@@ -21,6 +21,14 @@ here. The downloads also include the exact prompts, baseline answers, and data
 needed to recompute both correlations. The separate provider-exposed summaries
 are partial records, not complete or verified accounts of internal reasoning.
 
+The [full experiment archive (9.8 MB)](https://huggingface.co/buckets/open-athena/VEP-bench/resolve/experiments/issue97-msh6-ldlr-20260917/experiment-artifacts.tar)
+preserves all 32 original files, including complete provider payloads, question
+snapshots, request settings, usage, attempt receipts, and baseline provenance.
+Its [manifest](https://huggingface.co/buckets/open-athena/VEP-bench/resolve/experiments/issue97-msh6-ldlr-20260917/manifest.json)
+records each file's size and SHA-256 digest; [checksums](https://huggingface.co/buckets/open-athena/VEP-bench/resolve/experiments/issue97-msh6-ldlr-20260917/SHA256SUMS)
+also cover the downloadable archive. It is published separately from official
+benchmark versions and leaderboard results.
+
 ```js
 import MarkdownIt from "npm:markdown-it@14.1.0";
 const mechanismCases = [
@@ -759,6 +767,7 @@ evidence is sufficient for offline score and element-audit replay via
 This checks the exact prompts, file hashes, all predictions, both correlations,
 allele mappings and interval summaries without access to private local records.
 The annotation intervals are defined in
-`projects/blog-analysis/config/ldlr-elements.json`; no literature labels were
-added to the model prompt after inference. Full provider payloads, opaque provider
-data, and attempt receipts remain archived separately from these readable extracts.
+`projects/blog-analysis/config/ldlr-elements.json` and
+`projects/blog-analysis/config/msh6-elements.json`; no literature labels were
+added to the model prompt after inference. The linked HF archive preserves the
+full provider payloads and attempt receipts separately from the readable extracts.
