@@ -386,6 +386,7 @@ const ldlrSeries = [
 ];
 display(resize((width) => {
   const charts = document.createElement("div");
+  charts.setAttribute("aria-label", "LDLR element comparison");
   for (const series of ldlrSeries) {
     charts.append(Plot.plot({
       width, height: 185, marginLeft: 64, marginTop: 22,
