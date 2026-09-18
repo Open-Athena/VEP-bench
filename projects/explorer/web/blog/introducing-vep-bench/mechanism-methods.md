@@ -390,6 +390,10 @@ is not a mutant-only ΔPSI, and should not be substituted for an OpenSplice effe
 or used to calibrate a different allele. Neither study validates the model's
 specific SRSF2, RBFOX, or PTBP assignments in the exon interior.
 
+These exon-specific experiments predate Astra's cutoff. The newer OpenSplice
+measurements do not imply that this exon's regulatory mechanisms were previously
+unknown, or establish whether earlier knowledge influenced this response.
+
 ### Upstream losses cannot be assigned to one branchpoint
 
 V07 removes 184–204 and V09 removes 186–206. Both remove the `TTCAT` motif,
