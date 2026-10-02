@@ -93,14 +93,13 @@ scoreMetricInput.style.verticalAlign = "top";
 
 # VEP-bench
 
-VEP-bench is a public benchmark of language models' native ability to predict
+VEP-bench is an experimental benchmark of language models' native ability to predict
 genetic variant effects. Models answer without internet access or tools, and
-every response and deterministic score can be inspected.
+every response and deterministic score can be inspected. The benchmark has not
+yet been fully reviewed.
 
-Our [AlphaGenome and AVI comparison](./blog/introducing-vep-bench.html#comparison-with-alpha-genome-and-avi)
-compares specialist predictions with LLM answers on the same covered variants:
-1,000/1,000 for splicing, 800/800 for expression, and 487/800 for fitness.
-Splicing and expression include indels; the AVI fitness comparison covers SNVs.
+See our [early blog draft](./blog/introducing-vep-bench.html) for additional
+results, including a comparison with AlphaGenome.
 
 ## Leaderboard
 
