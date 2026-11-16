@@ -1,0 +1,54 @@
+{
+  "truncation": {
+    "count": 27,
+    "valid": 7,
+    "truncated": 20,
+    "api_errors": 0,
+    "batch_usage": {
+      "completion_tokens": 860218,
+      "cost": 4.336372,
+      "is_byok": false,
+      "prompt_tokens": 35282,
+      "total_tokens": 895500
+    }
+  },
+  "safety": {
+    "count": 2,
+    "valid": 1,
+    "truncated": 0,
+    "api_errors": 1,
+    "batch_usage": {
+      "completion_tokens": 32600,
+      "cost": 0.1658,
+      "is_byok": false,
+      "prompt_tokens": 2800,
+      "total_tokens": 35400
+    }
+  },
+  "tasks": [
+    {
+      "task": "opensplice_snv",
+      "total": 20,
+      "valid": 15,
+      "truncated": 4,
+      "complete": false,
+      "mean_spearman": null
+    },
+    {
+      "task": "satmut_mpra",
+      "total": 16,
+      "valid": 3,
+      "truncated": 13,
+      "complete": true,
+      "mean_spearman": 0.13056765947445978
+    },
+    {
+      "task": "sge",
+      "total": 16,
+      "valid": 13,
+      "truncated": 3,
+      "complete": true,
+      "mean_spearman": 0.5651575092084947
+    }
+  ]
+}

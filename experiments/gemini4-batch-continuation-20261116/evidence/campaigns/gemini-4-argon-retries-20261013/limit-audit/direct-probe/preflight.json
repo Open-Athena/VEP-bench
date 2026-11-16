@@ -1,0 +1,91 @@
+{
+  "checked_at": "2026-10-14T17:33:55.072196+00:00",
+  "endpoint": {
+    "name": "Google AI Studio | google/gemini-4-argon-20261013",
+    "model_id": "google/gemini-4-argon",
+    "model_name": "Google: Gemini 4 Argon",
+    "context_length": 1048576,
+    "pricing": {
+      "prompt": "0.000002",
+      "completion": "0.00001",
+      "image": "0.000002",
+      "audio": "0.000002",
+      "input_audio_cache": "0.0000001",
+      "web_search": "0.014",
+      "internal_reasoning": "0.00001",
+      "input_cache_read": "0.0000001",
+      "input_cache_write": "0.0000001875",
+      "discount": 0.5
+    },
+    "provider_name": "Google AI Studio",
+    "tag": "google-ai-studio",
+    "quantization": "unknown",
+    "max_completion_tokens": 943718,
+    "max_prompt_tokens": null,
+    "supported_parameters": [
+      "reasoning",
+      "include_reasoning",
+      "max_tokens",
+      "temperature",
+      "top_p",
+      "seed",
+      "response_format",
+      "tools",
+      "tool_choice",
+      "structured_outputs",
+      "reasoning_effort"
+    ],
+    "supports_tool_choice": {
+      "none": true,
+      "auto": true,
+      "required": true,
+      "function": true
+    },
+    "status": 0,
+    "uptime_last_30m": 100,
+    "uptime_last_5m": 100,
+    "uptime_last_1d": 75.34722222222221,
+    "supports_implicit_caching": false,
+    "native_tools": {
+      "openrouter:web_search": {
+        "type": "google_search"
+      }
+    },
+    "supports_voice_cloning": false,
+    "supports_multiple_audio_references": false,
+    "supports_image_reference": false,
+    "latency_last_30m": null,
+    "throughput_last_30m": null
+  },
+  "organization_verified": true,
+  "plan": {
+    "status": "prepared_not_executed",
+    "purpose": "Test continuation tokens and generation beyond the observed 32768-token batch boundary; not a benchmark recovery run",
+    "question_id": "satmut-mpra-ranking-v2:F9",
+    "question_sha256": "4951fd14b0f5ad2ad52557d8ddea24ab0b284b58be3ce8ef06a2a66e6b5a6280",
+    "request_file": "direct-probe-request.json",
+    "endpoint": "https://openrouter.ai/api/v1/chat/completions",
+    "max_hops": 2,
+    "total_output_budget": 128000,
+    "cost_ceiling_usd": 6,
+    "cost_bound_assumptions": "At most two 1048576-token input windows at $2/M plus 128000 total output tokens at $10/M = $5.474304; recheck prices, context and cumulative accounting before execution. No automatic retries.",
+    "stop_conditions": [
+      "Any HTTP/provider error or refusal",
+      "Length finish without gemini-continuation item",
+      "Provider changes",
+      "Missing or inconsistent usage",
+      "128000 cumulative output tokens",
+      "Two completed requests",
+      "Unexpected price or context limit"
+    ],
+    "resume_rule": "Only for native CONTINUATION with remaining budget, resend original user message unchanged plus last assistant message carrying the latest opaque continuation item. Keep max_tokens=128000; no additional user turn.",
+    "success_evidence": "Continuation item received and successfully replayed; cumulative generated output exceeds 32768, or a subsequent hop produces a normal final answer. A first-hop normal answer alone does not validate continuation.",
+    "retention": "Write every exact non-secret request and raw response before proceeding; store opaque continuation items locally, do not print them. Preserve old results unchanged.",
+    "production_followup": [
+      "Opt-in bounded continuation loop for direct transport",
+      "All-hop raw artifacts and usage accounting with validation and publication support",
+      "Fail closed on continuation without token",
+      "Do not present diagnostic output as an official benchmark score"
+    ]
+  }
+}

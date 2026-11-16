@@ -1,0 +1,95 @@
+{
+  "current": {
+    "questions": 52,
+    "question_set_sha256": "be62fd7b5f06656572a5150904758f04bb998590f63ce31ebbca13852a0bfab7",
+    "tasks": {
+      "opensplice-snv-ranking-v2": {
+        "questions": 20,
+        "completed": 20,
+        "valid": 20,
+        "api_errors": 0,
+        "truncated": 0,
+        "invalid_completed": 0,
+        "mean_spearman_rho": 0.7824439766814074,
+        "mean_pearson_r": 0.7758343481979317,
+        "cost_usd": 0.2584061766514549,
+        "completion_tokens": 39655
+      },
+      "satmut-mpra-ranking-v2": {
+        "questions": 16,
+        "completed": 16,
+        "valid": 16,
+        "api_errors": 0,
+        "truncated": 0,
+        "invalid_completed": 0,
+        "mean_spearman_rho": 0.28310143109684105,
+        "mean_pearson_r": 0.2845495133553132,
+        "cost_usd": 0.23394105172023175,
+        "completion_tokens": 43722
+      },
+      "sge-ranking-v2": {
+        "questions": 16,
+        "completed": 16,
+        "valid": 16,
+        "api_errors": 0,
+        "truncated": 0,
+        "invalid_completed": 0,
+        "mean_spearman_rho": 0.5172907848144559,
+        "mean_pearson_r": 0.5195227987219089,
+        "cost_usd": 0.30778777162831344,
+        "completion_tokens": 62587
+      }
+    },
+    "cost_usd": 0.800135,
+    "api_errors": 0,
+    "valid": 52,
+    "truncated": 0
+  },
+  "previous_low_20261013": {
+    "questions": 52,
+    "question_set_sha256": "be62fd7b5f06656572a5150904758f04bb998590f63ce31ebbca13852a0bfab7",
+    "tasks": {
+      "opensplice-snv-ranking-v2": {
+        "questions": 20,
+        "completed": 20,
+        "valid": 20,
+        "api_errors": 0,
+        "truncated": 0,
+        "invalid_completed": 0,
+        "mean_spearman_rho": 0.758110086960937,
+        "mean_pearson_r": 0.7519430714185122,
+        "cost_usd": 0.25252319762600456,
+        "completion_tokens": 39678
+      },
+      "satmut-mpra-ranking-v2": {
+        "questions": 16,
+        "completed": 16,
+        "valid": 16,
+        "api_errors": 0,
+        "truncated": 0,
+        "invalid_completed": 0,
+        "mean_spearman_rho": 0.383027115234897,
+        "mean_pearson_r": 0.3683495458213269,
+        "cost_usd": 0.20850665250875838,
+        "completion_tokens": 38179
+      },
+      "sge-ranking-v2": {
+        "questions": 16,
+        "completed": 16,
+        "valid": 16,
+        "api_errors": 0,
+        "truncated": 0,
+        "invalid_completed": 0,
+        "mean_spearman_rho": 0.5638764016686011,
+        "mean_pearson_r": 0.567103095918054,
+        "cost_usd": 0.27245514986523706,
+        "completion_tokens": 54777
+      }
+    },
+    "cost_usd": 0.7334849999999999,
+    "api_errors": 0,
+    "valid": 52,
+    "truncated": 0
+  },
+  "cost_source": "provider batch total allocated across questions"
+}

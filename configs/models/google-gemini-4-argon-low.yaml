@@ -1,0 +1,11 @@
+# User-requested effort comparison; keep sampling controls unset as Google advises.
+# https://ai.google.dev/gemini-api/docs/latest-model (checked 2026-10-13)
+# See google-gemini-4-argon-medium.yaml for context, output, and route guidance.
+# Use batch with the existing task-owned 128000-token output budget.
+schema_version: "1.0"
+label: gemini-4-argon-low
+model: google/gemini-4-argon
+generation:
+  reasoning:
+    effort: low
+    exclude: false

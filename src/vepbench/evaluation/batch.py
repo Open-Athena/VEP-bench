@@ -138,6 +138,7 @@ def submit_batch_file(
     generation_parameters: Mapping[str, Any],
     batch_offset: int = 0,
     batch_size: int | None = None,
+    selected_question_ids: list[str] | None = None,
     transport: BatchTransport | None = None,
     now: datetime | None = None,
 ) -> BatchSubmissionSummary:
@@ -165,18 +166,26 @@ def submit_batch_file(
         raise BuildError(f"{questions_file}: questions must be sorted by question_id")
     if len(question_ids) != len(set(question_ids)):
         raise BuildError(f"{questions_file}: duplicate question IDs")
-    submitted_questions = questions[
-        batch_offset : None if batch_size is None else batch_offset + batch_size
-    ]
+    if selected_question_ids is not None:
+        if batch_offset != 0 or batch_size is not None:
+            raise BuildError("question selection cannot be combined with batch offset or size")
+        if len(selected_question_ids) != len(set(selected_question_ids)):
+            raise BuildError("question selection contains duplicate IDs")
+        selected_ids = set(selected_question_ids)
+        if selected_ids - set(question_ids):
+            raise BuildError("question selection contains unknown IDs")
+        submitted_questions = [q for q in questions if q["question_id"] in selected_ids]
+    else:
+        submitted_questions = questions[
+            batch_offset : None if batch_size is None else batch_offset + batch_size
+        ]
     if not submitted_questions:
         raise BuildError("batch selection contains no questions")
     submitted_question_ids = [question["question_id"] for question in submitted_questions]
+    question_positions = {question_id: index for index, question_id in enumerate(question_ids)}
     submitted_custom_ids = [
-        f"request_{question_index:06d}"
-        for question_index in range(
-            batch_offset,
-            batch_offset + len(submitted_questions),
-        )
+        f"request_{question_positions[question_id]:06d}"
+        for question_id in submitted_question_ids
     ]
 
     state_file = Path(state_path)

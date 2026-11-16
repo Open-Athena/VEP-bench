@@ -1,0 +1,18 @@
+{
+  "hops": [
+    {
+      "hop": 1,
+      "finish_reason": "stop",
+      "native_finish_reason": "STOP",
+      "provider": "Google AI Studio",
+      "completion_tokens": 50630,
+      "reasoning_tokens": 49112,
+      "cost_usd": 0.508586,
+      "continuation_items": 0,
+      "content_characters": 3399
+    }
+  ],
+  "known_cost_usd": 0.508586,
+  "known_completion_tokens": 50630,
+  "at": "2026-10-14T20:29:13.180336+00:00"
+}

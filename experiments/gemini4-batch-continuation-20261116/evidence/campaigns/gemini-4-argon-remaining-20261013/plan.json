@@ -1,0 +1,21 @@
+{
+  "model": "google/gemini-4-argon",
+  "generation_parameters": {
+    "max_tokens": 128000,
+    "reasoning": {
+      "effort": "medium",
+      "exclude": false
+    }
+  },
+  "question_set_sha256": "bece664494644cbee6831bb5b9e7799f4f21ac44da7e2223b9476d61d00fdc92",
+  "questions_path": ".vepbench/campaigns/gemini-4-argon-remaining-20261013/questions.jsonl",
+  "counts": {
+    "opensplice_snv": 20,
+    "sge": 16
+  },
+  "prompt_utf8_bytes": 124601,
+  "budget_usd": 24,
+  "run_id": "gemini-4-argon-medium-opensplice-sge-20261013",
+  "previous_satmut_run": "gemini-4-argon-medium-satmut-mpra-20261013",
+  "conservative_request_cost_ceiling_usd": 23.201465000000002
+}

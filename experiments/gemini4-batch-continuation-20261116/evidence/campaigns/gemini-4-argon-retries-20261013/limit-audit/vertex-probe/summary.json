@@ -1,0 +1,12 @@
+{
+  "status": "response_received",
+  "provider": "Google",
+  "finish_reason": "length",
+  "native_finish_reason": "MAX_TOKENS",
+  "prompt_tokens": 1143,
+  "completion_tokens": 65536,
+  "reasoning_tokens": 65533,
+  "cost_usd": 0.657646,
+  "continuation_items": 1,
+  "content_characters": 0
+}

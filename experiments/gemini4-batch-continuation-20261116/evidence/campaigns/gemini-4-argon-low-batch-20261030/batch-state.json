@@ -1,0 +1,182 @@
+{
+  "batch_id": "batch-1793372679-PWPySGgnfzXhMje3VYE3",
+  "endpoint": "/v1/chat/completions",
+  "generation_parameters": {
+    "max_tokens": 128000,
+    "reasoning": {
+      "effort": "low",
+      "exclude": false
+    }
+  },
+  "model_id": "google/gemini-4-argon",
+  "question_ids": [
+    "opensplice-snv-ranking-v2:E01",
+    "opensplice-snv-ranking-v2:E02",
+    "opensplice-snv-ranking-v2:E03",
+    "opensplice-snv-ranking-v2:E04",
+    "opensplice-snv-ranking-v2:E05",
+    "opensplice-snv-ranking-v2:E06",
+    "opensplice-snv-ranking-v2:E07",
+    "opensplice-snv-ranking-v2:E08",
+    "opensplice-snv-ranking-v2:E09",
+    "opensplice-snv-ranking-v2:E10",
+    "opensplice-snv-ranking-v2:E11",
+    "opensplice-snv-ranking-v2:E12",
+    "opensplice-snv-ranking-v2:E13",
+    "opensplice-snv-ranking-v2:E14",
+    "opensplice-snv-ranking-v2:E15",
+    "opensplice-snv-ranking-v2:E16",
+    "opensplice-snv-ranking-v2:E17",
+    "opensplice-snv-ranking-v2:E18",
+    "opensplice-snv-ranking-v2:E19",
+    "opensplice-snv-ranking-v2:E20",
+    "satmut-mpra-ranking-v2:F9",
+    "satmut-mpra-ranking-v2:GP1BA",
+    "satmut-mpra-ranking-v2:HBB",
+    "satmut-mpra-ranking-v2:HBG1",
+    "satmut-mpra-ranking-v2:HNF4A",
+    "satmut-mpra-ranking-v2:IRF4",
+    "satmut-mpra-ranking-v2:IRF6",
+    "satmut-mpra-ranking-v2:LDLR",
+    "satmut-mpra-ranking-v2:MSMB",
+    "satmut-mpra-ranking-v2:MYCrs6983267",
+    "satmut-mpra-ranking-v2:PKLR",
+    "satmut-mpra-ranking-v2:SORT1",
+    "satmut-mpra-ranking-v2:TCF7L2",
+    "satmut-mpra-ranking-v2:TERT",
+    "satmut-mpra-ranking-v2:ZFAND3",
+    "satmut-mpra-ranking-v2:ZRSh13",
+    "sge-ranking-v2:BAP1",
+    "sge-ranking-v2:BARD1",
+    "sge-ranking-v2:BRCA1",
+    "sge-ranking-v2:BRCA2",
+    "sge-ranking-v2:CARD11",
+    "sge-ranking-v2:CTCF",
+    "sge-ranking-v2:DDX3X",
+    "sge-ranking-v2:PALB2",
+    "sge-ranking-v2:RAD51C",
+    "sge-ranking-v2:RAD51D",
+    "sge-ranking-v2:SBDS",
+    "sge-ranking-v2:SFPQ",
+    "sge-ranking-v2:TINF2",
+    "sge-ranking-v2:TP53",
+    "sge-ranking-v2:VHL",
+    "sge-ranking-v2:XRCC2"
+  ],
+  "question_set_sha256": "be62fd7b5f06656572a5150904758f04bb998590f63ce31ebbca13852a0bfab7",
+  "question_set_size": 52,
+  "raw_status": {
+    "completion_window": "24h",
+    "created_at": 1793372679,
+    "endpoint": "/v1/chat/completions",
+    "error": null,
+    "expires_at": 1793718279,
+    "finalized_at": 1793373055,
+    "id": "batch-1793372679-PWPySGgnfzXhMje3VYE3",
+    "model": "google/gemini-4-argon-20261013",
+    "object": "batch",
+    "provider": "Google",
+    "request_counts": {
+      "completed": 1,
+      "failed": 0,
+      "total": 1
+    },
+    "results": [
+      {
+        "custom_id": "request_000020",
+        "error": null,
+        "id": "kLLkaoqKF4qej8MP6-TB-Qo",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the signed regulatory-activity effects of the candidate variants in this saturation-mutagenesis MPRA panel, we first identify the genomic origin and functional architecture of the 303 bp mutagenized insert (`element`), which directly drives the firefly luciferase reporter in HepG2 cells.\n\n### 1. Element Identification and Architecture\nThe 303 bp sequence corresponds to the proximal promoter of the human **Coagulation Factor IX (*F9*)** gene (specifically, positions roughly -240 to +60 relative to the transcription start site, active in hepatocytes/HepG2 cells). Several well-characterized *cis*-regulatory motifs and transcription factor binding sites (TFBS) govern *F9* promoter activity in liver cells, where mutations are classically known to cause Hemophilia B Leyden or alter reporter expression in MPRA studies (e.g., Kircher et al. 2019):\n\n* **Pos 67–84 (`TCACTTCCTGTTTCAGAC`):** A critical regulatory module in the upstream region containing an **ETS / HNF4A** binding site (`ACTTCCTGTT` / `TTCCTGTTTC`). Variants in positions 71–83 strongly disrupt transcription factor binding, leading to substantial decreases in promoter activity. Conversely, specific changes that optimize the core motif (such as Pos 81 T>A creating `TTCCAGTT` or Pos 74 T>C) can maintain or slightly increase activity.\n* **Pos 130–145 (`TGAAATTTAATAATGA`):** **HNF1A / HNF1B** binding site. Pos 137 (`T>G`, V29) mutates the conserved TAAT core of the HNF1 motif, resulting in a pronounced loss of transcriptional activity. Pos 144 (`C>G` V30, `C>T` V31) lies immediately adjacent in the flanking region.\n* **Pos 171–186 (`AGGCCATTGGAAATAG`):** **CCAAT / C/EBP / NF-Y** binding region (`CCATTGG`). Variants at Pos 170 (`A>T` V33) and Pos 175 (`G>T` V34, disrupting the core `CCAAT`/`CCATTGG` box) reduce activity.\n* **Pos 212–228 (`GACATTATTTCCCAGAA`):** **C/EBP** binding site (Site 5, around the classic -20 to -1 region in *F9*). Mutations at Pos 213 (`G>T` V35), Pos 216 (`A>C` V36, `A>G` V37), Pos 222 (`T>A` V38), and Pos 228 (`A>T` V39) disrupt C/EBP activation and strongly decrease reporter expression.\n* **Pos 250–266 (`GCTTGTACTTTGGTACA`):** **Androgen Receptor (AR) / HNF4A** overlapping site (around the TSS). Mutations here (V41 Pos 252 `T>A`, V42 Pos 257 `T>G`, V43 Pos 259 `CA>C`) reduce basal activity in HepG2 cells.\n* **Pos 267–285 (`ACTAATCGACCTTACCACT`):** **HNF4A / COUP-TF** site (+1 to +20 region, classic Leyden region). Disruption of the core `ACTAATCGA` / `CCTTACC` element (V44 Pos 273 `T>G`, V45 Pos 273 `TA>T`, V46 Pos 279 `T>A`, V47 Pos 282 `C>T`) markedly decreases expression.\n\n### 2. Variant-Level Predictions\n* **Upstream flank (V01–V07, Pos 2–58):** Located upstream of the core TFBS clusters; variants here have mild or near-neutral effects, with minor negative effects around weak upstream motifs (e.g., Pos 39–46).\n* **ETS / HNF4A cluster (V08–V21, Pos 71–83):** Dense cluster of high-impact loss-of-function variants (`V10` Pos 73 T>G, `V12` Pos 74 T>G, `V13` Pos 77 T>C, `V14`/`V15` Pos 78 G>C/T, `V16`/`V17` Pos 79 T>C/G, `V18` Pos 80 T>G), whereas `V11` (Pos 74 T>C) and `V19` (Pos 81 T>A) are tolerated or slightly activating.\n* **Middle region & HNF1 site (V22–V32, Pos 97–155):** Mostly modest effects except `V29` (Pos 137 T>G), which ablates the HNF1 homeodomain core (`TTAATAAT` -> `TTAAGAAT`) and causes a strong negative effect.\n* **CCAAT & C/EBP & HNF4A core promoter (V33–V50, Pos 170–296):** Strong negative effects at the CCAAT box (`V34`), C/EBP binding site (`V35`, `V36`, `V37`, `V38`), and the proximal HNF4A/Leyden region (`V41`–`V47`), tapering off toward the 3' end of the insert (`V48`–`V50`).\n\nFINAL: {\"V01\": -0.05, \"V02\": 0.04, \"V03\": -0.12, \"V04\": -0.08, \"V05\": -0.06, \"V06\": 0.03, \"V07\": -0.04, \"V08\": -0.18, \"V09\": -0.45, \"V10\": -0.55, \"V11\": 0.12, \"V12\": -0.42, \"V13\": -0.68, \"V14\": -0.75, \"V15\": -0.72, \"V16\": -0.58, \"V17\": -0.64, \"V18\": -0.48, \"V19\": 0.15, \"V20\": -0.25, \"V21\": -0.18, \"V22\": -0.08, \"V23\": -0.05, \"V24\": 0.06, \"V25\": -0.10, \"V26\": -0.12, \"V27\": -0.08, \"V28\": -0.05, \"V29\": -0.65, \"V30\": -0.15, \"V31\": -0.12, \"V32\": 0.04, \"V33\": -0.14, \"V34\": -0.45, \"V35\": -0.35, \"V36\": -0.48, \"V37\": -0.42, \"V38\": -0.38, \"V39\": -0.18, \"V40\": -0.08, \"V41\": -0.28, \"V42\": -0.32, \"V43\": -0.35, \"V44\": -0.45, \"V45\": -0.52, \"V46\": -0.40, \"V47\": -0.30, \"V48\": -0.12, \"V49\": -0.08, \"V50\": 0.02}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1793372816,
+            "id": "gen-batch-1793372679-eab9a722c820871f424e",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 1828,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 0
+              },
+              "prompt_tokens": 1143,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 2971
+            }
+          },
+          "request_id": "kLLkaoqKF4qej8MP6-TB-Qo",
+          "status_code": 200
+        }
+      }
+    ],
+    "status": "completed",
+    "usage": {
+      "completion_tokens": 1828,
+      "cost": 0.010283,
+      "is_byok": false,
+      "prompt_tokens": 1143,
+      "total_tokens": 2971
+    }
+  },
+  "raw_submission": {
+    "completion_window": "24h",
+    "created_at": 1793372679,
+    "endpoint": "/v1/chat/completions",
+    "error": null,
+    "expires_at": 1793718279,
+    "finalized_at": null,
+    "id": "batch-1793372679-PWPySGgnfzXhMje3VYE3",
+    "model": "google/gemini-4-argon-20261013",
+    "object": "batch",
+    "provider": "Google",
+    "request_counts": {
+      "completed": 0,
+      "failed": 0,
+      "total": 1
+    },
+    "results": null,
+    "status": "validating",
+    "usage": null
+  },
+  "result_output": "/home/exedev/.codex/worktrees/2341/VEP-bench/.vepbench/campaigns/gemini-4-argon-low-batch-20261030/results.jsonl",
+  "run_id": "gemini-4-argon-low-batch-F9-20261030",
+  "schema_version": "1.0",
+  "status": "completed",
+  "submitted_at": "2026-10-30T15:04:39.141209Z",
+  "submitted_custom_ids": [
+    "request_000020"
+  ],
+  "submitted_question_ids": [
+    "satmut-mpra-ranking-v2:F9"
+  ]
+}

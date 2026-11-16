@@ -1,0 +1,21 @@
+{
+  "questions": 16,
+  "statuses": {
+    "completed": 16
+  },
+  "valid": 16,
+  "mean_spearman": 0.36292748708344724,
+  "mean_pearson": 0.3657531117357125,
+  "finish_reasons": {
+    "stop": 16
+  },
+  "batch_usage": {
+    "completion_tokens": 37168,
+    "cost": 0.205353,
+    "is_byok": false,
+    "prompt_tokens": 19513,
+    "total_tokens": 56681
+  },
+  "results_sha256": "357527f7e490f0ce6b19107a5838ec58ce358bf8e4d48e5c31fc2e938d1afa86",
+  "results_path": ".vepbench/results/gemini-4-argon-medium-satmut-mpra-20261013.jsonl"
+}

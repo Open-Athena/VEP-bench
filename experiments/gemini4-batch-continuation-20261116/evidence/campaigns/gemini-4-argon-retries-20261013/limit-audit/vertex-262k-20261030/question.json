@@ -1,0 +1,426 @@
+{
+  "candidates": [
+    {
+      "alt": "G",
+      "candidate_id": "V01",
+      "chrom": "element",
+      "pos": 2,
+      "ref": "T",
+      "reference_score": 0.365683518465683
+    },
+    {
+      "alt": "G",
+      "candidate_id": "V02",
+      "chrom": "element",
+      "pos": 16,
+      "ref": "T",
+      "reference_score": -0.256851834741023
+    },
+    {
+      "alt": "A",
+      "candidate_id": "V03",
+      "chrom": "element",
+      "pos": 39,
+      "ref": "C",
+      "reference_score": 0.330695398909604
+    },
+    {
+      "alt": "C",
+      "candidate_id": "V04",
+      "chrom": "element",
+      "pos": 40,
+      "ref": "A",
+      "reference_score": 0.0713872289557976
+    },
+    {
+      "alt": "T",
+      "candidate_id": "V05",
+      "chrom": "element",
+      "pos": 46,
+      "ref": "C",
+      "reference_score": 0.0199276973049381
+    },
+    {
+      "alt": "A",
+      "candidate_id": "V06",
+      "chrom": "element",
+      "pos": 58,
+      "ref": "C",
+      "reference_score": 0.149866063870474
+    },
+    {
+      "alt": "T",
+      "candidate_id": "V07",
+      "chrom": "element",
+      "pos": 58,
+      "ref": "C",
+      "reference_score": 1.12864846972167
+    },
+    {
+      "alt": "G",
+      "candidate_id": "V08",
+      "chrom": "element",
+      "pos": 71,
+      "ref": "A",
+      "reference_score": -0.564818870229807
+    },
+    {
+      "alt": "C",
+      "candidate_id": "V09",
+      "chrom": "element",
+      "pos": 72,
+      "ref": "CT",
+      "reference_score": -0.753261960366186
+    },
+    {
+      "alt": "G",
+      "candidate_id": "V10",
+      "chrom": "element",
+      "pos": 73,
+      "ref": "T",
+      "reference_score": -0.659614551499568
+    },
+    {
+      "alt": "C",
+      "candidate_id": "V11",
+      "chrom": "element",
+      "pos": 74,
+      "ref": "T",
+      "reference_score": -0.80152514368272
+    },
+    {
+      "alt": "G",
+      "candidate_id": "V12",
+      "chrom": "element",
+      "pos": 74,
+      "ref": "T",
+      "reference_score": -0.727244437986831
+    },
+    {
+      "alt": "C",
+      "candidate_id": "V13",
+      "chrom": "element",
+      "pos": 77,
+      "ref": "T",
+      "reference_score": -0.480721825364648
+    },
+    {
+      "alt": "C",
+      "candidate_id": "V14",
+      "chrom": "element",
+      "pos": 78,
+      "ref": "G",
+      "reference_score": -0.487258345752418
+    },
+    {
+      "alt": "T",
+      "candidate_id": "V15",
+      "chrom": "element",
+      "pos": 78,
+      "ref": "G",
+      "reference_score": -0.725300732338468
+    },
+    {
+      "alt": "C",
+      "candidate_id": "V16",
+      "chrom": "element",
+      "pos": 79,
+      "ref": "T",
+      "reference_score": -0.420720931589907
+    },
+    {
+      "alt": "G",
+      "candidate_id": "V17",
+      "chrom": "element",
+      "pos": 79,
+      "ref": "T",
+      "reference_score": -0.577845491830682
+    },
+    {
+      "alt": "G",
+      "candidate_id": "V18",
+      "chrom": "element",
+      "pos": 80,
+      "ref": "T",
+      "reference_score": -0.332026376619773
+    },
+    {
+      "alt": "A",
+      "candidate_id": "V19",
+      "chrom": "element",
+      "pos": 81,
+      "ref": "T",
+      "reference_score": -0.231271013572945
+    },
+    {
+      "alt": "A",
+      "candidate_id": "V20",
+      "chrom": "element",
+      "pos": 82,
+      "ref": "C",
+      "reference_score": -0.256007021983462
+    },
+    {
+      "alt": "C",
+      "candidate_id": "V21",
+      "chrom": "element",
+      "pos": 83,
+      "ref": "A",
+      "reference_score": 0.565716401099635
+    },
+    {
+      "alt": "T",
+      "candidate_id": "V22",
+      "chrom": "element",
+      "pos": 97,
+      "ref": "C",
+      "reference_score": 0.113286363316548
+    },
+    {
+      "alt": "T",
+      "candidate_id": "V23",
+      "chrom": "element",
+      "pos": 99,
+      "ref": "C",
+      "reference_score": 0.466261766928033
+    },
+    {
+      "alt": "G",
+      "candidate_id": "V24",
+      "chrom": "element",
+      "pos": 112,
+      "ref": "C",
+      "reference_score": 0.0617759026203809
+    },
+    {
+      "alt": "C",
+      "candidate_id": "V25",
+      "chrom": "element",
+      "pos": 119,
+      "ref": "A",
+      "reference_score": -0.0547114232103846
+    },
+    {
+      "alt": "T",
+      "candidate_id": "V26",
+      "chrom": "element",
+      "pos": 119,
+      "ref": "A",
+      "reference_score": 0.0428151460824435
+    },
+    {
+      "alt": "G",
+      "candidate_id": "V27",
+      "chrom": "element",
+      "pos": 121,
+      "ref": "C",
+      "reference_score": -0.0511541615266518
+    },
+    {
+      "alt": "T",
+      "candidate_id": "V28",
+      "chrom": "element",
+      "pos": 124,
+      "ref": "A",
+      "reference_score": 0.0690121618824768
+    },
+    {
+      "alt": "G",
+      "candidate_id": "V29",
+      "chrom": "element",
+      "pos": 137,
+      "ref": "T",
+      "reference_score": 0.439917169201168
+    },
+    {
+      "alt": "G",
+      "candidate_id": "V30",
+      "chrom": "element",
+      "pos": 144,
+      "ref": "C",
+      "reference_score": 0.244103321942294
+    },
+    {
+      "alt": "T",
+      "candidate_id": "V31",
+      "chrom": "element",
+      "pos": 144,
+      "ref": "C",
+      "reference_score": -0.0256002135118433
+    },
+    {
+      "alt": "A",
+      "candidate_id": "V32",
+      "chrom": "element",
+      "pos": 155,
+      "ref": "C",
+      "reference_score": 0.0297271961113171
+    },
+    {
+      "alt": "T",
+      "candidate_id": "V33",
+      "chrom": "element",
+      "pos": 170,
+      "ref": "A",
+      "reference_score": 0.11564780947208
+    },
+    {
+      "alt": "T",
+      "candidate_id": "V34",
+      "chrom": "element",
+      "pos": 175,
+      "ref": "G",
+      "reference_score": -0.0752594332578627
+    },
+    {
+      "alt": "T",
+      "candidate_id": "V35",
+      "chrom": "element",
+      "pos": 213,
+      "ref": "G",
+      "reference_score": -0.0281464486129497
+    },
+    {
+      "alt": "C",
+      "candidate_id": "V36",
+      "chrom": "element",
+      "pos": 216,
+      "ref": "A",
+      "reference_score": 0.15696111437298
+    },
+    {
+      "alt": "G",
+      "candidate_id": "V37",
+      "chrom": "element",
+      "pos": 216,
+      "ref": "A",
+      "reference_score": 0.0820406920079308
+    },
+    {
+      "alt": "A",
+      "candidate_id": "V38",
+      "chrom": "element",
+      "pos": 222,
+      "ref": "T",
+      "reference_score": -0.272073389743595
+    },
+    {
+      "alt": "T",
+      "candidate_id": "V39",
+      "chrom": "element",
+      "pos": 228,
+      "ref": "A",
+      "reference_score": -0.166860805254356
+    },
+    {
+      "alt": "T",
+      "candidate_id": "V40",
+      "chrom": "element",
+      "pos": 243,
+      "ref": "A",
+      "reference_score": -0.0232305955091567
+    },
+    {
+      "alt": "A",
+      "candidate_id": "V41",
+      "chrom": "element",
+      "pos": 252,
+      "ref": "T",
+      "reference_score": -0.226740686447402
+    },
+    {
+      "alt": "G",
+      "candidate_id": "V42",
+      "chrom": "element",
+      "pos": 257,
+      "ref": "T",
+      "reference_score": 0.42699418589661
+    },
+    {
+      "alt": "C",
+      "candidate_id": "V43",
+      "chrom": "element",
+      "pos": 259,
+      "ref": "CA",
+      "reference_score": -0.320204384749752
+    },
+    {
+      "alt": "G",
+      "candidate_id": "V44",
+      "chrom": "element",
+      "pos": 273,
+      "ref": "T",
+      "reference_score": 0.34682930083924
+    },
+    {
+      "alt": "T",
+      "candidate_id": "V45",
+      "chrom": "element",
+      "pos": 273,
+      "ref": "TA",
+      "reference_score": 0.356807429039928
+    },
+    {
+      "alt": "A",
+      "candidate_id": "V46",
+      "chrom": "element",
+      "pos": 279,
+      "ref": "T",
+      "reference_score": -0.522180147975088
+    },
+    {
+      "alt": "T",
+      "candidate_id": "V47",
+      "chrom": "element",
+      "pos": 282,
+      "ref": "C",
+      "reference_score": -0.333497535221507
+    },
+    {
+      "alt": "G",
+      "candidate_id": "V48",
+      "chrom": "element",
+      "pos": 287,
+      "ref": "T",
+      "reference_score": -0.447610198404362
+    },
+    {
+      "alt": "G",
+      "candidate_id": "V49",
+      "chrom": "element",
+      "pos": 292,
+      "ref": "T",
+      "reference_score": 0.550933188011408
+    },
+    {
+      "alt": "C",
+      "candidate_id": "V50",
+      "chrom": "element",
+      "pos": 296,
+      "ref": "A",
+      "reference_score": 0.129251791090873
+    }
+  ],
+  "metadata": {
+    "tags": [
+      "grch38",
+      "mpra",
+      "noncoding",
+      "quantitative",
+      "ranking",
+      "satmut"
+    ],
+    "task_family": "satmut_mpra"
+  },
+  "prompt": "Predict the signed regulatory-activity effect of every candidate variant in this saturation-mutagenesis MPRA panel.\n\n**Assay context:**\n- Reporter configuration: The complete mutagenized insert shown below directly drives a firefly luciferase reporter from an episomal plasmid. Linked random barcodes are in the reporter transcript's 3-prime UTR.\n- Cellular context: HepG2 cells.\n- Measurement: Reporter activity was measured 24 hours after transfection. No additional treatment was applied. Activity effects are signed log2-scale regression coefficients from barcode-linked reporter quantification.\n\n**Complete mutagenized insert (reporter-construct orientation):**\n\nSequence lines contain 80 bases except the final line.\n\n```fasta\n>element\nGTCCCACTGATGAACTGTGCTGCCACAGTAAATGTAGCCACTATGCCTATCTCCATTCTGAAGATGTGTCACTTCCTGTT\nTCAGACTCAAATCAGCCACAGTGGCAGAAGCCCACGAAATCAGAGGTGAAATTTAATAATGACCACTGCCCATTCTCTTC\nACTTGTCCCAAGAGGCCATTGGAAATAGTCCAAAGACCCATTGAGGGAGATGGACATTATTTCCCAGAAGTAAATACAGC\nTCAGCTTGTACTTTGGTACAACTAATCGACCTTACCACTTTCACAATCTGCTAGCAAAGGTTA\n```\n\n**Reporter interface:** The mutagenized insert directly drives the reporter; no separate minimal promoter is present.\n\n**Candidate variants:**\n\n```vcf\n##fileformat=VCFv4.3\n#CHROM\tPOS\tID\tREF\tALT\nelement\t2\tV01\tT\tG\nelement\t16\tV02\tT\tG\nelement\t39\tV03\tC\tA\nelement\t40\tV04\tA\tC\nelement\t46\tV05\tC\tT\nelement\t58\tV06\tC\tA\nelement\t58\tV07\tC\tT\nelement\t71\tV08\tA\tG\nelement\t72\tV09\tCT\tC\nelement\t73\tV10\tT\tG\nelement\t74\tV11\tT\tC\nelement\t74\tV12\tT\tG\nelement\t77\tV13\tT\tC\nelement\t78\tV14\tG\tC\nelement\t78\tV15\tG\tT\nelement\t79\tV16\tT\tC\nelement\t79\tV17\tT\tG\nelement\t80\tV18\tT\tG\nelement\t81\tV19\tT\tA\nelement\t82\tV20\tC\tA\nelement\t83\tV21\tA\tC\nelement\t97\tV22\tC\tT\nelement\t99\tV23\tC\tT\nelement\t112\tV24\tC\tG\nelement\t119\tV25\tA\tC\nelement\t119\tV26\tA\tT\nelement\t121\tV27\tC\tG\nelement\t124\tV28\tA\tT\nelement\t137\tV29\tT\tG\nelement\t144\tV30\tC\tG\nelement\t144\tV31\tC\tT\nelement\t155\tV32\tC\tA\nelement\t170\tV33\tA\tT\nelement\t175\tV34\tG\tT\nelement\t213\tV35\tG\tT\nelement\t216\tV36\tA\tC\nelement\t216\tV37\tA\tG\nelement\t222\tV38\tT\tA\nelement\t228\tV39\tA\tT\nelement\t243\tV40\tA\tT\nelement\t252\tV41\tT\tA\nelement\t257\tV42\tT\tG\nelement\t259\tV43\tCA\tC\nelement\t273\tV44\tT\tG\nelement\t273\tV45\tTA\tT\nelement\t279\tV46\tT\tA\nelement\t282\tV47\tC\tT\nelement\t287\tV48\tT\tG\nelement\t292\tV49\tT\tG\nelement\t296\tV50\tA\tC\n```\n\nFor each candidate ID, predict one finite signed log2 reporter-activity effect. Positive values mean increased activity, negative values mean decreased activity, and zero means no predicted activity change. Numerical distances should reflect predicted differences in effect magnitude, although exact calibration is not required.\n\nYou may explain your reasoning. Your final line must contain only `FINAL: ` followed by one strict JSON object with every candidate ID exactly once and no additional keys. Values must be finite JSON numbers.\n\nExample form: `FINAL: {\"V01\": -0.42, \"V02\": 0.08}`",
+  "provenance": {
+    "source_dataset": "CADD-v1.7-RegSeq",
+    "source_record_id": "F9",
+    "source_record_sha256": "1e0748ae4433736d7a1419a01136a90936ab66e0a43f3bac4996b7a9919a41aa",
+    "template_id": "satmut-mpra-ranking-v2",
+    "template_version": "2.0"
+  },
+  "question_id": "satmut-mpra-ranking-v2:F9",
+  "schema_version": "2.0",
+  "task_type": "ranking"
+}

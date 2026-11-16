@@ -1,0 +1,29 @@
+{
+  "hops": [
+    {
+      "hop": 1,
+      "finish_reason": "length",
+      "native_finish_reason": "CONTINUATION",
+      "provider": "Google",
+      "completion_tokens": 65539,
+      "reasoning_tokens": 65536,
+      "cost_usd": 0.657676,
+      "continuation_items": 1,
+      "content_characters": 0
+    },
+    {
+      "hop": 2,
+      "finish_reason": "stop",
+      "native_finish_reason": "STOP",
+      "provider": "Google",
+      "completion_tokens": 28950,
+      "reasoning_tokens": 27333,
+      "cost_usd": 0.422956,
+      "continuation_items": 0,
+      "content_characters": 3829
+    }
+  ],
+  "known_cost_usd": 1.080632,
+  "known_completion_tokens": 94489,
+  "at": "2026-10-30T14:55:14.519591+00:00"
+}

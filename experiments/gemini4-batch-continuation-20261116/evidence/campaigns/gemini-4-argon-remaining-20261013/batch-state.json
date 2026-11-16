@@ -1,0 +1,2192 @@
+{
+  "batch_id": "batch-1791927144-4pJLlcoasP4t0M4SvSY4",
+  "endpoint": "/v1/chat/completions",
+  "generation_parameters": {
+    "max_tokens": 128000,
+    "reasoning": {
+      "effort": "medium",
+      "exclude": false
+    }
+  },
+  "model_id": "google/gemini-4-argon",
+  "question_ids": [
+    "opensplice-snv-ranking-v2:E01",
+    "opensplice-snv-ranking-v2:E02",
+    "opensplice-snv-ranking-v2:E03",
+    "opensplice-snv-ranking-v2:E04",
+    "opensplice-snv-ranking-v2:E05",
+    "opensplice-snv-ranking-v2:E06",
+    "opensplice-snv-ranking-v2:E07",
+    "opensplice-snv-ranking-v2:E08",
+    "opensplice-snv-ranking-v2:E09",
+    "opensplice-snv-ranking-v2:E10",
+    "opensplice-snv-ranking-v2:E11",
+    "opensplice-snv-ranking-v2:E12",
+    "opensplice-snv-ranking-v2:E13",
+    "opensplice-snv-ranking-v2:E14",
+    "opensplice-snv-ranking-v2:E15",
+    "opensplice-snv-ranking-v2:E16",
+    "opensplice-snv-ranking-v2:E17",
+    "opensplice-snv-ranking-v2:E18",
+    "opensplice-snv-ranking-v2:E19",
+    "opensplice-snv-ranking-v2:E20",
+    "sge-ranking-v2:BAP1",
+    "sge-ranking-v2:BARD1",
+    "sge-ranking-v2:BRCA1",
+    "sge-ranking-v2:BRCA2",
+    "sge-ranking-v2:CARD11",
+    "sge-ranking-v2:CTCF",
+    "sge-ranking-v2:DDX3X",
+    "sge-ranking-v2:PALB2",
+    "sge-ranking-v2:RAD51C",
+    "sge-ranking-v2:RAD51D",
+    "sge-ranking-v2:SBDS",
+    "sge-ranking-v2:SFPQ",
+    "sge-ranking-v2:TINF2",
+    "sge-ranking-v2:TP53",
+    "sge-ranking-v2:VHL",
+    "sge-ranking-v2:XRCC2"
+  ],
+  "question_set_sha256": "bece664494644cbee6831bb5b9e7799f4f21ac44da7e2223b9476d61d00fdc92",
+  "question_set_size": 36,
+  "raw_status": {
+    "completion_window": "24h",
+    "created_at": 1791927144,
+    "endpoint": "/v1/chat/completions",
+    "error": null,
+    "finalized_at": 1791928093,
+    "id": "batch-1791927144-4pJLlcoasP4t0M4SvSY4",
+    "model": "google/gemini-4-argon-20261013",
+    "object": "batch",
+    "request_counts": {
+      "completed": 36,
+      "failed": 0,
+      "total": 36
+    },
+    "results": [
+      {
+        "custom_id": "request_000006",
+        "error": null,
+        "id": "EKTOaoacNtSeitUP3Pe9-AY",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "Below is a summary of the predicted splicing effects (signed change in PSI, in percentage points) based on the location and sequence context of each variant within the minigene cassette:\n\n1. **Upstream Intron & 3' Splice Site (V01–V20):**\n   - **V04, V05, V06, V08, V12, V15:** Deletions removing the polypyrimidine tract (PPT) and/or branchpoint region (positions 188–213) strongly impair 3'ss recognition, causing severe exon skipping (ranging from `-35` to `-80` PSI).\n   - **V11, V13, V14, V17, V18, V19:** Deletions removing or disrupting the canonical 3'ss `AG` dinucleotide (positions 215–216) abolish canonical acceptor usage (`-90` PSI).\n   - **V16 (211 T>A):** Creates a premature competing `AG` dinucleotide 4 nt upstream of the authentic 3'ss (`AGCTAG`), strongly repressing canonical inclusion (`-60` PSI).\n   - **V01, V02, V03, V07, V09, V10, V20:** Variants further upstream or minor indels have modest effects on PPT strength or acceptor context.\n\n2. **Alternative Exon Body (V21–V37, V39, V41):**\n   - **V22, V23, V24, V25:** Disrupt the 5'-end purine-rich exonic splicing enhancer (`ATGGAGGACG`) or create inhibitory G-runs/silencers, reducing exon inclusion (`-15` to `-30` PSI).\n   - **V31, V32:** 21-bp deletions removing the central purine-rich ESE (`AAAGAGGAAGGAGCAG`) strongly decrease inclusion (`-70` PSI).\n   - **V33 (269 A>T):** Disrupts the central purine-rich ESE and introduces an inhibitory `TAG` motif (`-30` PSI), whereas **V34 (272 G>A)** preserves purine content (`+2` PSI).\n   - **V26, V27, V28, V29, V30, V35, V36, V37, V39, V41:** Point mutations and small deletions across the exon body cause mild to moderate reductions in PSI depending on ESE disruption or silencer creation.\n\n3. **5' Splice Site (V38, V40, V42–V50):**\n   - **V38, V40, V42:** Multi-base deletions removing the 5'ss (`ACA|GTAAGT`, positions 301–309) completely abolish donor site recognition (`-90` PSI).\n   - **V43 (305 T>A), V44 (305 T>G), V45 (305 TA>T):** Disrupt the invariant `+2` `T` or shift the `+3` position of the 5'ss, causing near-complete exon skipping (`-85` to `-90` PSI).\n   - **V46, V47, V48, V49, V50:** Substitutions and deletions at the `+4` (`307A`) and `+6` (`309T`) positions weaken base-pairing with U1 snRNA, leading to moderate-to-strong decreases in exon inclusion (`-25` to `-40` PSI).\n\nFINAL: {\"V01\": 5.0, \"V02\": -2.0, \"V03\": 1.0, \"V04\": -70.0, \"V05\": -75.0, \"V06\": -80.0, \"V07\": -15.0, \"V08\": -82.0, \"V09\": 3.0, \"V10\": -5.0, \"V11\": -90.0, \"V12\": -40.0, \"V13\": -90.0, \"V14\": -90.0, \"V15\": -35.0, \"V16\": -60.0, \"V17\": -90.0, \"V18\": -90.0, \"V19\": -90.0, \"V20\": -10.0, \"V21\": -5.0, \"V22\": -30.0, \"V23\": -30.0, \"V24\": -15.0, \"V25\": -20.0, \"V26\": -15.0, \"V27\": -20.0, \"V28\": -10.0, \"V29\": -5.0, \"V30\": -5.0, \"V31\": -70.0, \"V32\": -70.0, \"V33\": -30.0, \"V34\": 2.0, \"V35\": -15.0, \"V36\": -10.0, \"V37\": -5.0, \"V38\": -90.0, \"V39\": -5.0, \"V40\": -90.0, \"V41\": -3.0, \"V42\": -90.0, \"V43\": -90.0, \"V44\": -90.0, \"V45\": -85.0, \"V46\": -35.0, \"V47\": -25.0, \"V48\": -40.0, \"V49\": -35.0, \"V50\": -30.0}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-808ab0b6e87f8cf6ea46",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 3974,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 2620
+              },
+              "prompt_tokens": 1518,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 5492
+            }
+          },
+          "request_id": "EKTOaoacNtSeitUP3Pe9-AY",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000024",
+        "error": null,
+        "id": "EKTOavSgNvqRq7UPy8OPkAk",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the functional damage of each candidate variant in *CARD11*, we map the variants onto the coding frame and splice junctions of the target exon:\n\n1. **Exon structure and reading frame:**\n   - The 3' splice acceptor `AG` is located at positions 99–100, with the exon starting at position 101 (`GCCGGCTG...`) and continuing through position 238 (`...ATTGTGG`), followed by the 5' splice donor `GTAAGT` at positions 239–244.\n   - Translating in-frame from position 103 yields the conserved SH3/GUK-region sequence `RLLDILHTKGQRGYVVFLESLEFYYPELYKLVTGKEPTRRFSTIV`.\n\n2. **Variant consequences:**\n   - **Nonsense variants (`V16`, `V35`):** Introduce premature stop codons (`GGG>TAG` and `CTG>TAG`), causing complete loss of function and strong depletion.\n   - **Synonymous variants (`V22`, `V29`, `V33`, `V44`):** Preserve the amino acid sequence without disrupting splice motifs, resulting in minimal functional damage.\n   - **Missense variants:** Scored by structural and physicochemical disruption. Proline or charged substitutions within hydrophobic secondary structure elements (`RLLDIL`, `GYVVFL`, `EFYYP`, `STIV`—such as `V03`, `V09`, `V10`, `V11`, `V12`, `V13`, `V19`, `V23`, `V24`, `V30`, `V32`, `V49`, `V50`) cause substantial loss of function, whereas conservative substitutions (`V01`, `V05`, `V27`, `V28`, `V48`) are largely tolerated.\n\nFINAL: {\"V01\": 0.12, \"V02\": 0.65, \"V03\": 1.45, \"V04\": 0.78, \"V05\": 0.1, \"V06\": 0.62, \"V07\": 0.55, \"V08\": 0.95, \"V09\": 1.85, \"V10\": 1.65, \"V11\": 1.6, \"V12\": 1.5, \"V13\": 1.48, \"V14\": 0.45, \"V15\": 0.52, \"V16\": 2.55, \"V17\": 0.58, \"V18\": 0.64, \"V19\": 1.55, \"V20\": 1.25, \"V21\": 0.68, \"V22\": -0.15, \"V23\": 1.75, \"V24\": 1.72, \"V25\": 0.82, \"V26\": 0.54, \"V27\": 0.18, \"V28\": 0.14, \"V29\": -0.12, \"V30\": 1.15, \"V31\": 1.05, \"V32\": 1.38, \"V33\": -0.14, \"V34\": 0.76, \"V35\": 2.5, \"V36\": 0.72, \"V37\": 0.48, \"V38\": 0.35, \"V39\": 0.85, \"V40\": 0.42, \"V41\": 0.38, \"V42\": 0.6, \"V43\": 0.74, \"V44\": -0.1, \"V45\": 0.66, \"V46\": 0.56, \"V47\": 0.62, \"V48\": 0.08, \"V49\": 1.12, \"V50\": 1.35}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-e8443467b148f387a94d",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 4608,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 3643
+              },
+              "prompt_tokens": 1201,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 5809
+            }
+          },
+          "request_id": "EKTOavSgNvqRq7UPy8OPkAk",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000035",
+        "error": null,
+        "id": "EKTOapatNsuA3PcPuuOlyQU",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "Below is a summary of how the functional-damage scores are derived from the sequence context of *XRCC2* (exon 3, the large C-terminal coding exon containing the Walker A/B ATPase motifs and RAD51-paralog core domain):\n\n1. **Splice Acceptor & Nonsense Variants (Highest Damage):**\n   - The exon 3 canonical 3' splice acceptor (`AG`) is located at positions 99–100, and the open reading frame continues in-frame at position 103 (`GAT` = Asp) through the stop codon `TGA` at positions 820–822.\n   - Variants disrupting the canonical splice acceptor (`V01`, `V02`, `V03`) or introducing premature termination codons (`V06`, `V11`, `V24`, `V30`, `V39`, `V43`, `V44`) cause severe loss of *XRCC2* function.\n\n2. **In-frame Deletions & Catalytic Core Missense Variants (Intermediate-to-High Damage):**\n   - Three-nucleotide in-frame deletions within the Walker A motif (`V07`, `V08`, `V09`) and substitution of the essential Walker A catalytic threonine (`V12`) strongly impair function, as do in-frame deletions across structured core helices and $\\beta$-strands (`V04`, `V14`, `V15`, `V25`, `V26`, `V28`, `V31`, `V32`, `V33`, `V36`, `V37`, `V41`, `V42`).\n   - Non-conservative missense variants in the Walker B and core structural elements (`V05`, `V19`, `V21`, `V27`, `V29`, `V35`, `V40`) cause moderate-to-strong functional depletion, whereas C-terminal alterations (`V45`, `V46`, `V47`, `V48`, `V49`) show more attenuated effects.\n\n3. **Synonymous, Conservative Missense, and 3' UTR Variants (Retained Function):**\n   - Synonymous coding changes (`V10`, `V20`, `V34`), conservative aliphatic/hydroxyl substitutions (`V13`, `V16`, `V17`, `V18`, `V23`, `V38`), and 3' UTR variants downstream of the stop codon (`V50`) retain normal function.\n\nFINAL: {\"V01\": 1.55, \"V02\": 1.55, \"V03\": 1.5, \"V04\": 1.15, \"V05\": 0.9, \"V06\": 1.65, \"V07\": 1.4, \"V08\": 1.4, \"V09\": 1.4, \"V10\": -0.15, \"V11\": 1.65, \"V12\": 1.45, \"V13\": 0.05, \"V14\": 1.2, \"V15\": 1.2, \"V16\": -0.05, \"V17\": -0.02, \"V18\": 0.15, \"V19\": 0.95, \"V20\": -0.15, \"V21\": 0.9, \"V22\": 0.45, \"V23\": 0.2, \"V24\": 1.65, \"V25\": 1.2, \"V26\": 0.85, \"V27\": 0.65, \"V28\": 1.1, \"V29\": 0.55, \"V30\": 1.65, \"V31\": 1.25, \"V32\": 1.0, \"V33\": 1.1, \"V34\": -0.15, \"V35\": 0.7, \"V36\": 1.1, \"V37\": 1.15, \"V38\": -0.05, \"V39\": 1.65, \"V40\": 0.6, \"V41\": 1.15, \"V42\": 1.05, \"V43\": 1.65, \"V44\": 1.65, \"V45\": 0.25, \"V46\": 0.6, \"V47\": 0.2, \"V48\": 0.5, \"V49\": 0.3, \"V50\": -0.15}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-d8808dce041f5aa59dc3",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 6099,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 5002
+              },
+              "prompt_tokens": 2800,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 8899
+            }
+          },
+          "request_id": "EKTOapatNsuA3PcPuuOlyQU",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000009",
+        "error": null,
+        "id": "EKTOav2RNtKdj9YPv_6DoQg",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the signed change in exon inclusion ($\\Delta\\text{PSI}$) for each candidate variant, we examine the splice-regulatory features across the tested alternative exon (positions 217–307) and its flanking native intronic sequences (positions 147–216 and 308–332):\n\n1. **Upstream Intron & 3' Splice Site (positions 147–216):**\n   - **Branchpoint & Polypyrimidine Tract (186–214):** Position 192 (`A` in `TTCTAAC`) serves as the canonical branchpoint adenosine, followed by a polypyrimidine tract (`GTTCTCTTGTTTTAATTACTT`). Deletions removing the branchpoint or polypyrimidine tract (`V04`–`V06`, `V08`, `V09`, `V11`–`V15`, `V17`–`V20`), as well as point mutations at the branchpoint (`V16`) or polypyrimidine tract (`V23`, `V24`, `V26`), impair 3' splice site recognition and reduce exon inclusion.\n   - **3' Splice Site AG (215–216):** Variants that delete across or directly disrupt the canonical acceptor `AG` (`V21`, `V22`, `V25`, `V27`) abolish the canonical 3'ss and strongly decrease inclusion.\n\n2. **Alternative Exon (positions 217–307):**\n   - **Exonic Regulatory Elements (217–304):** Exonic deletions (`V29`–`V32`, `V34`, `V36`) remove putative exonic splicing enhancers (ESEs) and reduce exon length, leading to marked decreases in exon inclusion. Single nucleotide substitutions in the exon body (`V28`, `V33`, `V35`) have milder effects depending on local ESE/ESS modulation.\n\n3. **5' Splice Site & Downstream Intron (positions 305–332):**\n   - **Canonical 5'ss (305–313):** The wild-type 5'ss is `AAGGTACTA` (exon-intron boundary between 307 and 308).\n   - **Disrupting 5'ss (`V37`, `V39`–`V46`, `V48`):** Deletions removing the 5'ss (`V37`, `V39`, `V40`, `V42`, `V45`) or substitutions disrupting the invariant `+1G` (`V43`, `V44`), `-1G` (`V41`), or `+3A` (`V46`, `V48`) strongly abrogate splicing and yield the largest negative $\\Delta\\text{PSI}$ values.\n   - **Strengthening 5'ss (`V38`, `V47`, `V49`):** `V47` (`310 A>G`, `+3A>G`) and `V49` (`313 A>G`, `+6A>G`, which creates a base pair with U1 snRNA across from the suboptimal `+4C`/`+5U`) improve 5'ss complementarity or mildly modulate inclusion, while `V38` (`306 A>G`, `-2A>G`) slightly weakens the exonic consensus.\n\nFINAL: {\"V01\": -1.5, \"V02\": -1.0, \"V03\": -2.0, \"V04\": -45.0, \"V05\": -45.0, \"V06\": -48.0, \"V07\": 2.0, \"V08\": -35.0, \"V09\": -35.0, \"V10\": -8.0, \"V11\": -35.0, \"V12\": -35.0, \"V13\": -12.0, \"V14\": -30.0, \"V15\": -38.0, \"V16\": -25.0, \"V17\": -38.0, \"V18\": -30.0, \"V19\": -30.0, \"V20\": -30.0, \"V21\": -80.0, \"V22\": -80.0, \"V23\": -18.0, \"V24\": -15.0, \"V25\": -75.0, \"V26\": -25.0, \"V27\": -75.0, \"V28\": -8.0, \"V29\": -20.0, \"V30\": -45.0, \"V31\": -45.0, \"V32\": -25.0, \"V33\": -5.0, \"V34\": -30.0, \"V35\": -6.0, \"V36\": -25.0, \"V37\": -80.0, \"V38\": -15.0, \"V39\": -55.0, \"V40\": -85.0, \"V41\": -65.0, \"V42\": -85.0, \"V43\": -85.0, \"V44\": -85.0, \"V45\": -80.0, \"V46\": -45.0, \"V47\": 5.0, \"V48\": -50.0, \"V49\": 12.0, \"V50\": -3.0}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-ebe6b39a4f2b52001404",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 1302,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 0
+              },
+              "prompt_tokens": 1495,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 2797
+            }
+          },
+          "request_id": "EKTOav2RNtKdj9YPv_6DoQg",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000005",
+        "error": null,
+        "id": "EKTOauidNsTEu7AP3ZyxsAc",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "Here is a summary of the predicted splicing effects based on the locations of the candidate variants relative to the splice sites and regulatory motifs of the tested alternative exon (positions 217–305):\n\n- **Core 3' splice site and polypyrimidine tract (PPT) disruptions (V07, V09, V11, V16–V27):** Deletions or substitutions that eliminate the canonical `AG` acceptor dinucleotide (positions 215–216), place a repressive `G` at position -3 (V21), or remove the upstream polypyrimidine tract (`GTTTATTTTAG`) are predicted to strongly abolish exon inclusion.\n- **Branchpoint region deletions (V03–V06):** Deletions spanning positions 168–203 remove the putative branchpoint sequence (`TTAAT` around positions 178–182) and/or reduce the branchpoint-to-3'ss spacing, causing substantial decreases in PSI. By contrast, the shorter 6-nt deletion V08 juxtaposes an upstream `CTTTT` tract with the PPT, preserving or slightly enhancing inclusion.\n- **Core 5' splice site disruptions and enhancements (V32, V33, V35–V49):** The wild-type donor sequence at positions 303–311 is `CAG|GTCAGT`. Deletions spanning the junction or mutations of the invariant `+1/+2 GT` (V41, V42) or `+5 G` (V48) strongly abrogate splicing. Conversely, V44 (`308 C>G`, position +3) converts `CAG|GTCAGT` into the consensus `CAG|GTGAGT` donor motif, which is predicted to increase exon inclusion.\n- **Exonic and distal intronic variants (V01, V02, V28–V31, V34, V50):** Single-nucleotide substitutions away from the splice junctions generally have mild effects, while the 21-nt internal exon deletion (V31) moderately reduces exon inclusion by shortening the exon and removing exonic regulatory sequences.\n\nFINAL: {\"V01\": 0.0, \"V02\": -5.0, \"V03\": -35.0, \"V04\": -45.0, \"V05\": -55.0, \"V06\": -55.0, \"V07\": -65.0, \"V08\": 5.0, \"V09\": -85.0, \"V10\": -10.0, \"V11\": -85.0, \"V12\": -5.0, \"V13\": -2.0, \"V14\": -25.0, \"V15\": -5.0, \"V16\": -60.0, \"V17\": -80.0, \"V18\": -25.0, \"V19\": -25.0, \"V20\": -85.0, \"V21\": -75.0, \"V22\": -85.0, \"V23\": -85.0, \"V24\": -85.0, \"V25\": -85.0, \"V26\": -85.0, \"V27\": -85.0, \"V28\": -5.0, \"V29\": -10.0, \"V30\": 0.0, \"V31\": -20.0, \"V32\": -85.0, \"V33\": -85.0, \"V34\": -5.0, \"V35\": -85.0, \"V36\": -85.0, \"V37\": -20.0, \"V38\": -85.0, \"V39\": -65.0, \"V40\": -70.0, \"V41\": -85.0, \"V42\": -80.0, \"V43\": -60.0, \"V44\": 15.0, \"V45\": -75.0, \"V46\": -75.0, \"V47\": -50.0, \"V48\": -75.0, \"V49\": -25.0, \"V50\": 0.0}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-360adcdc18c0bd5dea46",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 3954,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 2948
+              },
+              "prompt_tokens": 1520,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 5474
+            }
+          },
+          "request_id": "EKTOauidNsTEu7AP3ZyxsAc",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000007",
+        "error": null,
+        "id": "EKTOarmCNpX2wtQP8vWxQQ",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the signed change in percentage spliced in ($\\Delta\\text{PSI}$) for each candidate variant, we map the variants onto the functional splicing architecture of the tested 85-nt alternative exon (positions 217–301, corresponding to *PTEN* exon 4) and its flanking native intronic regions:\n\n1. **3' Splice Site (3'ss) and Polypyrimidine Tract (PPT) (positions 185–216):**\n   - The canonical 3'ss `AG` dinucleotide occupies positions 215–216 (`...TTTAACAG|CTG...`). Variants that directly mutate or delete this junction (V10, V14, V15, V16) abolish canonical 3'ss recognition and cause near-complete exon skipping.\n   - V13 (`213 A>G`) creates a premature `AG` dinucleotide (`AGCAG`) just upstream of the natural 3'ss, strongly competing with and disrupting normal splicing.\n   - Variants within the uridine-rich PPT (V04–V09, V11, V12) replacement of pyrimidines with purines (especially `G` or `A`) progressively weaken U2AF65 binding, causing mild-to-moderate decreases in inclusion, whereas pyrimidine-to-pyrimidine transitions (V09 `202 T>C`) have minimal impact.\n   - Distal upstream intronic variants (V01–V03) lie upstream of the core branchpoint/PPT region and have negligible effects.\n\n2. **Exonic Splicing Regulatory Elements (positions 217–301):**\n   - A prominent purine-rich Exonic Splicing Enhancer (ESE) (`AAGAAGGAGA`, positions 277–286) recruits SR proteins to promote exon definition. Large deletions removing this motif (V31, V33, V34, V35) or shorter deletions truncating it (V32, V38) substantially reduce exon inclusion.\n   - Large 21-nt deletions in the central region of the exon (V19, V21, V22) shorten the exon to 64 nt and remove auxiliary exonic enhancers, causing strong decreases in PSI.\n   - Single-nucleotide substitutions and small indels outside the primary ESE (V17, V18, V20, V23–V30, V36, V37, V40, V41) cause mild-to-moderate perturbations depending on their disruption of local enhancer/silencer balances.\n\n3. **5' Splice Site (5'ss) and Downstream Intron (positions 300–326):**\n   - The 5'ss spans positions 300–307 (`TG|GTAAGA`). Deletions spanning the exon-intron boundary or the invariant `+1/+2` `GT` dinucleotide (V39, V42, V43) completely ablate 5'ss recognition.\n   - V44 deletes positions +3 to +23 of the downstream intron, disrupting base-pairing with U1 snRNA at positions +3 to +6 and strongly reducing inclusion.\n   - Substitutions at position +4 (`305 A>C` in V45 and `305 A>T` in V46) weaken the 5'ss consensus, moderately reducing exon inclusion, whereas +7 (`308 A>C`, V47) and distal downstream variants (V48–V50) have minor effects (with V49 deleting a GGG motif that may act as a weak intronic splicing enhancer).\n\nFINAL: {\"V01\": -3.0, \"V02\": -1.0, \"V03\": -1.5, \"V04\": -8.0, \"V05\": -12.0, \"V06\": -15.0, \"V07\": -22.0, \"V08\": -18.0, \"V09\": -2.0, \"V10\": -90.0, \"V11\": -16.0, \"V12\": -18.0, \"V13\": -65.0, \"V14\": -90.0, \"V15\": -88.0, \"V16\": -90.0, \"V17\": -6.0, \"V18\": -18.0, \"V19\": -55.0, \"V20\": -4.0, \"V21\": -55.0, \"V22\": -55.0, \"V23\": -6.0, \"V24\": -5.0, \"V25\": -4.0, \"V26\": -12.0, \"V27\": -10.0, \"V28\": -10.0, \"V29\": -5.0, \"V30\": -6.0, \"V31\": -70.0, \"V32\": -28.0, \"V33\": -75.0, \"V34\": -75.0, \"V35\": -75.0, \"V36\": -12.0, \"V37\": 2.0, \"V38\": -15.0, \"V39\": -92.0, \"V40\": -12.0, \"V41\": -18.0, \"V42\": -92.0, \"V43\": -88.0, \"V44\": -82.0, \"V45\": -45.0, \"V46\": -35.0, \"V47\": -4.0, \"V48\": -2.0, \"V49\": -14.0, \"V50\": 0.0}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-1ef6aca8b381db76cfc1",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 3070,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 1726
+              },
+              "prompt_tokens": 1512,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 4582
+            }
+          },
+          "request_id": "EKTOarmCNpX2wtQP8vWxQQ",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000004",
+        "error": null,
+        "id": "EKTOatm3NvqRq7UPy8OPkAk",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the signed change in exon inclusion ($\\Delta\\text{PSI}$) for each candidate variant, we evaluate the position of each mutation relative to the splice junctions and key splicing regulatory elements of the tested alternative exon (positions 217–300):\n\n1. **Upstream Intron & 3' Splice Site (positions 147–216):**\n   - **Canonical 3'SS (`AG` at 215–216) and +1 position (217):** Variants directly mutating or deleting the invariant `AG` dinucleotide (V12, V17, V19, V20, V38-like deletions at 3'SS) abolish recognition of the 3' splice site and cause near-complete exon skipping ($\\Delta\\text{PSI} \\approx -80$ to $-90$). Variants deleting the immediate exonic junction while preserving an `AG` (V21, V22) or substituting the +1 G (V23) moderately to strongly impair splicing.\n   - **Polypyrimidine Tract (PPT, ~200–214):** The native PPT (`ATTTTTTTCTTTTT`) is U-rich and strong. Short deletions (3–6 nt) or transversions within the PPT (V08–V11, V13–V16, V18) shorten or interrupt the pyrimidine run, leading to moderate-to-strong decreases in inclusion depending on the number of pyrimidines lost.\n   - **Branchpoint Region (~180–199):** Large deletions removing the branchpoint and part of the PPT (V03, V06, V07) strongly reduce inclusion. Single-nucleotide changes in the upstream intronic region (V01, V02, V04, V05) have minimal impact.\n\n2. **Alternative Exon Body (positions 217–300):**\n   - **Exonic Splicing Enhancers/Silencers (ESEs/ESSs):** Large exonic deletions (V24, V28, V32, V33) shorten the exon below optimal length and remove multiple ESE motifs (such as purine-rich `GAAAG` elements around 284–290), resulting in strong exon skipping. Smaller deletions or point mutations disrupting putative ESEs or creating ESSs (e.g., V25–V27, V29–V31, V34–V37, V39–V41) generally cause mild-to-moderate reductions in inclusion, though a few changes that disrupt repressive motifs or strengthen local enhancers can slightly increase PSI.\n\n3. **5' Splice Site & Downstream Intron (positions 298–325):**\n   - **Canonical 5'SS (`CAG|GTAAAT` at 298–306):** The wild-type 5'SS has a strong consensus sequence (`CAG|GTAAAT`). Any deletion removing the `GT` dinucleotide or the donor junction (V38, V42, V44, V45) completely ablates 5'SS recognition ($\\Delta\\text{PSI} \\approx -90$).\n   - **Donor Consensus Flanking Positions:** Deletions or mutations affecting the exonic `-2/-1` positions (V43) or the intronic `+3` to `+6` positions (`AAAT` at 303–306; V46, V48, V49, V50) weaken U1 snRNP base-pairing and strongly reduce exon inclusion. Conversely, V47 (`303 A>G`, +3 position) converts `GTAAAT` to `GTGAAT` or maintains a purine at +3; while A and G are both purines at +3, A>G slightly alters U1 binding stability, resulting in a mild negative or near-neutral shift.\n\nFINAL: {\"V01\": -1.5, \"V02\": 0.5, \"V03\": -55.0, \"V04\": -2.0, \"V05\": -2.5, \"V06\": -70.0, \"V07\": -75.0, \"V08\": -12.0, \"V09\": -10.0, \"V10\": -18.0, \"V11\": -45.0, \"V12\": -90.0, \"V13\": -18.0, \"V14\": -45.0, \"V15\": -22.0, \"V16\": -20.0, \"V17\": -90.0, \"V18\": -25.0, \"V19\": -88.0, \"V20\": -88.0, \"V21\": -35.0, \"V22\": -65.0, \"V23\": -20.0, \"V24\": -25.0, \"V25\": -5.0, \"V26\": -15.0, \"V27\": -8.0, \"V28\": -60.0, \"V29\": -12.0, \"V30\": -4.0, \"V31\": -6.0, \"V32\": -65.0, \"V33\": -70.0, \"V34\": -20.0, \"V35\": 2.0, \"V36\": -25.0, \"V37\": -10.0, \"V38\": -90.0, \"V39\": -8.0, \"V40\": -12.0, \"V41\": -35.0, \"V42\": -85.0, \"V43\": -50.0, \"V44\": -90.0, \"V45\": -90.0, \"V46\": -75.0, \"V47\": -5.0, \"V48\": -70.0, \"V49\": -80.0, \"V50\": -40.0}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-f15837cfb08f82bf2a45",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 1393,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 0
+              },
+              "prompt_tokens": 1501,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 2894
+            }
+          },
+          "request_id": "EKTOatm3NvqRq7UPy8OPkAk",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000000",
+        "error": null,
+        "id": "EKTOapeHNuGW1dUP1cib4Ak",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the signed change in percentage spliced in ($\\Delta\\text{PSI}$) for each candidate variant, we evaluate the position and nature of each mutation relative to the splice junctions and cis-regulatory elements of the tested alternative exon (positions 217–306):\n\n1. **3' Splice Site (positions 215–216) and Polypyrimidine Tract (positions 199–214):**\n   - The canonical 3'ss `AG` dinucleotide is located at positions 215–216 (`...TTTTTTTTTTTTTAAG|GTG...`). Substitutions or deletions directly mutating or removing positions 215 or 216 (`V10`–`V20`) abolish or severely impair 3'ss recognition, leading to strong exon skipping (large negative $\\Delta\\text{PSI}$). Note that `V13` (`209 TTTTTAA>T`) and `V15` (`213 TAAG>T`) shift or delete the `AG` while shortening the polypyrimidine tract.\n   - `V21` (`217 G>T`) mutates the first nucleotide of the exon (+1 position relative to 3'ss), weakening the 3'ss consensus (`AG|G` to `AG|T`) and moderately reducing inclusion.\n   - Upstream deletions `V07` and `V09` remove portions of the upstream intron and branchpoint/polypyrimidine region, moderately to strongly reducing exon inclusion. Point mutations in the deep upstream intron (`V01`–`V06`, `V08`) have minimal impact.\n\n2. **Exonic Splicing Enhancers/Silencers (positions 217–306):**\n   - Large internal exon deletions (`V24`, `V28`, `V30`) remove 21 nt of exonic sequence (shrinking the exon from 90 nt to 69 nt) and delete putative exonic splicing enhancers, generally reducing inclusion. Smaller deletions (`V25`, `V26`, `V31`, `V35`) and point variants (`V22`, `V23`, `V27`, `V29`) within the exon body cause more modest regulatory shifts depending on local motif changes.\n\n3. **5' Splice Site (positions 304–312):**\n   - The wild-type 5'ss spanning the exon-intron boundary (306/307) is `TAG|GTAAGA`.\n   - Variants spanning the boundary (`V32`, `V33`, `V34`, `V36`, `V37`, `V38`, `V43`) delete the canonical 5'ss completely, resulting in near-complete exon skipping.\n   - Variants at the immediate 5'ss consensus positions—such as `V39` and `V40` (altering the exonic `-2/-1` positions), `V41` and `V42` (mutating `-1G` at 306), `V44` (mutating `+1G` at 307), `V45` and `V46` (deleting `+2T` and adjacent bases), and `V47`, `V48`, `V49` (mutating or deleting `+3A` and downstream intronic nucleotides)—strongly disrupt U1 snRNP binding and cause severe decreases in PSI.\n   - `V50` (`328 T>A`) lies further downstream in the intron and is expected to have a negligible effect.\n\nFINAL: {\"V01\": -0.5, \"V02\": -0.8, \"V03\": -3.5, \"V04\": 0.5, \"V05\": -1.2, \"V06\": -0.5, \"V07\": -25.0, \"V08\": 0.2, \"V09\": -35.0, \"V10\": -85.0, \"V11\": -88.0, \"V12\": -88.0, \"V13\": -45.0, \"V14\": -82.0, \"V15\": -78.0, \"V16\": -85.0, \"V17\": -85.0, \"V18\": -90.0, \"V19\": -85.0, \"V20\": -85.0, \"V21\": -18.0, \"V22\": -4.0, \"V23\": -6.0, \"V24\": -30.0, \"V25\": -15.0, \"V26\": -10.0, \"V27\": -3.0, \"V28\": -25.0, \"V29\": -2.0, \"V30\": -35.0, \"V31\": 4.0, \"V32\": -88.0, \"V33\": -88.0, \"V34\": -88.0, \"V35\": -12.0, \"V36\": -90.0, \"V37\": -90.0, \"V38\": -90.0, \"V39\": -40.0, \"V40\": -55.0, \"V41\": -45.0, \"V42\": -55.0, \"V43\": -90.0, \"V44\": -90.0, \"V45\": -88.0, \"V46\": -88.0, \"V47\": -60.0, \"V48\": -75.0, \"V49\": -80.0, \"V50\": -0.5}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-4a2e41a1e7a049a4db6f",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 1522,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 191
+              },
+              "prompt_tokens": 1538,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 3060
+            }
+          },
+          "request_id": "EKTOapeHNuGW1dUP1cib4Ak",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000008",
+        "error": null,
+        "id": "EKTOaou_Numzq7UP_7fByAc",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the signed change in percentage spliced in ($\\Delta\\text{PSI}$) for each candidate variant, we map the variants onto the functional splicing elements of the tested alternative exon (positions 217–300) and its flanking native intronic regions:\n\n1. **5' Splice Site (positions 298–306, `CAG|GTAAGT`):**\n   - Variants that directly mutate or delete the canonical `+1/+2` `GT` dinucleotide or the surrounding 5' splice site motif (`V38`, `V42`–`V49`) abolish 5' splice site recognition and cause near-complete exon skipping.\n   - Variants disrupting the exonic `-1G` and `-2A` positions (`V39`, `V40`, `V41`) severely weaken U1 snRNP base-pairing, causing large decreases in PSI.\n\n2. **3' Splice Site, Polypyrimidine Tract (PPT), and Branchpoint Region (positions 180–217):**\n   - Variants that mutate or delete the canonical `AG` acceptor at 215–216 (`V11`, `V13`, `V21`, `V22`) abolish normal 3' splice site usage and result in strong exon skipping.\n   - Deletions removing the upstream branchpoint region around 195–201 (`V03`–`V06`, `V09`) or shortening/interrupting the polypyrimidine tract at 204–214 (`V12`, `V14`–`V20`) reduce spliceosome assembly efficiency in proportion to the severity of the disruption.\n   - Deeper upstream intronic point mutations (`V01`, `V02`) and distal downstream intronic variants (`V50`) have minimal impact.\n\n3. **Exonic Splicing Regulatory Elements (positions 217–297):**\n   - Multi-nucleotide deletions removing purine-rich exonic splicing enhancers (ESEs), particularly near the 5' and 3' ends of the exon (`V25`, `V26`, `V27`, `V30`, `V31`, `V34`, `V37`), substantially reduce exon inclusion.\n   - Single-nucleotide substitutions and small indels within the exon (`V23`, `V24`, `V28`, `V29`, `V32`, `V33`, `V35`, `V36`) cause mild-to-moderate reductions depending on their overlap with enhancer motifs.\n\nFINAL: {\"V01\": 0.0, \"V02\": -1.5, \"V03\": -55.0, \"V04\": -60.0, \"V05\": -65.0, \"V06\": -80.0, \"V07\": -4.0, \"V08\": -15.0, \"V09\": -25.0, \"V10\": -10.0, \"V11\": -90.0, \"V12\": -40.0, \"V13\": -90.0, \"V14\": -45.0, \"V15\": -20.0, \"V16\": -6.0, \"V17\": -25.0, \"V18\": -14.0, \"V19\": -18.0, \"V20\": -22.0, \"V21\": -90.0, \"V22\": -90.0, \"V23\": -20.0, \"V24\": -10.0, \"V25\": -50.0, \"V26\": -50.0, \"V27\": -25.0, \"V28\": -20.0, \"V29\": -15.0, \"V30\": -35.0, \"V31\": -35.0, \"V32\": -5.0, \"V33\": -15.0, \"V34\": -25.0, \"V35\": -5.0, \"V36\": -2.0, \"V37\": -45.0, \"V38\": -90.0, \"V39\": -40.0, \"V40\": -65.0, \"V41\": -60.0, \"V42\": -90.0, \"V43\": -90.0, \"V44\": -90.0, \"V45\": -90.0, \"V46\": -85.0, \"V47\": -85.0, \"V48\": -88.0, \"V49\": -90.0, \"V50\": -1.0}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-4498430b96c46ab45924",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 3415,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 2302
+              },
+              "prompt_tokens": 1522,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 4937
+            }
+          },
+          "request_id": "EKTOaou_Numzq7UP_7fByAc",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000032",
+        "error": null,
+        "id": "EKTOava_Numzq7UP_7fByAc",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "Brief summary of variant impact reasoning:\n- **Nonsense and frameshift variants** (`V14`, `V16`, `V17`, `V18`, `V34`, `V35`, `V45`, `V50`) cause premature termination of the essential TINF2 protein and are assigned the highest damage scores.\n- **Splice-disrupting variant** (`V48`, c.-3C>G creating a competing `AG` dinucleotide out-of-frame just upstream of the canonical 3' splice site) is predicted to be strongly damaging.\n- **In-frame deletions and helix-breaking/core-disrupting missense variants** within the conserved N-terminal alpha-helical domain (`V10`, `V20`, `V22`, `V24`, `V26`, `V27`, `V28`, `V29`, `V30`, `V36`, `V37`, `V43`) are assigned moderate-to-high damage scores, especially where hydrophobic core residues (F155, Y161, L164, L173, L185) are replaced by charged or polar residues or proline (`V20`).\n- **Conservative missense and benign intronic/surface variants** (`V02`, `V05`, `V11`, `V21`, `V23`, `V32`, `V38`, `V46`, `V47`) are assigned low damage scores.\n\nFINAL: {\"V01\": 0.25, \"V02\": 0.05, \"V03\": 0.35, \"V04\": 0.2, \"V05\": 0.05, \"V06\": 0.22, \"V07\": 0.25, \"V08\": 0.3, \"V09\": 0.25, \"V10\": 0.65, \"V11\": 0.08, \"V12\": 0.25, \"V13\": 0.45, \"V14\": 0.95, \"V15\": 0.4, \"V16\": 1.0, \"V17\": 0.95, \"V18\": 1.0, \"V19\": 0.15, \"V20\": 0.78, \"V21\": 0.25, \"V22\": 0.72, \"V23\": 0.22, \"V24\": 0.75, \"V25\": 0.3, \"V26\": 0.7, \"V27\": 0.7, \"V28\": 0.82, \"V29\": 0.76, \"V30\": 0.75, \"V31\": 0.45, \"V32\": 0.18, \"V33\": 0.38, \"V34\": 0.95, \"V35\": 0.95, \"V36\": 0.72, \"V37\": 0.75, \"V38\": 0.12, \"V39\": 0.18, \"V40\": 0.28, \"V41\": 0.32, \"V42\": 0.42, \"V43\": 0.68, \"V44\": 0.52, \"V45\": 0.95, \"V46\": 0.1, \"V47\": -0.05, \"V48\": 0.85, \"V49\": 0.55, \"V50\": 0.98}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-c1ce931c74775a1f2c14",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 3732,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 2843
+              },
+              "prompt_tokens": 1184,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 4916
+            }
+          },
+          "request_id": "EKTOava_Numzq7UP_7fByAc",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000010",
+        "error": null,
+        "id": "EKTOasPzNZX2wtQP8vWxQQ",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the signed change in percentage spliced in ($\\Delta\\text{PSI}$) for each candidate variant, I analyzed the sequence features governing splice-site recognition and exon definition across the alternative exon (positions 217–309) and its flanking native intronic regions:\n\n1. **Core Splice Site Signals (3'SS and 5'SS):**\n   - **3' Splice Site (positions 200–216, `TTTCTTTTAATGCCAG|A`):** Variants disrupting the canonical invariant dinucleotide `AG` at positions 215–216 (**V18** `216 G>T`) or deleting the polypyrimidine tract (PPT) and 3'SS junction (**V14**) abolish canonical 3'SS recognition, resulting in severe exon skipping ($\\Delta\\text{PSI} \\approx -80$ to $-90$).\n   - **Polypyrimidine Tract (positions 200–210):** Transitions conserving pyrimidines (**V13** `201 T>C`) have negligible or slightly positive effects, whereas pyrimidine-to-purine transversions (**V15** `203 T>A`, **V16** `207 T>G`) weaken U2AF65 binding and moderately reduce inclusion. Deletions shortening the PPT or bringing purines closer to the 3'SS (**V04**, **V06**, **V08**, **V12**) similarly reduce inclusion, with large deletions eliminating the branchpoint/PPT boundary (**V08**) having pronounced negative effects.\n   - **5' Splice Site (positions 307–316, `ACA|GTAAGTA`):** Disrupting the invariant `+1G` (**V46** `310 G>A`) or deleting the entire 5'SS consensus (**V47**) completely abolishes 5'SS recognition ($\\Delta\\text{PSI} \\approx -90$). Disruption of the highly conserved `+5G` (**V49** `314 G>A`) causes severe skipping, while `+4A>C` (**V48**) causes a moderate-to-strong reduction, and `+7A>T` (**V50**) has a mild effect.\n\n2. **Exonic Splicing Enhancers (ESEs) and Silencers (ESSs):**\n   - **5' Exonic Purine-Rich ESE (positions 220–242, `GAAGAACCTCAAGGAGTGAAG`):** The 5' end of the alternative exon contains a strong GA-rich enhancer motif bound by SR proteins (e.g., SRSF1/SRSF2). Large 21-nt deletions spanning this cluster (**V21**, **V23**, **V25**, **V28**, **V29**, **V33**), as well as smaller deletions and point mutations that disrupt the purine runs (**V20**, **V24**, **V26**, **V27**, **V30**–**V36**), weaken exon definition and substantially reduce PSI.\n   - **Central and 3' Exonic Regions (positions 245–305):** Variants disrupting pyrimidine/T-rich stretches or hnRNP-binding silencer motifs in the middle of the exon (**V37**–**V41**) or modifying the A-rich tract near the 3' end (**V42**–**V45**) produce smaller, context-dependent shifts in exon inclusion.\n\nFINAL: {\"V01\": -1.5, \"V02\": -1.0, \"V03\": 0.5, \"V04\": -25.0, \"V05\": -1.5, \"V06\": -28.0, \"V07\": -4.0, \"V08\": -55.0, \"V09\": -4.0, \"V10\": -3.0, \"V11\": -12.0, \"V12\": -10.0, \"V13\": 1.5, \"V14\": -90.0, \"V15\": -14.0, \"V16\": -18.0, \"V17\": -5.0, \"V18\": -88.0, \"V19\": -15.0, \"V20\": -25.0, \"V21\": -65.0, \"V22\": -8.0, \"V23\": -65.0, \"V24\": -18.0, \"V25\": -62.0, \"V26\": -12.0, \"V27\": -16.0, \"V28\": -58.0, \"V29\": -55.0, \"V30\": -30.0, \"V31\": -20.0, \"V32\": -28.0, \"V33\": -52.0, \"V34\": -18.0, \"V35\": -26.0, \"V36\": -8.0, \"V37\": 6.0, \"V38\": -4.0, \"V39\": -6.0, \"V40\": 5.0, \"V41\": 4.0, \"V42\": -10.0, \"V43\": -6.0, \"V44\": -8.0, \"V45\": 4.0, \"V46\": -90.0, \"V47\": -92.0, \"V48\": -35.0, \"V49\": -78.0, \"V50\": -5.0}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-c006ed4fd20d49207ac0",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 1674,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 371
+              },
+              "prompt_tokens": 1504,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 3178
+            }
+          },
+          "request_id": "EKTOasPzNZX2wtQP8vWxQQ",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000029",
+        "error": null,
+        "id": "EKTOar2qNomfitUP4azyoQo",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "Brief justification of predictions:\n- **Exon structure:** The target region covers a 71-bp coding exon of *RAD51D* (positions 101–171, encoding an alpha-helical segment `LALMMQLARELKTLARDLGMAVV`) flanked by the canonical splice acceptor `AG` at positions 99–100 and splice donor `GT` at positions 172–173.\n- **Nonsense & canonical splice variants:** Nonsense mutations (`V12`, `V18`, `V22`, `V26`) and canonical splice acceptor/donor disruptions (`V01`–`V05`, `V42`, `V43`) cause severe loss of function.\n- **In-frame deletions & helix-breaking missense:** 3-bp coding deletions (`V06`–`V09`, `V11`, `V15`–`V17`, `V21`, `V27`–`V29`, `V31`, `V35`–`V37`) and proline substitutions within the alpha-helix (`V13`, `V19`, `V24`) are strongly damaging, whereas conservative substitutions (`V32`, `V33`), synonymous variants (`V20`), and distal intronic variants (`V46`–`V50`) retain function.\n\nFINAL: {\"V01\": 0.90, \"V02\": 0.95, \"V03\": 0.95, \"V04\": 0.95, \"V05\": 0.95, \"V06\": 0.65, \"V07\": 0.65, \"V08\": 0.65, \"V09\": 0.65, \"V10\": 0.35, \"V11\": 0.70, \"V12\": 1.00, \"V13\": 0.65, \"V14\": 0.20, \"V15\": 0.75, \"V16\": 0.75, \"V17\": 0.75, \"V18\": 1.00, \"V19\": 0.65, \"V20\": 0.00, \"V21\": 0.75, \"V22\": 1.00, \"V23\": 0.45, \"V24\": 0.70, \"V25\": 0.55, \"V26\": 1.00, \"V27\": 0.75, \"V28\": 0.75, \"V29\": 0.75, \"V30\": 0.20, \"V31\": 0.75, \"V32\": 0.10, \"V33\": 0.12, \"V34\": 0.45, \"V35\": 0.75, \"V36\": 0.75, \"V37\": 0.75, \"V38\": 0.40, \"V39\": 0.45, \"V40\": 0.45, \"V41\": 0.45, \"V42\": 0.95, \"V43\": 0.95, \"V44\": 0.30, \"V45\": 0.60, \"V46\": 0.00, \"V47\": 0.00, \"V48\": 0.00, \"V49\": 0.00, \"V50\": 0.00}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-4e8d6ee657d337da95b8",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 5084,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 4216
+              },
+              "prompt_tokens": 1190,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 6274
+            }
+          },
+          "request_id": "EKTOar2qNomfitUP4azyoQo",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000016",
+        "error": null,
+        "id": "EKTOavGHNtKdj9YPv_6DoQg",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the signed change in percentage spliced in ($\\Delta\\text{PSI}$) for each variant, we evaluate the position and sequence context of the mutations relative to the splicing regulatory elements of the tested alternative exon (positions 217–301):\n\n1. **Core 3' Splice Site & Polypyrimidine Tract (Positions 203–217):**\n   - Wild-type sequence: `...CTAATTATATTTGATTCTTTTACAG|G...`\n   - Variants that delete or mutate the invariant `AG` dinucleotide at positions 215–216 (**V13, V15, V17–V20, V22, V23**) abolish canonical 3' splice site recognition, resulting in complete or near-complete exon skipping (large negative $\\Delta\\text{PSI}$).\n   - Substitutions at the $-3$ position (**V21**, `C>A`) or $+1$ exon position (**V24**, `G>T`) substantially weaken 3'ss consensus strength.\n   - Deletions and transversions within the polypyrimidine tract (`ATTCTTTT`, positions 205–212; **V08–V12, V14, V16**) reduce U2AF binding in proportion to tract shortening or purine/G introduction.\n\n2. **Branchpoint Sequence (Positions 190–196):**\n   - Position 195 (`A>G`, **V07**) mutates the putative branchpoint adenosine within the `CTAAT` motif located 22 nt upstream of the 3' splice site, causing a substantial reduction in exon inclusion. Upstream intronic variants (**V01–V06**) lie outside the minimal core motifs and have much smaller effects.\n\n3. **Exonic Variants (Positions 218–297):**\n   - Single-nucleotide variants and small indels within the exon body (**V25–V28, V34, V35**) alter exonic splicing enhancers/silencers (ESEs/ESSs) with moderate effects, whereas large 21-nt deletions (**V29–V33**) severely compromise exon definition and shorten the exon below optimal size.\n\n4. **Core 5' Splice Site (Positions 296–308):**\n   - Wild-type sequence: `...CAG|GTCAGGC...`\n   - Variants spanning or mutating the invariant `+1/+2` `GT` dinucleotide at positions 302–303 (**V36–V38, V42, V45–V47**) abolish usage of the 5' splice site, leading to severe exon skipping.\n   - Mutations at the exonic $-1$ position (**V43, V44**), $-2$ position (**V41**), $-3$ position (**V40**), dinucleotide deletion at $-4/-3$ (**V39**), or deletion of the `+3` to `+6` `CAGG` motif (**V48**) disrupt U1 snRNA base-pairing and strongly decrease inclusion. Downstream intronic changes (**V49, V50**) have minimal impact.\n\nFINAL: {\"V01\": -1.0, \"V02\": 0.5, \"V03\": -2.0, \"V04\": -1.0, \"V05\": -4.0, \"V06\": -3.0, \"V07\": -45.0, \"V08\": -12.0, \"V09\": -65.0, \"V10\": -18.0, \"V11\": -70.0, \"V12\": -30.0, \"V13\": -90.0, \"V14\": -45.0, \"V15\": -90.0, \"V16\": -22.0, \"V17\": -85.0, \"V18\": -90.0, \"V19\": -85.0, \"V20\": -80.0, \"V21\": -45.0, \"V22\": -90.0, \"V23\": -90.0, \"V24\": -25.0, \"V25\": -5.0, \"V26\": -10.0, \"V27\": -25.0, \"V28\": -4.0, \"V29\": -55.0, \"V30\": -55.0, \"V31\": -55.0, \"V32\": -55.0, \"V33\": -55.0, \"V34\": -8.0, \"V35\": -18.0, \"V36\": -90.0, \"V37\": -90.0, \"V38\": -90.0, \"V39\": -40.0, \"V40\": -15.0, \"V41\": -35.0, \"V42\": -90.0, \"V43\": -70.0, \"V44\": -75.0, \"V45\": -90.0, \"V46\": -90.0, \"V47\": -90.0, \"V48\": -75.0, \"V49\": -2.0, \"V50\": -2.0}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-50efffaa12381d34289a",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 2895,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 1652
+              },
+              "prompt_tokens": 1499,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 4394
+            }
+          },
+          "request_id": "EKTOavGHNtKdj9YPv_6DoQg",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000022",
+        "error": null,
+        "id": "EKTOas6fNsTEu7AP3ZyxsAc",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the functional damage scores of the candidate variants in *BRCA1*, we first map the local sequence context to the *BRCA1* transcript structure and reading frame:\n\n1. **Exon-Intron Boundaries:**\n   - **Positions 1–100:** Upstream intronic sequence ending with the canonical 3' splice acceptor dinucleotide `AG` at positions 99–100 (`...AATTTCAG`).\n   - **Positions 101–189:** An 89-bp coding exon (historically *BRCA1* exon 5, encoding residues 36–64 of the N-terminal RING finger domain: `SLQESTRFSQLVEELLKIICAFQLDTGLE`).\n   - **Positions 190–289:** Downstream intronic sequence beginning with the canonical 5' splice donor sequence `GTAAGT` at positions 190–195.\n\n2. **Variant Classification and Scoring Rationale:**\n   - **Canonical Splice Variants (V04, V05, V06, V41, V42, V43, V44):** Variants altering the essential `-2/-1` acceptor (`AG`) or `+1/+2` donor (`GT`) dinucleotides abolish normal splicing and cause severe loss of function (scores ~ `2.2`).\n   - **Extended Splice Region Variants (V03, V45–V49):** Variants at donor positions `+4` (193) and `+6` (195) weaken U1 snRNP binding and cause partial to severe splicing defects depending on the substitution (`+4A>G` is generally better tolerated than `+4A>C/T`).\n   - **Nonsense Variants (V11, V22, V23, V25):** Premature termination codons within the RING domain lead to nonsense-mediated decay and complete loss of BRCA1 function (scores ~ `2.1`).\n   - **Missense Variants in the RING Domain:** \n     - **V29 (pos 159 T>C, p.Cys61Arg):** Disrupts a critical zinc-coordinating cysteine residue (Cys61) required for RING domain structural integrity and BARD1 heterodimerization; this is a well-established pathogenic variant with complete loss of function (`2.0`).\n     - **Helix-disrupting and Core Hydrophobic Variants (V15, V20, V24, V28, V30, V34):** Substitutions introducing proline or charged residues into the $\\alpha$-helices (e.g., V24 p.Leu50Arg, V30 p.Ala62Pro) or disrupting buried hydrophobic core residues show moderate-to-high functional damage.\n     - **Surface/Conservative Missense Variants (V08, V10, V12, V13, V16, V17, V21, V32, V33, V35, V37–V40):** Show mild or negligible depletion.\n   - **Synonymous & Deep Intronic Variants (V01, V02, V07, V09, V14, V18, V19, V26, V27, V31, V36, V50):** Expected to retain normal function (scores `< 0`).\n\nFINAL: {\"V01\": -0.15, \"V02\": -0.15, \"V03\": 0.1, \"V04\": 2.2, \"V05\": 2.2, \"V06\": 2.2, \"V07\": -0.2, \"V08\": 0.35, \"V09\": -0.2, \"V10\": 0.05, \"V11\": 2.1, \"V12\": 0.1, \"V13\": 0.4, \"V14\": -0.15, \"V15\": 1.0, \"V16\": 0.2, \"V17\": 0.05, \"V18\": -0.2, \"V19\": -0.2, \"V20\": 1.2, \"V21\": 0.1, \"V22\": 2.1, \"V23\": 2.1, \"V24\": 1.65, \"V25\": 2.1, \"V26\": -0.2, \"V27\": -0.2, \"V28\": 1.35, \"V29\": 2.05, \"V30\": 1.55, \"V31\": -0.2, \"V32\": 0.5, \"V33\": 0.25, \"V34\": 1.05, \"V35\": 0.5, \"V36\": -0.2, \"V37\": 0.2, \"V38\": 0.3, \"V39\": 0.5, \"V40\": 0.2, \"V41\": 2.2, \"V42\": 2.2, \"V43\": 2.2, \"V44\": 2.2, \"V45\": 1.1, \"V46\": 0.45, \"V47\": 1.2, \"V48\": 0.85, \"V49\": 0.75, \"V50\": -0.15}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-84ed04a78b528a5c52d0",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 3879,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 2616
+              },
+              "prompt_tokens": 1173,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 5052
+            }
+          },
+          "request_id": "EKTOas6fNsTEu7AP3ZyxsAc",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000017",
+        "error": null,
+        "id": "EKTOatSdNtKYjNsPoOzOwA0",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the signed change in percentage spliced in ($\\Delta\\text{PSI}$) for each candidate variant, we evaluate the position and sequence context of the mutations relative to the splice sites and regulatory motifs of the 98-nt alternative exon (positions 217–314):\n\n1. **Core 3' Splice Site (positions 215–216, `AG`) and Upstream Intron / Polypyrimidine Tract (positions 183–214):**\n   - **Direct 3'SS disruption:** Deletions removing the canonical 3' splice site dinucleotide `AG` at 215–216 (`V03`, `V06`, `V07`, `V14`, `V16`) abolish canonical acceptor recognition, causing severe exon skipping.\n   - **Polypyrimidine tract (PPT) and branchpoint region:** The native PPT (`GGTTACTATATTAC`, positions 201–214) is suboptimal and purine/thymine-interrupted. Variants introducing purines into the PPT (`V08` C206G, `V09` T209A, `V11` T211G, `V13` T212G) or shortening the spacer/PPT (`V04`, `V05`, `V10`) weaken 3'SS definition, whereas pyrimidine transitions (`V12` T212C, `V15` C214T) have mild or slightly positive effects. Larger upstream deletions (`V01`, `V02`) remove putative branchpoint sequences (`TGAATAAT` / `TTACTAT`), reducing inclusion.\n\n2. **Exonic Splicing Enhancers (ESEs), Silencers (ESSs), and Exon Length (positions 217–314):**\n   - Purine-rich and SR-protein binding motifs (e.g., `CCTGGGAAG` at 232–240 and `GCAAGTTCAAGAGAACAA` at 255–272) act as strong ESEs promoting exon inclusion. Deletions removing these elements (`V19`, `V20`, `V21`, `V23`, `V29`, `V30`, `V32`, `V33`, `V34`) or point mutations disrupting the `GGAAG` motif (`V24`, `V25`, `V26`) substantially decrease PSI, compounded by exon shortening from 98 nt to 77 nt for the 21-bp deletions.\n   - Conversely, positions 241–250 (`CATCTTTTCG`) contain a pyrimidine-rich tract that can function as a weak ESS; small deletions or point mutations here (`V28`, `V31`) have milder or slightly positive effects. Single-nucleotide changes in the 3' half of the exon (`V35`–`V39`) have modest effects depending on local motif creation.\n\n3. **Core 5' Splice Site (positions 312–320, `AATGTAAGT`) and Downstream Intron (positions 321–339):**\n   - **Direct 5'SS disruption:** Deletions spanning the exon-intron boundary (`V40`, `V41`, `V42`) or disrupting the canonical donor sequence `GTAAGT` (`V43` deleting `AAG` at +3..+5, `V44` A318C at +4, `V45` and `V46` deleting +6 `T` and downstream nucleotides) strongly abrogate U1 snRNP base-pairing and cause severe exon skipping.\n   - **5'SS +6 position (position 320):** Single-nucleotide substitutions at the +6 position (`V47` T320A, `V48` T320C, `V49` T320G) weaken the consensus `GTAAGT` donor to a moderate-to-strong degree.\n   - **Downstream intronic variant (`V50`):** A 1-nt deletion at position 327 (+13 of the downstream intron) lies outside the core donor consensus and has a minimal effect.\n\nFINAL: {\"V01\": -28.0, \"V02\": -32.0, \"V03\": -88.0, \"V04\": -18.0, \"V05\": -14.0, \"V06\": -88.0, \"V07\": -88.0, \"V08\": -24.0, \"V09\": -16.0, \"V10\": -15.0, \"V11\": -26.0, \"V12\": 4.0, \"V13\": -22.0, \"V14\": -82.0, \"V15\": 2.0, \"V16\": -85.0, \"V17\": -8.0, \"V18\": -6.0, \"V19\": -48.0, \"V20\": -48.0, \"V21\": -42.0, \"V22\": -5.0, \"V23\": -35.0, \"V24\": -25.0, \"V25\": -18.0, \"V26\": -20.0, \"V27\": -25.0, \"V28\": 6.0, \"V29\": -52.0, \"V30\": -52.0, \"V31\": 3.0, \"V32\": -58.0, \"V33\": -55.0, \"V34\": -22.0, \"V35\": -8.0, \"V36\": 2.0, \"V37\": -4.0, \"V38\": -6.0, \"V39\": -3.0, \"V40\": -90.0, \"V41\": -90.0, \"V42\": -90.0, \"V43\": -86.0, \"V44\": -65.0, \"V45\": -38.0, \"V46\": -42.0, \"V47\": -30.0, \"V48\": -25.0, \"V49\": -35.0, \"V50\": -2.0}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-cf7ce844e0cc2e83e22d",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 2739,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 1260
+              },
+              "prompt_tokens": 1538,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 4277
+            }
+          },
+          "request_id": "EKTOatSdNtKYjNsPoOzOwA0",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000013",
+        "error": null,
+        "id": "EKTOaoODNr_EitUP676JiAg",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the signed change in percentage spliced in ($\\Delta\\text{PSI}$) for each candidate variant, we map the variants onto the functional splicing elements of the tested alternative exon (positions 217–303) and its flanking native intronic regions:\n\n1. **3' Splice Site and Polypyrimidine Tract (positions 190–222):**\n   - The canonical 3' splice site `AG` dinucleotide is located at positions 215–216, preceded by a U-rich polypyrimidine tract (PPT) spanning positions 195–210 (`ATTATTTGCTTATTT`).\n   - Variants that directly delete or disrupt the invariant `AG` dinucleotide (**V06, V07, V16, V19, V20**) abolish canonical 3'ss recognition and cause near-complete exon skipping.\n   - Large or moderate deletions within the PPT (**V04, V05, V12, V13**) and pyrimidine-to-purine point substitutions in the PPT (**V08, V09, V10, V11, V14, V15**), especially `T>G` transversions, reduce U2AF binding and decrease exon inclusion.\n   - **V21** deletes the first 6 nucleotides of the exon immediately downstream of the 3'ss, and **V22** mutates the +1G of the exon (`G>T`), both weakening 3'ss definition.\n\n2. **Exonic Splicing Regulatory Elements (positions 223–302):**\n   - Multi-nucleotide deletions within the exon body (**V26, V28, V33, V35**) remove exonic splicing enhancers (ESEs)—most notably the purine-rich enhancer region around 272–293 (`CAAAAACAACAAAATGAAAAGG`) deleted in **V35** and mutated in **V37**—and shorten the exon, leading to substantial decreases in inclusion.\n   - Point substitutions creating G-runs or disrupting ESE motifs (**V23, V24, V37, V38**) moderately reduce PSI.\n\n3. **5' Splice Site and Downstream Intron (positions 298–328):**\n   - The 5' splice site spans positions 301–309 (`GAC|GTAAGT`).\n   - Deletions removing the invariant `+1G` or `+2T` (**V40, V42, V43**) completely abrogate 5'ss usage.\n   - **V44** removes positions +5 to +10, eliminating the critical `+5G` and `+6T` base-pairing with U1 snRNA, causing severe skipping.\n   - **V45** (`+6 T>C`) and **V41** (`-1 C>A`) moderately weaken the 5'ss consensus, whereas variants further into the introns (**V01, V02, V48, V49, V50**) are expected to have minimal effect.\n\nFINAL: {\"V01\": -1.0, \"V02\": 0.5, \"V03\": -3.0, \"V04\": -68.0, \"V05\": -22.0, \"V06\": -85.0, \"V07\": -85.0, \"V08\": -14.0, \"V09\": -22.0, \"V10\": -14.0, \"V11\": -22.0, \"V12\": -26.0, \"V13\": -25.0, \"V14\": -15.0, \"V15\": -23.0, \"V16\": -85.0, \"V17\": -6.0, \"V18\": -3.0, \"V19\": -85.0, \"V20\": -85.0, \"V21\": -42.0, \"V22\": -20.0, \"V23\": -12.0, \"V24\": -16.0, \"V25\": -4.0, \"V26\": -18.0, \"V27\": -8.0, \"V28\": -32.0, \"V29\": -5.0, \"V30\": -5.0, \"V31\": -7.0, \"V32\": -3.0, \"V33\": -38.0, \"V34\": 2.0, \"V35\": -52.0, \"V36\": -3.0, \"V37\": -18.0, \"V38\": -10.0, \"V39\": -6.0, \"V40\": -85.0, \"V41\": -12.0, \"V42\": -85.0, \"V43\": -85.0, \"V44\": -72.0, \"V45\": -28.0, \"V46\": -5.0, \"V47\": 2.0, \"V48\": -1.0, \"V49\": -1.0, \"V50\": 0.0}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-8b3ca218b7c017f8bc2b",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 3322,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 2108
+              },
+              "prompt_tokens": 1474,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 4796
+            }
+          },
+          "request_id": "EKTOaoODNr_EitUP676JiAg",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000020",
+        "error": null,
+        "id": "EKTOasDzNZT0jNsPjtqAgQc",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "Below is a summary of the functional impact predictions for the candidate variants across the *BAP1* exon 1–intron 1–exon 2–intron 2 region:\n\n1. **Splice-Site & Truncating Variants:**\n   - Canonical splice donor/acceptor mutations and deletions in intron 1 (`V03`, `V04`, `V05`, `V13`, `V14`) and intron 2 (`V41`, `V42`, `V43`, `V44`, `V45`), frameshift indels in exon 2 (`V20`, `V21`, `V26`, `V34`, `V40`), and the nonsense variant `V37` (Glu>Ter) cause severe loss of *BAP1* function and strongly deplete in HAP1 cells.\n   - In-frame single-amino-acid deletions (`V35`, `V36`) within the core UCH catalytic domain beta-strand/loop region also strongly impair protein stability and function.\n   - Last-base exon 1 substitutions (`V01`, `V02`) perturb the 5' splice donor consensus and coding sequence, resulting in substantial functional damage.\n\n2. **Coding Missense Variants (Exon 2):**\n   - Substitutions introducing proline or charged/polar residues into hydrophobic core positions of the UCH domain (`V15`, `V16`, `V18`, `V24`, `V25`, `V30`, `V31`, `V32`, `V33`) are predicted to be strongly to moderately damaging, whereas more conservative substitutions (`V17`, `V19`, `V22`, `V23`, `V27`, `V28`, `V29`, `V38`, `V39`) have milder effects.\n\n3. **Intronic & Near-Splice Variants:**\n   - Proximal splice-region variants (`V12`, `V46`, `V47`) have modest effects on splicing efficiency, while deeper intronic variants (`V06`–`V11`, `V48`–`V50`) are predicted to be functionally neutral.\n\nFINAL: {\"V01\": 0.65, \"V02\": 0.65, \"V03\": 0.96, \"V04\": 0.96, \"V05\": 0.95, \"V06\": 0.0, \"V07\": 0.0, \"V08\": 0.05, \"V09\": 0.0, \"V10\": 0.0, \"V11\": 0.0, \"V12\": 0.18, \"V13\": 0.96, \"V14\": 0.96, \"V15\": 0.65, \"V16\": 0.58, \"V17\": 0.35, \"V18\": 0.65, \"V19\": 0.35, \"V20\": 0.95, \"V21\": 0.95, \"V22\": 0.45, \"V23\": 0.45, \"V24\": 0.78, \"V25\": 0.78, \"V26\": 0.95, \"V27\": 0.35, \"V28\": 0.25, \"V29\": 0.35, \"V30\": 0.72, \"V31\": 0.72, \"V32\": 0.78, \"V33\": 0.76, \"V34\": 0.95, \"V35\": 0.85, \"V36\": 0.85, \"V37\": 1.0, \"V38\": 0.5, \"V39\": 0.45, \"V40\": 0.95, \"V41\": 0.96, \"V42\": 0.96, \"V43\": 0.96, \"V44\": 0.94, \"V45\": 0.95, \"V46\": 0.15, \"V47\": 0.15, \"V48\": 0.0, \"V49\": 0.0, \"V50\": 0.0}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-e7ef6b69af7749d5ea26",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 3919,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 2885
+              },
+              "prompt_tokens": 1152,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 5071
+            }
+          },
+          "request_id": "EKTOasDzNZT0jNsPjtqAgQc",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000019",
+        "error": null,
+        "id": "EKTOaoCNNuPFjNsP-KCgwAU",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "FINAL: {\"V01\": -5.0, \"V02\": -2.0, \"V03\": -80.0, \"V04\": -2.0, \"V05\": -3.0, \"V06\": -85.0, \"V07\": -10.0, \"V08\": -8.0, \"V09\": -30.0, \"V10\": -20.0, \"V11\": -20.0, \"V12\": -15.0, \"V13\": -5.0, \"V14\": -60.0, \"V15\": -85.0, \"V16\": -18.0, \"V17\": -45.0, \"V18\": -25.0, \"V19\": -25.0, \"V20\": -25.0, \"V21\": -20.0, \"V22\": -85.0, \"V23\": -85.0, \"V24\": -85.0, \"V25\": -85.0, \"V26\": -85.0, \"V27\": -8.0, \"V28\": -25.0, \"V29\": -25.0, \"V30\": -10.0, \"V31\": -5.0, \"V32\": -25.0, \"V33\": -2.0, \"V34\": -8.0, \"V35\": 0.0, \"V36\": -20.0, \"V37\": 2.0, \"V38\": -85.0, \"V39\": -85.0, \"V40\": -25.0, \"V41\": -20.0, \"V42\": -25.0, \"V43\": -85.0, \"V44\": -70.0, \"V45\": -85.0, \"V46\": -25.0, \"V47\": -60.0, \"V48\": -45.0, \"V49\": -35.0, \"V50\": -5.0}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-d2dd242bab648054b240",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 2960,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 2417
+              },
+              "prompt_tokens": 1493,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 4453
+            }
+          },
+          "request_id": "EKTOaoCNNuPFjNsP-KCgwAU",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000027",
+        "error": null,
+        "id": "EKTOaqyTNtjTjNsP-c248QY",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the functional-damage scores for the candidate variants in *PALB2*, we first map the local sequence context to the *PALB2* transcript structure and reading frame:\n\n1. **Exon and Reading Frame Mapping:**\n   - **3' Splice Acceptor:** Positions 99–100 (`AG` of `...TTTTATTTAG`).\n   - **Exon Sequence (Positions 101–186, 86 bp):** Encodes part of the essential C-terminal WD40 $\\beta$-propeller domain (beginning with `GTT CCA GTA TTA CAG ATA...` $\\rightarrow$ `V P V L Q I V P V P D V Y N L V C V A L G N L E I R E I...`, starting in-frame at position 101).\n   - **5' Splice Donor:** Positions 187–188 (`GT` of `GTATGTAATT...`).\n\n2. **Variant Classification and Scoring Rationale:**\n   - **Canonical Splice-Site Variants (V03, V04, V48, V49, V50):** Disrupting the invariant `AG` acceptor (pos 99–100) or `GT` donor (pos 187–188), or deleting across the splice junction (V03, V46, V50), abolishes normal splicing of this 86 bp exon (which causes a frameshift if skipped), resulting in strong loss of function (scores $\\approx 0.90 - 1.00$).\n   - **Nonsense Variants (V14, V30):**\n     - `V14` (pos 119 `G>T`, `ATA` [Ile] + `GTT` [Val] at pos 119 $\\rightarrow$ `TTT` [Phe]; wait: pos 119 is 1st base of codon `GTT` (119–121), so `GTT` $\\rightarrow$ `TTT` is p.Val->Phe, missense).\n     - `V30` (pos 151 `T>A`, codon 149–151 `TGT` [Cys] $\\rightarrow$ `TGA` [Stop]) creates a premature termination codon within the WD40 domain, causing severe truncation and nonsense-mediated decay (score $\\approx 1.00$).\n   - **In-Frame 3-bp Deletions (V05, V08, V10, V12, V16, V17, V20, V21, V22, V23, V25, V28, V31, V33, V36, V38, V41, V42):** The WD40 domain forms a rigid circular $\\beta$-propeller scaffold required for BRCA2 and RAD51C interaction. Deleting single amino acids within the $\\beta$-strands destabilizes the domain fold, leading to substantial depletion (scores $\\approx 0.70 - 0.90$). `V01` deletes 3 bp in the polypyrimidine tract (`TTAG>T` at pos 97–100, preserving the `AG` acceptor by shifting `T`), having a milder splicing effect.\n   - **Synonymous Variants (V06, V07, V09, V18, V24, V26, V34):** Preserve the amino acid sequence (e.g., pos 105 `CCA>CAA/CGA` is 3rd base of `TCC`? No, codons are 101-103 `GTT`, 104-106 `CCA`, 107-109 `GTA`, 110-112 `TTA`, 113-115 `CAG`, 116-118 `ATA`, 119-121 `GTT`, 122-124 `CCA`, 125-127 `GTG`, 128-130 `CCT`, 131-133 `GAT`, 134-136 `GTG`, 137-139 `TAT`, 140-142 `AAT`, 143-145 `CTC`, 146-148 `GTG`, 149-151 `TGT`, 152-154 `GTA`, 155-157 `GCT`, 158-160 `TTG`, 161-163 `GGA`, 164-166 `AAT`, 167-169 `TTG`, 170-172 `GAA`, 173-175 `ATC`, 176-178 `AGA`, 179-181 `GAG`, 182-184 `ATC`, 185-186 `AG`). Third-base substitutions that do not alter the encoded residue or splice motifs retain normal function (scores $\\approx 0.00$).\n   - **Missense Variants:** Scored according to physicochemical severity and structural burial within the WD40 repeat blade (ranging from $\\approx 0.05$ for conservative surface changes to $\\approx 0.65$ for core-disrupting substitutions).\n\nFINAL: {\"V01\": 0.25, \"V02\": 0.12, \"V03\": 0.98, \"V04\": 0.96, \"V05\": 0.82, \"V06\": 0.28, \"V07\": 0.32, \"V08\": 0.82, \"V09\": 0.15, \"V10\": 0.84, \"V11\": 0.22, \"V12\": 0.85, \"V13\": 0.18, \"V14\": 0.35, \"V15\": 0.45, \"V16\": 0.83, \"V17\": 0.83, \"V18\": 0.02, \"V19\": 0.42, \"V20\": 0.86, \"V21\": 0.86, \"V22\": 0.87, \"V23\": 0.88, \"V24\": 0.01, \"V25\": 0.89, \"V26\": 0.01, \"V27\": 0.38, \"V28\": 0.89, \"V29\": 0.55, \"V30\": 1.0, \"V31\": 0.88, \"V32\": 0.34, \"V33\": 0.88, \"V34\": 0.2, \"V35\": 0.58, \"V36\": 0.84, \"V37\": 0.26, \"V38\": 0.85, \"V39\": 0.3, \"V40\": 0.28, \"V41\": 0.82, \"V42\": 0.82, \"V43\": 0.36, \"V44\": 0.24, \"V45\": 0.4, \"V46\": 0.94, \"V47\": 0.48, \"V48\": 0.98, \"V49\": 0.97, \"V50\": 0.96}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-c6d2159bbe44b6e0eeb4",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 2333,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 577
+              },
+              "prompt_tokens": 1187,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 3520
+            }
+          },
+          "request_id": "EKTOaqyTNtjTjNsP-c248QY",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000012",
+        "error": null,
+        "id": "EKTOasDzNZX2wtQP8vWxQQ",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the signed change in exon inclusion ($\\Delta\\text{PSI}$) for each candidate variant, we analyze the wild-type (WT) sequence context of the tested alternative exon (positions 217–298) and its flanking native intronic regions:\n\n- **3' Splice Site (3'ss) Region (positions 190–216):** `TCTCAAATGCAATGTTCATATTTTCAG`\n  The canonical 3'ss AG is at positions 215–216, preceded by a polypyrimidine tract (`CATATTTTC`, 206–214) and putative branchpoint adenosines upstream (around 194–201).\n- **Alternative Exon (positions 217–298, length 82 nt):**\n  `GATTCCAGTCAAATTGAGCTATTAAAAGAATTAATGGATCTGCAGAAGGATATGGTGGTCATGTTGCTGTCCATGTTAGAAG`\n  The middle of the exon (245–270) is purine-rich (`AATGGATCTGCAGAAGGATATGGTGG`), typical of SRSF1/TRA2B exonic splicing enhancers (ESEs). The 3' end of the exon (270–292) is TG/T-rich (`TGGTCATGTTGCTGTCCATGTT`), which can act as an exonic splicing silencer (ESS).\n- **5' Splice Site (5'ss) Region (positions 296–306):** `AAG/GTAGTTTT`\n  The canonical 5'ss GT is at 299–300. The motif `AAG|GTAGTT` has a strong consensus match at +1 to +4 (`GTAG`), with `T` at +5 (position 303).\n\n### Variant Analysis Summary:\n1. **Core Splice Site & Polypyrimidine Tract Mutations:**\n   - **V15 (`216 G>A`), V16 (`216 GGAT>G`):** Directly mutate or shift the invariant 3'ss `AG` dinucleotide, causing near-complete exon skipping ($\\sim -85$ to $-90$).\n   - **V07–V13 (positions 208–212):** Substitutions in the polypyrimidine tract (`TTTT` at 209–212). Purine substitutions (`T>G` or `T>A`: V07, V09, V10, V11, V12, V13) strongly disrupt U2AF2 binding (large negative $\\Delta\\text{PSI}$), whereas pyrimidine-to-pyrimidine `210 T>C` (V08) is well tolerated ($\\sim -2$).\n   - **V14 (`214 C>A`):** Mutates the $-3$ position of the 3'ss from preferred `C` to `A`, moderately weakening 3'ss recognition ($\\sim -25$).\n   - **V31, V35, V37, V44, V45, V46:** Deletions removing the 5'ss junction (V31, V35, V37, V44), mutation of the $-1$ G (`298 G>A`, V45), or deletion of the $+1$ G (`299 GT>G`, V46). All abolish canonical 5'ss usage ($\\sim -80$ to $-90$).\n   - **V42 (`297 A>C`), V43 (`297 A>T`):** Mutate the $-2$ A of the 5'ss, substantially weakening U1 snRNP base-pairing ($\\sim -35$ to $-40$).\n   - **V47 (`301 A>C`), V48 (`301 A>G`), V49 (`301 A>T`):** Mutate the $+3$ position of the 5'ss (`A`). While `A` and `G` are both purines accepted at $+3$, `G` (V48) is slightly weaker in the context of a $+5$ `T`, and pyrimidines `C`/`T` (V47, V49) strongly disrupt U1 snRNP binding ($\\sim -55$ to $-60$).\n\n2. **Upstream Intron Variants (V01–V06):**\n   - **V04 (`191 del21`):** Deletes the branchpoint region and brings upstream poly-T sequences directly adjacent to the 3'ss, severely shortening the branchpoint-to-3'ss distance and impairing splicing ($\\sim -65$).\n   - **V02, V03:** Large deletions removing an upstream poly-T element (176–187) that may compete with the true PPT, while preserving the branchpoint; mild to moderate effects.\n   - **V05 (`199 CAATGTT>C`):** Alters spacing and removes potential branchpoint adenosines ($\\sim -18$).\n\n3. **Exonic Variants (V17–V41):**\n   - **V19, V20, V23, V24, V26:** 21-nt deletions removing the purine-rich ESE core (`GCAGAAGGATATGG`) and shortening the exon from 82 nt to 61 nt. This results in strong exon skipping ($\\sim -50$ to $-60$).\n   - **V21 (`250 A>G`), V22 (`253 GA>G`), V25 (`259 C>T`), V27 (`265 GA>G`), V28 (`266 A>G`):** Point mutations/indels within the ESE region that modulate SRSF1/TRA2B binding.\n   - **V29 (`271 del21`), V30–V36:** Variants in the TG-rich region (271–290). Deletions or mutations that disrupt repressive TG-motifs (e.g., V29, V33, V34, V36) are expected to mildly increase or have neutral-to-positive effects on inclusion, whereas mutations creating stronger silencers or weakening adjacent enhancers reduce inclusion.\n   - **V38–V41 (positions 290–295):** Located immediately upstream of the 5'ss (`ATGTTAGAAG`). V40 (`294 A>C`) and V41 (`295 G>A`) disrupt the purine-rich `AGAAG` enhancer immediately preceding the 5'ss ($\\sim -12$ to $-15$).\n\nFINAL: {\"V01\": -2.0, \"V02\": -8.0, \"V03\": -12.0, \"V04\": -65.0, \"V05\": -18.0, \"V06\": -4.0, \"V07\": -25.0, \"V08\": -2.0, \"V09\": -35.0, \"V10\": -30.0, \"V11\": -38.0, \"V12\": -28.0, \"V13\": -35.0, \"V14\": -25.0, \"V15\": -90.0, \"V16\": -85.0, \"V17\": -5.0, \"V18\": 2.0, \"V19\": -55.0, \"V20\": -60.0, \"V21\": 4.0, \"V22\": -8.0, \"V23\": -55.0, \"V24\": -55.0, \"V25\": -12.0, \"V26\": -50.0, \"V27\": -18.0, \"V28\": -8.0, \"V29\": 5.0, \"V30\": -3.0, \"V31\": -80.0, \"V32\": 2.0, \"V33\": 4.0, \"V34\": 6.0, \"V35\": -85.0, \"V36\": 3.0, \"V37\": -90.0, \"V38\": 2.0, \"V39\": -3.0, \"V40\": -15.0, \"V41\": -12.0, \"V42\": -35.0, \"V43\": -40.0, \"V44\": -90.0, \"V45\": -80.0, \"V46\": -90.0, \"V47\": -55.0, \"V48\": -15.0, \"V49\": -60.0, \"V50\": -1.0}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-f8462bc7f8193c3a6a7e",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 2010,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 0
+              },
+              "prompt_tokens": 1491,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 3501
+            }
+          },
+          "request_id": "EKTOasDzNZX2wtQP8vWxQQ",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000001",
+        "error": null,
+        "id": "EKTOaoqJNrmPq7UPj8Gt0Qc",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "Here is the summary of the predicted effects on exon inclusion ($\\Delta\\text{PSI}$) based on sequence context and splice-regulatory features of the cassette:\n\n1. **Core 3' Splice Site & Polypyrimidine Tract (PPT) (Positions 170–216):**\n   - **Canonical 3'SS (`TAG` at 214–216):** Deletions removing the `AG` dinucleotide (`V10`, `V16`, `V19`, `V21`, `V22`) abolish canonical 3'SS recognition and cause near-complete exon skipping. `V20` removes the pyrimidine at position -3 (`T214`), substantially weakening the 3'SS.\n   - **Competing AG creation (`V14`):** `210 T>G` creates a premature `AG` dinucleotide 5 nt upstream of the authentic 3'SS, strongly inhibiting normal splicing.\n   - **PPT & Branchpoint Deletions (`V03`–`V08`, `V13`):** Large deletions removing the uridine-rich PPT (`189–212`) or branchpoint region (`170–190`) strongly reduce exon inclusion, while single-nucleotide T-to-A/G transversions in the PPT (`V09`, `V11`, `V15`, `V17`, `V18`) have milder negative effects.\n\n2. **Exonic Splicing Enhancers (ESEs) & Silencers (ESSs) (Positions 217–302):**\n   - **5'-Exonic Purine-Rich ESE (`217–225`):** `V23` and `V25` delete the `GAAGAA` purine-rich ESE immediately downstream of the 3'SS, causing a strong decrease in inclusion.\n   - **Internal Exonic Variants (`V26`–`V36`):** `V28` (`263 A>T`) extends a poly-U tract (`CATTTT` $\\to$ `CTTTTT`), strengthening hnRNP C-like silencing, whereas `V29` (`266 T>A`) interrupts this U-run and increases inclusion. `V30` removes a purine-rich `AAGACTT` motif, decreasing inclusion.\n\n3. **Core 5' Splice Site (Positions 300–308, `CAA|GTGAGT`):**\n   - **Donor Deletions & Invariant `+1 G` (`V31`, `V32`, `V34`, `V37`–`V40`, `V43`, `V45`):** Disruption or deletion of the invariant `GT` dinucleotide or the entire 5'SS motif causes severe exon skipping.\n   - **Extended Donor Consensus (`V41`, `V42`, `V44`, `V46`–`V50`):** Substitutions at `+5 G` (`V46`), `+3 G` (`V41`, `V42`), `+4 A` (`V44`), and `+6 T` (`V47`–`V50`) progressively weaken U1 snRNA base-pairing according to position conservation.\n\nFINAL: {\"V01\": -2.0, \"V02\": 1.0, \"V03\": -40.0, \"V04\": -45.0, \"V05\": -65.0, \"V06\": -70.0, \"V07\": -75.0, \"V08\": -80.0, \"V09\": -10.0, \"V10\": -85.0, \"V11\": -12.0, \"V12\": -5.0, \"V13\": -35.0, \"V14\": -60.0, \"V15\": -8.0, \"V16\": -85.0, \"V17\": -8.0, \"V18\": -10.0, \"V19\": -80.0, \"V20\": -45.0, \"V21\": -85.0, \"V22\": -85.0, \"V23\": -50.0, \"V24\": -15.0, \"V25\": -55.0, \"V26\": -15.0, \"V27\": -5.0, \"V28\": -20.0, \"V29\": 12.0, \"V30\": -25.0, \"V31\": -85.0, \"V32\": -85.0, \"V33\": -5.0, \"V34\": -85.0, \"V35\": -8.0, \"V36\": -5.0, \"V37\": -85.0, \"V38\": -85.0, \"V39\": -85.0, \"V40\": -85.0, \"V41\": -50.0, \"V42\": -55.0, \"V43\": -75.0, \"V44\": -45.0, \"V45\": -70.0, \"V46\": -75.0, \"V47\": -40.0, \"V48\": -25.0, \"V49\": -20.0, \"V50\": -30.0}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-55f3f1491ba46828c6e4",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 3443,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 2183
+              },
+              "prompt_tokens": 1516,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 4959
+            }
+          },
+          "request_id": "EKTOaoqJNrmPq7UPj8Gt0Qc",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000031",
+        "error": null,
+        "id": "EKTOaqyjNpOn3PcP_4ul0As",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "An analysis of the local sequence and candidate variants at the *SFPQ* locus reveals a 96-bp coding exon spanning positions 101 to 196, flanked by a canonical 3′ splice acceptor (`AG` at positions 99–100) and 5′ splice donor (`GTAAG` at positions 197–201):\n\n- **Nonsense variants** (`V30`, `V31`, `V32`, `V39`, `V43`, and `V48` which creates a premature termination codon across the exon junction) and **canonical splice-site disruptions** (`V14`–`V18`, `V47`, `V49`) cause strong loss of function and high functional-damage scores.\n- **In-frame 3-bp deletions** within the coding exon (`V21`, `V22`, `V24`–`V26`, `V37`, `V38`, `V40`, `V41`, `V44`, `V46`) remove conserved residues in the coiled-coil/NOPS region of SFPQ and confer moderate-to-high damage.\n- **Coding missense variants** (`V19`, `V20`, `V23`, `V27`–`V29`, `V33`–`V36`, `V42`, `V45`) produce mild-to-moderate effects depending on the physicochemical severity of the substitution.\n- **Intronic variants outside the core splice motifs** (`V01`–`V13`, `V50`) are predicted to be largely neutral.\n\nFINAL: {\"V01\": 0.02, \"V02\": 0.01, \"V03\": -0.02, \"V04\": 0.0, \"V05\": 0.03, \"V06\": -0.01, \"V07\": 0.0, \"V08\": 0.01, \"V09\": -0.01, \"V10\": 0.02, \"V11\": 0.12, \"V12\": 0.04, \"V13\": 0.18, \"V14\": 1.85, \"V15\": 1.45, \"V16\": 1.88, \"V17\": 1.82, \"V18\": 1.84, \"V19\": 0.45, \"V20\": 0.42, \"V21\": 1.18, \"V22\": 1.2, \"V23\": 0.38, \"V24\": 1.22, \"V25\": 1.2, \"V26\": 1.15, \"V27\": 0.52, \"V28\": 0.4, \"V29\": 0.28, \"V30\": 1.92, \"V31\": 1.9, \"V32\": 1.91, \"V33\": 0.35, \"V34\": 0.25, \"V35\": 0.38, \"V36\": 0.62, \"V37\": 1.25, \"V38\": 1.22, \"V39\": 1.9, \"V40\": 1.08, \"V41\": 1.1, \"V42\": 0.26, \"V43\": 1.89, \"V44\": 1.12, \"V45\": 0.24, \"V46\": 1.2, \"V47\": 1.85, \"V48\": 1.78, \"V49\": 1.82, \"V50\": 0.02}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-c69ae3f797066c4b1e0c",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 6086,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 5169
+              },
+              "prompt_tokens": 1173,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 7259
+            }
+          },
+          "request_id": "EKTOaqyjNpOn3PcP_4ul0As",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000021",
+        "error": null,
+        "id": "EKTOasSANvy4u7APto6sqA8",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the functional-damage score of each candidate variant in this *BARD1* saturation genome editing (SGE) panel, we first map the local exon-intron structure and reading frame:\n\n1. **Exon-Intron Boundaries:**\n   - **3' Splice Acceptor:** Located at positions 99–100 (`AG`), preceded by a polypyrimidine tract (`TTTTTTTGTATTTT`).\n   - **Exon Sequence:** Spans positions 101–193 (93 bp), encoding 31 amino acids within the C-terminal BRCT domain of BARD1 (`THVVVPGDAVQSTLKCMLGILNGCWILKFE-`), which includes the highly conserved BRCT motif centered around Trp (encoded by `TGG` at positions 175–177).\n   - **5' Splice Donor:** Located at positions 194–195 (`GT` in `GTAAGTGTT`).\n\n2. **Variant Consequences:**\n   - **Nonsense & Canonical Splice Variants:** `V03` (-2 splice acceptor `A>C`), `V12` (`TTG>TAG` nonsense), `V13` (`AAG>TAG` nonsense), and `V18` (`TGT>TGA` nonsense) cause complete loss of function and receive the highest damage scores.\n   - **In-Frame 3-bp Deletions & Core BRCT Missense Variants:** Single-codon deletions within the structured BRCT beta-sheet/alpha-helix core (`V04`, `V05`, `V11`, `V14`, `V15`, `V17`, `V20`, `V22`, `V23`, `V25`, `V26`, `V29`, `V33`, `V35`, `V37`, `V38`, `V39`, `V41`) and missense substitutions disrupting key conserved residues (such as the conserved Trp at `V34` and adjacent glycines/cysteines/hydrophobic core residues at `V16`, `V19`, `V21`, `V24`, `V27`, `V28`, `V30`, `V32`, `V40`, `V42`, `V43`) strongly impair protein folding and BARD1-dependent survival.\n   - **Extended Splice Donor Variants:** `V46` (deletion of +4 to +6 `GTG`) and `V47` (+5 `G>A`) strongly disrupt 5' splice site recognition, while `V45` (+3 `A>C`) and `V48` (+6 `T>A`) have moderate splice-disruptive effects.\n   - **Synonymous & Deep Intronic Variants:** Synonymous changes (`V06`, `V09`, `V31`, `V44`) and intronic variants outside critical splice motifs (`V01`, `V02`, `V49`, `V50`) retain normal function and receive the lowest damage scores.\n\nFINAL: {\"V01\": -0.05, \"V02\": -0.04, \"V03\": 1.0, \"V04\": 0.92, \"V05\": 0.65, \"V06\": -0.02, \"V07\": 0.42, \"V08\": 0.52, \"V09\": -0.03, \"V10\": 0.22, \"V11\": 0.68, \"V12\": 1.0, \"V13\": 1.0, \"V14\": 0.86, \"V15\": 0.86, \"V16\": 0.72, \"V17\": 0.85, \"V18\": 1.0, \"V19\": 0.58, \"V20\": 0.86, \"V21\": 0.66, \"V22\": 0.86, \"V23\": 0.85, \"V24\": 0.7, \"V25\": 0.82, \"V26\": 0.85, \"V27\": 0.8, \"V28\": 0.8, \"V29\": 0.9, \"V30\": 0.82, \"V31\": -0.02, \"V32\": 0.75, \"V33\": 0.95, \"V34\": 0.94, \"V35\": 0.95, \"V36\": 0.35, \"V37\": 0.88, \"V38\": 0.86, \"V39\": 0.85, \"V40\": 0.68, \"V41\": 0.86, \"V42\": 0.45, \"V43\": 0.48, \"V44\": -0.02, \"V45\": 0.38, \"V46\": 0.88, \"V47\": 0.85, \"V48\": 0.45, \"V49\": -0.04, \"V50\": -0.05}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-434e050249f0b71f13f3",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 4210,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 2986
+              },
+              "prompt_tokens": 1189,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 5399
+            }
+          },
+          "request_id": "EKTOasSANvy4u7APto6sqA8",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000033",
+        "error": null,
+        "id": "aKbOavKKDcvVvfIPlMKzoAE",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "This saturation genome editing panel targets the 3' end of *TP53* exon 8 (codons 305–307: `AAG CGA G`) and the adjacent 5' splice donor region of intron 8 (`GTAAGCAAGC...`). In the HCT116 Nutlin-3a survival assay, loss-of-function (LOF) alleles impair p53-mediated growth arrest/apoptosis and become enriched (higher positive functional-damage scores), whereas functionally neutral alleles are depleted or remain near baseline (negative scores).\n\n### Variant Categorization and Scoring Logic\n1. **Nonsense and Frameshift Variants (Codons 305–306, positions 2–7):**\n   - Nonsense variants at Arg306 (`V15` C>T and `V18` CG>TA) truncate p53 prior to the tetramerization domain, causing complete LOF (highest damage scores).\n   - Frameshift indels within exon 8 (`V01`, `V08`, `V09`, `V12`, `V13`, `V14`, `V20`, `V23`) and `V22` (which deletes the terminal exonic bases) similarly abolish normal C-terminal translation and yield strong positive damage scores.\n2. **Exonic Missense Variants (Codons 305–306, positions 2–7):**\n   - Missense substitutions at Lys305 (`V02`–`V07`, `V10`, `V11`) and Arg306 (`V16`, `V17`, `V19`, `V21`) lie in the flexible C-terminal linker region outside the core DNA-binding domain and are generally well tolerated, yielding negative (benign) scores.\n3. **Splice Donor Site Variants (Exon 8 position -1 and Intron 8 positions +1 to +6, positions 8–14):**\n   - Variants disrupting the canonical `+1/+2` `GT` dinucleotide (`V25`, `V26`, `V27`) cause severe splicing defects and strong LOF.\n   - Substitutions or deletions affecting the `-1G` (`V24`) or `+5G` (`V28`, `V29`, `V30`, `V31`, `V32`, `V33`, `V35`) positions of the `GTAAGC` donor motif substantially impair spliceosome recognition, resulting in intermediate-to-high damage scores.\n4. **Flanking Intronic Variants (Intron 8 positions +6 to +12, positions 14–20):**\n   - Single-nucleotide variants and small indels beyond the splice donor consensus (`V36`–`V50`) do not disrupt splicing or coding sequence, resulting in functionally neutral (negative) scores.\n\nFINAL: {\"V01\": 2.1, \"V02\": -0.5, \"V03\": -0.45, \"V04\": -0.4, \"V05\": -0.5, \"V06\": -0.45, \"V07\": -0.45, \"V08\": 2.1, \"V09\": 2.1, \"V10\": -0.6, \"V11\": -0.6, \"V12\": 2.05, \"V13\": 2.1, \"V14\": 2.1, \"V15\": 2.4, \"V16\": -0.5, \"V17\": -0.45, \"V18\": 2.4, \"V19\": -0.5, \"V20\": 2.05, \"V21\": -0.45, \"V22\": 1.9, \"V23\": 2.1, \"V24\": 1.6, \"V25\": 2.3, \"V26\": 2.3, \"V27\": 2.15, \"V28\": 1.5, \"V29\": 1.8, \"V30\": 1.1, \"V31\": 1.4, \"V32\": 1.75, \"V33\": 1.7, \"V34\": 0.1, \"V35\": 1.7, \"V36\": -0.7, \"V37\": -0.65, \"V38\": -0.8, \"V39\": -0.8, \"V40\": -0.65, \"V41\": -0.8, \"V42\": -0.75, \"V43\": -0.75, \"V44\": -0.8, \"V45\": -0.75, \"V46\": -0.75, \"V47\": -0.75, \"V48\": -0.75, \"V49\": -0.8, \"V50\": -0.8}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927912,
+            "id": "gen-batch-1791927144-4d7a28b44f81d9356519",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 3448,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 2292
+              },
+              "prompt_tokens": 1125,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 4573
+            }
+          },
+          "request_id": "aKbOavKKDcvVvfIPlMKzoAE",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000030",
+        "error": null,
+        "id": "EKTOarGuNsi9jNsP2seX2AU",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the functional-damage score of each variant in *SBDS*, we map the local sequence to the *SBDS* transcript structure and reading frame:\n\n1. **Exon and Reading Frame Identification:**\n   - A canonical 3' splice acceptor (`TTTTTTTAG`) ends at position 100, and a canonical 5' splice donor (`GTGAGT`) begins at position 302.\n   - Positions 101–301 correspond to the 201-bp Exon 2 of *SBDS* (encoding 67 amino acids in-frame from codon `ATT` [Ile] at 101–103 through `CAG` [Gln] at 299–301).\n\n2. **Variant Classification and Scoring Logic:**\n   - **Nonsense and Canonical Splice-Site Variants:** Stop-gain variants (`V10` p.R47*, `V19` p.C63*, `V26` p.Y72*, `V39` p.K92*) and the classic pathogenic +2 splice-donor variant (`V47`, c.258+2T>C at position 303) cause complete loss of full-length *SBDS* expression and receive the highest damage scores (~0.95–1.00).\n   - **In-Frame Codon Deletions:** The 3-bp deletions within structured regions of the N-terminal FYSH domain (`V02`, `V05`, `V12`, `V13`, `V14`, `V22`, `V23`, `V25`, `V27`, `V28`, `V31`, `V32`, `V37`, `V38`, `V41`) disrupt secondary structure and protein stability, yielding high damage scores (~0.60–0.85).\n   - **Missense and Near-Splice Variants:** Helix-breaking proline substitutions (`V16`, `V17`) and buried core substitutions (`V15`, `V20`, `V34`) are strongly damaging, whereas conservative substitutions (`V07`, `V29`, `V30`, `V35`) have minimal effects. Substitutions at the penultimate exonic base (`V45`, `V46` at position 300) affect both the terminal codon and the `CAG` splice donor consensus.\n   - **Synonymous and Deep Intronic Variants:** Synonymous changes away from splice junctions (`V03`, `V33`) and intronic variants beyond the core splice motif (`V49`, `V50`) retain normal function and receive the lowest scores.\n\nFINAL: {\"V01\": 0.35, \"V02\": 0.72, \"V03\": -0.08, \"V04\": 0.22, \"V05\": 0.75, \"V06\": 0.32, \"V07\": 0.05, \"V08\": 0.20, \"V09\": 0.30, \"V10\": 0.98, \"V11\": 0.28, \"V12\": 0.68, \"V13\": 0.78, \"V14\": 0.85, \"V15\": 0.55, \"V16\": 0.75, \"V17\": 0.72, \"V18\": 0.25, \"V19\": 0.99, \"V20\": 0.48, \"V21\": 0.22, \"V22\": 0.65, \"V23\": 0.70, \"V24\": 0.28, \"V25\": 0.72, \"V26\": 0.98, \"V27\": 0.82, \"V28\": 0.80, \"V29\": 0.08, \"V30\": 0.04, \"V31\": 0.80, \"V32\": 0.80, \"V33\": -0.06, \"V34\": 0.52, \"V35\": 0.05, \"V36\": 0.25, \"V37\": 0.78, \"V38\": 0.78, \"V39\": 0.97, \"V40\": 0.18, \"V41\": 0.60, \"V42\": 0.18, \"V43\": 0.15, \"V44\": 0.30, \"V45\": 0.58, \"V46\": 0.52, \"V47\": 0.98, \"V48\": 0.12, \"V49\": -0.05, \"V50\": -0.08}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-318b1040f07be4c3701e",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 4704,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 3553
+              },
+              "prompt_tokens": 1224,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 5928
+            }
+          },
+          "request_id": "EKTOarGuNsi9jNsP2seX2AU",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000015",
+        "error": null,
+        "id": "EKTOaqn_NZjlwtQP79_BoQ0",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the signed changes in percentage spliced in ($\\Delta\\text{PSI}$) for the candidate variants, we analyze their locations relative to the core splicing signals of the tested alternative exon (positions 217–309) and regulatory motifs within the exon and flanking native introns:\n\n1. **Upstream Intron & 3' Splice Site (V01–V19):**\n   - **Deep intronic variants (V01–V04):** Located upstream of the polypyrimidine tract (PPT); expected to have negligible effects on exon inclusion.\n   - **Polypyrimidine tract (PPT) disruptions (V05–V15):** Positions 195–214 (`TTTTTGTTTTTACTTTTCT`) form a strong uridine-rich PPT. Large 21-nt deletions removing most or all of this tract (V05–V08) severely abolish 3' splice site recognition, while shorter deletions (V10, V11, V14) and pyrimidine-to-purine substitutions (V09, V12, V13, V15) cause moderate-to-strong reductions in PSI.\n   - **Canonical 3'SS AG mutations (V16–V19):** Variants that delete or mutate the invariant `AG` dinucleotide at positions 215–216 completely abrogate canonical 3' splice site usage, leading to strong exon skipping.\n\n2. **Alternative Exon (V20–V43):**\n   - **5' G-rich silencer region (V20, V21):** The 5' end of the exon contains a G-run (`GGGGGGTTTGGGT`, positions 222–234) typical of hnRNP F/H-bound exonic splicing silencers (ESS). Disrupting this motif (V21) or deleting it (V20) relieves repression or modestly alters inclusion.\n   - **Central purine-rich ESE (V22–V31):** Positions 245–254 (`CGAAGAAGAT`) form a strong purine-rich exonic splicing enhancer (ESE). Deletions removing this element (V22, V23, V24, V26, V27, V31) or transversions disrupting the purine tract (V29, V30) substantially reduce exon inclusion.\n   - **Downstream exonic deletions and substitutions (V32–V43):** Large 21-nt exonic deletions (V32, V35, V38, V40) shorten the exon below optimal size and remove enhancer sequences (with V40 also altering the $-3$ to $-1$ exonic context of the 5' splice site), strongly decreasing PSI.\n\n3. **5' Splice Site & Downstream Intron (V44–V50):**\n   - **Canonical 5'SS deletion (V44):** Deletes the entire canonical 5' splice site (`GTGAGGTTT...` starting at position 310), resulting in complete loss of exon inclusion.\n   - **Downstream intronic variants (V45–V50):** Located $\\ge 11\\text{ nt}$ downstream of the 5' splice site; small deletions and point substitutions in this region have minimal impact on splicing efficiency.\n\nFINAL: {\"V01\": 0.5, \"V02\": 0.0, \"V03\": -1.0, \"V04\": -0.5, \"V05\": -65.0, \"V06\": -68.0, \"V07\": -72.0, \"V08\": -85.0, \"V09\": -6.0, \"V10\": -38.0, \"V11\": -32.0, \"V12\": -7.0, \"V13\": -9.0, \"V14\": -18.0, \"V15\": -14.0, \"V16\": -88.0, \"V17\": -88.0, \"V18\": -88.0, \"V19\": -88.0, \"V20\": 6.0, \"V21\": 8.0, \"V22\": -55.0, \"V23\": -58.0, \"V24\": -25.0, \"V25\": -3.0, \"V26\": -48.0, \"V27\": -18.0, \"V28\": -5.0, \"V29\": -22.0, \"V30\": -16.0, \"V31\": -15.0, \"V32\": -42.0, \"V33\": -5.0, \"V34\": -12.0, \"V35\": -38.0, \"V36\": 2.0, \"V37\": -3.0, \"V38\": -35.0, \"V39\": -6.0, \"V40\": -50.0, \"V41\": -6.0, \"V42\": 5.0, \"V43\": -3.0, \"V44\": -90.0, \"V45\": -5.0, \"V46\": -3.0, \"V47\": 0.0, \"V48\": -1.0, \"V49\": 0.0, \"V50\": -2.0}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-da52c77a60a6204a26e9",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 3644,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 2390
+              },
+              "prompt_tokens": 1518,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 5162
+            }
+          },
+          "request_id": "EKTOaqn_NZjlwtQP79_BoQ0",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000034",
+        "error": null,
+        "id": "EKTOas76Nfy4u7APto6sqA8",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the functional-damage score of each candidate variant in *VHL*, we map the provided sequence to the endogenous *VHL* locus and evaluate the impact of each mutation on mRNA splicing and protein structure/function:\n\n1. **Genomic Architecture:**\n   - **Positions 1–100:** Intron 1, ending with the canonical 3' splice acceptor `AG` at positions 99–100.\n   - **Positions 101–223:** Exon 2 (123 bp), encoding *VHL* beta-domain residues Gly114 (bases 2–3) through Val155 (base 1). This region forms the core $\\beta$-sandwich essential for structural stability and HIF-1$\\alpha$ recognition.\n   - **Positions 224–323:** Intron 2, beginning with the canonical 5' splice donor `GT` at positions 224–225.\n\n2. **Variant Classification:**\n   - **Canonical Splice Site & Nonsense Variants (Severe LOF):** Variants altering the canonical 3' acceptor (`V09`, `V10`, `V11`), canonical 5' donor (`V48`, `V49`), or introducing premature stop codons (`V18` Trp117\\*, `V34` Leu135\\*, `V41` Gln145\\*) cause complete loss of function. Variants at the exon-intron boundary (`V47` at exonic -1G, `V50` at intronic +3A, and `V08` at intronic -3T) also impair splicing to varying degrees.\n   - **Core $\\beta$-Sheet & Active-Site Missense Variants (Moderate to High Damage):** Substitutions at buried hydrophobic core residues or key HIF-binding residues—such as His115 (`V12`–`V15`), Trp117 (`V17`, `V19`), Phe119 (`V20`–`V22`), Leu128 (`V29`), Phe136 (`V35`, `V36`), Leu140Pro (`V38`), Ile151Thr (`V43`), and Leu153Gln (`V46`)—destabilize the $\\beta$-domain.\n   - **Conservative Missense & Intronic Variants (Neutral/Retained Function):** Upstream polypyrimidine-tract variants (`V01`–`V07`) and conservative amino acid substitutions at surface-exposed or tolerant positions (`V26`, `V30`–`V33`, `V39`, `V42`, `V44`) retain near-wild-type function.\n\nFINAL: {\"V01\": -0.05, \"V02\": 0.02, \"V03\": 0.05, \"V04\": 0.02, \"V05\": 0.05, \"V06\": -0.05, \"V07\": 0.12, \"V08\": 0.65, \"V09\": 2.45, \"V10\": 2.50, \"V11\": 2.45, \"V12\": 1.35, \"V13\": 1.50, \"V14\": 1.25, \"V15\": 1.25, \"V16\": 0.45, \"V17\": 2.15, \"V18\": 2.55, \"V19\": 2.05, \"V20\": 1.95, \"V21\": 1.20, \"V22\": 1.15, \"V23\": 0.85, \"V24\": 0.40, \"V25\": 0.55, \"V26\": 0.10, \"V27\": 1.30, \"V28\": 0.95, \"V29\": 1.75, \"V30\": 0.05, \"V31\": 0.10, \"V32\": -0.05, \"V33\": -0.05, \"V34\": 2.50, \"V35\": 1.95, \"V36\": 1.70, \"V37\": 0.45, \"V38\": 2.10, \"V39\": -0.05, \"V40\": 0.80, \"V41\": 2.45, \"V42\": 0.10, \"V43\": 1.35, \"V44\": 0.15, \"V45\": 0.35, \"V46\": 1.65, \"V47\": 1.85, \"V48\": 2.50, \"V49\": 2.45, \"V50\": 1.10}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-2330494021805a80d7cf",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 4120,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 2962
+              },
+              "prompt_tokens": 1197,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 5317
+            }
+          },
+          "request_id": "EKTOas76Nfy4u7APto6sqA8",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000014",
+        "error": null,
+        "id": "EKTOapr5Nb_EitUP676JiAg",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "Summary of predicted splicing impacts based on variant location relative to splice signals of the alternative exon (positions 217–300):\n\n- **Branchpoint & Polypyrimidine Tract (V03–V12, V17–V18):** The canonical branchpoint sequence `TCTAAT` (positions 185–190) and the downstream polypyrimidine tract (positions 191–214) are essential for 3' splice site recognition. Deletions of the polypyrimidine tract (V07, V10) or mutations/deletions disrupting the branchpoint adenosine and core motif (V03–V06, V08, V09) cause substantial decreases in exon inclusion, while single pyrimidine-to-purine substitutions in the tract (V11, V12, V17) have moderate negative effects.\n- **3' Splice Site (V13–V16, V19–V27):** Multi-base deletions removing the 3' splice site junction (V13–V16, V19, V22) or indels/substitutions directly altering the invariant `-2/-1` `AG` dinucleotide at positions 215–216 (V20, V21, V24–V27) abolish canonical 3' splice site usage and strongly reduce PSI. Position `-3` `C>G` (V23) also strongly impairs 3' splice site strength.\n- **5' Splice Site (V32–V48):** Multi-base deletions spanning the exon-intron boundary at positions 300–301 (V32–V34, V36) and mutations disrupting the core `CAG|GTGAGA` donor motif—especially at `+3G` (V37–V39), `+4A` (V41–V43), and `+5G` (V40, V44–V48), as well as `-2A` (V35)—significantly decrease exon inclusion.\n- **Deep Intronic & Exonic Variants (V01, V02, V28–V31, V49, V50):** Variants located deeper in the introns or within the exon body away from the splice junctions exhibit comparatively minor effects on PSI.\n\nFINAL: {\"V01\": 0.0, \"V02\": -1.5, \"V03\": -40.0, \"V04\": -25.0, \"V05\": -25.0, \"V06\": -45.0, \"V07\": -80.0, \"V08\": -35.0, \"V09\": -25.0, \"V10\": -80.0, \"V11\": -5.0, \"V12\": -6.0, \"V13\": -85.0, \"V14\": -85.0, \"V15\": -85.0, \"V16\": -85.0, \"V17\": -10.0, \"V18\": -1.0, \"V19\": -85.0, \"V20\": -80.0, \"V21\": -85.0, \"V22\": -85.0, \"V23\": -45.0, \"V24\": -80.0, \"V25\": -80.0, \"V26\": -85.0, \"V27\": -85.0, \"V28\": -10.0, \"V29\": -2.0, \"V30\": 0.0, \"V31\": -5.0, \"V32\": -85.0, \"V33\": -85.0, \"V34\": -85.0, \"V35\": -30.0, \"V36\": -85.0, \"V37\": -75.0, \"V38\": -60.0, \"V39\": -55.0, \"V40\": -70.0, \"V41\": -40.0, \"V42\": -35.0, \"V43\": -40.0, \"V44\": -75.0, \"V45\": -75.0, \"V46\": -70.0, \"V47\": -75.0, \"V48\": -75.0, \"V49\": -2.0, \"V50\": -1.0}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-6e541b264e3b7c4a35e7",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 3695,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 2638
+              },
+              "prompt_tokens": 1506,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 5201
+            }
+          },
+          "request_id": "EKTOapr5Nb_EitUP676JiAg",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000026",
+        "error": null,
+        "id": "EKTOat32NZT0jNsPjtqAgQc",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the functional damage scores for the candidate variants in *DDX3X*, we first map the local exon-intron structure and reading frame within the provided 300 bp window:\n\n1. **Genomic / Transcript Structure:**\n   - **Positions 1–100:** Upstream intron, ending with the canonical 3' splice acceptor `AG` at positions 99–100 (`...TTCTTAG`).\n   - **Positions 101–199:** A 99-bp coding exon encoding 33 amino acids (`ENGRYGRRKQYPISLVLAPTRELA VQIYEEARK`) within the highly conserved helicase core domain, specifically spanning DEAD-box **motif Ia (`LAPTRELA`)**, which is critical for RNA binding and ATPase coupling.\n   - **Positions 200–300:** Downstream intron, beginning with the canonical 5' splice donor `GTAAGT` at positions 200–205.\n\n2. **Variant Categorization:**\n   - **Nonsense, frameshift, and canonical splice-site variants** (`V03`, `V04`, `V13`, `V28`, `V39`, `V40`, `V43`, `V44`, `V45`, `V46`, `V47`) cause severe loss of function and rapid depletion in HAP1 cells (highest positive damage scores).\n   - **In-frame deletion and motif Ia core substitutions** (`V11`, `V12`, `V15`–`V26`, `V29`, `V30`, `V33`–`V35`) alter highly conserved residues in the `LVLAPTRELA` and `VQIY` structural elements, resulting in moderate-to-severe functional impairment.\n   - **Synonymous and deeper intronic variants** (`V01`, `V02`, `V06`, `V10`, `V14`, `V27`, `V48`, `V49`, `V50`) preserve protein sequence and splicing, yielding scores near zero.\n\nFINAL: {\"V01\": 0.0, \"V02\": 0.08, \"V03\": 2.5, \"V04\": 2.55, \"V05\": 0.65, \"V06\": 0.0, \"V07\": 0.75, \"V08\": 1.05, \"V09\": 1.1, \"V10\": 0.0, \"V11\": 2.25, \"V12\": 1.45, \"V13\": 2.6, \"V14\": 0.0, \"V15\": 1.25, \"V16\": 1.25, \"V17\": 1.65, \"V18\": 1.65, \"V19\": 1.65, \"V20\": 1.9, \"V21\": 2.05, \"V22\": 2.05, \"V23\": 2.0, \"V24\": 1.95, \"V25\": 2.0, \"V26\": 1.9, \"V27\": 0.02, \"V28\": 2.6, \"V29\": 1.5, \"V30\": 1.6, \"V31\": 0.65, \"V32\": 0.55, \"V33\": 1.75, \"V34\": 1.4, \"V35\": 1.35, \"V36\": 0.85, \"V37\": 0.6, \"V38\": 0.8, \"V39\": 2.6, \"V40\": 2.6, \"V41\": 0.55, \"V42\": 0.55, \"V43\": 2.55, \"V44\": 2.5, \"V45\": 2.5, \"V46\": 2.5, \"V47\": 2.35, \"V48\": 0.0, \"V49\": 0.0, \"V50\": 0.0}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-0bcd71c64eab313013c9",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 4746,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 3746
+              },
+              "prompt_tokens": 1203,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 5949
+            }
+          },
+          "request_id": "EKTOat32NZT0jNsPjtqAgQc",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000025",
+        "error": null,
+        "id": "EKTOaqj_NZvhwtQP4_O1oAg",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the functional damage scores for the candidate variants in *CTCF*, we first map the exon boundaries and reading frame within the provided genomic sequence:\n\n1. **Exon and Domain Architecture:**\n   - **Splice Acceptor (3'ss):** Located at positions 99–100 (`TTTTTCTTTAAAG` $\\rightarrow$ `AG` dinucleotide at 99–100, preceded by the polypyrimidine tract at 85–98).\n   - **Coding Exon:** Positions 101–250 (150 bp), encoding two essential $\\text{C}_2\\text{H}_2$ zinc finger domains in frame +3 (first complete codon starts at position 103):\n     - **ZF1:** `EKPYECYICHARFTQSGTMKMHILQKH` (Cysteines at 118–120 and 127–129; Histidines at 166–168 and 181–183).\n     - **ZF2:** `TENVAKFHCPHCDTVIARKSDL` (Cysteines at 208–210 and 217–219; Histidines outside this exon).\n   - **Splice Donor (5'ss):** Located at positions 251–256 (`...GATTTGG|GTAAGT...`, canonical `GT` at 251–252).\n\n2. **Variant Classification and Impact:**\n   - **Nonsense & Canonical Splice Variants:**\n     - `V05` (98 `AAGG>A`) deletes the canonical 3' splice site `AG` and first exonic base.\n     - `V49` (252 `T>A`) disrupts the canonical 5' splice donor `+2T`.\n     - `V06` (103 `G>T`, p.Glu->Ter) and `V30` (178 `A>T`, p.Lys->Ter) introduce premature stop codons. These cause complete loss of function (highest damage scores).\n   - **In-Frame Codon Deletions (3-bp deletions):**\n     - `V07`, `V09`, `V10`, `V12`, `V14`, `V16`, `V17`, `V18`, `V20`, `V23`, `V24`, `V26`, `V31`, `V33`, `V35`, `V43` delete single amino acids within the tightly structured $\\text{C}_2\\text{H}_2$ zinc fingers, altering spacing between zinc-coordinating residues or DNA-contacting $\\alpha$-helices, causing severe loss of function. `V03` deletes 3 Ts from the polypyrimidine tract (mild/moderate effect).\n   - **Missense Variants:**\n     - Variants mutating zinc-coordinating cysteines (`V11` p.Cys->Ser, `V36` p.Cys->Ser, `V37` p.Cys->Gly, `V38` p.Cys->Phe) completely abolish zinc finger folding and are severely damaging.\n     - Core hydrophobic or DNA-binding residue substitutions (`V19` p.Phe->Tyr, `V21` p.Gly->Arg, `V22` p.Gly->Cys, `V25` p.Met->Arg, `V29` p.Lys->Gln, `V41` p.Ala->Asp, `V44`/`V45` p.Lys->Asn, `V48` p.Leu->His) show moderate-to-high damage depending on structural tolerance.\n   - **Synonymous & Intronic Variants:**\n     - Synonymous changes (`V08`, `V13`, `V15`, `V27`, `V28`, `V32`, `V34`, `V39`, `V40`, `V42`, `V46`, `V47`) and intronic variants outside core splice motifs (`V01`, `V02`, `V04`, `V50`) largely retain wild-type function.\n\nFINAL: {\"V01\": -0.05, \"V02\": 0.02, \"V03\": 0.25, \"V04\": 0.05, \"V05\": 1.45, \"V06\": 1.5, \"V07\": 1.1, \"V08\": -0.02, \"V09\": 1.25, \"V10\": 1.25, \"V11\": 1.4, \"V12\": 1.35, \"V13\": 0.0, \"V14\": 1.3, \"V15\": -0.05, \"V16\": 1.3, \"V17\": 1.35, \"V18\": 1.35, \"V19\": 0.45, \"V20\": 1.25, \"V21\": 1.15, \"V22\": 1.15, \"V23\": 1.25, \"V24\": 1.3, \"V25\": 0.95, \"V26\": 1.3, \"V27\": -0.05, \"V28\": -0.05, \"V29\": 0.75, \"V30\": 1.5, \"V31\": 1.3, \"V32\": 0.0, \"V33\": 1.35, \"V34\": -0.05, \"V35\": 1.2, \"V36\": 1.4, \"V37\": 1.4, \"V38\": 1.4, \"V39\": 0.0, \"V40\": 0.1, \"V41\": 0.9, \"V42\": -0.05, \"V43\": 1.25, \"V44\": 0.85, \"V45\": 0.85, \"V46\": -0.05, \"V47\": -0.05, \"V48\": 1.05, \"V49\": 1.48, \"V50\": -0.08}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-f9d706261b00c39c613d",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 3093,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 1618
+              },
+              "prompt_tokens": 1197,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 4290
+            }
+          },
+          "request_id": "EKTOaqj_NZvhwtQP4_O1oAg",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000002",
+        "error": null,
+        "id": "EKTOavCNNuPFjNsP-KCgwAU",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the signed change in percentage spliced in ($\\Delta\\text{PSI}$) for each candidate variant, we map each mutation relative to the splice junctions and cis-regulatory elements of the 81-nt alternative exon (positions 217–297):\n\n1. **3' Splice Site and Polypyrimidine Tract (positions 195–220):**\n   - The wild-type 3' splice site at positions 215–216 (`ACTTGCAG|G`) is preceded by a weak, A-rich polypyrimidine tract (`AAAAATTCAAAAAAATATACTTGCAG`).\n   - Variants directly disrupting the canonical 3'ss `AG` dinucleotide or the immediate junction (**V15**, **V19**, **V20**, **V21**, **V22**) cause severe loss of exon inclusion.\n   - At position -3 (214, wild-type `C`), **V17** (`C>G`) strongly impairs 3'ss recognition, whereas **V18** (`C>T`) preserves a pyrimidine with minimal impact.\n   - Upstream deletions (**V06**, **V09**, **V10**, **V11**, **V12**, **V14**, **V16**) remove the minimal pyrimidines (`T`/`C`) adjacent to the 3'ss and juxtapose the upstream poly(A) tract directly against the splice junction, substantially reducing exon inclusion. Point mutations replacing pyrimidines with purines near the 3'ss (**V07**, **V08**, **V13**) similarly decrease inclusion.\n\n2. **Exonic Splicing Regulatory Elements and Exon Length (positions 233–295):**\n   - Large 21-nt in-frame deletions across the exon body (**V23**, **V24**, **V30**, **V32**, **V33**, **V34**, **V35**) reduce exon size from 81 nt to 60 nt and remove exonic splicing enhancers (ESEs), leading to strong decreases in exon inclusion. Shorter deletions (**V25–V29**, **V31**, **V36**, **V38**) and point variants (**V37**, **V39**) cause moderate-to-strong reductions depending on the disrupted ESE motifs and proximity to the 5'ss.\n\n3. **5' Splice Site and Downstream Intron (positions 298–322):**\n   - The wild-type 5'ss (`CAA|GTAGGT` at 295–303) is directly abolished by mutations at positions +1/+2 (**V40**, **V41**) and strongly weakened by deletions removing the +3 to +6 `AGGT` consensus (**V43**, **V44**, **V45**).\n   - **V42** (`300A>G`, +3 `A>G`) and **V46** (`303T>C`, +6 `T>C`) modestly weaken 5'ss base-pairing with U1 snRNA, whereas **V47** (`304T>G`) and deeper intronic variants (**V01–V05**, **V48–V50**) have small or near-neutral effects.\n\nFINAL: {\"V01\": -1.0, \"V02\": -1.5, \"V03\": 2.0, \"V04\": 3.0, \"V05\": -2.0, \"V06\": -25.0, \"V07\": -10.0, \"V08\": -12.0, \"V09\": -55.0, \"V10\": -35.0, \"V11\": -15.0, \"V12\": -40.0, \"V13\": -18.0, \"V14\": -30.0, \"V15\": -65.0, \"V16\": -28.0, \"V17\": -45.0, \"V18\": -3.0, \"V19\": -70.0, \"V20\": -70.0, \"V21\": -70.0, \"V22\": -25.0, \"V23\": -45.0, \"V24\": -45.0, \"V25\": -15.0, \"V26\": -25.0, \"V27\": -25.0, \"V28\": -18.0, \"V29\": -25.0, \"V30\": -50.0, \"V31\": -20.0, \"V32\": -50.0, \"V33\": -50.0, \"V34\": -50.0, \"V35\": -55.0, \"V36\": -15.0, \"V37\": -12.0, \"V38\": -30.0, \"V39\": -10.0, \"V40\": -70.0, \"V41\": -70.0, \"V42\": -8.0, \"V43\": -60.0, \"V44\": -65.0, \"V45\": -50.0, \"V46\": -15.0, \"V47\": -5.0, \"V48\": -2.0, \"V49\": -2.0, \"V50\": -3.0}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-0a493d138c462dadd955",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 1916,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 646
+              },
+              "prompt_tokens": 1471,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 3387
+            }
+          },
+          "request_id": "EKTOavCNNuPFjNsP-KCgwAU",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000018",
+        "error": null,
+        "id": "EKTOapz8Nb_EitUP676JiAg",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the signed change in percentage spliced in ($\\Delta$PSI) for each candidate variant, we analyze the wild-type splicing regulatory elements across the native upstream intron (positions 147–216), the tested alternative exon (positions 217–306), and the native downstream intron (positions 307–331).\n\n### Splicing Regulatory Architecture of the Wild-Type Construct\n1. **Branchpoint & Polypyrimidine Tract (147–214):**\n   - Putative branchpoint sequence (`ACTCACACTGA`, adenosine at position 155) resides near the start of the native upstream intron.\n   - An extended, strong polypyrimidine tract (`TTTGTTGTTCCTGTTTTTGTTTTTGTTGTTCTTTTTTTTTTTTTTTT`, positions 161–207) promotes spliceosome assembly, followed by `AATCCG` (208–213) immediately upstream of the 3' splice site.\n2. **Canonical 3' Splice Site (214–216):**\n   - Position 214 is `C` (-3), 215 is `A` (-2), and 216 is `G` (-1). The exon begins at position 217 (`CTGTGGTGTG...`). Note that positions 217–218 are `CT`, not `AG`, so deletions of the canonical `AG` cannot easily shift the 3'SS by 2 nt, although a cryptic `AG` exists further downstream inside the exon (`TGACAAG` at 231–237 and `TTCCTCAG` at 266–273).\n3. **Exonic Splicing Enhancers (ESEs) & Silencers (ESSs) (217–306):**\n   - The 5' portion of the exon (228–260: `TTTTGACAAGTCGATACCCTTGAAGAACCTGAC`) is rich in purine/A-rich and SR-protein binding motifs (e.g., `GAAGAA` at 249–254), acting as strong exonic splicing enhancers (ESEs).\n   - The central/3' region contains a strong cryptic 3'SS (`TTTCAATTCCTCAG` at 260–273) and another `AG` (`TGTTTACAG` at 278–286).\n4. **Canonical 5' Splice Site (304–312):**\n   - The exon ends with `GAG` (304–306) followed by the intron starting with `GTATTT` (307–312). The 9-mer 5'SS `GAG|GTATTT` has a strong consensus match at -2A, -1G, +1G, +2T, +3A, but weak +4T/+5T. Modifying +3A to G (`G>A` is typical, here `A>G` at 309) or strengthening +4/+5 alters 5'SS recognition, whereas mutating the invariant `+1G/+2T` or `-1G/-2A` abolishes 5'SS usage.\n\n---\n\n### Variant-by-Variant Evaluation\n\n- **V01 (155 ACTGACT>A) & V02 (156 CT>C):** Disrupt or shorten the branchpoint region near 155, causing a modest reduction in exon inclusion ($\\Delta\\text{PSI} \\approx -10$ to $-4$).\n- **V03 (188 GT>G) & V05 (197 T>C):** Minor single-nucleotide alterations within the long polypyrimidine tract; minimal impact ($\\Delta\\text{PSI} \\approx -1$).\n- **V04, V06, V07, V10, V11, V12:** Multi-base deletions that remove the 3' splice site (`AG` at 215–216) and/or large segments of the polypyrimidine tract. These completely ablate normal 3'SS recognition ($\\Delta\\text{PSI} \\approx -80$ to $-90$).\n- **V08 (208 A>T):** Converts an adenosine interrupting the 3' end of the polypyrimidine tract into a thymidine, strengthening the PPT and slightly increasing inclusion ($\\Delta\\text{PSI} \\approx +3$).\n- **V09 (210 T>G):** Introduces a G into the -7 position of the 3'SS region, slightly weakening it ($\\Delta\\text{PSI} \\approx -5$).\n- **V13 (214 CA>C):** Deletes the -3C and -2A of the canonical 3'SS, destroying the `AG` dinucleotide ($\\Delta\\text{PSI} \\approx -85$).\n- **V14 (215 A>G), V15 (215 A>T), V16 (216 G>A), V17 (216 G>C):** Direct point mutations of the invariant `-2A` and `-1G` of the 3' splice site, causing severe exon skipping ($\\Delta\\text{PSI} \\approx -85$).\n- **V18, V19, V21, V22, V24, V25, V26, V27:** 21-nt exonic deletions spanning positions 228–264. These remove the prominent purine-rich ESE cluster (`GAAGAA` and surrounding motifs) and dramatically shorten the exon from 90 nt to 69 nt, leading to strong exon skipping ($\\Delta\\text{PSI} \\approx -45$ to $-65$).\n- **V20 (230 T>C):** Point mutation in the early exon; relieves a U-rich stretch (`TTTT`), slightly improving or having a near-neutral effect on splicing ($\\Delta\\text{PSI} \\approx +2$).\n- **V23 (233 AC>A):** 1-nt deletion in the ESE region, modestly reducing enhancer activity ($\\Delta\\text{PSI} \\approx -12$).\n- **V28 (248 TG>T), V29 (250 A>T), V30 (252 G>C):** Disrupt the core `TTGAAGAAC` purine-rich ESE (specifically the `GAAGAA` SRSF1/tra2$\\beta$ motif at 249–254), significantly decreasing exon inclusion ($\\Delta\\text{PSI} \\approx -20$ to $-25$).\n- **V31 (271 TCAG>T) & V32 (275 C>G):** Modify the internal `CCTCAGCTGT` region; V31 removes an internal cryptic `CAG`, while V32 alters a flanking base, causing mild to moderate changes ($\\Delta\\text{PSI} \\approx -8$ and $-4$).\n- **V33 (287 A>G) & V34 (289 ATCT>A):** Alter the downstream exonic region near 287–292, causing mild negative effects ($\\Delta\\text{PSI} \\approx -5$ to $-12$).\n- **V35 (298 T>C) & V36 (298 TA>T):** Located in the `CCTACCCAGAG` region just upstream of the 5'SS; minor effects ($\\Delta\\text{PSI} \\approx -2$ to $-6$).\n- **V37, V38, V40, V41, V44:** Deletions spanning the exon-intron boundary (306|307) or removing the canonical 5'SS (`GAG|GTATTT`). These completely abolish 5'SS recognition ($\\Delta\\text{PSI} \\approx -88$ to $-90$).\n- **V39 (304 GA>G), V42 (305 A>G), V43 (305 A>T):** Disrupt the exonic `-2A/-1G` nucleotides of the 5'SS (`GAG|GT` $\\rightarrow$ `GG|GT` or `GTG|GT`), substantially weakening U1 snRNP base-pairing ($\\Delta\\text{PSI} \\approx -30$ to $-50$).\n- **V45 (307 GT>G) & V46 (308 T>A):** Disrupt the invariant `+1G/+2T` intronic dinucleotide of the 5'SS, abolishing splicing ($\\Delta\\text{PSI} \\approx -88$).\n- **V47 (309 A>G):** Mutates the +3 position of the 5'SS from `A` to `G` (`GAG|GTATTT` $\\rightarrow$ `GAG|GTGTTT`). In weak +4T/+5T 5' splice sites, +3G is less favorable for U1 snRNP pairing than +3A, leading to reduced exon inclusion ($\\Delta\\text{PSI} \\approx -35$).\n- **V48 (309 ATTTATTTATGAGCTCCCCTTG>A):** Deletes 21 nt of the native downstream intron immediately following the 5'SS (`+3` to `+24`), positioning `GCAGATTG...` directly at `+4` (`GAG|GTAGCAG...`), which alters 5'SS flanking context and shortens the downstream intron, reducing inclusion ($\\Delta\\text{PSI} \\approx -40$).\n- **V49 (320 AGCT>A) & V50 (321 GC>G):** Small deletions in the downstream intron (`GAGCTCCCCTT`), having minor effects on inclusion ($\\Delta\\text{PSI} \\approx -5$ to $-3$).\n\nFINAL: {\"V01\": -10.0, \"V02\": -4.0, \"V03\": -1.5, \"V04\": -85.0, \"V05\": -1.0, \"V06\": -85.0, \"V07\": -85.0, \"V08\": 3.0, \"V09\": -5.0, \"V10\": -80.0, \"V11\": -85.0, \"V12\": -88.0, \"V13\": -82.0, \"V14\": -85.0, \"V15\": -85.0, \"V16\": -85.0, \"V17\": -85.0, \"V18\": -45.0, \"V19\": -48.0, \"V20\": 2.0, \"V21\": -50.0, \"V22\": -55.0, \"V23\": -12.0, \"V24\": -55.0, \"V25\": -55.0, \"V26\": -58.0, \"V27\": -60.0, \"V28\": -20.0, \"V29\": -25.0, \"V30\": -22.0, \"V31\": -8.0, \"V32\": -4.0, \"V33\": -5.0, \"V34\": -12.0, \"V35\": -2.0, \"V36\": -6.0, \"V37\": -90.0, \"V38\": -88.0, \"V39\": -45.0, \"V40\": -88.0, \"V41\": -90.0, \"V42\": -30.0, \"V43\": -50.0, \"V44\": -88.0, \"V45\": -88.0, \"V46\": -88.0, \"V47\": -35.0, \"V48\": -40.0, \"V49\": -5.0, \"V50\": -3.0}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-f4e0002688ffb38ad37d",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 2706,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 0
+              },
+              "prompt_tokens": 1517,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 4223
+            }
+          },
+          "request_id": "EKTOapz8Nb_EitUP676JiAg",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000023",
+        "error": null,
+        "id": "EKTOaquCNtSeitUP3Pe9-AY",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the functional-damage scores for the candidate variants in this *BRCA2* saturation genome editing (SGE) panel, we first map the local exon-intron structure and reading frame within the displayed 364 bp window:\n\n1. **Exon-Intron Architecture and Reading Frame:**\n   - **Exon 17 (positions 101–264, 164 bp):** Preceded by the canonical 3' splice acceptor `AG` at positions 99–100 and followed by the canonical 5' splice donor `GT` at positions 265–266. The open reading frame is in phase 1 (positions 101–102 complete the preceding codon, and full codons begin at position 103: `103-105 ATA` [Ile], `106-108 CTG` [Leu], ..., `262-264 CCG` [Pro]).\n   - **Exon 18 start (positions 358–364):** Preceded by the canonical 3' splice acceptor `AG` at positions 356–357, with full codons starting at position 358 (`358-360 GTT` [Val], `361-363 TCA` [Ser]).\n\n2. **Variant Classification:**\n   - **Nonsense (stop-gain) variants:** `V06` (p.Ser->Ter), `V07` (p.Leu->Ter), `V09` (p.Tyr->Ter), `V33` (p.Arg->Ter), `V34` (p.Gln->Ter), `V38` (p.Lys->Ter), and `V49` (p.Ser->Ter) introduce premature termination codons and result in complete loss of function (highest positive damage scores).\n   - **Canonical and near-splice variants:** `V46` (356A>C), `V47` (356A>T), and `V48` (357G>A) disrupt the essential `-2A` and `-1G` nucleotides of the exon 18 splice acceptor site, causing severe loss of function. `V39` (264G>C, last base of exon 17) and `V40` (267A>C, +3 donor position) perturb the exon 17 5' splice donor motif and cause moderate-to-high functional depletion. Other flanking intronic changes (`V01`, `V02`, `V41`, `V42`, `V43`, `V44`, `V45`) are largely tolerated.\n   - **Synonymous variants:** `V04`, `V05`, `V08`, `V15`, `V16`, `V19`, `V22`, `V24`, `V28`, `V32`, and `V37` preserve the amino acid sequence without creating splice defects and retain normal function (scores near zero).\n   - **Missense variants:** Scored according to physicochemical disruption and structural conservation within the BRCA2 DNA-binding domain (e.g., core hydrophobic or helix-disrupting substitutions such as `V03`, `V14`, `V17`, `V20`, and `V36` show elevated damage compared to conservative surface substitutions such as `V10`, `V18`, `V23`, `V27`, and `V31`).\n\nFINAL: {\"V01\": -0.05, \"V02\": -0.02, \"V03\": 1.15, \"V04\": -0.04, \"V05\": -0.03, \"V06\": 2.55, \"V07\": 2.52, \"V08\": -0.05, \"V09\": 2.50, \"V10\": 0.08, \"V11\": 0.45, \"V12\": 0.35, \"V13\": 0.75, \"V14\": 1.45, \"V15\": -0.04, \"V16\": -0.03, \"V17\": 1.10, \"V18\": 0.15, \"V19\": -0.04, \"V20\": 1.75, \"V21\": 0.55, \"V22\": -0.05, \"V23\": 0.05, \"V24\": -0.04, \"V25\": 0.25, \"V26\": 0.20, \"V27\": 0.05, \"V28\": -0.05, \"V29\": 0.25, \"V30\": 0.45, \"V31\": 0.08, \"V32\": -0.04, \"V33\": 2.50, \"V34\": 2.55, \"V35\": 0.50, \"V36\": 1.60, \"V37\": -0.04, \"V38\": 2.48, \"V39\": 1.40, \"V40\": 1.10, \"V41\": 0.05, \"V42\": 0.05, \"V43\": -0.03, \"V44\": -0.04, \"V45\": -0.02, \"V46\": 2.40, \"V47\": 2.42, \"V48\": 2.45, \"V49\": 2.50, \"V50\": 0.70}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-27517e838c6863217af3",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 5231,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 3888
+              },
+              "prompt_tokens": 1205,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 6436
+            }
+          },
+          "request_id": "EKTOaquCNtSeitUP3Pe9-AY",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000028",
+        "error": null,
+        "id": "EKTOaoSKNuicjNsPk8S5yAc",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the functional-damage scores for the candidate variants in *RAD51C*, we first map the local exon-intron structure and reading frame within the provided 332 bp sequence:\n\n1. **Gene and Domain Structure:** \n   - Positions 1–100 represent the upstream intron ending with the canonical 3' splice acceptor `AG` at positions 99–100.\n   - Positions 101–232 (132 bp) encompass *RAD51C* exon 5, encoding 44 amino acids (`VRLVIVDGIAFPFRHDLDDLSLLRTRLLNGLAQQMISLANNHRLA`) that contain the highly conserved Walker B ATPase motif (`VIVDGIAFPFRHD`).\n   - Positions 233–332 represent the downstream intron beginning with the canonical 5' splice donor `GT` at positions 233–234.\n\n2. **Variant Classification and Scoring:**\n   - **Nonsense, frameshift, and canonical splice donor variants** (`V05`, `V07`, `V11`, `V15`, `V18`, `V20`, `V21`, `V23`, `V25`, `V26`, `V28`, `V33`, `V36`, `V38`, `V39`, `V40`, `V41`, `V42`, `V47`, `V48`, `V49`) result in complete loss of function via premature termination or exon skipping and are assigned the highest damage scores (~1.0).\n   - **In-frame deletions** (`V03`, `V06`, `V09`, `V19`, `V24`, `V44`) and **missense substitutions within the catalytic Walker B motif** (`V08`, `V10`, `V12`, `V13`, `V14`) severely disrupt protein folding or ATPase activity and receive high damage scores (0.80–0.92).\n   - **Other missense substitutions** (`V04`, `V16`, `V17`, `V22`, `V27`, `V29`, `V30`, `V31`, `V32`, `V34`, `V35`, `V37`, `V43`, `V45`, `V46`) are scored according to structural conservation and physicochemical severity (e.g., helix-breaking proline `V34` or buried charge introductions `V31`, `V32`, `V35` vs. conservative substitutions `V45`, `V46`).\n   - **Intronic variants outside canonical splice motifs** (`V01`, `V02`, `V50`) are predicted to be functionally neutral (~0.0).\n\nFINAL: {\"V01\": -0.05, \"V02\": -0.02, \"V03\": 0.88, \"V04\": 0.78, \"V05\": 1.0, \"V06\": 0.88, \"V07\": 0.98, \"V08\": 0.86, \"V09\": 0.92, \"V10\": 0.92, \"V11\": 0.98, \"V12\": 0.85, \"V13\": 0.84, \"V14\": 0.82, \"V15\": 0.98, \"V16\": 0.58, \"V17\": 0.7, \"V18\": 0.98, \"V19\": 0.86, \"V20\": 0.98, \"V21\": 0.98, \"V22\": 0.76, \"V23\": 0.98, \"V24\": 0.86, \"V25\": 0.98, \"V26\": 1.0, \"V27\": 0.74, \"V28\": 1.0, \"V29\": 0.65, \"V30\": 0.35, \"V31\": 0.76, \"V32\": 0.75, \"V33\": 0.98, \"V34\": 0.82, \"V35\": 0.72, \"V36\": 1.0, \"V37\": 0.42, \"V38\": 0.98, \"V39\": 1.0, \"V40\": 1.0, \"V41\": 1.0, \"V42\": 0.98, \"V43\": 0.3, \"V44\": 0.85, \"V45\": 0.12, \"V46\": 0.18, \"V47\": 0.96, \"V48\": 0.99, \"V49\": 0.99, \"V50\": -0.05}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-6da3aad2b632b49381cd",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 3944,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 2760
+              },
+              "prompt_tokens": 1209,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 5153
+            }
+          },
+          "request_id": "EKTOaoSKNuicjNsPk8S5yAc",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000003",
+        "error": null,
+        "id": "EKTOaqSGNpjlwtQP79_BoQ0",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the signed change in percentage spliced in ($\\Delta$PSI) for each candidate variant, we analyze the splicing regulatory motifs within the wild-type (WT) minigene sequence and evaluate how each mutation alters splice site strength, polypyrimidine tract (PPT) composition, branchpoint (BP) usage, and exonic/intronic splicing enhancers or silencers (ESEs/ESSs/ISEs/ISSs).\n\n### Wild-Type Sequence Characterization\n- **Upstream 3' Splice Site (3'ss) Region (positions 180–216):**\n  `180-AACTAAGTTTTCTACAAACATTGTGTTTTGGTTCCAG-216`\n  - **Canonical 3'ss:** `CAG` at 214–216 (intron/exon junction between 216G and 217G).\n  - **Polypyrimidine Tract (PPT):** `TGTGTTTTGGTTC` (201–213) is a strong pyrimidine-rich tract immediately preceding the `CAG`.\n  - **Branchpoint (BP):** Putative branchpoint adenosines are located within `CTACAAACATT` (191–201).\n- **Tested Alternative Exon (positions 217–299, length 83 nt):**\n  `217-GTGTTTGATTTTGAATTAACACAGCACGATATGGATAACATCCTCAGCCTAAACAGGAATCTCCGACTGGCCATGTTCCCCAT-299`\n- **Downstream 5' Splice Site (5'ss) Region (positions 297–324):**\n  `297-CAT|GTAAATATGGCTCCTTCTTTTTAA-323`\n  - **Canonical 5'ss:** `CAT|GTAAAT` (297–305). The intronic `+1` to `+6` sequence is `GTAAAT`, which matches the consensus `GTAAGT` at 5 of 6 positions (missing only the `+5G`).\n\n---\n\n### Variant-by-Variant Evaluation\n\n1. **Deep Upstream Intron (V01):**\n   - **V01 (156 A>T):** Located at -61 relative to the 3'ss. Minimal impact on splicing elements ($\\Delta\\text{PSI} \\approx 0.0$).\n\n2. **Branchpoint and Polypyrimidine Tract Deletions/Mutations (V02–V15):**\n   - **V02 (182 del 21bp), V03 (184 del 21bp), V04 (185 del 21bp):** Delete the putative branchpoint region while bringing upstream uridine-rich sequences (`TTTTCT`) closer to the 3'ss; moderate reduction in inclusion ($\\Delta\\text{PSI} \\approx -15.0$ to $-25.0$).\n   - **V05 (189 del 21bp), V07 (192 del 21bp):** Remove the branchpoint and almost the entire PPT (`TGTGTTTTGGTTC`). Severe loss of 3'ss recognition ($\\Delta\\text{PSI} \\approx -70.0$ to $-85.0$).\n   - **V06 (190 TC>T), V08 (194 CA>C), V09 (195 del 6bp):** Small deletions around the branchpoint region; mild to moderate effects ($\\Delta\\text{PSI} \\approx -2.0$ to $-12.0$).\n   - **V10 (196 del 21bp):** Deletes the entire PPT AND the canonical 3'ss `CAG` (ends at 217), abolishing canonical 3'ss usage ($\\Delta\\text{PSI} \\approx -90.0$).\n   - **V11 (201 T>A), V12 (201 T>C), V13 (201 T>G):** Position 201 (-16) is at the 5' edge of the PPT. `T>C` preserves pyrimidine character ($\\approx 0.0$), whereas `T>A` and `T>G` introduce purines ($\\approx -3.0$ to $-5.0$).\n   - **V14 (202 GT>G):** Deletes a `T` in the PPT ($\\Delta\\text{PSI} \\approx -4.0$).\n   - **V15 (202 del 6bp):** Deletes `TGTTTT` from the core of the PPT, substantially weakening the 3'ss ($\\Delta\\text{PSI} \\approx -35.0$).\n\n3. **3' Splice Site Junction & Exon Start (V16–V25):**\n   - **V16 (203 del 21bp), V17 (204 del 21bp), V19 (209 del 21bp):** Span the 3' intron-exon boundary, completely deleting the `CAG` 3'ss and the first several bases of the exon ($\\Delta\\text{PSI} \\approx -90.0$).\n   - **V18 (207 T>G):** Replaces a core `T` at -10 in the PPT with a `G`, weakening PPT strength ($\\Delta\\text{PSI} \\approx -15.0$).\n   - **V20 (212 TC>T):** Deletes a `C` at -4 in the PPT ($\\Delta\\text{PSI} \\approx -8.0$).\n   - **V21 (214 C>A):** Mutates the -3 position of the 3'ss from `CAG` to `AAG`, which significantly weakens 3'ss definition ($\\Delta\\text{PSI} \\approx -25.0$).\n   - **V22 (215 A>T):** Mutates the invariant -2 `A` of the `AG` dinucleotide (`CAG` $\\to$ `CTG`), abolishing the canonical 3'ss ($\\Delta\\text{PSI} \\approx -90.0$).\n   - **V23 (215 AGGT>A):** Deletes the `AG` of the 3'ss and `GT` of the exon start ($\\Delta\\text{PSI} \\approx -90.0$).\n   - **V24 (217 G>T):** Mutates the +1G of the exon (`CAG|G` $\\to$ `CAG|T`), weakening the 3'ss consensus ($\\Delta\\text{PSI} \\approx -15.0$).\n   - **V25 (219 GTTT>G):** Deletes 3 Ts near the 5' end of the exon, slightly reducing local U-rich silencing ($\\Delta\\text{PSI} \\approx +2.0$).\n\n4. **Internal Exon Variants (V26–V40):**\n   - **V26 (236 del 21bp), V27 (237 del 21bp), V28 (240 del 21bp):** Shorten the exon from 83 nt to 62 nt and remove internal sequences (`CACAGCACGATATGGATAACAT`), causing moderate exon skipping due to reduced exon length and loss of ESEs ($\\Delta\\text{PSI} \\approx -20.0$ to $-25.0$).\n   - **V29 (248 T>G), V30 (249 G>A):** Disrupt the exonic `ATGGA` / hnRNP G/A1-like motif; `248 T>G` creates a purine-rich `AGGGA` motif ($\\Delta\\text{PSI} \\approx -10.0$), whereas `249 G>A` (`ATAGA`) has a milder effect ($\\Delta\\text{PSI} \\approx -3.0$).\n   - **V31 (255 del 21bp), V33 (260 del 21bp), V34 (263 del 21bp), V35 (265 del 21bp), V36 (269 del 21bp):** Delete the strong purine-rich ESE cluster (`AAACAGGAATCTCCGACTGG`) in the middle/3' half of the exon and shorten the exon to 62 nt, strongly decreasing inclusion ($\\Delta\\text{PSI} \\approx -35.0$ to $-45.0$).\n   - **V32 (259 C>A):** Single nucleotide change in the C-rich tract (`CCTCAGC` $\\to$ `CCTAAGC`) ($\\Delta\\text{PSI} \\approx -3.0$).\n   - **V37 (275 AT>A), V38 (281 GA>G):** Single-base deletions in the exon that disrupt ESE architecture and alter exon length ($\\Delta\\text{PSI} \\approx -8.0$ to $-12.0$).\n   - **V39 (289 A>G):** `CCATG` $\\to$ `CCGTG` near the 3' end of the exon ($\\Delta\\text{PSI} \\approx -3.0$).\n   - **V40 (292 TTCCCCA>T):** Deletes 6 nt (`TCCCCA`) just upstream of the 5'ss, altering the exonic context of the 5'ss ($\\Delta\\text{PSI} \\approx -15.0$).\n\n5. **Downstream 5' Splice Site Region (V41–V50):**\n   - WT 5'ss is `CAT|GTAAATATGG` (297–309).\n   - **V41 (301 TA>T):** Deletes the `+2T` of the `GT` dinucleotide (`CAT|GAAATATGG`), completely abolishing the 5'ss ($\\Delta\\text{PSI} \\approx -90.0$).\n   - **V42 (302 AAAT>A):** Deletes 3 nt at `+3` to `+5`, changing `CAT|GTAAATATGG` to `CAT|GTATGG` (`+5G` is gained, `+4A` becomes `T`, `+6T` becomes `G`), moderately weakening the 5'ss ($\\Delta\\text{PSI} \\approx -35.0$).\n   - **V43 (303 A>C):** Mutates the `+4A` to `C` (`CAT|GTACATAT`), weakening U1 snRNA base-pairing ($\\Delta\\text{PSI} \\approx -25.0$).\n   - **V44 (303 AATATGG>A):** Deletes 6 nt (`ATATGG`), changing the 5'ss to `CAT|GTAAGCTCCT`, which creates a canonical `GTAAGC` 5'ss (introducing the consensus `+5G`!). This strengthens the 5'ss and increases inclusion ($\\Delta\\text{PSI} \\approx +12.0$).\n   - **V45 (304 AT>A):** Deletes `+5T`, shifting `+6A` and `+7T` to create `CAT|GTAAAATGG` (still lacks `+5G`, loses `+6T`) ($\\Delta\\text{PSI} \\approx -15.0$).\n   - **V46 (304 ATAT>A):** Deletes 3 nt (`TAT`), shifting `GG` into positions `+5` and `+6` to create `CAT|GTAAGGCTC`! This introduces the highly favored `+5G` (`GTAAGG`), strongly enhancing 5'ss strength ($\\Delta\\text{PSI} \\approx +15.0$).\n   - **V47 (305 T>A):** Mutates `+6T` to `A` (`CAT|GTAAAA`), reducing base-pairing with U1 snRNA ($\\Delta\\text{PSI} \\approx -15.0$).\n   - **V48 (305 T>G):** Mutates `+6T` to `G` (`CAT|GTAAAG`), weakening the `+6` position ($\\Delta\\text{PSI} \\approx -15.0$).\n   - **V49 (306 AT>A):** Deletes `+7T`, shifting `G` into `+7` (`CAT|GTAAATGGC`) ($\\Delta\\text{PSI} \\approx -3.0$).\n   - **V50 (308 G>C):** Mutates `+9G` to `C` in the downstream intron ($\\Delta\\text{PSI} \\approx -2.0$).\n\nFINAL: {\"V01\": 0.0, \"V02\": -15.0, \"V03\": -20.0, \"V04\": -25.0, \"V05\": -75.0, \"V06\": -3.0, \"V07\": -80.0, \"V08\": -4.0, \"V09\": -12.0, \"V10\": -90.0, \"V11\": -4.0, \"V12\": 0.0, \"V13\": -5.0, \"V14\": -4.0, \"V15\": -35.0, \"V16\": -90.0, \"V17\": -90.0, \"V18\": -15.0, \"V19\": -90.0, \"V20\": -8.0, \"V21\": -25.0, \"V22\": -90.0, \"V23\": -90.0, \"V24\": -15.0, \"V25\": 2.0, \"V26\": -20.0, \"V27\": -20.0, \"V28\": -25.0, \"V29\": -10.0, \"V30\": -3.0, \"V31\": -35.0, \"V32\": -3.0, \"V33\": -40.0, \"V34\": -45.0, \"V35\": -45.0, \"V36\": -40.0, \"V37\": -8.0, \"V38\": -12.0, \"V39\": -3.0, \"V40\": -15.0, \"V41\": -90.0, \"V42\": -35.0, \"V43\": -25.0, \"V44\": 12.0, \"V45\": -15.0, \"V46\": 15.0, \"V47\": -15.0, \"V48\": -15.0, \"V49\": -3.0, \"V50\": -2.0}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-824afc57a53fb4f0a945",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 3323,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 0
+              },
+              "prompt_tokens": 1537,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 4860
+            }
+          },
+          "request_id": "EKTOaqSGNpjlwtQP79_BoQ0",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000011",
+        "error": null,
+        "id": "EKTOaoOKNuicjNsPk8S5yAc",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "Based on the architecture of the splicing cassette and canonical splicing regulatory principles:\n\n1. **Core Splice Site & Polypyrimidine Tract (PPT) Disruptions:**\n   - The 3' splice site (`AG` at positions 215–216) and upstream PPT (positions 198–214) are directly ablated or truncated by deletions **V07–V12** and **V15**, and disrupted by premature `AG` dinucleotide creation in **V14** and **V16**, causing severe losses in exon inclusion.\n   - The 5' splice site (`CAG|GTATAC` spanning positions 302–310) is destroyed by deletions overlapping the exon-intron boundary (**V37**, **V40–V42**, **V48**) and by substitution at the invariant +1G (**V49**) or consensus -1G/-2A/-3C positions (**V43–V47**).\n\n2. **Exonic Splicing Enhancers (ESEs) & Intronic Elements:**\n   - The purine-rich ESE motif (`GAAGAG` at positions 274–279) is a major positive determinant of inclusion; deletions (**V27**, **V29–V32**, **V34**) and point mutations (**V33**, **V35**) affecting this motif substantially reduce PSI.\n   - Upstream 21-nt intronic deletions (**V02–V05**) remove putative branchpoint/regulatory sequences, while deletions near the exon flanks (**V18**, **V20**, **V24**, **V25**, **V39**) remove auxiliary cis-regulatory sequences.\n\nFINAL: {\"V01\": -1.0, \"V02\": -35.0, \"V03\": -35.0, \"V04\": -35.0, \"V05\": -35.0, \"V06\": -5.0, \"V07\": -60.0, \"V08\": -35.0, \"V09\": -65.0, \"V10\": -35.0, \"V11\": -10.0, \"V12\": -65.0, \"V13\": -8.0, \"V14\": -35.0, \"V15\": -40.0, \"V16\": -45.0, \"V17\": -15.0, \"V18\": -30.0, \"V19\": -10.0, \"V20\": -30.0, \"V21\": -15.0, \"V22\": -10.0, \"V23\": -15.0, \"V24\": -22.0, \"V25\": -22.0, \"V26\": -5.0, \"V27\": -45.0, \"V28\": -15.0, \"V29\": -45.0, \"V30\": -20.0, \"V31\": -35.0, \"V32\": -45.0, \"V33\": -30.0, \"V34\": -40.0, \"V35\": -30.0, \"V36\": -15.0, \"V37\": -65.0, \"V38\": -15.0, \"V39\": -45.0, \"V40\": -60.0, \"V41\": -65.0, \"V42\": -65.0, \"V43\": -25.0, \"V44\": -45.0, \"V45\": -40.0, \"V46\": -35.0, \"V47\": -55.0, \"V48\": -65.0, \"V49\": -65.0, \"V50\": 1.0}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791927312,
+            "id": "gen-batch-1791927144-93305701ece2f799dba0",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 3361,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 2436
+              },
+              "prompt_tokens": 1523,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 4884
+            }
+          },
+          "request_id": "EKTOaoOKNuicjNsPk8S5yAc",
+          "status_code": 200
+        }
+      }
+    ],
+    "status": "completed",
+    "usage": {
+      "completion_tokens": 125554,
+      "cost": 0.678572,
+      "is_byok": false,
+      "prompt_tokens": 50802,
+      "total_tokens": 176356
+    }
+  },
+  "raw_submission": {
+    "completion_window": "24h",
+    "created_at": 1791927144,
+    "endpoint": "/v1/chat/completions",
+    "error": null,
+    "finalized_at": null,
+    "id": "batch-1791927144-4pJLlcoasP4t0M4SvSY4",
+    "model": "google/gemini-4-argon-20261013",
+    "object": "batch",
+    "request_counts": {
+      "completed": 0,
+      "failed": 0,
+      "total": 36
+    },
+    "results": null,
+    "status": "validating",
+    "usage": null
+  },
+  "result_output": "/home/exedev/.codex/worktrees/2341/VEP-bench/.vepbench/campaigns/gemini-4-argon-remaining-20261013/results.jsonl",
+  "run_id": "gemini-4-argon-medium-opensplice-sge-20261013",
+  "schema_version": "1.0",
+  "status": "completed",
+  "submitted_at": "2026-10-13T21:32:23.723359Z",
+  "submitted_custom_ids": [
+    "request_000000",
+    "request_000001",
+    "request_000002",
+    "request_000003",
+    "request_000004",
+    "request_000005",
+    "request_000006",
+    "request_000007",
+    "request_000008",
+    "request_000009",
+    "request_000010",
+    "request_000011",
+    "request_000012",
+    "request_000013",
+    "request_000014",
+    "request_000015",
+    "request_000016",
+    "request_000017",
+    "request_000018",
+    "request_000019",
+    "request_000020",
+    "request_000021",
+    "request_000022",
+    "request_000023",
+    "request_000024",
+    "request_000025",
+    "request_000026",
+    "request_000027",
+    "request_000028",
+    "request_000029",
+    "request_000030",
+    "request_000031",
+    "request_000032",
+    "request_000033",
+    "request_000034",
+    "request_000035"
+  ],
+  "submitted_question_ids": [
+    "opensplice-snv-ranking-v2:E01",
+    "opensplice-snv-ranking-v2:E02",
+    "opensplice-snv-ranking-v2:E03",
+    "opensplice-snv-ranking-v2:E04",
+    "opensplice-snv-ranking-v2:E05",
+    "opensplice-snv-ranking-v2:E06",
+    "opensplice-snv-ranking-v2:E07",
+    "opensplice-snv-ranking-v2:E08",
+    "opensplice-snv-ranking-v2:E09",
+    "opensplice-snv-ranking-v2:E10",
+    "opensplice-snv-ranking-v2:E11",
+    "opensplice-snv-ranking-v2:E12",
+    "opensplice-snv-ranking-v2:E13",
+    "opensplice-snv-ranking-v2:E14",
+    "opensplice-snv-ranking-v2:E15",
+    "opensplice-snv-ranking-v2:E16",
+    "opensplice-snv-ranking-v2:E17",
+    "opensplice-snv-ranking-v2:E18",
+    "opensplice-snv-ranking-v2:E19",
+    "opensplice-snv-ranking-v2:E20",
+    "sge-ranking-v2:BAP1",
+    "sge-ranking-v2:BARD1",
+    "sge-ranking-v2:BRCA1",
+    "sge-ranking-v2:BRCA2",
+    "sge-ranking-v2:CARD11",
+    "sge-ranking-v2:CTCF",
+    "sge-ranking-v2:DDX3X",
+    "sge-ranking-v2:PALB2",
+    "sge-ranking-v2:RAD51C",
+    "sge-ranking-v2:RAD51D",
+    "sge-ranking-v2:SBDS",
+    "sge-ranking-v2:SFPQ",
+    "sge-ranking-v2:TINF2",
+    "sge-ranking-v2:TP53",
+    "sge-ranking-v2:VHL",
+    "sge-ranking-v2:XRCC2"
+  ]
+}

@@ -1,0 +1,1550 @@
+{
+  "batch_id": "batch-1791930801-kbp0S1vYFcIQ3igLnOvg",
+  "endpoint": "/v1/chat/completions",
+  "generation_parameters": {
+    "max_tokens": 262144,
+    "reasoning": {
+      "effort": "high",
+      "exclude": false
+    }
+  },
+  "model_id": "google/gemini-4-argon",
+  "question_ids": [
+    "opensplice-snv-ranking-v2:E01",
+    "opensplice-snv-ranking-v2:E02",
+    "opensplice-snv-ranking-v2:E03",
+    "opensplice-snv-ranking-v2:E04",
+    "opensplice-snv-ranking-v2:E05",
+    "opensplice-snv-ranking-v2:E06",
+    "opensplice-snv-ranking-v2:E07",
+    "opensplice-snv-ranking-v2:E08",
+    "opensplice-snv-ranking-v2:E09",
+    "opensplice-snv-ranking-v2:E10",
+    "opensplice-snv-ranking-v2:E11",
+    "opensplice-snv-ranking-v2:E12",
+    "opensplice-snv-ranking-v2:E13",
+    "opensplice-snv-ranking-v2:E14",
+    "opensplice-snv-ranking-v2:E15",
+    "opensplice-snv-ranking-v2:E16",
+    "opensplice-snv-ranking-v2:E17",
+    "opensplice-snv-ranking-v2:E18",
+    "opensplice-snv-ranking-v2:E19",
+    "opensplice-snv-ranking-v2:E20",
+    "satmut-mpra-ranking-v2:F9",
+    "satmut-mpra-ranking-v2:GP1BA",
+    "satmut-mpra-ranking-v2:HBB",
+    "satmut-mpra-ranking-v2:HBG1",
+    "satmut-mpra-ranking-v2:HNF4A",
+    "satmut-mpra-ranking-v2:IRF4",
+    "satmut-mpra-ranking-v2:IRF6",
+    "satmut-mpra-ranking-v2:LDLR",
+    "satmut-mpra-ranking-v2:MSMB",
+    "satmut-mpra-ranking-v2:MYCrs6983267",
+    "satmut-mpra-ranking-v2:PKLR",
+    "satmut-mpra-ranking-v2:SORT1",
+    "satmut-mpra-ranking-v2:TCF7L2",
+    "satmut-mpra-ranking-v2:TERT",
+    "satmut-mpra-ranking-v2:ZFAND3",
+    "satmut-mpra-ranking-v2:ZRSh13",
+    "sge-ranking-v2:BAP1",
+    "sge-ranking-v2:BARD1",
+    "sge-ranking-v2:BRCA1",
+    "sge-ranking-v2:BRCA2",
+    "sge-ranking-v2:CARD11",
+    "sge-ranking-v2:CTCF",
+    "sge-ranking-v2:DDX3X",
+    "sge-ranking-v2:PALB2",
+    "sge-ranking-v2:RAD51C",
+    "sge-ranking-v2:RAD51D",
+    "sge-ranking-v2:SBDS",
+    "sge-ranking-v2:SFPQ",
+    "sge-ranking-v2:TINF2",
+    "sge-ranking-v2:TP53",
+    "sge-ranking-v2:VHL",
+    "sge-ranking-v2:XRCC2"
+  ],
+  "question_set_sha256": "be62fd7b5f06656572a5150904758f04bb998590f63ce31ebbca13852a0bfab7",
+  "question_set_size": 52,
+  "raw_status": {
+    "completion_window": "24h",
+    "created_at": 1791930801,
+    "endpoint": "/v1/chat/completions",
+    "error": null,
+    "finalized_at": 1791932081,
+    "id": "batch-1791930801-kbp0S1vYFcIQ3igLnOvg",
+    "model": "google/gemini-4-argon-20261013",
+    "object": "batch",
+    "request_counts": {
+      "completed": 27,
+      "failed": 0,
+      "total": 27
+    },
+    "results": [
+      {
+        "custom_id": "request_000031",
+        "error": null,
+        "id": "R7LOatSmH4WG67MP44feuQI",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "length",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": null,
+                  "reasoning": null,
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "CONTINUATION"
+              }
+            ],
+            "created": 1791930951,
+            "id": "gen-batch-1791930801-7dca081d8378c9e42885",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 32768,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 32765
+              },
+              "prompt_tokens": 1305,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 34073
+            }
+          },
+          "request_id": "R7LOatSmH4WG67MP44feuQI",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000022",
+        "error": null,
+        "id": "R7LOapOOH4WG67MP44feuQI",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "length",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": null,
+                  "reasoning": null,
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "CONTINUATION"
+              }
+            ],
+            "created": 1791930951,
+            "id": "gen-batch-1791930801-237c29489fb22eecae0f",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 32768,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 32765
+              },
+              "prompt_tokens": 1108,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 33876
+            }
+          },
+          "request_id": "R7LOapOOH4WG67MP44feuQI",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000027",
+        "error": null,
+        "id": "R7LOarPZH5qzvfIP9e720Q8",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the regulatory-activity effects of the candidate variants, we first identify the 318 bp mutagenized element and map its functional cis-regulatory architecture in HepG2 cells:\n\n1. **Element Identification:**\n   The 318 bp sequence corresponds to the human *LDLR* promoter and 5' UTR (spanning `c.-318` to `c.-1` immediately upstream of the translation start codon). In saturation-mutagenesis MPRA assays in HepG2 cells, basal transcription from this promoter is driven by a series of well-characterized activating elements where mutations predominantly cause loss of function (negative log2 activity effects):\n\n2. **Key Functional Motifs and Variant Effects:**\n   - **Far Upstream Region (pos 1–88; V01–V08):** Located upstream of the core regulatory footprint cluster; variants here have minimal effects near zero, with slight negative effects when perturbing GC-rich sequences (e.g., V03 at pos 46) and slight positive/neutral effects where de novo C/EBP-like sequences are favored (e.g., V06 at pos 74).\n   - **Distal AT-Rich Activator Element (`GGTTAAAAAG`, pos 91–100; V09–V12):** Variants at pos 93 (`T>C`, `T>G`) and pos 95 (`A>C`, `A>G`) disrupt the `TTAAAA` core footprint and produce strong negative effects.\n   - **Sterol-Independent Regulatory Element / SIRE (`CCGATGTCACATC`, pos 101–113; V13–V17):** A critical bZIP (CREB/ATF/AP-1) binding site (`GATGTCACAT`, RC `ATGTGACATC`). Substitutions at the invariant core positions 106 (`G>C`, `G>T`; V13, V14) and 107 (`T>C`, `T>G`; V15, V16) strongly reduce activity, whereas V17 at the 3' edge (pos 112 `T>C`) has a more moderate negative effect.\n   - **Repeat 1 (`AAACTCCTCCTCTTGC`, pos 123–138; V18–V24) and Adjacent Element (`TGAGGTGAAG`, pos 141–150; V25–V26):** Repeat 1 binds Sp1/KLF family factors. Core cytosine substitutions and the 1 bp deletion (V18–V23) strongly decrease reporter activity, while the 3'-flanking substitution V24 (pos 135 `T>G`) and variants in the adjacent `TGAGGTGA` motif (V25, V26) cause moderate decreases.\n   - **Repeat 2 / SRE-1 (`ATCACCCCAC`, pos 161–170; V27–V31):** The canonical SREBP binding site and Familial Hypercholesterolemia hotspot. All five substitutions inside this decamer (V27–V31) strongly abolish transcriptional activation.\n   - **Repeat 3 (`AAACTCCTCCCCCTGC`, pos 174–189) and Flanks (pos 171–191; V32–V40):** Repeat 3 is the proximal high-affinity Sp1 binding site. Mutations in the central pentacytosine (`CCCCC`) tract (V35 `182 C>A`, V36 `182 C>T`, V37 `185 C>G`, V38 `186 C>G`) cause some of the largest activity losses across the element, with transversions (V35, V37, V38) slightly stronger than the pyrimidine transition (V36). Upstream Repeat 3 variants (V32, V33, V34) show progressively stronger negative effects from the linker into the motif, while 3' flanking variants (V39, V40) are nearly neutral.\n   - **TATA-like Box and 5' UTR Downstream Elements (pos 204–303; V41–V50):** V42 (pos 212 `T>G`) disrupts the TATA-like `TGTAAAT` element and moderately reduces activity, while V47 and V48 (pos 290 `C>A`, `C>T`) disrupt the downstream GC-rich `GGGTCGGG` motif in the 5' UTR and moderately decrease activity. Flanking indels and substitutions in the 5' UTR (V43–V46, V49, V50) have mild negative effects.\n\nFINAL: {\"V01\": -0.06, \"V02\": 0.02, \"V03\": -0.14, \"V04\": -0.08, \"V05\": 0.03, \"V06\": 0.08, \"V07\": 0.04, \"V08\": -0.03, \"V09\": -0.52, \"V10\": -0.58, \"V11\": -0.68, \"V12\": -0.64, \"V13\": -0.82, \"V14\": -0.78, \"V15\": -0.72, \"V16\": -0.76, \"V17\": -0.35, \"V18\": -0.58, \"V19\": -0.75, \"V20\": -0.74, \"V21\": -0.76, \"V22\": -0.68, \"V23\": -0.54, \"V24\": -0.28, \"V25\": -0.32, \"V26\": -0.30, \"V27\": -0.95, \"V28\": -0.82, \"V29\": -1.08, \"V30\": -1.05, \"V31\": -0.92, \"V32\": -0.26, \"V33\": -0.45, \"V34\": -0.66, \"V35\": -1.12, \"V36\": -0.88, \"V37\": -1.15, \"V38\": -1.02, \"V39\": -0.05, \"V40\": -0.04, \"V41\": -0.05, \"V42\": -0.36, \"V43\": -0.12, \"V44\": -0.06, \"V45\": -0.10, \"V46\": -0.22, \"V47\": -0.46, \"V48\": -0.40, \"V49\": -0.18, \"V50\": -0.22}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791930951,
+            "id": "gen-batch-1791930801-ecc7df6926c781a77cd4",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 30997,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 29405
+              },
+              "prompt_tokens": 1163,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 32160
+            }
+          },
+          "request_id": "R7LOarPZH5qzvfIP9e720Q8",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000011",
+        "error": null,
+        "id": "R7LOao7jH_SOvfIP3v7KkQ0",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the signed change in percentage spliced in ($\\Delta\\text{PSI}$) for each candidate variant in this *BRCA1* exon 18 (88 nt, positions 217–304) minigene splicing panel, we analyze how each mutation affects canonical splice site recognition and cis-regulatory splicing elements:\n\n1. **Upstream Intron & Branchpoint Region (`V01`–`V06`, positions 147–199):**\n   - `V01` (160 T>A, position -57 relative to the 3'ss) and `V06` (191 T>G, position -26) do not disrupt the branchpoint sequence (`181: TAACTCAT`) or polypyrimidine tract (PPT) and do not create cryptic splice sites, resulting in near-zero effects.\n   - `V02`–`V05` are overlapping 21-nt deletions removing the native branchpoint region (`TAACTCATGATAAT`). Because upstream intronic sequences provide cryptic branchpoint adenosines at optimal distances, these deletions cause a mild-to-moderate reduction in exon inclusion, with `V04` and `V05` removing additional adenosines and the first thymidine of the PPT.\n\n2. **Polypyrimidine Tract & 3' Splice Site (`V07`–`V17`, positions 193–217):**\n   - `V07` deletes the entire 21-nt PPT (`194–214`) immediately upstream of the 3'ss `AG`, and `V09` and `V12` delete 21-nt segments spanning the canonical 3'ss `AG` (`215–216`), causing near-complete exon skipping.\n   - `V15` deletes `TTT` at positions -6 to -4 (`211–213`) immediately upstream of the 3'ss `CAG`, severely impairing U2AF binding.\n   - `V14` (210 A>G) and `V16` (211 T>G) create premature competing `AG` dinucleotides (`TAG` at -7 and `AAG` at -6) within the AG-exclusion zone of the PPT, substantially reducing inclusion, whereas `V13` (209 A>G) forms `GA` rather than `AG` and has a minimal effect.\n   - `V08` (deleting `TTTGAT` in the PPT) reduces PPT strength more strongly than `V10` (deleting `GATTTA`, which fuses the flanking T-runs into `TATTTATTTCAG`) or `V11` (single-T deletion).\n   - `V17` deletes the first exonic nucleotide (`217 A`), changing `TTTCAG|ATG` to `TTTCAG|TG` and modestly weakening the +1 position of the 3'ss.\n\n3. **5' Exonic Region (`V18`–`V25`, positions 218–241):**\n   - `V18` and `V20` (21-nt deletions near the 5' end of the exon) and `V24` and `V25` (6-nt deletions removing the `GCCAGAA` exonic splicing enhancer) moderately reduce exon inclusion.\n   - Smaller deletions in `220–229` (`V19`, `V21`, `V22`, `V23`) have mild effects, with `V23` creating an inhibitory `TAG` motif (`GTGTAGTTT`).\n\n4. **Central Exonic Splicing Enhancer / CERES Element (`V26`–`V36`, positions 261–286):**\n   - `V26` (261 T>G) disrupts an AU-rich `TAA` motif in the middle of the exon and is neutral to slightly positive.\n   - Positions `271–285` (`ACTGAAGAGACTACT`) contain the critical purine-rich ESE (`GAAGAG`) required for *BRCA1* exon 18 inclusion. Complete deletion of this element (`V27`, `V29`, `V32`) or point mutations that simultaneously destroy the `GAAGAG` enhancer and create `TAA`/`TAG` exonic splicing silencers (`V33` c.5080G>T and `V35` 277 G>T) cause severe exon skipping. Partial deletions of the `GAAGAG` motif (`V30`, `V31`, `V34`, `V28`) cause moderate-to-strong skipping, whereas deleting `CTACTC` downstream of the intact `GAAGAG` core (`V36`) has a much milder effect.\n\n5. **5' Splice Site & Downstream Intron (`V37`–`V50`, positions 284–329):**\n   - Because the native intronic 5'ss sequence (`GTATAC`) lacks the canonical +5G and +6T bases, recognition relies heavily on the exonic `CAG` (-3 to -1) and invariant `+1..+3 GTA`.\n   - Deletions removing the 5'ss (`V37`, `V40`, `V41`, `V42`, `V48`) and substitutions at the invariant +1G (`V49`) or -1G (`V47`) cause near-complete exon skipping.\n   - Disrupting the -2A position (`V44`, `V45`, `V46`) strongly reduces inclusion, while mutating or replacing the -3C position (`V39`, `V43`) causes a moderate reduction.\n   - `V50` (+14 C>T in the downstream intron) lies outside the splice donor consensus and has a negligible effect.\n\nFINAL: {\"V01\": 0.0, \"V02\": -10.0, \"V03\": -10.0, \"V04\": -12.0, \"V05\": -14.0, \"V06\": 0.0, \"V07\": -82.0, \"V08\": -22.0, \"V09\": -86.0, \"V10\": -10.0, \"V11\": -6.0, \"V12\": -86.0, \"V13\": -3.0, \"V14\": -28.0, \"V15\": -55.0, \"V16\": -38.0, \"V17\": -10.0, \"V18\": -28.0, \"V19\": -4.0, \"V20\": -28.0, \"V21\": -2.0, \"V22\": -5.0, \"V23\": -12.0, \"V24\": -20.0, \"V25\": -18.0, \"V26\": 1.5, \"V27\": -72.0, \"V28\": -25.0, \"V29\": -72.0, \"V30\": -46.0, \"V31\": -52.0, \"V32\": -68.0, \"V33\": -64.0, \"V34\": -50.0, \"V35\": -66.0, \"V36\": -8.0, \"V37\": -86.0, \"V38\": -2.0, \"V39\": -36.0, \"V40\": -78.0, \"V41\": -86.0, \"V42\": -86.0, \"V43\": -24.0, \"V44\": -62.0, \"V45\": -65.0, \"V46\": -60.0, \"V47\": -82.0, \"V48\": -86.0, \"V49\": -86.0, \"V50\": 0.0}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791930951,
+            "id": "gen-batch-1791930801-11ef76ad6a260118b137",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 30863,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 29018
+              },
+              "prompt_tokens": 1523,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 32386
+            }
+          },
+          "request_id": "R7LOao7jH_SOvfIP3v7KkQ0",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000033",
+        "error": null,
+        "id": "R7LOauubH9Sw67MP1oj5qA4",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "length",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": null,
+                  "reasoning": null,
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "CONTINUATION"
+              }
+            ],
+            "created": 1791930951,
+            "id": "gen-batch-1791930801-1623e6bd20a899b1a804",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 32768,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 32765
+              },
+              "prompt_tokens": 1127,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 33895
+            }
+          },
+          "request_id": "R7LOauubH9Sw67MP1oj5qA4",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000003",
+        "error": null,
+        "id": "R7LOap2pH4WG67MP44feuQI",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the signed change in percentage spliced in ($\\Delta\\text{PSI}$) for each candidate variant, we analyze how each mutation alters the cis-regulatory splicing architecture of the tested 83-nt alternative exon (positions 217–299) and its flanking native intronic regions (upstream intron positions 147–216; downstream intron positions 300–324):\n\n1. **Upstream Intron, Branchpoint (BP), and Polypyrimidine Tract (PPT) (`V01`–`V20`):**\n   - **Wild-type architecture:** The 3' splice site (`TTCCAG|GTG`, junction at 216|217) is preceded by a core poly-U tract (`TTTT` at 205–208, interrupted by `GG` at 209–210 and `GTG` at 202–204) and branchpoint motifs at `CTACAAAC` (191–198) and `ACTAAG` (181–186).\n   - **Deep intronic SNV (`V01`):** Position 156 A>T lies 61 nt upstream of the 3'ss and does not create cryptic splice sites, yielding a near-zero effect (`0.0`).\n   - **21-nt deletions across the BP/PPT (`V02`–`V05`, `V07`, `V10`, `V16`, `V17`, `V19`):**\n     - `V10`, `V16`, `V17`, and `V19` delete across the canonical 3'ss `AG` dinucleotide (215–216), completely abolishing normal 3'ss recognition ($\\Delta\\text{PSI} \\approx -72$).\n     - `V05` (leaving `GTTTTTCCAG` preceded by purine-rich sequence) and `V07` (leaving only `TTTTCTCAG`) delete the native branchpoint and almost the entire PPT, causing severe exon skipping ($\\Delta\\text{PSI} \\approx -46$ to $-58$).\n     - `V02`, `V03`, and `V04` delete the native branchpoints and upstream PPT while leaving decreasing lengths of the core PPT (`GTTTTGGTTCCAG`, `TATTTGGTTCCAG`, and `TTGGTTCCAG`, respectively) and shifting an upstream `TTAAAT` motif into branchpoint distance, causing strong to progressively larger decreases in inclusion ($\\Delta\\text{PSI} \\approx -30$ to $-38$).\n   - **Small indels and SNVs in the BP/PPT (`V06`, `V08`, `V09`, `V11`–`V15`, `V18`, `V20`):**\n     - `V15` (6-nt deletion of `TGTTTT` at 203–208) removes the core poly-U run and fuses flanking Gs into a `GGG` triplet (`AAACATTGGGTTCCAG`), strongly repressing splicing ($\\Delta\\text{PSI} \\approx -52$).\n     - `V18` (207 T>G) disrupts the middle of the core `TTTT` tract (`GTTTTGG` $\\to$ `GTTGTGG`), substantially weakening U2AF2 binding ($\\Delta\\text{PSI} \\approx -32$).\n     - `V20` (deletion of -4C) shortens the proximal pyrimidine tract (`TTTTGGTTCCAG` $\\to$ `TTTTGGTTCAG`) and shifts `GG` to position -6 ($\\Delta\\text{PSI} \\approx -18$).\n     - `V09` (6-nt deletion of `AACATT` at 196–201) removes `TT` at the 5' end of the PPT (`TTGTGTTTT` $\\to$ `GTGTTTT`) ($\\Delta\\text{PSI} \\approx -14$).\n     - `V14` (deletion of 203 T) creates a `GG` dinucleotide (`TTGTGTTTT` $\\to$ `TTGGTTTT`, $\\Delta\\text{PSI} \\approx -14$).\n     - At position 201 (-16), `V13` (T>G, creating `ATGGTG`) reduces inclusion more than `V11` (T>A, `ATAGTG`) and `V12` (T>C, pyrimidine-to-pyrimidine transition).\n     - `V06` (deletion of 191 C) merges `TTTT` and `T` into `TTTTTACAA` while preserving the BP motif (`+1.5`), whereas `V08` (deletion of one A in `AAA`) has minimal impact (`-1.0`).\n\n2. **3' Splice Site Junction and Early Exon (`V21`–`V25`):**\n   - `V22` (215 A>T) mutates the invariant `-2A` of the 3'ss `AG` (`TTCCAG` $\\to$ `TTCCTG`), abolishing inclusion ($\\Delta\\text{PSI} \\approx -72$).\n   - `V21` (214 C>A) mutates `-3C` to `A` (`TTCCAG` $\\to$ `TTCAAG`), strongly impairing U2AF1 recognition ($\\Delta\\text{PSI} \\approx -58$).\n   - `V23` (215 `AGGT`>`A`) deletes `GGT` (216–218), but because position 219 is `G`, it recreates the `TTCCAG` 3'ss (`TTCCAG|TTTGAT`) while shifting the exon start from `+1G` to `+1T` and shortening the exon by 3 nt, producing a moderate reduction similar to `V24` (217 G>T, `TTCCAG|TTG`, $\\Delta\\text{PSI} \\approx -24$ and $-20$).\n   - `V25` deletes `TTT` at 220–222 within the U-rich 5' exonic segment (`GTGTTTGATTTTGA` $\\to$ `GTGGATTTTGA`), weakening a poly-U silencer element (`+2.0`).\n\n3. **Internal Exon Variants (`V26`–`V40`):**\n   - **21-nt exonic deletions (`V26`–`V28`, `V31`, `V33`–`V36`):** These deletions shorten the exon from 83 nt to 62 nt and remove exonic splicing enhancers (ESEs), particularly the dense purine/SR-rich ESE cluster in positions 256–290 (`ATCCTCAGCCTAAACAGGAATCTCCGACTGGCCAT`), causing large drops in PSI ($\\Delta\\text{PSI} \\approx -34$ to $-45$).\n   - **6-nt deletion at the 3' end of the exon (`V40`):** Deleting `TCCCCA` (293–298) removes positions `-3C` and `-2A` of the 5'ss (`CAT|GTAAAT` $\\to$ `GTT|GTAAAT`), severely weakening U1 snRNA base-pairing ($\\Delta\\text{PSI} \\approx -55$).\n   - **Internal SNVs and 1-nt deletions (`V29`, `V30`, `V32`, `V37`–`V39`):** Because the 3-exon FAS minigene terminates in exon 7 without a downstream intron, frameshifts do not trigger NMD; these variants act through modest ESE/ESS perturbations (with `V29` creating an `AGGG` silencer motif).\n\n4. **5' Splice Site and Downstream Intron (`V41`–`V50`):**\n   - The wild-type 5'ss (`CAT|GTAAATATG`) is suboptimal at `-1T` and `+5A`, making it highly dependent on base-pairing at `+3A`, `+4A`, and `+6T`.\n   - `V41` (1-nt del $\\to$ `CAT|GTAATA`), `V42` (3-nt del $\\to$ `CAT|GTAATG`), `V43` (`+4A>C` $\\to$ `CAT|GTACAT`), `V45` and `V47` (`+6T>A` $\\to$ `CAT|GTAAAA`), and `V46` and `V48` (`+6T>G` $\\to$ `CAT|GTAAAG`) disrupt the core `+4`–`+6` U1 snRNA base-pairing, causing severe exon skipping ($\\Delta\\text{PSI} \\approx -56$ to $-64$).\n   - `V44` (6-nt del $\\to$ `CAT|GTAACT`) alters `+5A>C` while retaining `+6T`, resulting in a strong but slightly smaller decrease ($\\Delta\\text{PSI} \\approx -42$).\n   - `V49` (deletion of `+8T` $\\to$ `CAT|GTAAATAGG`) and `V50` (`+9G>C` $\\to$ `CAT|GTAAATATC`) lie outside the core `-3` to `+6` 5'ss motif and have near-zero effects (`+0.5` and `0.0`).\n\nFINAL: {\"V01\": 0.0, \"V02\": -30.0, \"V03\": -32.0, \"V04\": -38.0, \"V05\": -46.0, \"V06\": 1.5, \"V07\": -58.0, \"V08\": -1.0, \"V09\": -14.0, \"V10\": -72.0, \"V11\": -6.0, \"V12\": -2.5, \"V13\": -12.0, \"V14\": -14.0, \"V15\": -52.0, \"V16\": -72.0, \"V17\": -72.0, \"V18\": -32.0, \"V19\": -72.0, \"V20\": -18.0, \"V21\": -58.0, \"V22\": -72.0, \"V23\": -24.0, \"V24\": -20.0, \"V25\": 2.0, \"V26\": -34.0, \"V27\": -34.0, \"V28\": -36.0, \"V29\": -8.0, \"V30\": -2.0, \"V31\": -42.0, \"V32\": -4.0, \"V33\": -45.0, \"V34\": -45.0, \"V35\": -44.0, \"V36\": -44.0, \"V37\": -5.0, \"V38\": -6.0, \"V39\": -1.5, \"V40\": -55.0, \"V41\": -64.0, \"V42\": -64.0, \"V43\": -60.0, \"V44\": -42.0, \"V45\": -58.0, \"V46\": -56.0, \"V47\": -58.0, \"V48\": -56.0, \"V49\": 0.5, \"V50\": 0.0}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791930951,
+            "id": "gen-batch-1791930801-5d9676565d91bfc6b2d8",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 32667,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 30017
+              },
+              "prompt_tokens": 1537,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 34204
+            }
+          },
+          "request_id": "R7LOap2pH4WG67MP44feuQI",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000040",
+        "error": null,
+        "id": "R7LOauCcH5Orz9MPttTVkQU",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "length",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": null,
+                  "reasoning": null,
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "CONTINUATION"
+              }
+            ],
+            "created": 1791930951,
+            "id": "gen-batch-1791930801-185bc4d56dbd18110b0b",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 32768,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 32765
+              },
+              "prompt_tokens": 1201,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 33969
+            }
+          },
+          "request_id": "R7LOauCcH5Orz9MPttTVkQU",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000032",
+        "error": null,
+        "id": "R7LOarO8H62WvfIPk_W5uAs",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "length",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": null,
+                  "reasoning": null,
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "CONTINUATION"
+              }
+            ],
+            "created": 1791930951,
+            "id": "gen-batch-1791930801-5706a82cc3f9355aac26",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 32768,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 32765
+              },
+              "prompt_tokens": 1294,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 34062
+            }
+          },
+          "request_id": "R7LOarO8H62WvfIPk_W5uAs",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000025",
+        "error": null,
+        "id": "R7LOaub5H9PHvfIPp_OR6Ak",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "length",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": null,
+                  "reasoning": null,
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "CONTINUATION"
+              }
+            ],
+            "created": 1791930951,
+            "id": "gen-batch-1791930801-1041a6e584f2584c1548",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 32768,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 32765
+              },
+              "prompt_tokens": 1242,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 34010
+            }
+          },
+          "request_id": "R7LOaub5H9PHvfIPp_OR6Ak",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000045",
+        "error": null,
+        "id": "R7LOatTFH9SavfIP8L7f8Qk",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "length",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": null,
+                  "reasoning": null,
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "CONTINUATION"
+              }
+            ],
+            "created": 1791930951,
+            "id": "gen-batch-1791930801-e8eed6587a175084fed8",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 32768,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 32765
+              },
+              "prompt_tokens": 1190,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 33958
+            }
+          },
+          "request_id": "R7LOatTFH9SavfIP8L7f8Qk",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000019",
+        "error": null,
+        "id": "R7LOav6xH5yYvfIPipbNiQs",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the signed change in percentage spliced in ($\\Delta\\text{PSI}$) for each candidate variant, we analyze how each mutation alters the cis-regulatory splicing code across the native 190-nt insert (positions 147–336) within the *FAS* exon 5–6–7 minigene cassette:\n\n1. **3' Splice Site and Polypyrimidine Tract (Positions 193–216, Variants V03–V26):**\n   - **Canonical 3'SS (`AG` at 215–216):** Substitutions or deletions directly disrupting the invariant 3'SS dinucleotide (`V23` 215 A>C, `V24` 215 A>T, `V25` 215 AG>A, `V26` 216 G>C) or deleting the 3'SS boundary (`V06`, `V15`, `V22`) abolish canonical 3'SS recognition, resulting in maximal exon skipping ($\\Delta\\text{PSI} \\approx -82$ to $-85$).\n   - **Polypyrimidine Tract (Positions 201–214, `TCACTTTCTGTTCT`):** Deleting the entire PPT (`V03`) nearly abolishes inclusion. Medium (6-nt) deletions removing core pyrimidines and shortening the branchpoint-to-3'SS spacer (`V09`, `V14`) and the proximal 3-nt deletion (`V17`) strongly decrease inclusion, while smaller 3-nt deletions (`V10`, `V11`) and pyrimidine-to-purine substitutions (`V12`, `V16`, `V18`, `V19`, `V20`, `V21`) moderately reduce U2AF65 binding (with `T>G` mutations creating purine dinucleotides next to G210 having stronger effects than `T>A`). The 1-nt deletion `V13` (`TTTCTG` $\\to$ `TTTTG`) has a minimal effect.\n   - **Branchpoint Motif (Positions 193–197, `CTAAG`):** Variants at the branchpoint adenosine A196 (`V07` A>G, which also creates a `TAGG` silencer motif; `V08` A>T) and the conserved $-2$ thymidine T194 (`V04` T>C, `V05` T>G) moderately reduce splicing efficiency.\n\n2. **Alternative Exon Body (Positions 217–311, Variants V27–V40):**\n   - **21-nt Exonic Deletions (`V28`, `V29`, `V32`):** In-frame 21-nt deletions removing exonic splicing enhancer (ESE) tracts and shortening the exon from 95 nt to 74 nt moderately reduce exon definition.\n   - **Exonic SNVs and 3-nt Deletions (`V27`, `V30`, `V31`, `V33`–`V37`):** `V31` (244 G>A) disrupts an ESE and creates an hnRNP A1 `TAGA` exonic splicing silencer (ESS), and `V37` (291 T>G) extends an exonic G-run (`GGGGCGGG`), both reducing inclusion. `V33` (253 C>G) and `V35` (278 A>G) create purine-rich ESE motifs (`GAAGGC`, `GGAGA`), yielding slight positive effects.\n\n3. **5' Splice Site and Downstream Intron (Positions 291–336, Variants V38–V50):**\n   - **5'SS Destruction (`V38`, `V39`, `V43`, `V44`):** Deletions removing the 5'SS (`V38`, `V39`, `V43`) and mutation of the invariant $+2\\text{ T}$ (`V44` 313 T>C in the non-consensus +4/+6 context `CAG|GCAGGC`) nearly completely abolish exon inclusion.\n   - **5'SS Weakening (`V40`–`V42`, `V45`–`V49`):** Because the wild-type 5'SS (`CAG|GTAGGC`) has non-consensus bases at $+4\\text{ G}$ and $+6\\text{ C}$, U1 snRNA binding depends heavily on $+5\\text{ G}$ (pos 316), $+3\\text{ A}$ (pos 314), and the exonic `CAG` (pos 309–311). Variants losing $+5\\text{ G}$ or $+3\\text{ A}$ (`V49` 316 G>A, `V47`, `V46` 314 A>T, `V45`, `V48`) or weakening the exonic $-3..-1\\text{ CAG}$ (`V40`, `V42` 310 A>T, `V41` 310 A>G) cause substantial decreases in PSI.\n   - **Distal Intronic Deletions (`V01`, `V02`, `V50`):** Deletions removing upstream intronic G-runs (`V01`, `V02`) or shortening the downstream U-tract beyond $+7$ (`V50`) cause mild reductions in inclusion.\n\nFINAL: {\"V01\": -8.0, \"V02\": -2.5, \"V03\": -78.0, \"V04\": -10.0, \"V05\": -14.0, \"V06\": -85.0, \"V07\": -18.0, \"V08\": -9.0, \"V09\": -46.0, \"V10\": -26.0, \"V11\": -24.0, \"V12\": -12.0, \"V13\": -4.0, \"V14\": -55.0, \"V15\": -85.0, \"V16\": -22.0, \"V17\": -36.0, \"V18\": -15.0, \"V19\": -20.0, \"V20\": -16.0, \"V21\": -19.0, \"V22\": -84.0, \"V23\": -82.0, \"V24\": -82.0, \"V25\": -83.0, \"V26\": -82.0, \"V27\": -5.0, \"V28\": -22.0, \"V29\": -21.0, \"V30\": -7.0, \"V31\": -11.0, \"V32\": -18.0, \"V33\": 1.5, \"V34\": -3.5, \"V35\": 1.0, \"V36\": -1.5, \"V37\": -8.0, \"V38\": -85.0, \"V39\": -85.0, \"V40\": -48.0, \"V41\": -38.0, \"V42\": -45.0, \"V43\": -84.0, \"V44\": -80.0, \"V45\": -62.0, \"V46\": -64.0, \"V47\": -70.0, \"V48\": -52.0, \"V49\": -72.0, \"V50\": -6.0}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791930951,
+            "id": "gen-batch-1791930801-aa331e5ced283be43e21",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 32198,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 30424
+              },
+              "prompt_tokens": 1493,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 33691
+            }
+          },
+          "request_id": "R7LOav6xH5yYvfIPipbNiQs",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000029",
+        "error": null,
+        "id": "R7LOau38HtKq67MP1NDj-Q0",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "length",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": null,
+                  "reasoning": null,
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "CONTINUATION"
+              }
+            ],
+            "created": 1791930951,
+            "id": "gen-batch-1791930801-fdb738bbf5b0629841ee",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 32768,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 32765
+              },
+              "prompt_tokens": 1294,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 34062
+            }
+          },
+          "request_id": "R7LOau38HtKq67MP1NDj-Q0",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000007",
+        "error": null,
+        "id": "R7LOar6mH4iQvfIPrKiA6QE",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "length",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the signed change in exon inclusion ($\\Delta\\text{PSI}$, in percentage points) for each candidate variant, we analyze the cis-regulatory architecture of the 85-nt alternative exon (positions 217–301) and its flanking native intronic segments (upstream intron positions 147–216; downstream intron positions 302–326) within the FAS three-exon minigene cassette:\n\n1. **Upstream Intron & 3' Splice Site (147–216; V01–V16):**\n   - The wild-type 3' splice site (`197..216`: `TTTTCTCTTTTATTTAACAG|CTG`) features a strong U-rich polypyrimidine tract (PPT) and canonical `CAG` acceptor, preceded by a consensus `YURAY` branchpoint motif (`TTGAT` at 187–191, branchpoint `A` at -27).\n   - **Canonical 3'ss ablation (`V10`, `V14`, `V15`, `V16`):** Deletions spanning the 3'ss `AG` (`V10`, `V14`, `V16`) and the `-2 A->T` substitution (`V15`) abolish canonical 3'ss recognition, causing complete loss of exon inclusion ($\\Delta\\text{PSI} \\approx -81$ to $-82$).\n   - **Branchpoint, PPT, and 3'ss proximal variants (`V04`–`V09`, `V11`–`V13`):** Mutating the conserved `-2 U` of the branchpoint motif (`V04`, `188 T->G`) or introducing purines into the U2AF2-binding PPT (`V06`, `V07`, `V08`, `V11`, `V12`) moderately reduces inclusion, with `T->G` (`V07`) and core PPT (`V11`) mutations having stronger negative effects than the pyrimidine transition `T->C` (`V09`). `V13` (`213 A->G` at -4) creates a competing `TAGCAG` (`NAGNAG`) tandem acceptor, moderately reducing canonical inclusion. Deep intronic changes (`V01`–`V03`) have minimal effects.\n\n2. **Alternative Exon Body (217–301; V17–V43):**\n   - The exon contains a 5' poly-U silencer (`234..240`: `TTTTTTT`, hnRNP C motif), a central purine-rich enhancer (`241..251`: `GCGAAAGATGG`), an internal cryptic 5'ss/U1 decoy motif (`251..259`: `GTT|GTAAGA`), and a strong downstream GA-rich enhancer (`277..288`: `CAAGAAGGAGAT`).\n   - **21-nt exonic deletions (`V19`, `V21`, `V22` and `V31`, `V33`, `V34`, `V35`):** Both clusters shorten the exon from 85 nt to 64 nt and remove major",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "CONTINUATION"
+              }
+            ],
+            "created": 1791930951,
+            "id": "gen-batch-1791930801-a9b9e0a63d497af10d3c",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 32768,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 32054
+              },
+              "prompt_tokens": 1512,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 34280
+            }
+          },
+          "request_id": "R7LOar6mH4iQvfIPrKiA6QE",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000028",
+        "error": null,
+        "id": "R7LOavaHH-Poz9MPqLjYiAo",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "length",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": null,
+                  "reasoning": null,
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "CONTINUATION"
+              }
+            ],
+            "created": 1791930951,
+            "id": "gen-batch-1791930801-4a8a61aad553e7cdf2d2",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 32768,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 32765
+              },
+              "prompt_tokens": 1270,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 34038
+            }
+          },
+          "request_id": "R7LOavaHH-Poz9MPqLjYiAo",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000047",
+        "error": null,
+        "id": "n7TOaqC-AZjlwtQP79_BoQ0",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "length",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": null,
+                  "reasoning": null,
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "CONTINUATION"
+              }
+            ],
+            "created": 1791931551,
+            "id": "gen-batch-1791930801-8616bd2d8051dec406e1",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 32768,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 32765
+              },
+              "prompt_tokens": 1173,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 33941
+            }
+          },
+          "request_id": "n7TOaqC-AZjlwtQP79_BoQ0",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000021",
+        "error": null,
+        "id": "R7LOareFH9Kq67MP1NDj-Q0",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the signed regulatory-activity effects of the candidate variants in this 385 bp promoter element in HEL 92.1.7 (erythroleukemia/megakaryocytic) cells, we map the transcription factor binding sites (TFBS) and functional sequence features across the insert:\n\n1. **Upstream ETS Binding Module (positions 99–110, `GAGCGGAAGCCT`)**:\n   - Positions 100–108 contain a canonical ETS family binding site (`AGCGGAAGCC`), bound by megakaryocytic/erythroid ETS factors (e.g., FLI1, ERG, GABPA).\n   - Variants mutating the invariant `GGAA` core (**V11** `103 G>A`, **V12** `103 G>C`, **V13** `104 G>A`, **V14** `104 G>T`, **V15** `106 A>C`) or the conserved preceding cytosine (**V09** `102 C>G`, **V10** `102 C>T`) abolish or severely impair ETS binding, resulting in strong negative effects. Flanking mutations (**V08** `100 A>C`, **V16** `108 C>G`) and disruption of the adjacent GT-box (**V07** `93 G>A`) cause milder reductions.\n\n2. **Tandem GATA1 Binding Module (positions 131–147, `CGATAGTGTGCTATCTG`)**:\n   - This region contains two closely spaced GATA motifs: `CGATAG` on the plus strand (positions 131–136) and `CAGATAGC` (`CTATCT`) on the minus strand (positions 140–147).\n   - Core mutations in the high-affinity minus-strand `GATA` motif (**V22** `142 T>G`, **V23** `143 A>C`, **V24** `145 C>G`) and plus-strand `GATA` motif (**V19** `132 G>A`, **V20** `134 T>G`) strongly reduce promoter activity, whereas the 5' flanking substitution (**V18** `131 C>G`) has a moderate negative effect and the spacer substitution (**V21** `139 T>C`) is nearly neutral.\n\n3. **Core Promoter SP1/KLF1 + GATA1 Module (positions 215–248, `CGGGCGTGGCAGGGGCGGGGCGGCCTTATCGCTC`)**:\n   - Positions 225–238 (`AGGGGCGGGGCGGC`) form a canonical SP1/KLF1 GC-box immediately juxtaposed with a core GATA1 motif at positions 239–247 (`CTTATCGCT` / `AGCGATAAG`).\n   - Disrupting the invariant core bases of the proximal GATA1 motif (**V35** `241 T>C`, **V36** `243 T>C`) or the conserved guanines of the adjacent SP1/KLF1 GC-box (**V33** `229 G>T`, **V34** `231 G>A`) causes the largest decreases in transcriptional activity. Upstream GT/RUNX-like disruptions (**V30** `209 T>G`, **V32** `220 G>T`) produce smaller negative effects.\n\n4. **5' Flank and Downstream 5'-UTR / Exon–Intron Boundary (positions 1–80 and 275–385)**:\n   - In the distal 5' region, **V02** (`48 GA>G`) creates a consensus CREB/ATF motif (`TGACGTC`), yielding a modest positive effect, while other distal variants (**V01**, **V03–V06**) are near-neutral.\n   - Downstream of the transcription start site, **V43** (`289 C>A`) introduces an out-of-frame upstream start codon (`CCGGGATGCCG`) that represses reporter expression, and **V45** (`312 C>G`) and **V46** (`313 C>A`) disrupt the `TCCGGT` (`ACCGGA`) motif at the exon–intron junction, causing moderate negative effects.\n\nFINAL: {\"V01\": -0.05, \"V02\": 0.18, \"V03\": -0.05, \"V04\": 0.02, \"V05\": -0.03, \"V06\": -0.05, \"V07\": -0.25, \"V08\": -0.18, \"V09\": -1.05, \"V10\": -0.78, \"V11\": -1.42, \"V12\": -1.38, \"V13\": -1.45, \"V14\": -1.4, \"V15\": -1.32, \"V16\": -0.38, \"V17\": -0.05, \"V18\": -0.32, \"V19\": -0.82, \"V20\": -0.78, \"V21\": -0.04, \"V22\": -1.12, \"V23\": -1.18, \"V24\": -1.25, \"V25\": -0.04, \"V26\": -0.05, \"V27\": 0.05, \"V28\": -0.08, \"V29\": -0.15, \"V30\": -0.25, \"V31\": -0.1, \"V32\": -0.3, \"V33\": -1.35, \"V34\": -1.48, \"V35\": -1.55, \"V36\": -1.62, \"V37\": -0.05, \"V38\": -0.05, \"V39\": 0.08, \"V40\": -0.04, \"V41\": -0.12, \"V42\": -0.08, \"V43\": -0.45, \"V44\": -0.15, \"V45\": -0.4, \"V46\": -0.4, \"V47\": -0.05, \"V48\": -0.03, \"V49\": -0.02, \"V50\": -0.02}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791930951,
+            "id": "gen-batch-1791930801-768b90d43b385598cfef",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 30085,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 28551
+              },
+              "prompt_tokens": 1201,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 31286
+            }
+          },
+          "request_id": "R7LOareFH9Kq67MP1NDj-Q0",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000000",
+        "error": null,
+        "id": "R7LOap6fH4WG67MP44feuQI",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "length",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": null,
+                  "reasoning": null,
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "CONTINUATION"
+              }
+            ],
+            "created": 1791930951,
+            "id": "gen-batch-1791930801-7d9fdd97472c9b142b54",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 32768,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 32765
+              },
+              "prompt_tokens": 1538,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 34306
+            }
+          },
+          "request_id": "R7LOap6fH4WG67MP44feuQI",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000034",
+        "error": null,
+        "id": "R7LOapKSH5Orz9MPttTVkQU",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "length",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the signed regulatory-activity effects of the 50 candidate variants in the 579-bp *ZFAND3* enhancer element assayed in MIN6 pancreatic beta cells, we map each variant onto the sequence and evaluate how it alters transcription factor binding sites (TFBS) active in beta-cell and general enhancer regulation:\n\n1. **Inverted and Forward NF-Y (`CCAAT`-box) Sites (Pos 187–198 & Pos 291–302):**\n   - **Pos 187–198 (`TGGGATTGGGTC`, reverse complement `GACCCAATCCCA`):** Contains an inverted `CCAAT` box (`ATTGG` at pos 190–194) overlapping a `CAGATGG` motif (pos 183–189). **V10** (194 G>T) mutates the core `CCAAT` motif to `ACAAT` and is predicted to strongly decrease activity. **V09** (189 G>C) alters the immediate `+1` flanking base (`CCAATC` $\\to$ `CCAATG`) and the 3' G of `CAGATGG`, causing a moderate decrease, whereas **V11** (196 T>C, `ACCCA",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "CONTINUATION"
+              }
+            ],
+            "created": 1791930951,
+            "id": "gen-batch-1791930801-112ad74cae0accddb931",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 32768,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 32488
+              },
+              "prompt_tokens": 1289,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 34057
+            }
+          },
+          "request_id": "R7LOapKSH5Orz9MPttTVkQU",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000030",
+        "error": null,
+        "id": "R7LOaqeSH-Poz9MPqLjYiAo",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "length",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the signed regulatory-activity effects of the candidate variants in this 470 bp saturation-mutagenesis MPRA panel in K562 cells, we first identify the regulatory element and map its functional cis-regulatory architecture.\n\n### 1. Element Identification and Functional Architecture\nThe 470 bp insert is the human erythroid-specific *PKLR* (pyruvate kinase L/R) promoter (chr1:155,271,186–155,271,655 in GRCh37, oriented 5′-to-3′ driving the reporter). In erythroid K562 cells, transcriptional activity of this promoter is driven by four major activating cis-regulatory modules separated by largely neutral spacer sequence:\n\n1. **Distal Erythroid Activator Module (positions 44–76):**\n   - **Positions 44–56 (`GGGAGAGGATGAC`):** Contains a purine-rich `GGGAGA` motif (positions 44–49) immediately adjacent to a `GGATG` core motif (positions 50–54).\n   - **Positions 61–75 (`CTG [7 bp] TATCT`):** A canonical erythroid TAL1–GATA1 composite element consisting of a `CTG` half-E-box at positions 61–63 separated by a 7 bp spacer (`CTGGTCT`) from the high-affinity GATA1 binding site `CTTATCT` (`5'-AGATAAG-3'` on the reverse strand, positions 69–75, with the core `GATA` tetranucleotide at positions 71–74).\n\n2. **Distal CACCC / C-Rich Module (positions 100–143):**\n   - **Positions 100–110 (`GGGCACACCCA`):** A canonical KLF1 (EKLF)/Sp1 CACCC box where core mutations strongly reduce promoter activity.\n   - **Positions 113–143 (`GGCCACCCTGTCCCCACAGAATCCCTCCCCC`):** Secondary C-rich/CACCC tracts that contribute moderately to activity.\n\n3. **Proximal CACCC / G-Rich Module (positions 321–345):**\n   - **Positions 321–333 (`GAGCAGGGGCTGT`):** Upstream G-rich motif.\n   - **Positions 335–344 (`GGGTGGGGCT` / reverse-strand `AGCCCCACCC`):** The essential proximal KLF1/Sp1 CACCC box of the *PKLR* promoter.\n\n4. **Core Promoter GATA1/TATA-like and Sp1 Module (positions 366–398):**\n   - **Positions 366–385 (`GGGATCACTGTGATAATAT`):** The proximal GATA1/TATA-like core promoter element.\n   - **Positions 389–398 (`GGGGGGAGGG`):** Proximal G-rich Sp1/KLF element immediately downstream of the GATA/TATA box.\n\n### 2. Variant Effect Predictions\n- **5′ flank (`V01`–`V04`, pos 1–19):** Located upstream of the functional regulatory modules; near-zero to very mild negative effects.\n- **Distal `GGGAGA` + `GGATG` module (`V05`–`V11`, pos 44–54):** Substitutions in `GGGAGA` (`V05`–`V07`) cause substantial loss of activity, while mutations in the core `GGATG` motif (`V08`–`V11`) cause strong loss of function.\n- **Distal TAL1–GATA1 composite site (`V12`–`V21`, pos 61–75):**\n  - `V12` (`61 C>A`) and `V13` (`61 C>T`) disrupt the `CTG` half-E-box, moderately reducing activity.\n  - `V14` (`67 GT>G`) deletes 1 bp in the spacer between `CTG` and `TATCT`, strongly impairing cooperative complex binding.\n  - `V18` (`71 T>C`), `V19` (`74 C>G`), and `V20` (`74 C>T`) directly mutate the invariant `GATA` core and produce the largest negative effects, followed by `V17` (`70 T>G`) in `GATAA` and flanking `AGATAAG` variants `V15`, `V16`, and `V21`.\n- **Distal KLF1 CACCC box and C-rich region (`V23`–`V33`, pos 101–134):** Core CACCC mutations (`V23`–`V28`) strongly reduce activity, edge variant `V29` (`109 A>C`) has a moderate negative effect, and variants in the secondary C-rich tract (`V30`–`V33`) have mild-to-moderate negative effects.\n- **Middle spacer and downstream UTR (`V22`, `V34`–`V36`, `V43`, `V49`–`V50`):** Located in neutral regions outside the active TF binding footprints; effects are close to zero.\n- **Proximal G-rich and CACCC box (`V37`–`V42`, pos 322–343):** Disruption of the core proximal CACCC box (`V40` deletion `338 TG>T`, `V41` `339 G>C`, and `V42` `343 C>A`) causes strong loss of activity; `V38` (`326 G>C`) causes moderate loss, and flanking variants `V37` and `V39` have mild negative effects.\n- **Core promoter GATA/TATA and G-box (`V44`–`V48`, pos 368–397):** Variants disrupting `GGGATCACT` (`V44`–`V46`), the `TGATAATAT` element (`V47`), and the `GGGGGGAGGG` motif (`V48`) all produce moderate-to-strong negative effects.\n\nFINAL: {\"V01\": 0.0, \"V02\": -0.08, \"V03\": -0.1, \"V04\": -0.06, \"V05\": -0.75, \"V06\": -0.85, \"V07\": -0.65, \"V08\": -1.35, \"V09\": -1.45, \"V10\": -1.15, \"V11\": -1.25, \"V12\": -0.7, \"V13\": -0.75, \"V14\": -1.3, \"V15\": -0.75, \"V16\": -0.9, \"V17\": -1.4, \"V18\": -1.85, \"V19\": -2.1,",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "CONTINUATION"
+              }
+            ],
+            "created": 1791930951,
+            "id": "gen-batch-1791930801-346d28fe0e48cc0ee867",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 32768,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 31165
+              },
+              "prompt_tokens": 1197,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 33965
+            }
+          },
+          "request_id": "R7LOaqeSH-Poz9MPqLjYiAo",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000026",
+        "error": null,
+        "id": "R7LOatvVH_P1vfIPjZfM6QU",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "length",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": null,
+                  "reasoning": null,
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "CONTINUATION"
+              }
+            ],
+            "created": 1791930951,
+            "id": "gen-batch-1791930801-b4b2781c04324fa90df0",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 32768,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 32765
+              },
+              "prompt_tokens": 1297,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 34065
+            }
+          },
+          "request_id": "R7LOatvVH_P1vfIPjZfM6QU",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000042",
+        "error": null,
+        "id": "R7LOavOTH-Poz9MPqLjYiAo",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the continuous functional-damage score of each candidate variant in this *DDX3X* saturation genome editing (SGE) panel, we map the target sequence to the human *DDX3X* locus and analyze the molecular consequence of each variant on mRNA splicing and protein structure/function.\n\n### 1. Locus & Structural Mapping\n* **Exon boundaries:** The 299 bp element spans *DDX3X* exon 8 (positions `101–199`, 99 bp) and its flanking introns:\n  * **3' splice acceptor:** `TTATTTCTTAG` at positions `90–100` (canonical `-2A, -1G` at `99–100`).\n  * **Coding exon (residues 257–289, phase 0):** `GAA...AAA` at positions `101–199`, encoding the 33-amino-acid segment `257-ENGRYGRRKQYPISLVLAPTRELAVQIYEEARK-289` of the RecA1 helicase core domain.\n  * **5' splice donor:** `GTAAGT` at positions `200–205` (canonical `+1G, +2T` at `200–201`).\n* **Protein architecture within exon 8:**\n  * `257-ENGRYGRRKQ-266`: Solvent-exposed, flexible basic surface loop unique to the DDX3/Ded1 subfamily.\n  * `267-YPIS-270`: Linker turn leading into the RecA1 central beta-sheet.\n  * `271-LVL-273`: Buried central parallel beta-strand ($\\beta 2$) of the RecA1 core.\n  * `274-APTRELAVQI-283`: Canonical **Motif Ia** (`PTRELA`), essential for single-stranded RNA binding, inter-motif coupling with Motifs I/II/III, and ATPase/helicase activity.\n  * `284-YEEARK-289`: C-terminal solvent-exposed turns of the Motif Ia $\\alpha$-helix.\n\n### 2. Variant Consequence Summary\n* **Nonsense & Frameshift (Complete Loss of Function, ~0.97–1.00):**\n  * `V04` (`p.Glu257Glyfs*`), `V28` (`p.Leu279Ter`), `V39` (`p.Tyr284Ter`, `TAA`), `V40` (`p.Tyr284Ter`, `TAG`), and `V43` (`p.Lys289Ter`) introduce premature termination codons in an internal exon, triggering nonsense-mediated decay (NMD) and severe growth depletion in HAP1 cells.\n* **Canonical Splice Site & Donor Indel Variants (~0.91–0.98):**\n  * `V03` (`c.769-1G>C`), `V44` (`c.867+1G>A`), `V45` (`c.867+1G>T`), and `V46` (`c.867+2T>G`) abolish canonical splice sites, causing skipping of exon 8 (deleting $\\beta 2$ and Motif Ia) or frameshifting. `V47` (`c.867+3_867+4delAA`) converts the `AAA|GTAAGT` donor to `AAA|GTTATG`, ablating `+4A/+5G` U1 snRNA base-pairing.\n* **Core $\\beta 2$ Strand & Motif Ia Missense / In-frame Indel Variants:**\n  * **In-frame $\\beta 2$ deletion:** `V11` (`p.Leu273del`) shortens the buried central $\\beta 2$ strand (`LVL` $\\rightarrow$ `VL`), shifting the beta-sheet register immediately upstream of Motif Ia (~0.90).\n  * **Buried $\\beta 2$ missense:** `V12` (`p.Val272Gly`) removes a buried hydrophobic core side chain in $\\beta 2$ (~0.68), whereas `V13` (`p.Leu273Val`) is a conservative aliphatic substitution (~0.06).\n  * **Motif Ia (`275-PTRELA-280`):** Mutations at invariant catalytic/RNA-binding and structural anchor residues—`V21`/`V22` (`p.Thr276Arg`), `V23` (`p.Arg277Thr`), `V24` (`p.Arg277Ser`), `V25` (`p.Glu278Lys`), `V26` (`p.Glu278Val`), `V29` (`p.Leu279Ser`), and `V30` (`p.Leu279Trp`)—are strongly damaging (~0.76–0.92). At Pro275, bulky/charged substitutions `V20` (`p.Pro275Arg`), `V17`/`V19` (`p.Pro275Gln`), and `V18` (`p.Pro275Leu`) cause strong steric clashes (~0.74–0.85), while the small `V15`/`V16` (`p.Pro275Ala`) substitution is moderately damaging (~0.42). At the C-terminal end of `PTRELA`, conservative changes `V31` (`p.Ala280Ser`) and `V32` (`p.Val281Ala`) are benign (~0.07–0.08).\n  * **Conserved Gln282 & Ile283 (`282-QI-283`):** At Gln282 in the middle of the Motif Ia $\\alpha$-helix, damage follows the biophysical severity hierarchy `V33` (`p.Gln282Pro`, helix breaker, ~0.89) > `V34` (`p.Gln282Arg`, ~0.72) > `V35` (`p.Gln282Leu`, ~0.50) > `V36` (`p.Gln282His`, ~0.30). Hydrophobic core substitutions `V37` (`p.Ile283Phe`, ~0.38) and `V38` (`p.Ile283Thr`, ~0.45) cause moderate destabilization.\n* **Surface Loop, Synonymous, and Flanking Intronic Variants (~0.00–0.14):**\n  * Synonymous variants `V06` (`p.Gly259=`), `V14` (`p.Leu273=`), and the 3-bp codon swap `V27` (`TTG>CTC`, `p.Leu279=`), along with intronic variants `V01` (`-24C>A`), `V48` (`+13T>G`), `V49` (`+15C>A`), and `V50` (`+93C>G`), retain full function (~0.00–0.02). Surface loop variants (`V05`, `V07`, `V08`, `V41`/`V42`) and polypyrimidine tract `V02` (`-7T>G`) show minimal to very mild effects (~0.03–0.12).\n\nFINAL: {\"V01\": 0.01, \"V02\": 0.08, \"V03\": 0.98, \"V04\": 1.0, \"V05\": 0.05, \"V06\": 0.0, \"V07\": 0.03, \"V08\": 0.12, \"V09\": 0.14, \"V10\": 0.25, \"V11\": 0.9, \"V12\": 0.68, \"V13\": 0.06, \"V14\": 0.0, \"V15\": 0.42, \"V16\": 0.42, \"V17\": 0.78, \"V18\": 0.74, \"V19\": 0.78, \"V20\": 0.85, \"V21\": 0.88, \"V22\": 0.88, \"V23\": 0.9, \"V24\": 0.9, \"V25\": 0.92, \"V26\": 0.86, \"V27\": 0.01, \"V28\": 0.99, \"V29\": 0.76, \"V30\": 0.86, \"V31\": 0.08, \"V32\": 0.07, \"V33\": 0.89, \"V34\": 0.72, \"V35\": 0.5, \"V36\": 0.3, \"V37\": 0.38, \"V38\": 0.45, \"V39\": 0.99, \"V40\": 0.99, \"V41\": 0.1, \"V42\": 0.1, \"V43\": 0.97, \"V44\": 0.98, \"V45\": 0.98, \"V46\": 0.97, \"V47\": 0.91, \"V48\": 0.02, \"V49\": 0.01, \"V50\": 0.0}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791930951,
+            "id": "gen-batch-1791930801-35cebf2ed6eee13537f8",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 24526,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 22294
+              },
+              "prompt_tokens": 1203,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 25729
+            }
+          },
+          "request_id": "R7LOavOTH-Poz9MPqLjYiAo",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000010",
+        "error": null,
+        "id": "R7LOarqlH9Sw67MP1oj5qA4",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "length",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": null,
+                  "reasoning": null,
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "CONTINUATION"
+              }
+            ],
+            "created": 1791930951,
+            "id": "gen-batch-1791930801-a536b354ba171921e4cf",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 32768,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 32765
+              },
+              "prompt_tokens": 1504,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 34272
+            }
+          },
+          "request_id": "R7LOarqlH9Sw67MP1oj5qA4",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000006",
+        "error": null,
+        "id": "R7LOatGwH-7R67MP2_mw4Ag",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the signed change in percentage spliced in ($\\Delta\\text{PSI}$) for each candidate variant, we analyze the baseline splicing architecture of the wild-type cassette and the functional impact of each mutation on splice site recognition and regulatory motifs:\n\n1. **Wild-type baseline architecture:**\n   - **3' splice site (positions 199–216):** `TGTATTATATTTTGCTAG|ATG` features a canonical `TAG` acceptor preceded by a U-rich polypyrimidine tract (`TATTATATTTTG`) and candidate branchpoint adenosines at positions 196–198 (`CTAAAT`) and 185–190 (`TACAAT`).\n   - **Alternative exon (positions 217–303, 87 nt):** Contains a 5'-proximal purine-rich motif (`ATGGAGGAC`, positions 217–225) and a strong central/3' purine-rich exonic splicing enhancer (ESE, `AAAGAGGAAGGAGCA`, positions 262–276).\n   - **5' splice site (positions 301–309):** `ACA|GTAAGT` possesses an exact consensus intronic hexamer (`GTAAGT`, positions 304–309) that compensates for a non-consensus exonic `-2C/-1A`. Because all core splicing signals are strong, wild-type inclusion in HEK293T cells is high (~85%), giving a large negative dynamic range for loss-of-function variants and a ceiling-constrained positive range.\n\n2. **Variant effects by region:**\n   - **Direct 3'ss and 5'ss dinucleotide disruptions (V11, V13, V14, V17, V18, V19, V38, V40, V42, V43, V44):** Deletions removing the invariant 3'ss `AG` (positions 215–216) or 5'ss `GT` (positions 304–305), as well as point substitutions at 5'ss `+2T` (V43, V44), abolish canonical splicing ($\\Delta\\text{PSI} \\approx -83$ to $-84$). By contrast, 1-nt deletions immediately downstream of the 3'ss `AG` at exonic positions `+1` or `+2` (V20, V21) leave the `CTAG` acceptor intact and cause only mild reductions.\n   - **Polypyrimidine tract (PPT) and branchpoint region (V04–V10, V12, V15, V16):** 21-nt deletions removing the PPT (V04, V05, V06, V08) cause severe exon skipping ($\\Delta\\text{PSI} \\approx -68$ to $-78$). Shorter PPT deletions of 6 nt (V12) and 3 nt (V15) or the `-6 T>A` substitution creating a competing `TAG` (V16) moderately weaken U2AF binding ($\\Delta\\text{PSI} \\approx -14$ to $-35$). Upstream intronic variants (V01–V03, V07, V09, V10) have minor effects.\n   - **Exonic splicing enhancers and silencers (V22–V37, V39, V41):** 21-nt deletions removing the primary `GAGGAAGGAGCA` ESE (V31, V32) strongly reduce inclusion ($\\Delta\\text{PSI} \\approx -45$). Notably, `269 A>T` (V33) converts the `GAGGAAGGA` ESE directly into a `GAGGTAGGA` (`UAGG`) hnRNP A1 exonic splicing silencer (ESS), causing a strong drop ($\\Delta\\text{PSI} \\approx -30$), whereas `272 G>A` (V34) maintains an all-purine `GAAGAAG` ESE and is nearly neutral. Similarly, `220 G>T` (V24) and `243 C>A` (V26) create `TAGG` silencer motifs and moderately decrease inclusion.\n   - **5'ss `+3` to `+6` mutations (V45–V50):** Deleting `+3A` (V45) shifts the 5'ss register from `ACA|GTAAGTG` to `ACA|GTAGTG` (losing both `+5G` and `+6T`), strongly reducing inclusion ($\\Delta\\text{PSI} \\approx -65$). In contrast, deleting `+6T` (V48) yields `ACA|GTAAGG`, preserving `+1` to `+5` (`GTAAG`) and acting similarly to `+6` substitutions V49 (`+6 T>A`) and V50 (`+6 T>C`), alongside `+4` substitutions V46 and V47 ($\\Delta\\text{PSI} \\approx -16$ to $-28$).\n\nFINAL: {\"V01\": 1.5, \"V02\": -0.5, \"V03\": 0.5, \"V04\": -68.0, \"V05\": -72.0, \"V06\": -76.0, \"V07\": -2.0, \"V08\": -78.0, \"V09\": 1.5, \"V10\": -6.0, \"V11\": -84.0, \"V12\": -35.0, \"V13\": -84.0, \"V14\": -84.0, \"V15\": -24.0, \"V16\": -14.0, \"V17\": -83.0, \"V18\": -83.0, \"V19\": -84.0, \"V20\": -8.0, \"V21\": -6.0, \"V22\": -12.0, \"V23\": -12.0, \"V24\": -16.0, \"V25\": -5.0, \"V26\": -15.0, \"V27\": -1.5, \"V28\": -7.0, \"V29\": -2.5, \"V30\": -1.5, \"V31\": -45.0, \"V32\": -45.0, \"V33\": -30.0, \"V34\": -1.0, \"V35\": -8.0, \"V36\": -3.0, \"V37\": -1.0, \"V38\": -84.0, \"V39\": 1.0, \"V40\": -84.0, \"V41\": -1.5, \"V42\": -84.0, \"V43\": -83.0, \"V44\": -83.0, \"V45\": -65.0, \"V46\": -25.0, \"V47\": -28.0, \"V48\": -22.0, \"V49\": -22.0, \"V50\": -16.0}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791930951,
+            "id": "gen-batch-1791930801-d6185b68baf1d555abdb",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 23522,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 21877
+              },
+              "prompt_tokens": 1518,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 25040
+            }
+          },
+          "request_id": "R7LOatGwH-7R67MP2_mw4Ag",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000035",
+        "error": null,
+        "id": "R7LOatCGH9Kq67MP1NDj-Q0",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "length",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": null,
+                  "reasoning": null,
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "CONTINUATION"
+              }
+            ],
+            "created": 1791930951,
+            "id": "gen-batch-1791930801-52381853d378d826c626",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 32768,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 32765
+              },
+              "prompt_tokens": 1295,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 34063
+            }
+          },
+          "request_id": "R7LOatCGH9Kq67MP1NDj-Q0",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000020",
+        "error": null,
+        "id": "R7LOauybH9Sw67MP1oj5qA4",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "length",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": null,
+                  "reasoning": null,
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "CONTINUATION"
+              }
+            ],
+            "created": 1791930951,
+            "id": "gen-batch-1791930801-b0f9b0d7332ef43cfbdb",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 32768,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 32765
+              },
+              "prompt_tokens": 1143,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 33911
+            }
+          },
+          "request_id": "R7LOauybH9Sw67MP1oj5qA4",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000001",
+        "error": null,
+        "id": "R7LOauKtH-7R67MP2_mw4Ag",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "length",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": null,
+                  "reasoning": null,
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "CONTINUATION"
+              }
+            ],
+            "created": 1791930951,
+            "id": "gen-batch-1791930801-bb8e10a12bd5d0d11add",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 32768,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 32765
+              },
+              "prompt_tokens": 1516,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 34284
+            }
+          },
+          "request_id": "R7LOauKtH-7R67MP2_mw4Ag",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000024",
+        "error": null,
+        "id": "R7LOasiaH8vVvfIPlMKzoAE",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "length",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": null,
+                  "reasoning": null,
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "CONTINUATION"
+              }
+            ],
+            "created": 1791930951,
+            "id": "gen-batch-1791930801-abd392308b7e720eb250",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 32768,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 32765
+              },
+              "prompt_tokens": 1149,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 33917
+            }
+          },
+          "request_id": "R7LOasiaH8vVvfIPlMKzoAE",
+          "status_code": 200
+        }
+      }
+    ],
+    "status": "completed",
+    "usage": {
+      "completion_tokens": 860218,
+      "cost": 4.336372,
+      "is_byok": false,
+      "prompt_tokens": 35282,
+      "total_tokens": 895500
+    }
+  },
+  "raw_submission": {
+    "completion_window": "24h",
+    "created_at": 1791930801,
+    "endpoint": "/v1/chat/completions",
+    "error": null,
+    "finalized_at": null,
+    "id": "batch-1791930801-kbp0S1vYFcIQ3igLnOvg",
+    "model": "google/gemini-4-argon-20261013",
+    "object": "batch",
+    "request_counts": {
+      "completed": 0,
+      "failed": 0,
+      "total": 27
+    },
+    "results": null,
+    "status": "validating",
+    "usage": null
+  },
+  "result_output": "/home/exedev/.codex/worktrees/2341/VEP-bench/.vepbench/campaigns/gemini-4-argon-retries-20261013/truncation/results.jsonl",
+  "run_id": "gemini-4-argon-high-truncation-retry-20261013",
+  "schema_version": "1.0",
+  "status": "completed",
+  "submitted_at": "2026-10-13T22:33:20.636277Z",
+  "submitted_custom_ids": [
+    "request_000000",
+    "request_000001",
+    "request_000003",
+    "request_000006",
+    "request_000007",
+    "request_000010",
+    "request_000011",
+    "request_000019",
+    "request_000020",
+    "request_000021",
+    "request_000022",
+    "request_000024",
+    "request_000025",
+    "request_000026",
+    "request_000027",
+    "request_000028",
+    "request_000029",
+    "request_000030",
+    "request_000031",
+    "request_000032",
+    "request_000033",
+    "request_000034",
+    "request_000035",
+    "request_000040",
+    "request_000042",
+    "request_000045",
+    "request_000047"
+  ],
+  "submitted_question_ids": [
+    "opensplice-snv-ranking-v2:E01",
+    "opensplice-snv-ranking-v2:E02",
+    "opensplice-snv-ranking-v2:E04",
+    "opensplice-snv-ranking-v2:E07",
+    "opensplice-snv-ranking-v2:E08",
+    "opensplice-snv-ranking-v2:E11",
+    "opensplice-snv-ranking-v2:E12",
+    "opensplice-snv-ranking-v2:E20",
+    "satmut-mpra-ranking-v2:F9",
+    "satmut-mpra-ranking-v2:GP1BA",
+    "satmut-mpra-ranking-v2:HBB",
+    "satmut-mpra-ranking-v2:HNF4A",
+    "satmut-mpra-ranking-v2:IRF4",
+    "satmut-mpra-ranking-v2:IRF6",
+    "satmut-mpra-ranking-v2:LDLR",
+    "satmut-mpra-ranking-v2:MSMB",
+    "satmut-mpra-ranking-v2:MYCrs6983267",
+    "satmut-mpra-ranking-v2:PKLR",
+    "satmut-mpra-ranking-v2:SORT1",
+    "satmut-mpra-ranking-v2:TCF7L2",
+    "satmut-mpra-ranking-v2:TERT",
+    "satmut-mpra-ranking-v2:ZFAND3",
+    "satmut-mpra-ranking-v2:ZRSh13",
+    "sge-ranking-v2:CARD11",
+    "sge-ranking-v2:DDX3X",
+    "sge-ranking-v2:RAD51D",
+    "sge-ranking-v2:SFPQ"
+  ]
+}

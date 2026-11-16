@@ -1,0 +1,45 @@
+{
+  "checked_date": "2026-10-14",
+  "diagnosis": "Vertex continuation failure is consistent with an upstream API-version mismatch; upstream URL is not observable from our client.",
+  "observed_error": "Invalid JSON payload received. Unknown name \"continuationToken\": Cannot find field.",
+  "official_requirement": {
+    "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/guides/gemini-4-argon?hl=en",
+    "section": "Long decodes",
+    "api_version": "v1beta1",
+    "unsupported_version": "v1",
+    "token_location": "top-level continuationToken"
+  },
+  "client_contract": {
+    "url": "https://openrouter.ai/docs/cookbook/evaluate-and-optimize/model-migrations/gemini-4",
+    "request_matches_documented_shape": true,
+    "resume_budget": 128000,
+    "previous_output": 65536,
+    "original_conversation_preserved": true,
+    "opaque_token_preserved": true
+  },
+  "routing_review": {
+    "url": "https://openrouter.ai/docs/guides/routing/provider-selection",
+    "documented_upstream_api_version_override_found": false
+  },
+  "evidence_files": [
+    "vertex-probe/summary.json",
+    "vertex-continuation-probe/http-error.bin",
+    "vertex-continuation-probe/request.json",
+    "evidence.json"
+  ],
+  "resolution_paths": [
+    "OpenRouter Vertex adapter must use the Google v1beta1 endpoint for long decode if it currently uses v1.",
+    "AI Studio direct completed F9 beyond the batch boundary with a valid answer; continuation beyond 65536 remains untested on that route."
+  ],
+  "diagnostic_budget_usd": 6,
+  "prior_known_diagnostic_cost_usd": 0.657646,
+  "retry_remaining_budget_usd": 5.342354,
+  "benchmark_status": "No result artifacts rewritten or published; route diagnosis is not a benchmark score.",
+  "ai_studio_outcome": {
+    "finish_reason": "stop",
+    "completion_tokens": 50630,
+    "cost_usd": 0.508586,
+    "valid_answer": true,
+    "continuation_replay_tested": false
+  }
+}

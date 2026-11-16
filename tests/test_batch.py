@@ -316,6 +316,63 @@ def test_submit_and_collect_batch_chunk_retains_full_question_set_identity(
     assert result["question_set_size"] == 3
 
 
+def test_noncontiguous_retry_selection_preserves_question_identity(tmp_path: Path) -> None:
+    questions = _three_question_file(tmp_path)
+    originals = read_jsonl(questions)
+    selected = [originals[2]["question_id"], originals[0]["question_id"]]
+    transport = RequestedCompletedBatchTransport()
+    state_path = tmp_path / "state.json"
+    output = tmp_path / "results.jsonl"
+    submit_batch_file(
+        questions_path=questions,
+        question_schema_path=QUESTION_SCHEMA,
+        state_path=state_path,
+        result_output=output,
+        run_id="retry-selection",
+        model_id="example/model",
+        api_key="test-secret",
+        generation_parameters={"max_tokens": 256},
+        selected_question_ids=selected,
+        transport=transport,
+    )
+    state = json.loads(state_path.read_text())
+    assert state["submitted_custom_ids"] == ["request_000000", "request_000002"]
+    assert state["submitted_question_ids"] == sorted(selected)
+    collect_batch_file(
+        state_path=state_path,
+        questions_path=questions,
+        question_schema_path=QUESTION_SCHEMA,
+        result_schema_path=ROOT / "src/vepbench/schemas/result.schema.json",
+        api_key="test-secret",
+        transport=transport,
+    )
+    results = read_jsonl(output)
+    assert [r["question_id"] for r in results] == sorted(selected)
+    assert all(r["question_set_size"] == 3 for r in results)
+    assert all(r["question_set_sha256"] == state["question_set_sha256"] for r in results)
+    assert [r["question"] for r in results] == [originals[0], originals[2]]
+
+
+@pytest.mark.parametrize("selection", [[], ["unknown"], ["duplicate", "duplicate"]])
+def test_invalid_retry_selection_never_submits(tmp_path: Path, selection: list[str]) -> None:
+    transport = FakeBatchTransport()
+    with pytest.raises(BuildError):
+        submit_batch_file(
+            questions_path=QUESTIONS,
+            question_schema_path=QUESTION_SCHEMA,
+            state_path=tmp_path / "state.json",
+            result_output=tmp_path / "results.jsonl",
+            run_id="invalid-selection",
+            model_id="example/model",
+            api_key="test-secret",
+            generation_parameters={},
+            selected_question_ids=selection,
+            transport=transport,
+        )
+    assert not transport.requests
+    assert not (tmp_path / "state.json").exists()
+
+
 def test_collect_rejects_reordered_persisted_custom_ids(tmp_path: Path) -> None:
     questions = _three_question_file(tmp_path)
     transport = RequestedCompletedBatchTransport()

@@ -1,0 +1,11 @@
+{
+  "model": "hydrogen",
+  "finish": "stop",
+  "native_finish": "STOP",
+  "continuation_items": 0,
+  "output_tokens": 38470,
+  "cost": 0.14511975,
+  "valid": true,
+  "spearman": 0.3980360862897244,
+  "content_characters": 3873
+}

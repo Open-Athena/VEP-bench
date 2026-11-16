@@ -1,0 +1,122 @@
+{
+  "checked_at": "2026-10-13T22:33:20.463566+00:00",
+  "kind": "truncation",
+  "original_path": ".vepbench/campaigns/gemini-4-argon-efforts-20261013/high/results.jsonl",
+  "original_sha256": "400811ceca47984d21af8ab022a6d2592d6ef4300221eb0f8577f12e26c41407",
+  "selected_question_ids": [
+    "opensplice-snv-ranking-v2:E01",
+    "opensplice-snv-ranking-v2:E02",
+    "opensplice-snv-ranking-v2:E04",
+    "opensplice-snv-ranking-v2:E07",
+    "opensplice-snv-ranking-v2:E08",
+    "opensplice-snv-ranking-v2:E11",
+    "opensplice-snv-ranking-v2:E12",
+    "opensplice-snv-ranking-v2:E20",
+    "satmut-mpra-ranking-v2:F9",
+    "satmut-mpra-ranking-v2:GP1BA",
+    "satmut-mpra-ranking-v2:HBB",
+    "satmut-mpra-ranking-v2:HNF4A",
+    "satmut-mpra-ranking-v2:IRF4",
+    "satmut-mpra-ranking-v2:IRF6",
+    "satmut-mpra-ranking-v2:LDLR",
+    "satmut-mpra-ranking-v2:MSMB",
+    "satmut-mpra-ranking-v2:MYCrs6983267",
+    "satmut-mpra-ranking-v2:PKLR",
+    "satmut-mpra-ranking-v2:SORT1",
+    "satmut-mpra-ranking-v2:TCF7L2",
+    "satmut-mpra-ranking-v2:TERT",
+    "satmut-mpra-ranking-v2:ZFAND3",
+    "satmut-mpra-ranking-v2:ZRSh13",
+    "sge-ranking-v2:CARD11",
+    "sge-ranking-v2:DDX3X",
+    "sge-ranking-v2:RAD51D",
+    "sge-ranking-v2:SFPQ"
+  ],
+  "generation_parameters": {
+    "max_tokens": 262144,
+    "reasoning": {
+      "effort": "high",
+      "exclude": false
+    }
+  },
+  "batch_model": {
+    "id": "google/gemini-4-argon:batch",
+    "canonical_slug": "google/gemini-4-argon-20261013",
+    "hugging_face_id": null,
+    "name": "Google: Gemini 4 Argon (batch)",
+    "created": 1791907477,
+    "description": "Gemini 4 Argon is Google's flagship reasoning model, built for complex software engineering, deep mathematical and scientific problem solving, and autonomous multi-step agents. Google trained it to keep context across...",
+    "context_length": 1048576,
+    "architecture": {
+      "modality": "text+image+file+audio+video->text",
+      "input_modalities": [
+        "audio",
+        "file",
+        "image",
+        "text",
+        "video"
+      ],
+      "output_modalities": [
+        "text"
+      ],
+      "tokenizer": "Gemini",
+      "instruct_type": null
+    },
+    "pricing": {
+      "prompt": "0.000001",
+      "completion": "0.000005",
+      "image": "0.000001",
+      "audio": "0.000001",
+      "input_audio_cache": "0.00000005",
+      "web_search": "0.014",
+      "internal_reasoning": "0.000005",
+      "input_cache_read": "0.00000005",
+      "input_cache_write": "0.0000001875"
+    },
+    "top_provider": {
+      "context_length": 1048576,
+      "max_completion_tokens": 943718,
+      "is_moderated": false
+    },
+    "per_request_limits": null,
+    "supported_parameters": [
+      "include_reasoning",
+      "max_tokens",
+      "reasoning",
+      "reasoning_effort",
+      "response_format",
+      "seed",
+      "stop",
+      "structured_outputs",
+      "temperature",
+      "tool_choice",
+      "tools",
+      "top_p"
+    ],
+    "default_parameters": {
+      "temperature": null,
+      "top_p": null,
+      "top_k": null,
+      "frequency_penalty": null,
+      "presence_penalty": null,
+      "repetition_penalty": null
+    },
+    "supported_voices": null,
+    "knowledge_cutoff": null,
+    "expiration_date": null,
+    "links": {
+      "details": "/api/v1/models/google/gemini-4-argon-20261013/endpoints"
+    },
+    "reasoning": {
+      "mandatory": true,
+      "supported_efforts": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "default_effort": "medium"
+    }
+  },
+  "conservative_request_cost_ceiling_usd": 35.503679,
+  "organization_association_verified": true
+}

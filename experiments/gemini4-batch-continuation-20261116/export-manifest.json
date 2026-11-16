@@ -1,0 +1,692 @@
+[
+  {
+    "path": "batches/gemini-4-argon-medium-satmut-mpra-20261013.json",
+    "original_sha256": "19643f1fdd9e8986eae591ad984d8a03e9d5d44a94a3519ee6843521a136cf2f",
+    "export_sha256": "f8e8fd236f5365e10e6175780c3b37ad2ab81a249d08324cd15c29a70d30415a",
+    "redacted": true
+  },
+  {
+    "path": "campaigns/gemini-4-argon-efforts-20261013/high/batch-state.json",
+    "original_sha256": "4e87a17ae6e6d55c2508c063e1d8c175de86a26ca63cea7fe19efa72da71b28a",
+    "export_sha256": "013697e4d9ad2654a35fef84e73c88902ee3ba2e2edf4420add4ab15bf340885",
+    "redacted": true
+  },
+  {
+    "path": "campaigns/gemini-4-argon-efforts-20261013/high/preflight.json",
+    "original_sha256": "a9f4857dcb1ded7fd774479ef3907c023092c09e36f4d3f42084d62a95506fde",
+    "export_sha256": "a9f4857dcb1ded7fd774479ef3907c023092c09e36f4d3f42084d62a95506fde",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-efforts-20261013/high/results.jsonl",
+    "original_sha256": "400811ceca47984d21af8ab022a6d2592d6ef4300221eb0f8577f12e26c41407",
+    "export_sha256": "c6118ddeaba98505e18cf99a536ef84bc854e1c2fbb05390ddf636b008de15ba",
+    "redacted": true
+  },
+  {
+    "path": "campaigns/gemini-4-argon-efforts-20261013/low/batch-state.json",
+    "original_sha256": "0036319d7b484511eabe3ed5e9a78c18e1f6bbf7bfb225555923f4167c1c715a",
+    "export_sha256": "98393ffb8ceb2ef761c69c8fb4996a85aa62c42b9de086a9eeb3571b1ee5c7e1",
+    "redacted": true
+  },
+  {
+    "path": "campaigns/gemini-4-argon-efforts-20261013/low/preflight.json",
+    "original_sha256": "76efbae67aae57abab969690c96a8e45a276708e2d8a84745a00e76a7629ab19",
+    "export_sha256": "76efbae67aae57abab969690c96a8e45a276708e2d8a84745a00e76a7629ab19",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-efforts-20261013/low/results.jsonl",
+    "original_sha256": "78b688da4e18fbcfe24cb32f2aa2068d9ff30cbf4fe075c86fa1e7c175328822",
+    "export_sha256": "9d81db9cb9e5e82a011ac6b40544a560c661db03328e5728c7b21a3ebe615808",
+    "redacted": true
+  },
+  {
+    "path": "campaigns/gemini-4-argon-efforts-20261013/submit.py",
+    "original_sha256": "524d3c4fdb48197dc0a4ded0979eeaf0e2695a93a6f0a8a935b3da645d07ce48",
+    "export_sha256": "524d3c4fdb48197dc0a4ded0979eeaf0e2695a93a6f0a8a935b3da645d07ce48",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-high-batch-262k-F9-20261030/batch-state.json",
+    "original_sha256": "044646f7d4cd0f4413c1cd56f74216ee08820f1312305041ec34af3a6947a086",
+    "export_sha256": "044646f7d4cd0f4413c1cd56f74216ee08820f1312305041ec34af3a6947a086",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-high-batch-262k-F9-20261030/preflight.json",
+    "original_sha256": "161c8d96ecbb50dc1fa9efa03cea59002199d12e70ed1d383c0f65fa2a3560a9",
+    "export_sha256": "161c8d96ecbb50dc1fa9efa03cea59002199d12e70ed1d383c0f65fa2a3560a9",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-high-batch-262k-F9-20261030/results.jsonl",
+    "original_sha256": "d045168c1e46076fd1ababd3f110e560dcd826b3f3e597a6d08f564ec07b5c5f",
+    "export_sha256": "d045168c1e46076fd1ababd3f110e560dcd826b3f3e597a6d08f564ec07b5c5f",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-high-batch-262k-F9-20261030/run.py",
+    "original_sha256": "44676ff9586d0ef6c5905f3bc9e7a402c90d4c0b4e62c27869d712a7e065d6b7",
+    "export_sha256": "44676ff9586d0ef6c5905f3bc9e7a402c90d4c0b4e62c27869d712a7e065d6b7",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-high-batch-262k-F9-20261030/summary.json",
+    "original_sha256": "c926747ffa542de5d21efaba67575083a21ef29c8b477748277b863a77170d4f",
+    "export_sha256": "c926747ffa542de5d21efaba67575083a21ef29c8b477748277b863a77170d4f",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-high-batch-262k-F9-20261116/batch-state.json",
+    "original_sha256": "1f9ef82b792a9293149d5f1a5c20ac7efa2f72f2c34d0394cb51726e0e120035",
+    "export_sha256": "1f9ef82b792a9293149d5f1a5c20ac7efa2f72f2c34d0394cb51726e0e120035",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-high-batch-262k-F9-20261116/preflight.json",
+    "original_sha256": "161c8d96ecbb50dc1fa9efa03cea59002199d12e70ed1d383c0f65fa2a3560a9",
+    "export_sha256": "161c8d96ecbb50dc1fa9efa03cea59002199d12e70ed1d383c0f65fa2a3560a9",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-high-batch-262k-F9-20261116/results.jsonl",
+    "original_sha256": "8604bba1eeca7f6b498e65ce0d68cb9330fac0f1222886e5ea4e51fc50a429bf",
+    "export_sha256": "8604bba1eeca7f6b498e65ce0d68cb9330fac0f1222886e5ea4e51fc50a429bf",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-high-batch-262k-F9-20261116/run.py",
+    "original_sha256": "5c0b04140bd548fa6d0e37e745c2671b611286db6919b5d3d1fabafb72417f9e",
+    "export_sha256": "5c0b04140bd548fa6d0e37e745c2671b611286db6919b5d3d1fabafb72417f9e",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-high-batch-262k-F9-20261116/summary.json",
+    "original_sha256": "de18f1be3b77bde3edf383775bfdc12f97c445a800620952fb694c2384608450",
+    "export_sha256": "de18f1be3b77bde3edf383775bfdc12f97c445a800620952fb694c2384608450",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-low-all-20261030/batch-state.json",
+    "original_sha256": "1648b3d5a6d71016825231fb354a649847aa6178f38cc0b50e68c9f17b14a251",
+    "export_sha256": "0d8eec15bfb2414ee7fa92eead31f7b619780832053f8a71412ff551edbeb0ef",
+    "redacted": true
+  },
+  {
+    "path": "campaigns/gemini-4-argon-low-all-20261030/preflight.json",
+    "original_sha256": "161c8d96ecbb50dc1fa9efa03cea59002199d12e70ed1d383c0f65fa2a3560a9",
+    "export_sha256": "161c8d96ecbb50dc1fa9efa03cea59002199d12e70ed1d383c0f65fa2a3560a9",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-low-all-20261030/results.jsonl",
+    "original_sha256": "1479c31c16d813b943c4c9d05b93cb7d9ebdd87a5f1b64ff8ab0fc3868051d21",
+    "export_sha256": "24f3dbb8752feae0a532e1b446e8b87b73083f447562e99a1ea9789318ff9b9a",
+    "redacted": true
+  },
+  {
+    "path": "campaigns/gemini-4-argon-low-all-20261030/run.py",
+    "original_sha256": "1fd6d60edc70b0b1be1e8bf0bd2857ff566aae76934a1e86d4f7ed8fa63781d6",
+    "export_sha256": "1fd6d60edc70b0b1be1e8bf0bd2857ff566aae76934a1e86d4f7ed8fa63781d6",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-low-all-20261030/sha256.json",
+    "original_sha256": "6f2589c984b6927ef0c8025accea6ff7108e8b4162148d398be1f256b9080aac",
+    "export_sha256": "6f2589c984b6927ef0c8025accea6ff7108e8b4162148d398be1f256b9080aac",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-low-all-20261030/summarize.py",
+    "original_sha256": "5b4e3691513f00157e3f015df04f9d16aedfdb75a69fa2c3d60e04e3cdbdd45e",
+    "export_sha256": "5b4e3691513f00157e3f015df04f9d16aedfdb75a69fa2c3d60e04e3cdbdd45e",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-low-all-20261030/summary.json",
+    "original_sha256": "5dbaf3813c7729b75ea2e57bca5ba070fe1f06ea0a4639caa43d3ffd15b2199d",
+    "export_sha256": "5dbaf3813c7729b75ea2e57bca5ba070fe1f06ea0a4639caa43d3ffd15b2199d",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-low-batch-20261030/batch-state.json",
+    "original_sha256": "b95bc8625b4eda52e4a1df0856f0d66fd5fcb8ec265b46f9cef0f7eb1043b81e",
+    "export_sha256": "0cdcf8ec5872eb2c3b6a5cc591bcc81937e428108cf3bbbe090326b66f239f3d",
+    "redacted": true
+  },
+  {
+    "path": "campaigns/gemini-4-argon-low-batch-20261030/preflight.json",
+    "original_sha256": "161c8d96ecbb50dc1fa9efa03cea59002199d12e70ed1d383c0f65fa2a3560a9",
+    "export_sha256": "161c8d96ecbb50dc1fa9efa03cea59002199d12e70ed1d383c0f65fa2a3560a9",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-low-batch-20261030/results.jsonl",
+    "original_sha256": "bc7a6aa8fe62bc4e0e234cb5994434390d4d68def25a153eb375f4bd2f8d980e",
+    "export_sha256": "a35dac4cb9358364d9cb4db50f916031b71d6baaf8e2be80682a92a7c1554915",
+    "redacted": true
+  },
+  {
+    "path": "campaigns/gemini-4-argon-low-batch-20261030/run.py",
+    "original_sha256": "a5843b764ed4c691a76315da8469a3f0dfb53708d18f1092250ff8feccb78151",
+    "export_sha256": "a5843b764ed4c691a76315da8469a3f0dfb53708d18f1092250ff8feccb78151",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-medium-all-20261030/batch-state.json",
+    "original_sha256": "130c21a42873d45ccffdf4a580c00b6d9e0fd56a5672c0c5b96e336fe0a037a7",
+    "export_sha256": "7c41fdcbb30f221f503df1a5b0b9e8a00cbb985c2b0ce9fc037cab02e5ed487c",
+    "redacted": true
+  },
+  {
+    "path": "campaigns/gemini-4-argon-medium-all-20261030/preflight.json",
+    "original_sha256": "161c8d96ecbb50dc1fa9efa03cea59002199d12e70ed1d383c0f65fa2a3560a9",
+    "export_sha256": "161c8d96ecbb50dc1fa9efa03cea59002199d12e70ed1d383c0f65fa2a3560a9",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-medium-all-20261030/results.jsonl",
+    "original_sha256": "121332f62b7c6b2b1ed8700dd56019c7f851c5ca910eb4264ebb63b823102c74",
+    "export_sha256": "8811fbe2fd9154230f2100163da8cb5ef5970546ddc6d6082db7864e8150b2bd",
+    "redacted": true
+  },
+  {
+    "path": "campaigns/gemini-4-argon-medium-all-20261030/run.py",
+    "original_sha256": "d2e47f58667ec83c3325c4d9f122d40c055673251f3a16519deadab2254ac2b0",
+    "export_sha256": "d2e47f58667ec83c3325c4d9f122d40c055673251f3a16519deadab2254ac2b0",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-medium-all-20261030/sha256.json",
+    "original_sha256": "a3ffe0fc0cba157a66b6b9f14fa4e6a80235b73a6955087c483735c51f2b6e33",
+    "export_sha256": "a3ffe0fc0cba157a66b6b9f14fa4e6a80235b73a6955087c483735c51f2b6e33",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-medium-all-20261030/summarize.py",
+    "original_sha256": "50c217ba4b71a73efe70e58cbb924e2dc2309dd536a35bdfd9e64313dc101f12",
+    "export_sha256": "50c217ba4b71a73efe70e58cbb924e2dc2309dd536a35bdfd9e64313dc101f12",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-medium-all-20261030/summary.json",
+    "original_sha256": "1e980770728545cb5fcb649f2c05536df67e004f5486ad9f0edaf1cb550934ff",
+    "export_sha256": "1e980770728545cb5fcb649f2c05536df67e004f5486ad9f0edaf1cb550934ff",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-remaining-20261013/batch-state.json",
+    "original_sha256": "9c4696d382d401c502649dac8d8fa0a345e0230ad1dc0e37272ff6fcaa9f5a54",
+    "export_sha256": "2bad79396d626b37e27f5f8efc7f7eb6685ed24408cefdc8413ac2f952fa03ab",
+    "redacted": true
+  },
+  {
+    "path": "campaigns/gemini-4-argon-remaining-20261013/plan.json",
+    "original_sha256": "cf8f12daaba5ce8e7ed93bebaedf0fccac2c5c16603e5b31f3cf7bbd41122048",
+    "export_sha256": "cf8f12daaba5ce8e7ed93bebaedf0fccac2c5c16603e5b31f3cf7bbd41122048",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-remaining-20261013/preflight.json",
+    "original_sha256": "937a511df3ec5b60f5c01dcd65f31b46b665205016e0be3b494b0c5176a87aa2",
+    "export_sha256": "937a511df3ec5b60f5c01dcd65f31b46b665205016e0be3b494b0c5176a87aa2",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-remaining-20261013/questions.jsonl",
+    "original_sha256": "bece664494644cbee6831bb5b9e7799f4f21ac44da7e2223b9476d61d00fdc92",
+    "export_sha256": "bece664494644cbee6831bb5b9e7799f4f21ac44da7e2223b9476d61d00fdc92",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-remaining-20261013/results.jsonl",
+    "original_sha256": "2fe9513ef9ea03cde04f2ebd8ee2cd0291e89b03ed843029773979e1b6e0e7bb",
+    "export_sha256": "44c82aa1816521dc95727023a0d8f3c64d841994a7d4d1d88a4c38aac22ed27f",
+    "redacted": true
+  },
+  {
+    "path": "campaigns/gemini-4-argon-remaining-20261013/submit.py",
+    "original_sha256": "a261f898021b8ab1ab574d7fec7ab67167eb7f2b163238bb008357b5f71da1fa",
+    "export_sha256": "a261f898021b8ab1ab574d7fec7ab67167eb7f2b163238bb008357b5f71da1fa",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/batch-endpoints.json",
+    "original_sha256": "e16039926ef38abb9dc3c6efc43ee3a50b1f4d2e4e4c36524672ecaa178b89c5",
+    "export_sha256": "e16039926ef38abb9dc3c6efc43ee3a50b1f4d2e4e4c36524672ecaa178b89c5",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/continuation-contract-check.json",
+    "original_sha256": "98322683985a58aba2807b368268cc864291a9bc1b53ddd3d7278226378de693",
+    "export_sha256": "98322683985a58aba2807b368268cc864291a9bc1b53ddd3d7278226378de693",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/continuation-diagnosis.json",
+    "original_sha256": "a85ad26fa4e57ad1ebfb68927bd978e58ecaf9b4fec1cb9e1218c59aafb5f652",
+    "export_sha256": "a85ad26fa4e57ad1ebfb68927bd978e58ecaf9b4fec1cb9e1218c59aafb5f652",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/direct-endpoints.json",
+    "original_sha256": "bc0170ae29e0774c4e20583a3e7ad208d8d9ed3b2b66bc68ffce9a69759d5575",
+    "export_sha256": "bc0170ae29e0774c4e20583a3e7ad208d8d9ed3b2b66bc68ffce9a69759d5575",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/direct-probe/http-error-1.bin",
+    "original_sha256": "b562aa730ed94c34eb08d4ff0237bef80cdf82d7c9c2efa9c76f3b962e3d61d5",
+    "export_sha256": "b562aa730ed94c34eb08d4ff0237bef80cdf82d7c9c2efa9c76f3b962e3d61d5",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/direct-probe/preflight.json",
+    "original_sha256": "fb87aa898c848a83ef659d9e55db54d81baa40beb98c7896686db849870948de",
+    "export_sha256": "fb87aa898c848a83ef659d9e55db54d81baa40beb98c7896686db849870948de",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/direct-probe/request-1.json",
+    "original_sha256": "649241ce21813592f53cc6a78679c4079759a36cc7853f9dc6a639a933884d04",
+    "export_sha256": "649241ce21813592f53cc6a78679c4079759a36cc7853f9dc6a639a933884d04",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/direct-probe/summary.json",
+    "original_sha256": "32a7d682186303deef90162103b7a7797a78bafba732c93e2304323570aab19f",
+    "export_sha256": "32a7d682186303deef90162103b7a7797a78bafba732c93e2304323570aab19f",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/direct-probe-plan.json",
+    "original_sha256": "4209df878cf11e6b3f5a98308fb1301286f7105968f0c41924b63848b47a1903",
+    "export_sha256": "4209df878cf11e6b3f5a98308fb1301286f7105968f0c41924b63848b47a1903",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/direct-probe-request.json",
+    "original_sha256": "649241ce21813592f53cc6a78679c4079759a36cc7853f9dc6a639a933884d04",
+    "export_sha256": "649241ce21813592f53cc6a78679c4079759a36cc7853f9dc6a639a933884d04",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/direct-probe-retry/preflight.json",
+    "original_sha256": "c167989ae4708776443dad0a25202635d6411d4da85a83490f1baa84b476c254",
+    "export_sha256": "c167989ae4708776443dad0a25202635d6411d4da85a83490f1baa84b476c254",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/direct-probe-retry/request-1.json",
+    "original_sha256": "649241ce21813592f53cc6a78679c4079759a36cc7853f9dc6a639a933884d04",
+    "export_sha256": "649241ce21813592f53cc6a78679c4079759a36cc7853f9dc6a639a933884d04",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/direct-probe-retry/response-1.json",
+    "original_sha256": "5fb49f38bb8cc7f9155aa9cf08fee9fe9dde51f0009e15d40609470c337e616b",
+    "export_sha256": "5fb49f38bb8cc7f9155aa9cf08fee9fe9dde51f0009e15d40609470c337e616b",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/direct-probe-retry/summary.json",
+    "original_sha256": "f3a2d49ae5c811d3784bce64958938e5d31749c7d0b6ff7787d2e39e589187d9",
+    "export_sha256": "f3a2d49ae5c811d3784bce64958938e5d31749c7d0b6ff7787d2e39e589187d9",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/direct-probe-retry/validation.json",
+    "original_sha256": "a079eb01bb78c02ec4e56e5ea6841d94784dc69200b590a8140f4d0cc71b3522",
+    "export_sha256": "a079eb01bb78c02ec4e56e5ea6841d94784dc69200b590a8140f4d0cc71b3522",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/evidence.json",
+    "original_sha256": "04e7e8589f7223f8bbca5b720192c203eb44d15f296e9b7fd297db1223777735",
+    "export_sha256": "04e7e8589f7223f8bbca5b720192c203eb44d15f296e9b7fd297db1223777735",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/run-direct-probe-retry.py",
+    "original_sha256": "46fa2d6d170b443c97cd63807c8a7c69476137e3d11a99504d0ae635f26130d4",
+    "export_sha256": "46fa2d6d170b443c97cd63807c8a7c69476137e3d11a99504d0ae635f26130d4",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/run-direct-probe.py",
+    "original_sha256": "69de363d72bbba11e4826964b75a35d4ca75c455f74f8fb99f225211b6f39ec7",
+    "export_sha256": "69de363d72bbba11e4826964b75a35d4ca75c455f74f8fb99f225211b6f39ec7",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/run-vertex-262k-20261030.py",
+    "original_sha256": "faef54376c0acec17bcbc9487139502729d155697f9522efb57fe957ecf30350",
+    "export_sha256": "faef54376c0acec17bcbc9487139502729d155697f9522efb57fe957ecf30350",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/run-vertex-continuation-probe.py",
+    "original_sha256": "fb2027c44cd37b54c8bfa13d46b2229b354e88fec291e791741c48a172655245",
+    "export_sha256": "fb2027c44cd37b54c8bfa13d46b2229b354e88fec291e791741c48a172655245",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/run-vertex-probe.py",
+    "original_sha256": "24bc0df19ae8427c0d7258df1a061e4c5855b0766105ff4b67364dd87d2768ba",
+    "export_sha256": "24bc0df19ae8427c0d7258df1a061e4c5855b0766105ff4b67364dd87d2768ba",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/stable-batch-retrieval.json",
+    "original_sha256": "f9eaac5840319b2baaa0b14ad892c75cb8bc7e77d999f810203651a2fbc1fb8e",
+    "export_sha256": "f6812f38beaa5c167b30b013fe1ac43ed39ba4229f96b53a814b71cb19b7e0d5",
+    "redacted": true
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/vertex-262k-20261030/answer.txt",
+    "original_sha256": "d068d8c3bb52acaf07c18a8ffe038c11660728b6588dcf566f31fbd6ad0cf56a",
+    "export_sha256": "d068d8c3bb52acaf07c18a8ffe038c11660728b6588dcf566f31fbd6ad0cf56a",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/vertex-262k-20261030/preflight.json",
+    "original_sha256": "8bb524a7a4bc91942b77f96a049a633c01fffb2afcde1af42af51a470c97905a",
+    "export_sha256": "8bb524a7a4bc91942b77f96a049a633c01fffb2afcde1af42af51a470c97905a",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/vertex-262k-20261030/question.json",
+    "original_sha256": "d0258b8f4da1f503352ab9ed3b045a5ff5b603f6059333baf93d7cd3cfe00d42",
+    "export_sha256": "d0258b8f4da1f503352ab9ed3b045a5ff5b603f6059333baf93d7cd3cfe00d42",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/vertex-262k-20261030/request-1.json",
+    "original_sha256": "767d6e65d50338455d787298b3bb44deab3504a0caa96c1982f3053a83772840",
+    "export_sha256": "767d6e65d50338455d787298b3bb44deab3504a0caa96c1982f3053a83772840",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/vertex-262k-20261030/request-2.json",
+    "original_sha256": "b4bcec935cf211a72c88f2a491fd4852776cea49a5422d7f6817546117b9a4fd",
+    "export_sha256": "1a52fb0bd097153cf2b90f8c6e66328cc789dc40a8d7778183f1f96db72effbd",
+    "redacted": true
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/vertex-262k-20261030/response-1.json",
+    "original_sha256": "b7b51a2755f8a5651b8f7b9fc5eeab0da82962655a9849d50fca26d1900e5b1b",
+    "export_sha256": "0c318055d7c5a891bc24634c986db6369b667bef0b07cedc1f3694a487e9d232",
+    "redacted": true
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/vertex-262k-20261030/response-2.json",
+    "original_sha256": "e16adaac2e72c5e70b275a987a8230e7e02f529775abdadf2574cbaedaafba43",
+    "export_sha256": "f4d6fbde04b0d571b2317dfd9d7b3d7fdfaa0316994e84847c1ebdcec0d3f8fc",
+    "redacted": true
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/vertex-262k-20261030/sha256.json",
+    "original_sha256": "fec355ceab386243b6bde80c3b7c3d89d86cb49f9e8832fce707192805696745",
+    "export_sha256": "fec355ceab386243b6bde80c3b7c3d89d86cb49f9e8832fce707192805696745",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/vertex-262k-20261030/summary.json",
+    "original_sha256": "fff52f7aab921857c46d34fd04910b33d91a1c72428037637f1fccf248c28013",
+    "export_sha256": "fff52f7aab921857c46d34fd04910b33d91a1c72428037637f1fccf248c28013",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/vertex-262k-20261030/validation.json",
+    "original_sha256": "032ac59e4f5e08a832790821ca0fd7bd76910183a972fe1c8d6c1ae1a19cb609",
+    "export_sha256": "032ac59e4f5e08a832790821ca0fd7bd76910183a972fe1c8d6c1ae1a19cb609",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/vertex-continuation-probe/http-error.bin",
+    "original_sha256": "920c30cecb0a9096d60ca5c2af0294cdc8f287700b26b0af1635bc81995e9432",
+    "export_sha256": "920c30cecb0a9096d60ca5c2af0294cdc8f287700b26b0af1635bc81995e9432",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/vertex-continuation-probe/preflight.json",
+    "original_sha256": "712ab41391ca5bfb8893faf333bb332040aef7f29507717b77d71feab56c33a9",
+    "export_sha256": "712ab41391ca5bfb8893faf333bb332040aef7f29507717b77d71feab56c33a9",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/vertex-continuation-probe/request.json",
+    "original_sha256": "9ccaab2c3029e0e3996b9db5c744591792cb144494b203a8e1ce667e28d71618",
+    "export_sha256": "5c550b0917d2a023477117d9431ba4ed482d0df8fa6d4953869226253cbd6710",
+    "redacted": true
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/vertex-continuation-probe/summary.json",
+    "original_sha256": "f53e7414e916185b83551bd185554b5634330e2c9e772393deead25aaf907d81",
+    "export_sha256": "f53e7414e916185b83551bd185554b5634330e2c9e772393deead25aaf907d81",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/vertex-probe/preflight.json",
+    "original_sha256": "ed67310a3c137f932bbd95bda08190c698096fcadbbc7ebf198008d79486726f",
+    "export_sha256": "ed67310a3c137f932bbd95bda08190c698096fcadbbc7ebf198008d79486726f",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/vertex-probe/request.json",
+    "original_sha256": "d601b06d9a61d867807b93e1ae87fda3638cad1b49830d6300a4abdfde8b7381",
+    "export_sha256": "d601b06d9a61d867807b93e1ae87fda3638cad1b49830d6300a4abdfde8b7381",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/vertex-probe/response.json",
+    "original_sha256": "129ff6057bb7af5a637d88671952d57a4e75bd5d11b5e29029b4af1c4750a54a",
+    "export_sha256": "01a7cd4d09aa67b76a23547bb7d5b7fabf63cf62c3b392acb386903d59adad57",
+    "redacted": true
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/limit-audit/vertex-probe/summary.json",
+    "original_sha256": "edea94733e8cc97dc8a56dbc4d7a3e95fb0343b71fb98570c0987257062d0a94",
+    "export_sha256": "edea94733e8cc97dc8a56dbc4d7a3e95fb0343b71fb98570c0987257062d0a94",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/safety/batch-state.json",
+    "original_sha256": "4e8e1c8f09331a6e70349b5d172b528a15bee2da1af6f6fab0bc18fa33acd73c",
+    "export_sha256": "5cc6a82a5b3e73974510ef49978017f201e7ec2abf2918b69cb8cb38ca2d3d7e",
+    "redacted": true
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/safety/preflight.json",
+    "original_sha256": "b93a4cb5e5a326106b213b5cdd61f747118fcd4b0c3b605fad5a5dafe78d831d",
+    "export_sha256": "b93a4cb5e5a326106b213b5cdd61f747118fcd4b0c3b605fad5a5dafe78d831d",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/safety/results.jsonl",
+    "original_sha256": "7a57d8eb4b4f0f29fb823f38c2c11cb558cb8a8fcc44ffb0a2071f22bedc5a0b",
+    "export_sha256": "14a0f808b7834d4f70b67016c6acef12a15b48bc0ae069bc4411512651da04c2",
+    "redacted": true
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/submit.py",
+    "original_sha256": "ff13374183f8ffa701826bef0aa2d003fbca4d70b77af8b87257e5f86b8bd08a",
+    "export_sha256": "ff13374183f8ffa701826bef0aa2d003fbca4d70b77af8b87257e5f86b8bd08a",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/summary.json",
+    "original_sha256": "dc49e5b5068bd94f54e8e5788428a418bd75cefd70272eeb185c8985f3a7f1d8",
+    "export_sha256": "dc49e5b5068bd94f54e8e5788428a418bd75cefd70272eeb185c8985f3a7f1d8",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/truncation/batch-state.json",
+    "original_sha256": "50e3f8bc4f138145138b2efe3d9f5b1f6f1265dc06946f67507dbadd18670a22",
+    "export_sha256": "6cfa6dce1bab258be95ebbb210601cc7dc2b4fc5c5d3fdd10bd254676765fd6a",
+    "redacted": true
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/truncation/preflight.json",
+    "original_sha256": "920be0f8748539db74246d78d6db127168d62334a83580d8e76ab9ca6e3d48c4",
+    "export_sha256": "920be0f8748539db74246d78d6db127168d62334a83580d8e76ab9ca6e3d48c4",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-retries-20261013/truncation/results.jsonl",
+    "original_sha256": "c2fcc29adaaf334f5cf095ce7cb6298af2c5ffb0fea49b30cef045a7b06df8f9",
+    "export_sha256": "04ab7c234d72052da7340aef64ca0e5cdf1f07aab9240ec516c868ebdc186f87",
+    "redacted": true
+  },
+  {
+    "path": "campaigns/gemini-4-argon-satmut-mpra-20261013/comparison/manifest.json",
+    "original_sha256": "4805ae273c7c514be2b29254c998c981f6f9dca89987ba73bcc1d935d9fbd19c",
+    "export_sha256": "4805ae273c7c514be2b29254c998c981f6f9dca89987ba73bcc1d935d9fbd19c",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-satmut-mpra-20261013/comparison/runs.json",
+    "original_sha256": "6a63055ce0f1f365ac9b20cb39f003fce7920079d0a683d40b8ba620e286d72a",
+    "export_sha256": "6a63055ce0f1f365ac9b20cb39f003fce7920079d0a683d40b8ba620e286d72a",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-satmut-mpra-20261013/preflight.json",
+    "original_sha256": "662bbcf890a374436205ce348efdda39768520a13fb3ae98c473360730bc31f2",
+    "export_sha256": "662bbcf890a374436205ce348efdda39768520a13fb3ae98c473360730bc31f2",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-argon-satmut-mpra-20261013/summary.json",
+    "original_sha256": "ad685dfb85b6cde56faacb78d549a9b139246eb57b9f6942b36e977559cb993c",
+    "export_sha256": "ad685dfb85b6cde56faacb78d549a9b139246eb57b9f6942b36e977559cb993c",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-carbon-high-batch-262k-F9-20261116/batch-state.json",
+    "original_sha256": "9db0da4f4af5a11e59605df3521455e9ccea6e072c3dbecd31ec9a7a8ec7ba81",
+    "export_sha256": "9db0da4f4af5a11e59605df3521455e9ccea6e072c3dbecd31ec9a7a8ec7ba81",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-carbon-high-batch-262k-F9-20261116/preflight.json",
+    "original_sha256": "e5132f279c5e7467516a6dc1454d140957b99349c1d7db26f50a69bb82c8e4b7",
+    "export_sha256": "e5132f279c5e7467516a6dc1454d140957b99349c1d7db26f50a69bb82c8e4b7",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-carbon-high-batch-262k-F9-20261116/results.jsonl",
+    "original_sha256": "167963fd309089cb73e94839d76ac37362aa6a6bcc265c196b3ad345d5a504a8",
+    "export_sha256": "167963fd309089cb73e94839d76ac37362aa6a6bcc265c196b3ad345d5a504a8",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-carbon-high-batch-262k-F9-20261116/run.py",
+    "original_sha256": "dd4fbd181342fce403284b1a5ed3bae4387db0a329079b711e5bf639b25196a8",
+    "export_sha256": "dd4fbd181342fce403284b1a5ed3bae4387db0a329079b711e5bf639b25196a8",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-carbon-high-batch-262k-F9-20261116/summary.json",
+    "original_sha256": "2241d4e2c0ee3bca97ce77c2b6c1d6a44f0884015d779412fc61df2c3b0efd69",
+    "export_sha256": "2241d4e2c0ee3bca97ce77c2b6c1d6a44f0884015d779412fc61df2c3b0efd69",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-hydrogen-high-batch-262k-F9-20261116/batch-state.json",
+    "original_sha256": "1ed4c3dc8af9fd9ccd3d66f047213acaeda6350ae9680a00185318844cd7c2a7",
+    "export_sha256": "715d32209eae6c98a5200a5c428b5d5b36b2b96994258990f0712a6e6ad5b537",
+    "redacted": true
+  },
+  {
+    "path": "campaigns/gemini-4-hydrogen-high-batch-262k-F9-20261116/preflight.json",
+    "original_sha256": "0d478aace88d2409f4ede156e4896eb8f60991571bab7ed71fbe2548d0676715",
+    "export_sha256": "0d478aace88d2409f4ede156e4896eb8f60991571bab7ed71fbe2548d0676715",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-hydrogen-high-batch-262k-F9-20261116/results.jsonl",
+    "original_sha256": "ef2c04f86d4627c40caecffc7deedc2003eb3be014e9ca3ae25230eda445c1a4",
+    "export_sha256": "8c163f8810c5053b303fead5b7e858cb1c38fae4f2f367feb8fd5b26dc6a4cbc",
+    "redacted": true
+  },
+  {
+    "path": "campaigns/gemini-4-hydrogen-high-batch-262k-F9-20261116/run.py",
+    "original_sha256": "8b72e67d4d7ade5377a379a9adaf714828118128953cd95e9d441c96beb46245",
+    "export_sha256": "8b72e67d4d7ade5377a379a9adaf714828118128953cd95e9d441c96beb46245",
+    "redacted": false
+  },
+  {
+    "path": "campaigns/gemini-4-hydrogen-high-batch-262k-F9-20261116/summary.json",
+    "original_sha256": "14c951da2236fdee9436d306abd17d79e09a0fa3983dc35d900552dca672daf9",
+    "export_sha256": "14c951da2236fdee9436d306abd17d79e09a0fa3983dc35d900552dca672daf9",
+    "redacted": false
+  },
+  {
+    "path": "diagnostics/continuation-20261026/probe.py",
+    "original_sha256": "120c897ceeb585a848cfff403e14f0d1bf28c56d26216e934ea9ec7826ded6ca",
+    "export_sha256": "120c897ceeb585a848cfff403e14f0d1bf28c56d26216e934ea9ec7826ded6ca",
+    "redacted": false
+  },
+  {
+    "path": "diagnostics/continuation-20261026/request-1.json",
+    "original_sha256": "255b708f171d8aa98c5abdf48d7a3108f8a3748fb2c3ccbdeaea7f354b1629ad",
+    "export_sha256": "255b708f171d8aa98c5abdf48d7a3108f8a3748fb2c3ccbdeaea7f354b1629ad",
+    "redacted": false
+  },
+  {
+    "path": "diagnostics/continuation-20261026/request-2.json",
+    "original_sha256": "cf272cf55c526d4d3e8e1b70dad3a5b4f73bc4b8e19c29c218210b384940a792",
+    "export_sha256": "929486337c8181486600075c2acbb9f67226d623e1dff7a59afdf2538d675218",
+    "redacted": true
+  },
+  {
+    "path": "diagnostics/continuation-20261026/response-1.json",
+    "original_sha256": "33370908c1b14abedd624287254898400457e07642bdfb63df4e37f89ca755e3",
+    "export_sha256": "a69eda5719a7a46f24f515c75cd43ec6cb7dc40e7a167e113c71339eea0b29a6",
+    "redacted": true
+  },
+  {
+    "path": "diagnostics/continuation-20261026/response-2.json",
+    "original_sha256": "a0587ac66d6204139e02a1bbf57f648507e14a518c0f80a18cd4511f7f046287",
+    "export_sha256": "422b1da2f45d0249d07b801ccb7bb9638df4aaabfc9c0be94a1aa62be395a9f5",
+    "redacted": true
+  },
+  {
+    "path": "handoffs/gemini4-20261116.patch",
+    "original_sha256": "91b5f98a4f424c0f6981985eaa7f73c0011bc21df9a7c9d0fbc63241b4ab35c2",
+    "export_sha256": "91b5f98a4f424c0f6981985eaa7f73c0011bc21df9a7c9d0fbc63241b4ab35c2",
+    "redacted": false
+  },
+  {
+    "path": "handoffs/gemini4-20261116.txt",
+    "original_sha256": "c183a84d918ae8f64c9b21d0d931625b2385f2e5581d7037b5c4c776599908f7",
+    "export_sha256": "c183a84d918ae8f64c9b21d0d931625b2385f2e5581d7037b5c4c776599908f7",
+    "redacted": false
+  },
+  {
+    "path": "issues/gemini-batch-continuation.txt",
+    "original_sha256": "4afb7815f884dd434202d47309024b2a90f9f61a1d9e0bd2dbfb679c8ee94929",
+    "export_sha256": "4afb7815f884dd434202d47309024b2a90f9f61a1d9e0bd2dbfb679c8ee94929",
+    "redacted": false
+  },
+  {
+    "path": "questions/main-be62fd7b5f06.jsonl",
+    "original_sha256": "be62fd7b5f06656572a5150904758f04bb998590f63ce31ebbca13852a0bfab7",
+    "export_sha256": "be62fd7b5f06656572a5150904758f04bb998590f63ce31ebbca13852a0bfab7",
+    "redacted": false
+  },
+  {
+    "path": "questions/satmut-mpra-gemini4-20261013.jsonl",
+    "original_sha256": "56ce4af8e11fb5b7b9658adabb14449a36d9f10206407a532793a6ee992c5462",
+    "export_sha256": "56ce4af8e11fb5b7b9658adabb14449a36d9f10206407a532793a6ee992c5462",
+    "redacted": false
+  },
+  {
+    "path": "results/gemini-4-argon-medium-satmut-mpra-20261013.jsonl",
+    "original_sha256": "357527f7e490f0ce6b19107a5838ec58ce358bf8e4d48e5c31fc2e938d1afa86",
+    "export_sha256": "49a0792a41d320551387e27f2edd6c10a15a69d335cd62784a2403416f9de6d3",
+    "redacted": true
+  }
+]

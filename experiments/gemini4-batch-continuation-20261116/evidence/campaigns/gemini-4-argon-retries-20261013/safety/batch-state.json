@@ -1,0 +1,190 @@
+{
+  "batch_id": "batch-1791930803-AlWLLQGrxRPGgiHl6pRN",
+  "endpoint": "/v1/chat/completions",
+  "generation_parameters": {
+    "max_tokens": 128000,
+    "reasoning": {
+      "effort": "high",
+      "exclude": false
+    }
+  },
+  "model_id": "google/gemini-4-argon",
+  "question_ids": [
+    "opensplice-snv-ranking-v2:E01",
+    "opensplice-snv-ranking-v2:E02",
+    "opensplice-snv-ranking-v2:E03",
+    "opensplice-snv-ranking-v2:E04",
+    "opensplice-snv-ranking-v2:E05",
+    "opensplice-snv-ranking-v2:E06",
+    "opensplice-snv-ranking-v2:E07",
+    "opensplice-snv-ranking-v2:E08",
+    "opensplice-snv-ranking-v2:E09",
+    "opensplice-snv-ranking-v2:E10",
+    "opensplice-snv-ranking-v2:E11",
+    "opensplice-snv-ranking-v2:E12",
+    "opensplice-snv-ranking-v2:E13",
+    "opensplice-snv-ranking-v2:E14",
+    "opensplice-snv-ranking-v2:E15",
+    "opensplice-snv-ranking-v2:E16",
+    "opensplice-snv-ranking-v2:E17",
+    "opensplice-snv-ranking-v2:E18",
+    "opensplice-snv-ranking-v2:E19",
+    "opensplice-snv-ranking-v2:E20",
+    "satmut-mpra-ranking-v2:F9",
+    "satmut-mpra-ranking-v2:GP1BA",
+    "satmut-mpra-ranking-v2:HBB",
+    "satmut-mpra-ranking-v2:HBG1",
+    "satmut-mpra-ranking-v2:HNF4A",
+    "satmut-mpra-ranking-v2:IRF4",
+    "satmut-mpra-ranking-v2:IRF6",
+    "satmut-mpra-ranking-v2:LDLR",
+    "satmut-mpra-ranking-v2:MSMB",
+    "satmut-mpra-ranking-v2:MYCrs6983267",
+    "satmut-mpra-ranking-v2:PKLR",
+    "satmut-mpra-ranking-v2:SORT1",
+    "satmut-mpra-ranking-v2:TCF7L2",
+    "satmut-mpra-ranking-v2:TERT",
+    "satmut-mpra-ranking-v2:ZFAND3",
+    "satmut-mpra-ranking-v2:ZRSh13",
+    "sge-ranking-v2:BAP1",
+    "sge-ranking-v2:BARD1",
+    "sge-ranking-v2:BRCA1",
+    "sge-ranking-v2:BRCA2",
+    "sge-ranking-v2:CARD11",
+    "sge-ranking-v2:CTCF",
+    "sge-ranking-v2:DDX3X",
+    "sge-ranking-v2:PALB2",
+    "sge-ranking-v2:RAD51C",
+    "sge-ranking-v2:RAD51D",
+    "sge-ranking-v2:SBDS",
+    "sge-ranking-v2:SFPQ",
+    "sge-ranking-v2:TINF2",
+    "sge-ranking-v2:TP53",
+    "sge-ranking-v2:VHL",
+    "sge-ranking-v2:XRCC2"
+  ],
+  "question_set_sha256": "be62fd7b5f06656572a5150904758f04bb998590f63ce31ebbca13852a0bfab7",
+  "question_set_size": 52,
+  "raw_status": {
+    "completion_window": "24h",
+    "created_at": 1791930803,
+    "endpoint": "/v1/chat/completions",
+    "error": null,
+    "finalized_at": 1791931851,
+    "id": "batch-1791930803-AlWLLQGrxRPGgiHl6pRN",
+    "model": "google/gemini-4-argon-20261013",
+    "object": "batch",
+    "request_counts": {
+      "completed": 1,
+      "failed": 1,
+      "total": 2
+    },
+    "results": [
+      {
+        "custom_id": "request_000051",
+        "error": null,
+        "id": "oLTOaqzQB6ulj8MPoYasmAc",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the continuous functional-damage scores for the 50 candidate variants in *XRCC2*, we map the variants onto the endogenous *XRCC2* transcript and protein structure:\n\n1. **Gene and Exon Architecture**:\n   - Positions 1–100 span the 3′ end of Intron 2, ending with the canonical 3′ splice acceptor dinucleotide `AG` at positions 99–100 (`TTTTACACAG|GTGATATT...`).\n   - Positions 101–822 correspond to the coding sequence of Exon 3 (the final exon of *XRCC2*, encoding residues Cys41 through Cys280, followed by the `TGA` stop codon at positions 820–822 and the 3′ UTR starting at position 823).\n   - Exon 3 encompasses the core RecA/RAD51-like ATPase fold, including the Walker A P-loop (`G48-P49-E50-G51-T52-G53-K54-T55` at positions 121–144) and the Walker B motif (`L145-L146-I147-L148-D149-S150-L151-S152-A153-F154-Y155-W156-I157-D158` at positions 412–453), as well as the C-terminal helices ($\\alpha 5, \\alpha 6$) and $\\beta$-strands ($\\beta 5, \\beta 6, \\beta 7$) required for structural stability and heterodimerization with RAD51D.\n\n2. **Variant Classification and Functional Impact**:\n   - **Canonical Splice Acceptor Disruption (`V01`, `V02`, `V03`)**: Deletion (`V01`) or substitution (`V02`, `V03`) of the Intron 2 acceptor `AG` abolishes normal splicing of Exon 3, causing complete loss of function.\n   - **Nonsense Variants and Premature Stop-Creating Deletions (`V06`, `V11`, `V17`, `V24`, `V30`, `V31`, `V34`, `V39`, `V42`, `V43`, `V44`, `V46`)**: Along with single-nucleotide stop-gain mutations, three of the 3-bp deletions (`V31` `TGG ATA` $\\rightarrow$ `TGA` at W156, `V42` `TAC AGA` $\\rightarrow$ `TAA` at Y223, and `V46` `TCC AAA` $\\rightarrow$ `TAA` at S242) create immediate in-frame premature stop codons. Truncations up to residue 242 remove essential C-terminal core secondary structure ($\\alpha 6$ and $\\beta 6$–$\\beta 7$), resulting in severe loss of function.\n   - **Active-Site Motif Deletions and Catalytic Mutations (`V07`, `V08`, `V09`, `V12`, `V28`)**: In-frame deletions removing residues within the Walker A P-loop (`V07` p.Gly48del, `V08` p.Gly51_Thr52delinsAla, `V09` p.Thr52del), the catalytic Walker B aspartate (`V28` p.Asp149del), or mutating the $\\text{Mg}^{2+}$-coordinating Walker A threonine to proline (`V12` p.Thr55Pro) abrogate ATPase function.\n   - **Core Secondary Structure In-Frame Deletions (`V04`, `V14`, `V15`, `V25`, `V26`, `V32`, `V33`, `V36`, `V37`, `V41`, `V48`)**: Single-codon deletions within buried central $\\beta$-strands (`V04` p.Leu44del in $\\beta 1$, `V37` p.Leu189del in $\\beta 5$) or core $\\alpha$-helices (`V14` p.Thr62del, `V15` p.Ala63del in $\\alpha 1$; `V25` p.Leu128_Thr129delinsPro; `V32`, `V33` in $\\alpha 4$) shift secondary-structure register and strongly impair function, whereas deletions in peripheral turns (`V48` p.Glu274del near the C-terminus) have more moderate effects.\n   - **Missense, Synonymous, and 3′ UTR Variants**: Buried hydrophobic-to-charged/polar substitutions in the core (`V27` p.Leu148Ser in Walker B, `V05` p.Ile43Asn in $\\beta 1$, `V21` p.Leu112Arg in $\\alpha 3$, `V35` p.Val184Glu in $\\alpha 4$, `V19` p.Ile81Ser in $\\beta 2$, `V45` p.Met239Lys in $\\alpha 5$, `V47` p.Phe253Ser in $\\alpha 6$) cause substantial functional damage, whereas solvent-exposed substitutions (`V16` p.Glu75Lys, `V18` p.Glu75Ala, `V20` p.Ser101Phe), conservative hydrophobic/aromatic substitutions (`V23` p.Phe115Tyr, `V38` p.Ile198Met), synonymous variants (`V10`, `V13`), and the 3′ UTR variant (`V50` c.*5C>A) retain function.\n\nFINAL: {\"V01\": 1.03, \"V02\": 0.98, \"V03\": 0.97, \"V04\": 0.9, \"V05\": 0.76, \"V06\": 1.02, \"V07\": 0.98, \"V08\": 0.98, \"V09\": 0.97, \"V10\": 0.0, \"V11\": 1.02, \"V12\": 0.95, \"V13\": 0.0, \"V14\": 0.88, \"V15\": 0.88, \"V16\": 0.1, \"V17\": 1.01, \"V18\": 0.06, \"V19\": 0.68, \"V20\": 0.18, \"V21\": 0.75, \"V22\": 0.3, \"V23\": 0.05, \"V24\": 1.0, \"V25\": 0.89, \"V26\": 0.68, \"V27\": 0.78, \"V28\": 0.98, \"V29\": 0.42, \"V30\": 1.0, \"V31\": 1.0, \"V32\": 0.84, \"V33\": 0.84, \"V34\": 0.99, \"V35\": 0.72, \"V36\": 0.66, \"V37\": 0.9, \"V38\": 0.02, \"V39\": 0.98, \"V40\": 0.24, \"V41\": 0.64, \"V42\": 0.97, \"V43\": 0.96, \"V44\": 0.96, \"V45\": 0.65, \"V46\": 0.94, \"V47\": 0.62, \"V48\": 0.5, \"V49\": 0.38, \"V50\": -0.02}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791931552,
+            "id": "gen-batch-1791930803-ffd1ed67873100d72d19",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 32600,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 30733
+              },
+              "prompt_tokens": 2800,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 35400
+            }
+          },
+          "request_id": "oLTOaqzQB6ulj8MPoYasmAc",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000002",
+        "error": {
+          "message": "Gemini blocked the request: SAFETY",
+          "param": null,
+          "type": "content_policy_violation_error"
+        },
+        "id": "vertex-batch-request_000002",
+        "response": null
+      }
+    ],
+    "status": "completed",
+    "usage": {
+      "completion_tokens": 32600,
+      "cost": 0.1658,
+      "is_byok": false,
+      "prompt_tokens": 2800,
+      "total_tokens": 35400
+    }
+  },
+  "raw_submission": {
+    "completion_window": "24h",
+    "created_at": 1791930803,
+    "endpoint": "/v1/chat/completions",
+    "error": null,
+    "finalized_at": null,
+    "id": "batch-1791930803-AlWLLQGrxRPGgiHl6pRN",
+    "model": "google/gemini-4-argon-20261013",
+    "object": "batch",
+    "request_counts": {
+      "completed": 0,
+      "failed": 0,
+      "total": 2
+    },
+    "results": null,
+    "status": "validating",
+    "usage": null
+  },
+  "result_output": "/home/exedev/.codex/worktrees/2341/VEP-bench/.vepbench/campaigns/gemini-4-argon-retries-20261013/safety/results.jsonl",
+  "run_id": "gemini-4-argon-high-safety-retry-20261013",
+  "schema_version": "1.0",
+  "status": "completed",
+  "submitted_at": "2026-10-13T22:33:23.259535Z",
+  "submitted_custom_ids": [
+    "request_000002",
+    "request_000051"
+  ],
+  "submitted_question_ids": [
+    "opensplice-snv-ranking-v2:E03",
+    "sge-ranking-v2:XRCC2"
+  ]
+}

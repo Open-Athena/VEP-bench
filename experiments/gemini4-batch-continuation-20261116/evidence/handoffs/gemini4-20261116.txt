@@ -1,0 +1,32 @@
+Gemini 4 evaluation handoff — 2026-11-16
+Workspace: /home/exedev/.codex/worktrees/2341/VEP-bench
+Tracking issue: https://github.com/Open-Athena/VEP-bench/issues/116
+Upstream OpenRouter support ticket NOT filed. User has not authorized a full Carbon/Hydrogen campaign, Flex test, or full high direct run.
+
+PENDING: Argon high F9 batch batch-1794846783-xufCrjhmYlTyKmAZjdNe was checked before archiving and remains in_progress, 0/1 completed, 0 failed. No automated monitor is installed. Next session must collect it, without resubmission:
+UV_CACHE_DIR=/tmp/vepbench-uv-cache uv run --locked python .vepbench/campaigns/gemini-4-argon-high-batch-262k-F9-20261116/run.py status
+Source /home/exedev/.codex/secrets/vepbench.env only if OPENROUTER_API_KEY is unset; never expose its value. Network calls require normal sandbox escalation. This collection is already authorized.
+
+RESULTS:
+- Low batch all 52: 52 valid, no truncation/API errors, $0.800135. Mean rho OpenSplice .782444, satMutMPRA .283101, SGE .517291. Directory .vepbench/campaigns/gemini-4-argon-low-all-20261030/ contains results, summary, and checksums.
+- Medium batch all 52: 52 valid, no truncation/API errors, $0.913880. Mean rho OpenSplice .792208, satMutMPRA .360298, SGE .573274. Directory .vepbench/campaigns/gemini-4-argon-medium-all-20261030/.
+- High direct Argon F9 succeeded with a 262144 budget: two hops, 94489 output tokens, $1.080632, valid answer. Evidence .vepbench/campaigns/gemini-4-argon-retries-20261013/limit-audit/vertex-262k-20261030/.
+- High batch Argon F9 on Oct 30: 32768 output tokens, native CONTINUATION, no continuation token, empty final answer, $0.164983. Directory .vepbench/campaigns/gemini-4-argon-high-batch-262k-F9-20261030/.
+- High batch Carbon F9 on Nov 16: identical failure at 32768, $0.164983. Directory .vepbench/campaigns/gemini-4-carbon-high-batch-262k-F9-20261116/.
+- High batch Hydrogen F9 on Nov 16: valid STOP answer, 38470 output tokens, $0.14511975, rho .398036. Directory .vepbench/campaigns/gemini-4-hydrogen-high-batch-262k-F9-20261116/. It did NOT test continuation replay.
+- Carbon Flex metadata advertises $1/M input, $5/M output, but no live Flex test has occurred. Do not call this a verified workaround.
+
+PROTOCOL:
+Public question set .vepbench/questions/main-be62fd7b5f06.jsonl, 52 questions, sha256 be62fd7b5f06656572a5150904758f04bb998590f63ce31ebbca13852a0bfab7.
+Task-owned low/medium max_tokens=128000. High probes max_tokens=262144, reasoning effort high, exclude=false. Preserve full question set identity for selective requests. All-hop usage and raw response preservation are required for future direct continuation integration. Do not overwrite old failed attempts or present diagnostic results as full benchmark scores.
+
+UNCOMMITTED WORK:
+- src/vepbench/evaluation/batch.py: selective question ID submission retaining full question-set identity.
+- tests/test_batch.py: associated offline tests. Earlier checks passed; rerun appropriate checks before committing.
+- configs/models/google-gemini-4-argon-{low,medium,high}.yaml
+- configs/tasks/{opensplice-snv,satmut-mpra,sge}/task-262k.yaml
+Nothing in this session was committed, pushed, or published as benchmark results. Issue #116 is published and agent-generated labeled.
+
+RETENTION:
+Evidence is local under .vepbench, not uploaded to GitHub; preserve this worktree and its hidden artifacts. Issue #116 contains the externally durable synopsis but not the raw outputs. This handoff is .vepbench/handoffs/gemini4-20261116.txt. A patch snapshot is saved alongside it for tracked edits; untracked profiles remain in configs/.
+Shared cache /tmp/vepbench-uv-cache is retained for uv operations; do not remove while other sessions may use it. Do not delete /tmp/exe-codex-local-heavy.lock (shared resource). No task-owned background polling worker was launched.

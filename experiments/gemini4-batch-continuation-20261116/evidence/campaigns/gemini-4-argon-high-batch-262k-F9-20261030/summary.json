@@ -1,0 +1,55 @@
+{
+  "question_id": "satmut-mpra-ranking-v2:F9",
+  "generation_parameters": {
+    "max_tokens": 262144,
+    "reasoning": {
+      "effort": "high",
+      "exclude": false
+    }
+  },
+  "response_status": "completed",
+  "finish_reason": "length",
+  "native_finish_reason": "CONTINUATION",
+  "content_characters": 0,
+  "continuation_items": 0,
+  "usage": {
+    "completion_tokens": 32768,
+    "completion_tokens_details": {
+      "audio_tokens": 0,
+      "image_tokens": 0,
+      "reasoning_tokens": 32765
+    },
+    "cost": 0.164983,
+    "prompt_tokens": 1143,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cache_write_tokens": 0,
+      "cached_tokens": 0,
+      "video_tokens": 0
+    },
+    "total_tokens": 33911,
+    "vepbench": {
+      "batch_id": "batch-1793380005-G9rxX71cfay4AmPO0Sso",
+      "batch_question_ids": [
+        "satmut-mpra-ranking-v2:F9"
+      ],
+      "batch_usage": {
+        "completion_tokens": 32768,
+        "cost": 0.164983,
+        "is_byok": false,
+        "prompt_tokens": 1143,
+        "total_tokens": 33911
+      },
+      "cost_allocation": "proportional_total_tokens",
+      "cost_source": "allocated_batch_total"
+    }
+  },
+  "scoring": {
+    "metric": "rank_correlation",
+    "parse_error": "missing FINAL: <json-object> line",
+    "pearson_r": 0.0,
+    "spearman_rho": 0.0,
+    "valid": false,
+    "value": 0.0
+  }
+}

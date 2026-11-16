@@ -1,0 +1,1012 @@
+{
+  "batch_id": "batch-1791925708-tR7JnSFFwkUSB6YiB9ge",
+  "endpoint": "/v1/chat/completions",
+  "generation_parameters": {
+    "max_tokens": 128000,
+    "reasoning": {
+      "effort": "medium",
+      "exclude": false
+    }
+  },
+  "model_id": "google/gemini-4-argon",
+  "question_ids": [
+    "satmut-mpra-ranking-v2:F9",
+    "satmut-mpra-ranking-v2:GP1BA",
+    "satmut-mpra-ranking-v2:HBB",
+    "satmut-mpra-ranking-v2:HBG1",
+    "satmut-mpra-ranking-v2:HNF4A",
+    "satmut-mpra-ranking-v2:IRF4",
+    "satmut-mpra-ranking-v2:IRF6",
+    "satmut-mpra-ranking-v2:LDLR",
+    "satmut-mpra-ranking-v2:MSMB",
+    "satmut-mpra-ranking-v2:MYCrs6983267",
+    "satmut-mpra-ranking-v2:PKLR",
+    "satmut-mpra-ranking-v2:SORT1",
+    "satmut-mpra-ranking-v2:TCF7L2",
+    "satmut-mpra-ranking-v2:TERT",
+    "satmut-mpra-ranking-v2:ZFAND3",
+    "satmut-mpra-ranking-v2:ZRSh13"
+  ],
+  "question_set_sha256": "56ce4af8e11fb5b7b9658adabb14449a36d9f10206407a532793a6ee992c5462",
+  "question_set_size": 16,
+  "raw_status": {
+    "completion_window": "24h",
+    "created_at": 1791925708,
+    "endpoint": "/v1/chat/completions",
+    "error": null,
+    "finalized_at": 1791926923,
+    "id": "batch-1791925708-tR7JnSFFwkUSB6YiB9ge",
+    "model": "google/gemini-4-argon-20261013",
+    "object": "batch",
+    "request_counts": {
+      "completed": 16,
+      "failed": 0,
+      "total": 16
+    },
+    "results": [
+      {
+        "custom_id": "request_000003",
+        "error": null,
+        "id": "cZ7OatSeItKq67MP1NDj-Q0",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the regulatory activity effects of the candidate variants, we identify the mutagenized insert as the human fetal $\\gamma$-globin (*HBG1*/*HBG2*) proximal promoter assayed via saturation-mutagenesis MPRA in erythroid HEL 92.1.7 cells:\n\n1. **Distal GATA region (Positions 1–70):** Contains an upstream GATA1 motif (`TGATAA` at positions 21–26) and flanking sequence where most single-nucleotide variants have modest or near-neutral effects, with slight negative effects where activator contacts are perturbed.\n2. **$-200$ HPFH / ZBTB7A (LRF) repressor region (Positions 76–82, `CCTTTTAT`):** Variants in this pyrimidine-rich tract disrupt ZBTB7A repressor binding and/or create *de novo* erythroid activator (KLF1) motifs (such as T>C at position 80, corresponding to the classic $-198\\text{ T>C}$ British HPFH mutation), resulting in increased reporter activity (positive log2 effects).\n3. **Tandem CCAAT / BCL11A region (Positions 135–172, duplicated `CTATTGGTCA`):** The `ATTGG` core motifs (positions 137–141 and 164–168) recruit the transcriptional activator NF-Y, whereas the overlapping `TGGTCA` sequence overlaps the BCL11A repressor site (`-117 G>A` at position 167, `-114 C>T` at position 170). In episomal MPRA in HEL cells, disrupting the `ATTGG` NF-Y core (especially at the proximal CCAAT box, positions 164–168, and deletion V35) reduces promoter activity, whereas specific substitutions that favor activator over repressor binding or preserve the core have milder or slightly positive effects.\n4. **Proximal CACCC box (Positions 193–198, `GGGTGG`):** This site recruits the key erythroid transcriptional activator KLF1. Variants V40–V43 directly disrupt the `GGGTGG` consensus and cause strong reductions in reporter expression.\n5. **TATA-flanking / core promoter region (Positions 200–274):** Variants in the G-rich element downstream of the TATA-like box (positions 247–251, `GGGGAAG`) moderately decrease basal transcription.\n\nFINAL: {\"V01\": -0.05, \"V02\": -0.05, \"V03\": -0.08, \"V04\": -0.04, \"V05\": -0.05, \"V06\": -0.02, \"V07\": -0.03, \"V08\": -0.04, \"V09\": -0.05, \"V10\": -0.03, \"V11\": 0.35, \"V12\": 0.42, \"V13\": 0.45, \"V14\": 0.30, \"V15\": 0.65, \"V16\": 0.25, \"V17\": 0.20, \"V18\": 0.15, \"V19\": -0.05, \"V20\": -0.05, \"V21\": -0.08, \"V22\": -0.05, \"V23\": -0.04, \"V24\": -0.04, \"V25\": -0.12, \"V26\": -0.15, \"V27\": -0.35, \"V28\": -0.45, \"V29\": 0.08, \"V30\": -0.05, \"V31\": -0.05, \"V32\": -0.06, \"V33\": -0.35, \"V34\": -0.40, \"V35\": -0.55, \"V36\": -0.45, \"V37\": -0.15, \"V38\": -0.45, \"V39\": -0.10, \"V40\": -0.85, \"V41\": -0.95, \"V42\": -0.90, \"V43\": -0.75, \"V44\": -0.08, \"V45\": -0.12, \"V46\": -0.10, \"V47\": -0.20, \"V48\": -0.25, \"V49\": -0.15, \"V50\": -0.05}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791925873,
+            "id": "gen-batch-1791925708-4cc1da657292460feed8",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 2008,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 908
+              },
+              "prompt_tokens": 1139,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 3147
+            }
+          },
+          "request_id": "cZ7OatSeItKq67MP1NDj-Q0",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000007",
+        "error": null,
+        "id": "cZ7OavDGIuicjNsPk8S5yAc",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the regulatory-activity effects of the candidate variants in HepG2 cells, we first identify the sequence and its key functional cis-regulatory elements. \n\n### 1. Element Identification and Regulatory Architecture\nThe 318 bp sequence corresponds to the core promoter of the human low-density lipoprotein receptor (*LDLR*) gene (analyzed by saturation mutagenesis MPRA in Kircher et al., *Nature Communications* 2019). The *LDLR* promoter drives basal and sterol-regulated transcription in hepatocytes (HepG2) primarily through several well-characterized motifs:\n\n1. **Upstream regulatory region (~pos 90–115):** Contains an AT-rich element (`GGGTTAAAAAGCC`, pos 90–102) and an adjacent regulatory motif (`GATGTCACATCGG`, pos 104–116) that contribute positively to promoter activity.\n2. **Repeat 1 (pos 123–138, `AAACTCCTCCTCTTGC`):** A pyrimidine-rich Sp1-binding site critical for basal transcription.\n3. **Repeat 2 / SRE-1 (pos 161–176, `ATCACCCCACTGCAAA`):** The canonical Sterol Regulatory Element-1 (`ATCACCCCAC`, pos 161–170), bound by SREBP-1/2 to strongly activate transcription.\n4. **Repeat 3 (pos 177–192, `CTCCTCCCCCTGCTAG`):** A second canonical Sp1-binding site (`CTCCTCCCCC`, pos 177–186) that acts synergistically with SRE-1 and Repeat 1.\n5. **Downstream CRE/TATA-like and Initiation Region (pos 200–310):** Includes a `TGACGT` CREB/ATF-like motif (pos 217–222) and downstream core promoter/5' UTR sequences where mutations generally have smaller effects unless they create de novo sites or disrupt transcript stability/initiation.\n\n### 2. Variant Effect Assessment\n- **V01–V08 (pos 20–86):** Located in the distal 5' flanking region upstream of the main transcription factor binding cluster; single-base substitutions here have minimal effects on promoter activity (near 0).\n- **V09–V12 (pos 93–95):** Disrupt the `TTAAAA` motif (pos 93–98). Substitutions to C or G reduce activity moderately.\n- **V13–V17 (pos 106–112):** Disrupt the `GATGTCACATC` motif (especially the core `TGTCACA` at 106–112). Variants at 106, 107, and 112 significantly reduce promoter activity, except where a substitution increases affinity for AP-1/CREB-family factors (`GATGTCAC` -> `GACGTCAC` at V15 `107 T>C`, which creates a canonical palindromic CRE/ATF site `GACGTC` and strongly increases or maintains activity, whereas V13, V14, V16, V17 decrease it).\n- **V18–V24 (pos 126–135):** Located directly within **Repeat 1** (`TCCTCCTCTT`, pos 125–134). Disruptions of the C/T-rich Sp1 binding tract (including the single-base deletion V19 and transversions V20, V21, V22, V24) cause strong reductions in transcriptional activity.\n- **V25–V26 (pos 141–143):** Located in the spacer between Repeat 1 and Repeat 2; minor effects.\n- **V27–V33 (pos 162–175):** Located in **Repeat 2 (SRE-1, `ATCACCCCAC`)** and its immediate 3' flank (`TGCAAA`). Mutations within the decamer core (V27 at 162, V28/V29 at 164, V30 at 165, V31 at 169) strongly abolish SREBP binding and cause severe decreases in reporter activity. V32 (171) and V33 (175) in the 3' part of Repeat 2 have moderate negative effects.\n- **V34–V40 (pos 177–191):** Located in **Repeat 3 (`CTCCTCCCCCTGCTAG`)**. Variants in the core Sp1 site (V34 at 177, V35/V36 at 182, V37 at 185, V38 at 186) strongly reduce activity. V39 (190) and V40 (191) are at the 3' edge of Repeat 3 and have milder negative effects.\n- **V41–V50 (pos 204–303):** Located downstream of the Sp1/SRE-1 cluster in the core promoter / 5' UTR region, mostly exhibiting weak to modest effects.\n\nFINAL: {\"V01\": -0.04, \"V02\": 0.02, \"V03\": -0.05, \"V04\": -0.03, \"V05\": -0.08, \"V06\": -0.06, \"V07\": -0.04, \"V08\": -0.05, \"V09\": -0.35, \"V10\": -0.42, \"V11\": -0.38, \"V12\": -0.32, \"V13\": -0.55, \"V14\": -0.48, \"V15\": 0.35, \"V16\": -0.62, \"V17\": -0.45, \"V18\": -0.30, \"V19\": -0.75, \"V20\": -0.82, \"V21\": -0.88, \"V22\": -0.65, \"V23\": -0.45, \"V24\": -0.52, \"V25\": -0.08, \"V26\": -0.10, \"V27\": -0.95, \"V28\": -0.85, \"V29\": -0.92, \"V30\": -1.05, \"V31\": -0.78, \"V32\": -0.35, \"V33\": -0.25, \"V34\": -0.55, \"V35\": -1.10, \"V36\": -0.85, \"V37\": -0.95, \"V38\": -0.90, \"V39\": -0.22, \"V40\": -0.18, \"V41\": -0.12, \"V42\": -0.15, \"V43\": -0.18, \"V44\": -0.10, \"V45\": -0.08, \"V46\": -0.12, \"V47\": -0.06, \"V48\": -0.05, \"V49\": -0.14, \"V50\": -0.12}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791925873,
+            "id": "gen-batch-1791925708-53c0fbb814c5797928ae",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 2292,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 589
+              },
+              "prompt_tokens": 1163,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 3455
+            }
+          },
+          "request_id": "cZ7OavDGIuicjNsPk8S5yAc",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000010",
+        "error": null,
+        "id": "cZ7Oaq7IIp31j8MP1fbskQ0",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the regulatory-activity effects of the candidate variants in this K562 episomal MPRA panel, we first identify the regulatory element and map its key cis-regulatory motifs:\n\n1. **Element Identification:** The 470 bp sequence corresponds to the erythroid-specific promoter of the *PKLR* (pyruvate kinase L/R) gene, which is strongly active in K562 cells and driven primarily by erythroid transcription factors (GATA1, KLF1/Sp1 CACCC-box factors, and TAL1/E-box complexes).\n\n2. **Key Functional Motifs & Variant Impacts:**\n   - **Upstream GATA1 Motif (Positions 68–76, `TCTTATCTA` / rev-comp `TAGATAAGA`):** Variants **V15–V21** (positions 69–75) directly mutate the core `GATA` consensus (`TTATCT` on the minus strand). Disrupting this primary GATA1 binding site causes a severe loss of promoter activity (strong negative effects, especially at the invariant core bases 71–75). The adjacent deletion **V14** (pos 67) and upstream E-box/GATA-flanking variants (**V12, V13** at pos 61 `CTGCTG`) have moderate negative effects.\n   - **CACCC-Box / KLF1 Motif (Positions 100–109, `GGGCACACCC`):** Variants **V23–V29** hit the canonical erythroid CACCC box. Substitutions in the core `CACACCC` sequence (**V23–V28**) strongly reduce KLF1/Sp1 binding and reporter transcription, whereas **V26** (`105 A>C`, creating `GGCCACCC`) preserves a valid CACCC-box consensus more than transversions like **V27** (`105 A>T`) or **V28** (`106 C>A`).\n   - **Proximal Promoter Motifs (Positions 320–400):** \n     - Positions 333–344 (`TAGGGTGGGGCT`) and 384–398 (`TGGTGGGGGGAGGGT`) contain G-rich/CACCC-like elements bound by KLF/Sp1 factors; variants **V39–V42** and **V48** (`397 G>C`) reduce activity.\n     - Positions 367–382 (`GGATCACTGTGATAAT`) contain an erythroid regulatory module (including a GATA motif at 376–381 and an adjacent motif at 367–374); variants **V44–V46** decrease activity, whereas **V47** (`384 T>C`) flanks the GATA site with a mild effect.\n   - **Other Regions:** Variants in distal or less constrained linker bases (**V01–V11**, **V22**, **V30–V36**, **V49–V50**) generally exhibit smaller-magnitude effects around baseline.\n\nFINAL: {\"V01\": -0.05, \"V02\": -0.12, \"V03\": -0.1, \"V04\": -0.15, \"V05\": -0.08, \"V06\": -0.05, \"V07\": 0.05, \"V08\": -0.18, \"V09\": -0.15, \"V10\": -0.22, \"V11\": -0.25, \"V12\": -0.35, \"V13\": -0.3, \"V14\": -0.45, \"V15\": -0.65, \"V16\": -0.55, \"V17\": -1.1, \"V18\": -1.45, \"V19\": -1.6, \"V20\": -1.5, \"V21\": -1.4, \"V22\": -0.05, \"V23\": -0.85, \"V24\": -0.95, \"V25\": -1.25, \"V26\": -0.4, \"V27\": -1.15, \"V28\": -1.35, \"V29\": -0.35, \"V30\": -0.1, \"V31\": -0.15, \"V32\": -0.12, \"V33\": -0.1, \"V34\": -0.15, \"V35\": -0.12, \"V36\": -0.05, \"V37\": -0.1, \"V38\": -0.2, \"V39\": -0.45, \"V40\": -0.55, \"V41\": -0.6, \"V42\": -0.35, \"V43\": -0.15, \"V44\": -0.75, \"V45\": -0.6, \"V46\": -0.5, \"V47\": -0.2, \"V48\": -0.8, \"V49\": 0.05, \"V50\": -0.05}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791925873,
+            "id": "gen-batch-1791925708-9a15813098e6fef0ef6a",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 2058,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 839
+              },
+              "prompt_tokens": 1197,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 3255
+            }
+          },
+          "request_id": "cZ7Oaq7IIp31j8MP1fbskQ0",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000014",
+        "error": null,
+        "id": "cZ7OarPVIuDbu7APs4HSyAw",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "Based on the sequence composition of this regulatory element and the cellular context (MIN6 pancreatic beta-cells), key cis-regulatory features driving reporter activity include:\n\n1. **Core CCAAT / NF-Y and GC-rich Regulatory Region (pos 285–305, `TCCTGCCCAATGGGCCGTG`):** Variants directly disrupting the core `CCAAT` pentamer and immediate flanking bases (V28 at pos 295 A>G, V29 at pos 297 T>C, V30 at pos 298 G>C, and adjacent V31/V32) strongly reduce transcriptional activation.\n2. **Upstream Homeobox / E-box / bHLH Cluster (pos 230–270, `GTCATCATCATTGAATCCATCATGTGGTGCAGC`):** Contains overlapping homeodomain-like (`ATTA`/`TAAT` core on reverse strand at `TGAATCCAT`) and E-box (`CATGTG` at pos 251–256) motifs critical in beta-cell regulation (e.g., PDX1, USF/NEUROD1/bHLH factors). Variants V18 (247 C>A), V19 (253 T>C), V20 (255 T>A), and V21 (260 C>A) disrupt these binding sites and decrease activity.\n3. **Downstream E-box / bHLH Tandem Region (pos 333–390, `AGCAGATATGGGCAGGCAGTTGCCAGGCAGTTGAGCCGGGAGAACAGATGGCAGCTGC`):** Contains repeated `CAGATG` / `CAGTTG` / `CAGCTG` E-box motifs recognized by beta-cell bHLH activators (such as NEUROD1/E47). Variants disrupting the core consensus nucleotides (such as V35/V36 at pos 343–344, V38 at pos 359, and V39–V42 at pos 379–384) reduce enhancer activity.\n4. **Distal 5' and 3' Flanking Regions (pos 1–160, 410–559):** Most variants in the distal CA/GT-repeat region and 3' flank show milder or near-neutral effects compared to the central ~180–400 bp core enhancer module.\n\nFINAL: {\"V01\": -0.04, \"V02\": -0.06, \"V03\": -0.02, \"V04\": -0.05, \"V05\": -0.05, \"V06\": -0.08, \"V07\": -0.07, \"V08\": 0.04, \"V09\": -0.22, \"V10\": -0.25, \"V11\": -0.15, \"V12\": -0.12, \"V13\": -0.18, \"V14\": -0.14, \"V15\": -0.08, \"V16\": -0.16, \"V17\": -0.18, \"V18\": -0.32, \"V19\": -0.45, \"V20\": -0.42, \"V21\": -0.24, \"V22\": -0.15, \"V23\": -0.18, \"V24\": 0.05, \"V25\": -0.14, \"V26\": -0.22, \"V27\": -0.20, \"V28\": -0.65, \"V29\": -0.62, \"V30\": -0.58, \"V31\": -0.28, \"V32\": -0.25, \"V33\": -0.09, \"V34\": -0.15, \"V35\": -0.35, \"V36\": -0.38, \"V37\": -0.22, \"V38\": -0.28, \"V39\": -0.42, \"V40\": -0.40, \"V41\": -0.48, \"V42\": -0.36, \"V43\": -0.15, \"V44\": -0.14, \"V45\": -0.12, \"V46\": -0.08, \"V47\": -0.05, \"V48\": -0.10, \"V49\": -0.06, \"V50\": -0.08}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791925873,
+            "id": "gen-batch-1791925708-ae94f5bab89b35a388d1",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 2547,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 1461
+              },
+              "prompt_tokens": 1289,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 3836
+            }
+          },
+          "request_id": "cZ7OarPVIuDbu7APs4HSyAw",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000012",
+        "error": null,
+        "id": "cZ7Oavq_ItKYjNsPoOzOwA0",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the regulatory activity effects of the candidate variants in the *SLC30A8* enhancer assayed by MPRA in MIN6 (mouse pancreatic beta) cells, we examine the location of each variant with respect to beta-cell transcription factor binding motifs and active regulatory cores:\n\n1. **Distal 5' and 3' flanking regions (V01–V10, V46–V50):** Variants located near the ends of the 600 bp insert generally lie outside the core beta-cell transcription factor cluster and exhibit near-neutral or modest effects, with small perturbations where homeodomain/forkhead-like A/T-rich tracts or E-box-like sequences (`CATGTG` near 115–120 and 155–160) are flanked.\n2. **Central regulatory core (V11–V30, positions 220–350):**\n   - **Positions 260–275:** Contains a Maf/AP-1-like half-site (`TGGTGACAA`, positions 262–270); V15 (269 A>C) and V16 (276 T>G) perturb this region.\n   - **Canonical E-box (positions 304–309, `CAGCTG`):** Bound by beta-cell bHLH activators such as NEUROD1/TCF. Variants V19 (306 G>T) and V20 (308 T>G) directly disrupt the core `CAGCTG` motif and are predicted to cause strong decreases in reporter activity, while flanking variants V18 (301 G>C) and V21 (311 T>G) have moderate effects.\n   - **Homeodomain / Maf / GATA cluster (positions 321–350):** Contains a homeobox motif (`CAATTAG` / `CTAATTG`, bound by PDX1/ISL1/NKX factors) around positions 324–330, an adjacent Maf-like motif (`AGCTAAGCAC`) around 331–340, and a GATA motif (`AGATA`) around 346–350. Variants V23 (326 T>G), V24 (329 A>C), V25 (330 G>T), V26 (333 C>A), V27 (336 A>G), and V30 (348 A>T) disrupt these key motifs and are predicted to substantially reduce enhancer activity.\n3. **Downstream secondary cluster (V31–V45, positions 370–500):** Variants across positions 381–420 (V32–V39) and 461 (V42) overlap secondary regulatory motifs and cause moderate activity changes.\n\nFINAL: {\"V01\": -0.04, \"V02\": -0.02, \"V03\": 0.03, \"V04\": -0.05, \"V05\": 0.02, \"V06\": -0.06, \"V07\": -0.04, \"V08\": -0.03, \"V09\": -0.08, \"V10\": 0.04, \"V11\": -0.15, \"V12\": -0.12, \"V13\": -0.08, \"V14\": 0.05, \"V15\": -0.35, \"V16\": -0.18, \"V17\": -0.09, \"V18\": -0.22, \"V19\": -0.85, \"V20\": -0.78, \"V21\": -0.25, \"V22\": -0.32, \"V23\": -0.68, \"V24\": -0.45, \"V25\": -0.42, \"V26\": -0.55, \"V27\": -0.48, \"V28\": 0.06, \"V29\": -0.18, \"V30\": -0.52, \"V31\": -0.14, \"V32\": -0.24, \"V33\": -0.28, \"V34\": -0.15, \"V35\": -0.19, \"V36\": -0.22, \"V37\": -0.12, \"V38\": -0.26, \"V39\": -0.16, \"V40\": -0.09, \"V41\": -0.11, \"V42\": -0.25, \"V43\": -0.07, \"V44\": -0.12, \"V45\": 0.05, \"V46\": -0.06, \"V47\": -0.04, \"V48\": 0.03, \"V49\": -0.08, \"V50\": -0.05}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791925873,
+            "id": "gen-batch-1791925708-0421e8666903fa73928b",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 2677,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 1483
+              },
+              "prompt_tokens": 1294,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 3971
+            }
+          },
+          "request_id": "cZ7Oavq_ItKYjNsPoOzOwA0",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000008",
+        "error": null,
+        "id": "cZ7Oap71Ipqv1dUPh9GCkAE",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the regulatory-activity effects of the candidate variants in this 591 bp *PKLR* promoter element, we examine the sequence context and transcription factor binding motifs across the insert:\n\n1. **Upstream Region (Positions 1–160):**\n   - Contains CCAAT/enhancer-like and basal regulatory motifs (e.g., around positions 73–85 `CGCATTCGACATC` and 100–115 `AAGGTGAGAACACAT`). Variants here (V01–V13) generally have modest effects, with mutations disrupting core nucleotides in local motifs (such as V04–V06 and V07–V11) trending slightly negative.\n\n2. **Core Erythroid / Basal Promoter Cluster (Positions 165–235):**\n   - **Positions 166–185 (`TTATGAGTTATTAATCAATC`):** Contains an inverted GATA motif (`TTATCA` at 173–178) and surrounding AT-rich homeodomain/TATA-like sequences. Deletions and substitutions here (V14–V16) reduce promoter activity.\n   - **Positions 190–230 (`ATCTCCACCCAAGTTATGTGTTTACCTTGTCCCCACCCCG`):** Contains tandem CACCC / GC-rich boxes (`CCACCCA` at 194–200 and `CCCCACCCC` at 220–228) recognized by Sp1/KLF family factors (which are active in HEK293T cells), flanking an E-box/AP-1-like core (`TTATGTGT` at 203–210). Variants disrupting the conserved C/G residues of the CACCC boxes (V18 at pos 195, V24 at pos 221) or the core motif (V19–V22) cause notable decreases in reporter activity.\n\n3. **Middle Region and GC-Rich / E-box Cluster (Positions 250–360):**\n   - **Positions 280–320 (`TTTCTGCTGAGCCTTCGCCCTATGCTGGTGGATTGCTAGCACGTGA`):** Contains GC-rich stretches (288–298 `GCCTTCGCCCT`) and a canonical E-box (`CACGTG` at 314–319). Variants V31, V32, and V33 (positions 293–296) alter the `CGCC` core and reduce activity, whereas nearby flanking variants (V25–V30, V34–V36) show mild effects.\n\n4. **Downstream Proximal / 5' UTR Region (Positions 370–591):**\n   - Includes a GATA/TATA-like box (`GATAAGAAT` at 415–423, disrupted by deletion V40) and repetitive GC-rich/GGGAGGG Sp1-like elements (`CAGGCCCACCGGGCCTGGGTCTGTGGCCC` at 440–468, and `CTTAGGGTCTG` at 480–490). Disruptions to these GC-rich/proximal elements (V40, V42, V44) moderately decrease expression, while downstream variants near the 3' end of the insert (V45–V50) have smaller, near-neutral to slightly negative effects.\n\nFINAL: {\"V01\": -0.05, \"V02\": -0.12, \"V03\": -0.08, \"V04\": -0.18, \"V05\": -0.15, \"V06\": -0.22, \"V07\": -0.25, \"V08\": -0.14, \"V09\": -0.28, \"V10\": -0.32, \"V11\": -0.19, \"V12\": -0.06, \"V13\": -0.09, \"V14\": -0.35, \"V15\": -0.24, \"V16\": -0.45, \"V17\": -0.12, \"V18\": -0.65, \"V19\": -0.28, \"V20\": -0.34, \"V21\": -0.31, \"V22\": -0.22, \"V23\": -0.18, \"V24\": -0.72, \"V25\": -0.05, \"V26\": -0.08, \"V27\": -0.16, \"V28\": -0.14, \"V29\": 0.04, \"V30\": -0.19, \"V31\": -0.38, \"V32\": -0.42, \"V33\": -0.33, \"V34\": -0.11, \"V35\": 0.06, \"V36\": -0.07, \"V37\": -0.15, \"V38\": -0.09, \"V39\": -0.12, \"V40\": -0.36, \"V41\": -0.08, \"V42\": -0.29, \"V43\": -0.11, \"V44\": -0.25, \"V45\": 0.03, \"V46\": -0.14, \"V47\": -0.16, \"V48\": -0.12, \"V49\": -0.09, \"V50\": -0.07}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791925873,
+            "id": "gen-batch-1791925708-e5c1550a0dc9d3935b81",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 1611,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 298
+              },
+              "prompt_tokens": 1270,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 2881
+            }
+          },
+          "request_id": "cZ7Oap71Ipqv1dUPh9GCkAE",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000009",
+        "error": null,
+        "id": "cZ7OasvKIpOn3PcP_4ul0As",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the regulatory-activity effects of the candidate variants in this 600 bp enhancer element assayed in LiCl-stimulated HEK293T cells, we examine the sequence for transcription factor binding motifs active in the Wnt/$\\beta$-catenin signaling context (specifically TCF/LEF family motifs, `CTTTGAT` / `ATCAAAG`, and co-regulatory motifs) as well as consensus sequence creation or disruption:\n\n1. **Core TCF/LEF Motif (Positions 329–338, `GAATCAAAGG`):**\n   - **V33 (pos 333 C>G):** Disrupts the invariant core cytosine of the canonical `AATCAAAG` (reverse complement `CTTTGATT`) TCF/LEF binding site. In LiCl-stimulated HEK293T cells, this site is a primary driver of enhancer activity, so V33 is predicted to cause a strong loss of activity.\n   - **V34 (pos 338 G>C):** Alters the immediately flanking base of the TCF/LEF motif, resulting in a moderate decrease in activity.\n\n2. **Secondary Motifs and Structured Regions:**\n   - **Positions 220–245 (V27, V28, V29):** Located near a secondary HMG/TCF-like half-site and GATA/E-box-like sequence (`CTCAGCAGATGAAAGGC`). V27 (222 C>A) and V28 (228 A>C, disrupting `AGATGAAAG`) reduce activity, whereas V29 (241 A>T) has a mild effect.\n   - **Positions 350–400 (V35–V39):** Downstream of the primary TCF site, containing GC-rich and AP-1/ETS-like sequences (`GGGGCCTTAGACTGGGCTGTGTATACAG`). Variants disrupting the conserved core around 370–379 (V36, V37, V38) generally reduce activity.\n   - **Positions 1–70 (V01–V19):** Located at the 5'-distal end of the insert. Most single-nucleotide substitutions here have modest or near-neutral effects, with slight negative effects where local regulatory motifs (`CTGCAGAGGGCACTAG`, `TCCCTTCCAGCTCC`) are perturbed, or slight positive effects when creating stronger activator binding sites (e.g., V16 creating a stronger AT-rich/homeodomain or forkhead-like sequence).\n   - **Positions 404–470 (V40–V48):** Contains Fox/TCF-like sequences (`GTTTCCTTTAACCT`, `CAATAACTGTGCAACTCTGCAATTT`). Variants such as V42 (421 G>T) and V43 (437 T>C) have mild-to-moderate effects on baseline enhancer output.\n\nFINAL: {\"V01\": -0.05, \"V02\": -0.08, \"V03\": -0.06, \"V04\": -0.04, \"V05\": -0.12, \"V06\": -0.15, \"V07\": -0.05, \"V08\": -0.10, \"V09\": -0.08, \"V10\": -0.14, \"V11\": -0.18, \"V12\": -0.12, \"V13\": -0.09, \"V14\": 0.04, \"V15\": -0.06, \"V16\": 0.08, \"V17\": -0.07, \"V18\": -0.09, \"V19\": -0.05, \"V20\": -0.11, \"V21\": 0.12, \"V22\": -0.08, \"V23\": 0.06, \"V24\": -0.10, \"V25\": -0.15, \"V26\": -0.18, \"V27\": -0.12, \"V28\": -0.35, \"V29\": -0.08, \"V30\": -0.05, \"V31\": 0.04, \"V32\": 0.06, \"V33\": -1.15, \"V34\": -0.32, \"V35\": -0.14, \"V36\": -0.28, \"V37\": -0.25, \"V38\": -0.22, \"V39\": -0.10, \"V40\": -0.12, \"V41\": -0.08, \"V42\": -0.16, \"V43\": -0.14, \"V44\": -0.18, \"V45\": -0.15, \"V46\": -0.12, \"V47\": -0.10, \"V48\": -0.08, \"V49\": -0.06, \"V50\": -0.04}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791925873,
+            "id": "gen-batch-1791925708-9b4c141a7edc98be9d6b",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 2423,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 1231
+              },
+              "prompt_tokens": 1294,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 3717
+            }
+          },
+          "request_id": "cZ7OasvKIpOn3PcP_4ul0As",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000001",
+        "error": null,
+        "id": "cZ7Oape8IuPoz9MPqLjYiAo",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the regulatory-activity effects of the candidate variants in this 385-bp *PKLR* core promoter element in erythroid/megakaryocytic HEL 92.1.7 cells, we map the variants against key cis-regulatory motifs required for basal and lineage-specific transcription:\n\n1. **ETS motif (positions 99–108, `GAGCGGAAGC`):** Variants V08 through V16 directly alter the core `CGGAAG` ETS-family binding site. Disruptions of the invariant `GGAA` core (V09–V15) cause marked reductions in promoter activity.\n2. **Tandem GATA motifs (positions 131–147, `CGATAGTGTGCTATCTG`):** This region contains two closely spaced GATA1 binding sites (`GATAG` at 132–136 and reverse-complement `CTATCT` at 141–146), which are critical drivers of *PKLR* transcription in HEL cells. Variants V18–V24 disrupt these motifs and strongly decrease reporter expression.\n3. **GC-box / SP1/KLF motif (positions 224–236, `GGGGCGGGGCGG`):** Variants V33 (pos 229 G>T) and V34 (pos 231 G>A) disrupt the canonical GC-box/KLF1 site, leading to substantially reduced promoter activity.\n4. **Proximal GATA motif (positions 240–246, `TTATCGC`):** Variants V35 (pos 241 T>C) and V36 (pos 243 T>C) disrupt the core `GATA` (`TATC`) sequence on the minus strand, producing strong negative effects.\n5. **Flanking and non-core positions:** Variants outside conserved transcription factor binding sites generally exhibit mild or near-neutral effects on reporter activity.\n\nFINAL: {\"V01\": -0.05, \"V02\": -0.04, \"V03\": -0.06, \"V04\": 0.02, \"V05\": -0.03, \"V06\": -0.08, \"V07\": -0.12, \"V08\": -0.35, \"V09\": -0.95, \"V10\": -0.85, \"V11\": -1.35, \"V12\": -1.4, \"V13\": -1.3, \"V14\": -1.35, \"V15\": -0.9, \"V16\": -0.3, \"V17\": -0.1, \"V18\": -0.45, \"V19\": -1.45, \"V20\": -1.35, \"V21\": -0.15, \"V22\": -1.4, \"V23\": -1.35, \"V24\": -1.25, \"V25\": -0.08, \"V26\": -0.1, \"V27\": -0.05, \"V28\": -0.25, \"V29\": -0.2, \"V30\": -0.1, \"V31\": -0.25, \"V32\": -0.3, \"V33\": -0.85, \"V34\": -0.8, \"V35\": -1.15, \"V36\": -1.35, \"V37\": -0.1, \"V38\": -0.15, \"V39\": -0.2, \"V40\": -0.2, \"V41\": -0.05, \"V42\": -0.08, \"V43\": -0.05, \"V44\": 0.15, \"V45\": -0.12, \"V46\": -0.1, \"V47\": -0.05, \"V48\": 0.05, \"V49\": -0.02, \"V50\": -0.05}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791925873,
+            "id": "gen-batch-1791925708-db3ac458f5408ea233be",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 1497,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 531
+              },
+              "prompt_tokens": 1201,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 2698
+            }
+          },
+          "request_id": "cZ7Oape8IuPoz9MPqLjYiAo",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000013",
+        "error": null,
+        "id": "cZ7OapXZIuPFjNsP-KCgwAU",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the regulatory-activity effects of the candidate variants, we identify the sequence as the human *TERT* core promoter (from Kircher et al. / Patwardhan et al. saturation-mutagenesis MPRA in HEK293T cells). The sequence contains well-characterized transcription factor binding sites that drive promoter activity, as well as repressive elements:\n\n1. **Upstream E-box (`CACGTG`, pos 30–35):** Binds Myc/Max/Mad family TFs. Variants immediately flanking or within this region (V04, V05, V06) modestly alter activity.\n2. **Repressive / regulatory site around pos 55–65 (`CTGCCTGAAACTC`):** In the *TERT* promoter MPRA, mutations in the `TGAAACT` motif (pos 57–64: V10–V17) relieve transcriptional repression (or create activating motifs), resulting in strong **positive** effects on reporter activity.\n3. **SP1 binding site 1 (`GGCGGGGCC`, pos 81–89):** Essential activating GC-box. Disrupting the core `GGGCGG` (V18 at pos 81, V19 at pos 85, V20 at pos 88) causes strong **negative** effects.\n4. **Native ETS binding site (`CGGAAAGGAA`, pos 91–100):** Major activator site in the core promoter. Variants disrupting the `GGAA` tandem core (V22–V27) strongly **decrease** promoter activity.\n5. **SP1 binding site 2 (`GAGGGGCTGG`, pos 104–113):** Mutations disrupting this G-rich SP1 site (V29, V30) **decrease** activity.\n6. **SP1 binding site 3 (`GGGGCTGGGC`, pos 124–133):** Variants V31 (pos 126 G>T) and V32 (pos 128 G>T) disrupt the `GGGC` core, leading to **negative** effects.\n7. **Region around pos 142–147 (`CCGGGAGGGG`):** Variants V33–V36 fall in a lower-impact linker/minor GC region, with V35 (143 C>T) and V36 (147 G>T) causing mild effects.\n8. **SP1 binding site 4 (`CGGGGCGGGG`, pos 159–168):** A critical activating SP1 motif. Variants V37–V40 disrupt this core GC-box and strongly **reduce** reporter expression.\n9. **Downstream E-box (`CACGTG`, pos 238–243):** Binds USF1/2 and Myc/Max; often acts as a repressive or context-dependent element in episomal *TERT* reporters, or disruption at pos 241 (V48, G>T) alters E-box binding.\n\nFINAL: {\"V01\": -0.05, \"V02\": -0.08, \"V03\": -0.06, \"V04\": -0.15, \"V05\": -0.12, \"V06\": -0.10, \"V07\": -0.05, \"V08\": -0.05, \"V09\": -0.08, \"V10\": 0.45, \"V11\": 0.35, \"V12\": 0.55, \"V13\": 0.65, \"V14\": 0.50, \"V15\": 0.60, \"V16\": 0.55, \"V17\": 0.40, \"V18\": -0.45, \"V19\": -0.75, \"V20\": -0.50, \"V21\": -0.15, \"V22\": -0.65, \"V23\": -0.70, \"V24\": -0.80, \"V25\": -0.75, \"V26\": -0.70, \"V27\": -0.55, \"V28\": -0.25, \"V29\": -0.40, \"V30\": -0.35, \"V31\": -0.55, \"V32\": -0.50, \"V33\": -0.10, \"V34\": -0.08, \"V35\": 0.15, \"V36\": -0.30, \"V37\": -0.45, \"V38\": -0.50, \"V39\": -0.60, \"V40\": -0.75, \"V41\": -0.20, \"V42\": -0.25, \"V43\": -0.15, \"V44\": -0.10, \"V45\": -0.08, \"V46\": -0.12, \"V47\": -0.10, \"V48\": 0.30, \"V49\": -0.15, \"V50\": -0.10}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791925873,
+            "id": "gen-batch-1791925708-654fe9cd4fbb1822ba11",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 1884,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 671
+              },
+              "prompt_tokens": 1127,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 3011
+            }
+          },
+          "request_id": "cZ7OapXZIuPFjNsP-KCgwAU",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000002",
+        "error": null,
+        "id": "cZ7OarK3Iq-Mj8MPlNet8Qc",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the regulatory-activity effects of the candidate variants in the saturation-mutagenesis MPRA in HEL 92.1.7 (erythroid) cells, we first identify the mutagenized sequence and its functional cis-regulatory architecture:\n\n1. **Element Identity:** The 187 bp insert corresponds to the human fetal $\\gamma$-globin (*HBG1*/*HBG2*) proximal promoter region (spanning roughly from $-250$ to $-60$ relative to the endogenous TSS).\n2. **Key Regulatory Motifs in Erythroid MPRA:**\n   - **Distal CCAAT box (`GATTGGCCAA`, positions 121–130):** Bound by the transcriptional activator NF-Y (and competitively by the repressor BCL11A at the overlapping `TGACCA`/`TGGCCA` motif in endogenous chromatin). In episomal plasmid MPRAs lacking the $\\beta$-globin Locus Control Region (LCR), the core `ATTGG` sequence (positions 122–126) functions as a dominant basal activator; core-disrupting variants (`V35`, `V36`, `V37`) strongly decrease reporter expression, while variants at the 3' edge (`V38`, `V39`) have more moderate effects.\n   - **CACCC box (`GGGTGTGGCT`, positions 136–145):** Bound by erythroid Krüppel-like factors (KLF1/SP1). Variants disrupting the G-rich core (`V40`, `V41`, `V42`, `V43`, `V44`) markedly reduce promoter activity.\n   - **Upstream C-rich / GC-rich tracts (positions 85–115):** Contain SP1/KLF and ZBTB7A binding sequences (`TGGCTCCTGCCCTCCCTGCTCCTGGG`). Substitutions and deletions in these runs (`V19`–`V32`) generally produce mild-to-moderate reductions in activity.\n   - **$-175$ GATA/TAL1 region (`CCTGACTTTTATG`, positions 71–83):** Contains homeodomain/GATA/TAL1 binding motifs (`V16`, `V17`, `V18`) that modestly modulate erythroid promoter activity.\n   - **5' distal and 3' flanking sequences (positions 1–65 and 160–187):** Variants outside the core transcription factor footprints (`V01`–`V15`, `V46`–`V50`) generally exhibit near-neutral or weak regulatory effects.\n\nFINAL: {\"V01\": -0.02, \"V02\": -0.04, \"V03\": 0.03, \"V04\": -0.03, \"V05\": 0.02, \"V06\": -0.05, \"V07\": 0.04, \"V08\": -0.02, \"V09\": -0.03, \"V10\": -0.04, \"V11\": -0.02, \"V12\": -0.05, \"V13\": -0.03, \"V14\": -0.08, \"V15\": -0.06, \"V16\": -0.15, \"V17\": -0.18, \"V18\": -0.14, \"V19\": -0.12, \"V20\": -0.08, \"V21\": -0.10, \"V22\": -0.11, \"V23\": -0.15, \"V24\": -0.14, \"V25\": -0.18, \"V26\": -0.16, \"V27\": -0.15, \"V28\": -0.12, \"V29\": -0.08, \"V30\": -0.10, \"V31\": -0.22, \"V32\": -0.20, \"V33\": -0.09, \"V34\": -0.12, \"V35\": -0.45, \"V36\": -0.85, \"V37\": -0.80, \"V38\": -0.25, \"V39\": -0.30, \"V40\": -0.35, \"V41\": -0.65, \"V42\": -0.60, \"V43\": -0.62, \"V44\": -0.28, \"V45\": -0.10, \"V46\": -0.05, \"V47\": -0.08, \"V48\": -0.06, \"V49\": -0.04, \"V50\": -0.07}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791925873,
+            "id": "gen-batch-1791925708-335c31058e01e9ccaa08",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 3364,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 2242
+              },
+              "prompt_tokens": 1108,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 4472
+            }
+          },
+          "request_id": "cZ7OarK3Iq-Mj8MPlNet8Qc",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000015",
+        "error": null,
+        "id": "cZ7OarDDIvHDj8MPgMCSiQ4",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the signed regulatory-activity effects of the candidate variants in this enhancer (the ZRS limb enhancer assayed in NIH3T3 cells co-transfected with Hoxd13), we evaluate how each substitution or small deletion alters transcription factor binding motifs—most notably canonical Hoxd13/homeodomain binding sites (`TAATAAA`, `AAATAAA`, `TTTAT`, `ATGAC`) as well as ETS/E-box and Forkhead motifs—or creates new activator sites.\n\n### Sequence and Motif Analysis\n\n1. **Positions 1–80:**\n   `TGAGATATGGCTTCATTTTCTGTAATAAACACTAAGATCAAAACATGACCCAAGTTAAATTTCCTTGCAGGGTTCCCAGC`\n   - **V01 (pos 7, A>C):** `TGAGAT[A>C]TGG` — disrupts a GATA/homeodomain-like half-site; mild negative effect.\n   - **V02 (pos 15, A>C):** `CTTC[A>C]TTTT` — disrupts poly-T/AT-rich tract; slight negative effect.\n   - **V03 (pos 20, C>A), V04 (pos 22, G>A), V05 (pos 22, G>C):** Located immediately upstream of the canonical Hoxd13 site `GTAATAAAC` (pos 22–30). V03 (`CTG`>`ATG`) and V04 (`G`>`A`, making `ATAATAAAC`) increase AT-richness/Hox affinity (neutral to slightly positive), whereas V05 (`G`>`C`) is mildly disruptive.\n   - **V06 (pos 29, A>C):** `GTAATAA[A>C]C` — directly disrupts the core `TAATAAA` Hoxd13 binding motif; strong negative effect.\n   - **V07 (pos 36, G>C):** `CTAAG[A]TC` (pos 36 is `G` in `ACTAAGATC`) — mild negative effect.\n   - **V08 (pos 42, A>C):** `ATCAA[A>C]ACAT` — mild negative effect.\n   - **V09 (pos 46, T>G):** `ACATG[T? No, pos 46 is T in ATGAC? Let's check: pos 41-50 is AACATGACCC, wait: 10=G, 20=C, 30=C, 40=A, 41=A, 42=A, 43=C, 44=A, 45=T, 46=G? Wait: T(1)G(2)A(3)G(4)A(5)T(6)A(7)T(8)G(9)G(10) C(11)T(12)T(13)C(14)A(15)T(16)T(17)T(18)T(19)C(20) T(21)G(22)T(23)A(24)A(25)T(26)A(27)A(28)A(29)C(30) A(31)C(32)T(33)A(34)A(35)G(36)A(37)T(38)C(39)A(40) A(41)A(42)A(43)C(44)A(45)T(46)G(47)A(48)C(49)C(50)]`. Pos 46 is `T` in `AACATGACCC`, disrupting a Meis/TALE or AP-1/basic helix-loop-helix half-site (`CATGAC`); negative effect.\n   - **V10 (pos 67, G>T):** `CTTGCA[G>T]GGTT` — neutral/slight effect.\n\n2. **Positions 81–160:**\n   `AGGGGCTTCCCTTTTGTCTGTGATTTCCTCTCACCCACCAGAACCAGGCCAAATATGCGCATGTGCCACTAACACTAAGC`\n   - **V11 (pos 90, C>T):** `CTTCC[C>T]TTTT` — extends poly-T run; slight negative/neutral effect.\n   - **V12 (pos 132, A>T), V13 (pos 135, A>C):** Within `CAAATATGCGC` (pos 130–140). Pos 132 `A>T` maintains AT-richness (`CATATAT`), whereas pos 135 `A>C` (`AATCTGC`) disrupts the AT-core; negative effect for V13.\n   - **V14 (pos 144, T>G), V15 (pos 147, C>G):** Within `ATGTGCCACT` (`T>G` at 144, `C>G` at 147); mild effects.\n   - **V16 (pos 151, A>C), V17 (pos 154, A>T):** Within `AACACTAAGC` (`[A>C]AC[A>T]CTAAGC`); mild negative effects.\n\n3. **Positions 161–240:**\n   `AGCACTTCCTTAATCACTCATTTCCAACAATTTATGGATCATCAGTGGCAAAAAACGAGCAAAAATAATGAAAGAATGCA`\n   - **V18 (pos 162, G>T):** `A[G>T]CACTTCC` — slight effect.\n   - **V19 (pos 171, TA>T):** Deletes `A` in homeodomain-like `TTAATCACT`; negative effect.\n   - **V20 (pos 190, A>T), V21 (pos 194, A>C):** Located in `AATTTATGGAT` (pos 189–199, containing the core homeodomain/Hox motif `TTTATGG`). V20 (`A>T` at 190, `ATTTTATGG`) preserves/strengthens the AT-rich homeodomain motif, while V21 (`A>C` at 194, `TTTCTGG`) strongly disrupts the `TTTAT` core; strong negative effect for V21.\n   - **V22 (pos 220, C>A):** `CGAG[C>A]AAAAATA` — extends the poly-A tract upstream of `AATAATG`; positive or near-neutral effect.\n\n4. **Positions 241–320:**\n   `ATGAAAGCTCGTGGAGACAGAGGCTGGACTTCCTACTCACTCTGTGTCTCTTTAAGATGGAGGCCTGATACAAATTAGCC`\n   - **V23 (pos 246, A>C):** `ATGAA[A>C]GCT` — mild negative effect.\n   - **V24 (pos 270, T>C), V25 (pos 272, C>G), V26 (pos 279, A>C):** Within `TTCCTACTCAC` (pos 270–280); modest regulatory effects.\n   - **V27 (pos 289, T>A), V28 (pos 290, C>A):** Within `TCTGTGTCTCTTTA` (`TC` > `AA` at 289–290); modest effects.\n   - **V29 (pos 316, T>A), V30 (pos 320, C>G):** Within `CAAATTAGCC` (pos 311–320, homeodomain motif `CAAATTA`). V29 (`T>A` at 316, `CAAATAAGCC`) alters the homeodomain core (`AATTA` > `AATAA`, which is actually a strong Hoxd13 consensus `CAATAA`!), whereas V30 (`C>G` at 320) is flanking.\n\n5. **Positions 321–400:**\n   `ACTGGGGGGAAAAAGTCATCTGGTCATAAAATACAGTACAAGGTCACTTTTATGTAAGTTTGCCAAAAGGGACATAAACC`\n   - **V31 (pos 347, T>C):** Situated in `TCATAAAATAC` (pos 344–354, canonical Hoxd13 motif `CATAAAAT` / `ATAAA`). Pos 347 is `T` (`TCA[T>C]AAAATAC`); `T>C` changes `TCATAAA` to `TCACAAA`, disrupting the `TTTAT`/`ATAAA` site; negative effect.\n   - **V32 (pos 363, G>C):** `AAGG[G? pos 363 is G in AAGGTCAC]` — mild effect.\n   - **V33 (pos 369, T>G), V34 (pos 370, T>A):** Situated right in the canonical Hox/Fox site `CTTTTATGTA` (pos 367–376, `TTTTATG`). V33 (`T>G` at 369) and V34 (`T>A` at 370) disrupt the poly-T/Hox core `TTTTAT`; strong negative effects.\n   - **V35 (pos 391, GA>G), V36 (pos 392, A>T), V37 (pos 398, A>T):** Located in `AGGGACATAAACC` (pos 388–400, containing the Hoxd13 site `ACATAAA`). V37 (pos 398 `A>T` in `ACATAA[A>T]CC`) alters the core `ATAAA` motif.\n\n6. **Positions 401–486:**\n   `AGGACAATTTCAAACTGTGACACAGGATAGAAACATATTAAAAAAATCTTTGTTCCTCCTCTATTGTGCTGTCATGTTGC`\n   `TCAGCA`\n   - **V38 (pos 415, CT>C):** Deletion in `CTGTGAC`; mild negative effect.\n   - **V39 (pos 422, A>T), V40 (pos 424, A>T):** In `ACACAGGATAG` (`A[C]A` -> `T[C]T`); mild effects.\n   - **V41 (pos 448, CT>C), V42 (pos 450, T>G), V43 (pos 453, T>G), V44 (pos 455, C>A):** In `CTTTGTTCCTCCT` (pos 448–460); mostly neutral/mild effects (repressor/polypyrimidine tract).\n   - **V45–V50 (pos 467–485):** Near the 3' end of the element (`TGCTGTCATGTTGCTCAGCA`); generally small effects.\n\nFINAL: {\"V01\": -0.12, \"V02\": -0.08, \"V03\": 0.05, \"V04\": 0.08, \"V05\": -0.15, \"V06\": -0.65, \"V07\": -0.1, \"V08\": -0.12, \"V09\": -0.25, \"V10\": -0.04, \"V11\": -0.05, \"V12\": -0.06, \"V13\": -0.22, \"V14\": -0.08, \"V15\": -0.06, \"V16\": -0.1, \"V17\": -0.09, \"V18\": -0.05, \"V19\": -0.2, \"V20\": 0.04, \"V21\": -0.45, \"V22\": 0.06, \"V23\": -0.1, \"V24\": -0.08, \"V25\": -0.07, \"V26\": -0.09, \"V27\": -0.05, \"V28\": -0.04, \"V29\": 0.12, \"V30\": -0.05, \"V31\": -0.42, \"V32\": -0.08, \"V33\": -0.55, \"V34\": -0.38, \"V35\": -0.18, \"V36\": -0.12, \"V37\": -0.35, \"V38\": -0.15, \"V39\": -0.05, \"V40\": -0.06, \"V41\": -0.1, \"V42\": -0.08, \"V43\": -0.07, \"V44\": 0.03, \"V45\": -0.05, \"V46\": -0.06, \"V47\": -0.04, \"V48\": -0.05, \"V49\": -0.08, \"V50\": -0.03}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791925873,
+            "id": "gen-batch-1791925708-71c8dfefdbd9574591f8",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 3358,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 270
+              },
+              "prompt_tokens": 1295,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 4653
+            }
+          },
+          "request_id": "cZ7OarDDIvHDj8MPgMCSiQ4",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000011",
+        "error": null,
+        "id": "yaDOavLVBOPoz9MPqLjYiAo",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "Brief reasoning:\nThe mutagenized element is the *SORT1* liver enhancer (chr1p13.3) assayed in HepG2 cells, containing the active C/EBP binding site around positions 393–403 (the rs12740374 region) as well as functional GC-box/SP1/KLF motifs (positions 204–220, 365–380), an ETS/purine-rich regulatory module (positions 270–295), and flanking CCAAT/C/EBP-like and HNF motifs (positions 318–340, 440–455). Variants disrupting these activator binding sites—most notably the core C/EBP motif at positions 395–403 and the purine-rich activator cluster at 272–291—produce substantial decreases in reporter activity, whereas peripheral variants outside conserved motifs have near-neutral effects.\n\nFINAL: {\"V01\": -0.05, \"V02\": -0.18, \"V03\": 0.04, \"V04\": 0.08, \"V05\": -0.12, \"V06\": -0.06, \"V07\": 0.12, \"V08\": -0.15, \"V09\": -0.35, \"V10\": -0.45, \"V11\": -0.42, \"V12\": -0.25, \"V13\": -0.18, \"V14\": -0.65, \"V15\": -0.75, \"V16\": -0.85, \"V17\": -0.95, \"V18\": -0.55, \"V19\": -0.70, \"V20\": -0.60, \"V21\": -0.45, \"V22\": -0.20, \"V23\": -0.40, \"V24\": -0.35, \"V25\": -0.50, \"V26\": -0.25, \"V27\": -0.35, \"V28\": -0.30, \"V29\": -1.40, \"V30\": -1.20, \"V31\": -0.80, \"V32\": -1.35, \"V33\": -1.50, \"V34\": -1.45, \"V35\": -1.10, \"V36\": -1.25, \"V37\": -0.75, \"V38\": -0.20, \"V39\": -0.30, \"V40\": -0.25, \"V41\": -0.35, \"V42\": -0.60, \"V43\": -0.65, \"V44\": -0.55, \"V45\": -0.70, \"V46\": 0.05, \"V47\": 0.08, \"V48\": -0.10, \"V49\": -0.12, \"V50\": 0.02}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791926473,
+            "id": "gen-batch-1791925708-97f689726e0d265d6d71",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 3757,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 2984
+              },
+              "prompt_tokens": 1305,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 5062
+            }
+          },
+          "request_id": "yaDOavLVBOPoz9MPqLjYiAo",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000004",
+        "error": null,
+        "id": "cZ7Oava2IpvhwtQP4_O1oAg",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the regulatory activity effects of the candidate variants, we first identify the mutagenized sequence as the human *LDLR* core promoter and 5' UTR (characterized via saturation mutagenesis MPRA in HEK293T cells). \n\n### Sequence & Motif Analysis\n1. **Upstream Region (Positions 1–80, Variants V01–V12):**\n   Located upstream of the canonical *LDLR* promoter repeats. Variants in this distal region generally show weak or near-neutral effects on basal promoter activity, with minor modulation around secondary transcription factor motifs (e.g., around positions 64–70).\n\n2. **Repeat 1 / Distal Activator Region (Positions 90–105, Variants V13–V16):**\n   Contains the sequence `CTAAGTGACTGGT` (positions 94–106). Disrupting bases in this activator element moderately reduces transcription.\n\n3. **Repeat 2 & Repeat 3 / SRE-1 and SP1 Core Activator Region (Positions 118–136, Variants V17–V29):**\n   This critical regulatory cluster (`GTATCCACCCACCTTGGGTG`) harbors the sterol regulatory element (SRE-1) and adjacent SP1 binding sites essential for basal and sterol-regulated *LDLR* transcription. Single-nucleotide substitutions across positions 119–135 (V17–V29) disrupt SREBP/SP1 binding and cause strong reductions in reporter activity, unless a substitution increases consensus affinity (such as V19 `122C>T`, which creates the canonical `ATCACCCCAC` SRE-1 motif from `ATCCACCCAC` and slightly boosts or maintains activity).\n\n4. **TATA-like Box / Core Promoter Region (Positions 140–158, Variants V30–V33):**\n   The A/T-rich element (`TTAGAAGAATCAATAAGAT`) functions as the core promoter/TATA-like box. Variants V30–V33 (`145G>C`, `147A>T`, `152T>C`, `154A>C`) disrupt this core recognition site, resulting in negative activity effects.\n\n5. **Proximal SP1 Site (Positions 160–175, Variants V34–V37):**\n   Positions 160–168 (`CCGGGCGGT`) form a high-affinity GC-box/SP1 binding site (`CGGGCGG`). Variants V34 (`160C>A`) and especially V35 (`166G>C`, disrupting the core G of the GC-box) reduce promoter activity.\n\n6. **5' UTR and Downstream Region (Positions 190–285, Variants V38–V50):**\n   Located downstream of the transcription start site, spanning the 5' transcribed region. Most substitutions and single-base deletions (V38, V40, V43) in this region have modest or near-neutral effects on transcript abundance and reporter expression compared to disruptions in the core SRE-1/SP1 promoter elements.\n\nFINAL: {\"V01\": 0.02, \"V02\": -0.05, \"V03\": -0.04, \"V04\": -0.06, \"V05\": -0.05, \"V06\": -0.03, \"V07\": -0.04, \"V08\": 0.05, \"V09\": -0.15, \"V10\": -0.18, \"V11\": -0.12, \"V12\": -0.1, \"V13\": -0.25, \"V14\": -0.45, \"V15\": -0.55, \"V16\": -0.4, \"V17\": -0.5, \"V18\": -0.75, \"V19\": 0.15, \"V20\": -1.1, \"V21\": -0.95, \"V22\": -1.15, \"V23\": -1.05, \"V24\": -0.9, \"V25\": -0.8, \"V26\": -0.35, \"V27\": -0.85, \"V28\": -0.95, \"V29\": -0.7, \"V30\": -0.35, \"V31\": -0.4, \"V32\": -0.45, \"V33\": -0.35, \"V34\": -0.25, \"V35\": -0.85, \"V36\": -0.15, \"V37\": -0.1, \"V38\": -0.15, \"V39\": -0.08, \"V40\": -0.12, \"V41\": -0.05, \"V42\": -0.08, \"V43\": -0.12, \"V44\": 0.05, \"V45\": -0.2, \"V46\": -0.15, \"V47\": -0.05, \"V48\": -0.08, \"V49\": -0.1, \"V50\": -0.08}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791925873,
+            "id": "gen-batch-1791925708-748582242ff7bff768d5",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 2003,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 772
+              },
+              "prompt_tokens": 1149,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 3152
+            }
+          },
+          "request_id": "cZ7Oava2IpvhwtQP4_O1oAg",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000005",
+        "error": null,
+        "id": "cZ7Oar_HIoiQvfIPrKiA6QE",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the regulatory-activity effects of the candidate variants in this 451-bp *IRF4* enhancer element in SK-MEL-28 melanoma cells, we map the variants against key melanocyte transcription factor binding motifs active in this element:\n\n1. **MITF / E-box motifs (`CATGTG` / `CATATG`)**:\n   - **Positions 90–95 (`CATGTG`)**: Variants V06 (pos 92 T>A), V07 (pos 95 G>T), and flanking variants V05 (pos 88 A>T), V08 (pos 96 A>G), and V09 (pos 98 A>G) fall within or immediately adjacent to a primary MITF E-box. Disrupting core E-box bases (V06, V07) strongly reduces enhancer activity.\n   - **Positions 217–222 (`CATATG`)**: Variants V27 (pos 216 C>A), V28 (pos 219 A>T), V29 (pos 221 G>C), V30 (pos 222 A>G), and V31 (pos 222 A>T) hit a second E-box motif, leading to negative regulatory effects, with core substitutions (V28, V29, V31) showing stronger decreases and V30 (`CATATG` -> `CATGTG`, canonical MITF E-box conversion) preserving or increasing activity.\n\n2. **TFAP2A (AP-2) and adjacent motifs (Positions 99–112, `CCACAGGGCAGCT`)**:\n   - Variants V10 (pos 103 AG>A), V11 (pos 104 G>C), V12 (pos 105 G>T), V13 (pos 110 C>G), and V14 (pos 110 C>T) disrupt the GC-rich AP-2 binding region immediately downstream of the first E-box, reducing transcriptional activity.\n\n3. **AP-1 / ATF / Maf-like region (Positions 133–150, `TGTGAATGACAGCTTTGT`)**:\n   - Variants V15 (pos 134 G>C) and indels/substitutions at 144–145 (V16–V19) alter this regulatory segment, generally reducing activity when disrupting the core sequence.\n\n4. **TFAP2A / IRF4 / SOX-like region around rs12203592 (Positions 166–186)**:\n   - Variants V20–V25 span the conserved region containing `GGTAAAAGAAGGCAAATTCCCCT`. Core disruptions at 181–184 (V23–V25) and upstream activator sites (V20–V22) alter factor occupancy.\n\n5. **SOX10 motif region (Positions 247–262, `AGTATCTCCATTGTCCTTT`)**:\n   - Variants V32–V40 cluster across the SOX10 monomer/dimer binding region (`ATTGTC`). Disruptions of the core `ATTGTC` motif (V37–V40) strongly decrease enhancer activity in SK-MEL-28 cells, whereas flanking changes at 247–252 (V32–V36) have milder or motif-tuning effects.\n\n6. **Distal 3' region (Positions 273–397)**:\n   - Variants V41–V50 lie across secondary motifs (including ETS/GGGATTCC around 358 and GC-rich/CA-repeat elements near 394–397), generally producing modest effects compared to the central MITF/SOX10/TFAP2A core.\n\nFINAL: {\"V01\": -0.05, \"V02\": -0.08, \"V03\": -0.12, \"V04\": 0.05, \"V05\": -0.25, \"V06\": -1.15, \"V07\": -1.10, \"V08\": -0.45, \"V09\": -0.20, \"V10\": -0.65, \"V11\": -0.55, \"V12\": -0.60, \"V13\": -0.30, \"V14\": -0.25, \"V15\": -0.40, \"V16\": -0.50, \"V17\": -0.35, \"V18\": -0.30, \"V19\": -0.45, \"V20\": -0.35, \"V21\": -0.20, \"V22\": -0.45, \"V23\": -0.50, \"V24\": -0.40, \"V25\": -0.55, \"V26\": -0.25, \"V27\": -0.30, \"V28\": -0.85, \"V29\": -0.90, \"V30\": 0.35, \"V31\": -0.80, \"V32\": -0.15, \"V33\": -0.20, \"V34\": -0.25, \"V35\": -0.30, \"V36\": -0.20, \"V37\": -0.95, \"V38\": -1.05, \"V39\": -0.75, \"V40\": -0.85, \"V41\": 0.10, \"V42\": -0.15, \"V43\": -0.10, \"V44\": -0.20, \"V45\": -0.15, \"V46\": -0.10, \"V47\": -0.25, \"V48\": -0.15, \"V49\": -0.35, \"V50\": -0.30}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791925873,
+            "id": "gen-batch-1791925708-ae0e711d902abccac936",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 2103,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 690
+              },
+              "prompt_tokens": 1242,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 3345
+            }
+          },
+          "request_id": "cZ7Oar_HIoiQvfIPrKiA6QE",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000006",
+        "error": null,
+        "id": "cZ7Oap7jIsuA3PcPuuOlyQU",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the regulatory-activity effects of the candidate variants in this 601 bp element in HaCaT keratinocytes, we examine the sequence architecture and transcription factor binding motifs characteristic of the *IRF6* (MCS-9.7) keratinocyte enhancer:\n\n1. **Core Enhancer Modules (Positions 340–425):** \n   This central region harbors tightly clustered binding motifs for key epidermal transcription factors, notably **TP63 (p63)**, **TFAP2A (AP-2$\\alpha$)**, and **KLF4/SP1** (including GC-rich/C-box elements around positions 365–385 and AP-2 sites around 340–360 and 402–422). Variants that disrupt conserved core bases within these binding sites (V20–V42) consistently abolish transcription factor binding and cause strong reductions in reporter expression (strongly negative $\\log_2$ activity effects).\n\n2. **Secondary Regulatory Motifs (Positions 265–305 and 500–550):**\n   Additional conserved sequence elements upstream (positions 265–301, overlapping ETS/AP-2-like sequences) and downstream (positions 504–547, overlapping GC/GGGTGG and NF-$\\kappa$B/EBF-like motifs) contribute moderately to overall enhancer activity. Variants in these regions generally produce mild-to-moderate negative or occasionally weak positive effects depending on whether they disrupt or optimize the local motif.\n\n3. **Flanking and Low-Constraint Regions (Positions 1–240, 445–495, 575–601):**\n   Variants located outside the primary transcription factor footprints exhibit near-neutral or weak regulatory effects.\n\nFINAL: {\"V01\": -0.04, \"V02\": 0.03, \"V03\": -0.06, \"V04\": 0.08, \"V05\": -0.05, \"V06\": -0.08, \"V07\": -0.03, \"V08\": 0.04, \"V09\": 0.06, \"V10\": -0.07, \"V11\": -0.11, \"V12\": -0.09, \"V13\": -0.05, \"V14\": -0.15, \"V15\": -0.12, \"V16\": -0.28, \"V17\": -0.24, \"V18\": -0.32, \"V19\": -0.18, \"V20\": -0.75, \"V21\": -0.68, \"V22\": -0.52, \"V23\": -0.72, \"V24\": -0.58, \"V25\": -0.64, \"V26\": -0.45, \"V27\": -0.48, \"V28\": -0.42, \"V29\": -0.55, \"V30\": -0.82, \"V31\": -0.88, \"V32\": -0.76, \"V33\": -0.65, \"V34\": -0.46, \"V35\": -0.62, \"V36\": -0.58, \"V37\": -0.85, \"V38\": -0.74, \"V39\": -0.66, \"V40\": -0.79, \"V41\": -0.71, \"V42\": -0.44, \"V43\": -0.06, \"V44\": 0.05, \"V45\": -0.04, \"V46\": 0.09, \"V47\": 0.14, \"V48\": -0.19, \"V49\": -0.26, \"V50\": -0.03}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791925873,
+            "id": "gen-batch-1791925708-e0c55ce575c2e77b017c",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 1947,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 1000
+              },
+              "prompt_tokens": 1297,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 3244
+            }
+          },
+          "request_id": "cZ7Oap7jIsuA3PcPuuOlyQU",
+          "status_code": 200
+        }
+      },
+      {
+        "custom_id": "request_000000",
+        "error": null,
+        "id": "cZ7Oasa8IsvVvfIPlMKzoAE",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "To predict the regulatory activity effects of the candidate variants in HepG2 cells, we first identify the sequence as the human coagulation factor IX (*F9*) proximal promoter (characterized in saturation mutagenesis MPRA by Kircher et al., 2019). \n\nKey functional regions in this 303 bp promoter element include:\n1. **Positions 71–83 (`ACTTCCTGTTTCA`):** Contains a critical ETS family / HNF4A binding region (associated with Hemophilia B Leyden). Variants disrupting the core `TTCCTG` motif (positions 73–78; **V09–V17**) strongly reduce promoter activity, with flanking positions (**V08, V18–V21**) having moderate negative effects.\n2. **Positions 119–144:** Encompasses upstream regulatory motifs including an HNF1/DBP binding region around positions 130–145 (`AAATTTAATAATGACCACTGCCC`). Variants here (**V25–V31**) generally decrease transcription.\n3. **Positions 170–228:** Contains a CCAAT/enhancer-binding protein (C/EBP) and NF-Y region (`GCCATTGGAAAT` around pos 175–186; **V33, V34**) and an HNF4A/C/EBP site (`ATTGAGGGAGATGGACATTATTTCC` around pos 200–225; **V35–V38**), where disruptions reduce reporter expression.\n4. **Positions 243–285 (`CTTGTACTTTGGTACAACTAATCGACCTTACCACTTTC`):** Contains the well-characterized HNF4A / androgen receptor (AR) / C/EBP binding cluster near the transcription start site. Variants within the core HNF4A/C/EBP recognition sequences (**V41–V47**) cause substantial losses of activity, whereas variants outside the core motifs (**V01–V07, V22–V24, V48–V50**) exhibit smaller or near-neutral effects.\n\nFINAL: {\"V01\": -0.05, \"V02\": -0.08, \"V03\": -0.05, \"V04\": -0.06, \"V05\": -0.04, \"V06\": -0.08, \"V07\": -0.05, \"V08\": -0.25, \"V09\": -0.65, \"V10\": -0.75, \"V11\": -0.55, \"V12\": -0.72, \"V13\": -0.68, \"V14\": -0.82, \"V15\": -0.78, \"V16\": -0.45, \"V17\": -0.52, \"V18\": -0.35, \"V19\": -0.30, \"V20\": -0.28, \"V21\": -0.22, \"V22\": -0.06, \"V23\": -0.08, \"V24\": -0.10, \"V25\": -0.18, \"V26\": -0.15, \"V27\": -0.20, \"V28\": -0.15, \"V29\": -0.42, \"V30\": -0.35, \"V31\": -0.25, \"V32\": -0.08, \"V33\": -0.22, \"V34\": -0.48, \"V35\": -0.55, \"V36\": -0.32, \"V37\": -0.20, \"V38\": -0.38, \"V39\": -0.12, \"V40\": -0.15, \"V41\": -0.35, \"V42\": -0.50, \"V43\": -0.58, \"V44\": -0.62, \"V45\": -0.65, \"V46\": -0.45, \"V47\": -0.30, \"V48\": -0.12, \"V49\": -0.10, \"V50\": -0.08}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1791925873,
+            "id": "gen-batch-1791925708-da831d9c0e9e3a0223c3",
+            "model": "google/gemini-4-argon",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 1639,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 619
+              },
+              "prompt_tokens": 1143,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 2782
+            }
+          },
+          "request_id": "cZ7Oasa8IsvVvfIPlMKzoAE",
+          "status_code": 200
+        }
+      }
+    ],
+    "status": "completed",
+    "usage": {
+      "completion_tokens": 37168,
+      "cost": 0.205353,
+      "is_byok": false,
+      "prompt_tokens": 19513,
+      "total_tokens": 56681
+    }
+  },
+  "raw_submission": {
+    "completion_window": "24h",
+    "created_at": 1791925708,
+    "endpoint": "/v1/chat/completions",
+    "error": null,
+    "finalized_at": null,
+    "id": "batch-1791925708-tR7JnSFFwkUSB6YiB9ge",
+    "model": "google/gemini-4-argon-20261013",
+    "object": "batch",
+    "request_counts": {
+      "completed": 0,
+      "failed": 0,
+      "total": 16
+    },
+    "results": null,
+    "status": "validating",
+    "usage": null
+  },
+  "result_output": ".vepbench/results/gemini-4-argon-medium-satmut-mpra-20261013.jsonl",
+  "run_id": "gemini-4-argon-medium-satmut-mpra-20261013",
+  "schema_version": "1.0",
+  "status": "completed",
+  "submitted_at": "2026-10-13T21:08:27.169738Z",
+  "submitted_custom_ids": [
+    "request_000000",
+    "request_000001",
+    "request_000002",
+    "request_000003",
+    "request_000004",
+    "request_000005",
+    "request_000006",
+    "request_000007",
+    "request_000008",
+    "request_000009",
+    "request_000010",
+    "request_000011",
+    "request_000012",
+    "request_000013",
+    "request_000014",
+    "request_000015"
+  ],
+  "submitted_question_ids": [
+    "satmut-mpra-ranking-v2:F9",
+    "satmut-mpra-ranking-v2:GP1BA",
+    "satmut-mpra-ranking-v2:HBB",
+    "satmut-mpra-ranking-v2:HBG1",
+    "satmut-mpra-ranking-v2:HNF4A",
+    "satmut-mpra-ranking-v2:IRF4",
+    "satmut-mpra-ranking-v2:IRF6",
+    "satmut-mpra-ranking-v2:LDLR",
+    "satmut-mpra-ranking-v2:MSMB",
+    "satmut-mpra-ranking-v2:MYCrs6983267",
+    "satmut-mpra-ranking-v2:PKLR",
+    "satmut-mpra-ranking-v2:SORT1",
+    "satmut-mpra-ranking-v2:TCF7L2",
+    "satmut-mpra-ranking-v2:TERT",
+    "satmut-mpra-ranking-v2:ZFAND3",
+    "satmut-mpra-ranking-v2:ZRSh13"
+  ]
+}

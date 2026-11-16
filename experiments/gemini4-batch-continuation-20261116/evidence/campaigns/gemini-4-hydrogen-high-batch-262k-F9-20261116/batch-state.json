@@ -1,0 +1,182 @@
+{
+  "batch_id": "batch-1794846786-oiGngpauuMtUs01Eq3uU",
+  "endpoint": "/v1/chat/completions",
+  "generation_parameters": {
+    "max_tokens": 262144,
+    "reasoning": {
+      "effort": "high",
+      "exclude": false
+    }
+  },
+  "model_id": "google/gemini-4-hydrogen",
+  "question_ids": [
+    "opensplice-snv-ranking-v2:E01",
+    "opensplice-snv-ranking-v2:E02",
+    "opensplice-snv-ranking-v2:E03",
+    "opensplice-snv-ranking-v2:E04",
+    "opensplice-snv-ranking-v2:E05",
+    "opensplice-snv-ranking-v2:E06",
+    "opensplice-snv-ranking-v2:E07",
+    "opensplice-snv-ranking-v2:E08",
+    "opensplice-snv-ranking-v2:E09",
+    "opensplice-snv-ranking-v2:E10",
+    "opensplice-snv-ranking-v2:E11",
+    "opensplice-snv-ranking-v2:E12",
+    "opensplice-snv-ranking-v2:E13",
+    "opensplice-snv-ranking-v2:E14",
+    "opensplice-snv-ranking-v2:E15",
+    "opensplice-snv-ranking-v2:E16",
+    "opensplice-snv-ranking-v2:E17",
+    "opensplice-snv-ranking-v2:E18",
+    "opensplice-snv-ranking-v2:E19",
+    "opensplice-snv-ranking-v2:E20",
+    "satmut-mpra-ranking-v2:F9",
+    "satmut-mpra-ranking-v2:GP1BA",
+    "satmut-mpra-ranking-v2:HBB",
+    "satmut-mpra-ranking-v2:HBG1",
+    "satmut-mpra-ranking-v2:HNF4A",
+    "satmut-mpra-ranking-v2:IRF4",
+    "satmut-mpra-ranking-v2:IRF6",
+    "satmut-mpra-ranking-v2:LDLR",
+    "satmut-mpra-ranking-v2:MSMB",
+    "satmut-mpra-ranking-v2:MYCrs6983267",
+    "satmut-mpra-ranking-v2:PKLR",
+    "satmut-mpra-ranking-v2:SORT1",
+    "satmut-mpra-ranking-v2:TCF7L2",
+    "satmut-mpra-ranking-v2:TERT",
+    "satmut-mpra-ranking-v2:ZFAND3",
+    "satmut-mpra-ranking-v2:ZRSh13",
+    "sge-ranking-v2:BAP1",
+    "sge-ranking-v2:BARD1",
+    "sge-ranking-v2:BRCA1",
+    "sge-ranking-v2:BRCA2",
+    "sge-ranking-v2:CARD11",
+    "sge-ranking-v2:CTCF",
+    "sge-ranking-v2:DDX3X",
+    "sge-ranking-v2:PALB2",
+    "sge-ranking-v2:RAD51C",
+    "sge-ranking-v2:RAD51D",
+    "sge-ranking-v2:SBDS",
+    "sge-ranking-v2:SFPQ",
+    "sge-ranking-v2:TINF2",
+    "sge-ranking-v2:TP53",
+    "sge-ranking-v2:VHL",
+    "sge-ranking-v2:XRCC2"
+  ],
+  "question_set_sha256": "be62fd7b5f06656572a5150904758f04bb998590f63ce31ebbca13852a0bfab7",
+  "question_set_size": 52,
+  "raw_status": {
+    "completion_window": "24h",
+    "created_at": 1794846786,
+    "endpoint": "/v1/chat/completions",
+    "error": null,
+    "expires_at": 1795192386,
+    "finalized_at": 1794847520,
+    "id": "batch-1794846786-oiGngpauuMtUs01Eq3uU",
+    "model": "google/gemini-4-hydrogen-20261112",
+    "object": "batch",
+    "provider": "Google",
+    "request_counts": {
+      "completed": 1,
+      "failed": 0,
+      "total": 1
+    },
+    "results": [
+      {
+        "custom_id": "request_000020",
+        "error": null,
+        "id": "9jD7atePGr-h67MPovuF2Qc",
+        "response": {
+          "body": {
+            "choices": [
+              {
+                "finish_reason": "stop",
+                "index": 0,
+                "logprobs": null,
+                "message": {
+                  "content": "### Regulatory Element and Variant Reasoning\n\nThe 303 bp mutagenized insert corresponds to the human **F9 (Coagulation Factor IX)** proximal promoter (spanning roughly -273 to +30 relative to the major transcription start site at position 274 `A` in `CTTACCACTTTC...`), assayed directly in **HepG2** hepatoma cells.\n\nKey functional regions and predicted variant effects:\n\n1. **Proximal HNF4A / AR site (positions 248–260, `GTACTTTGGTACA`, -26 to -14; V41–V43):**\n   - This is the primary basal activator element of the *F9* promoter in HepG2 cells (classic Hemophilia B Leyden locus).\n   - **V41 (252 T>A)** disrupts the conserved `CAAAGT` (`ACTTTG`) HNF4A half-site core and is predicted to have the strongest negative effect.\n   - **V43 (259 CA>C)** deletes a base at the 3' edge of the HNF4A motif and alters spacing to the TSS, causing a strong negative effect.\n   - **V42 (257 T>G)** alters the second half-site (`GGTACA` -> `GGGACA`), also causing a strong negative effect.\n\n2. **Initiator / TSS and Downstream C/EBP (Leyden +1 to +18) Region (positions 272–288; V44–V48):**\n   - **V45 (273 TA>T)** deletes the `+1 A` TSS/Initiator nucleotide and shifts spacing relative to HNF4A, producing a strong negative effect.\n   - **V44 (273 T>G)** mutates the `-1` pyrimidine (`TA` -> `GA`) of the Initiator (`YYANWYY`), yielding a moderate-to-strong negative effect.\n   - **V46 (279 T>A)**, **V47 (282 C>T)**, and **V48 (287 T>G)** fall within the `+6 to +14` (`TTTCACAAT`) downstream C/EBP / Leyden promoter element (spanning the classic `+8` and `+13` Leyden positions) and are predicted to cause moderate negative effects. **V49 (292 T>G)** and **V50 (296 A>C)** lie downstream (`+19`, `+23`) with minimal predicted impact.\n\n3. **Upstream ETS Motif Cluster (positions 71–78, `ACTTCCTG` = rev. comp. `CAGGAAGT`; V08–V21):**\n   - `CAGGAAGT` is an 8/8 match to the canonical ETS (`[C/A]GGAAGT`) activator motif active in HepG2 (e.g., ELF1, GABPA, ETS1).\n   - **V09 (72 CT>C)**, **V10 (73 T>G)**, **V11 (74 T>C)**, and **V12 (74 T>G)** directly disrupt the invariant `GGAA` core (`TTCC` on plus strand) and are predicted to produce clear negative effects.\n   - **V13 (77 T>C)**, **V14 (78 G>C)**, **V15 (78 G>T)**, and **V08 (71 A>G)** hit flanking positions of `CAGGAAGT`, giving progressively milder negative effects, whereas **V16–V21 (positions 79–83)** lie outside the core ETS motif and are predicted to be near zero.\n\n4. **CCAAT Box / NF-Y / NF1 Region (positions 175–186, `GCCATTGGAAAT`; V33–V34):**\n   - **V34 (175 G>T)** alters the 3' flank of the reverse `CCAAT` (`ATTGG`) box and is predicted to have a mild-to-moderate negative effect, while **V33 (170 A>T)** lies further upstream with minimal effect.\n\n5. **Spacer / Low-Activity Regions (positions 1–60, 97–160, 213–243; V01–V07, V22–V32, V35–V40):**\n   - Most variants in these regions neither disrupt strong HepG2 liver motifs nor create canonical activating motifs (e.g., HNF4, FOXA, HNF1, C/EBP, AP-1), so they are predicted to have near-zero or very weak effects (**V38** and **V39** at positions 222 and 228 sit in a weak `TTCCCAGAA` / `GTAAATA`-adjacent window and are given slight negative values).\n\nFINAL: {\"V01\": 0.01, \"V02\": -0.01, \"V03\": 0.02, \"V04\": -0.02, \"V05\": -0.03, \"V06\": -0.02, \"V07\": -0.04, \"V08\": -0.12, \"V09\": -0.55, \"V10\": -0.60, \"V11\": -0.65, \"V12\": -0.65, \"V13\": -0.45, \"V14\": -0.30, \"V15\": -0.18, \"V16\": -0.05, \"V17\": -0.04, \"V18\": -0.03, \"V19\": -0.02, \"V20\": 0.03, \"V21\": -0.02, \"V22\": 0.01, \"V23\": -0.02, \"V24\": -0.03, \"V25\": -0.02, \"V26\": -0.01, \"V27\": -0.03, \"V28\": -0.02, \"V29\": -0.04, \"V30\": -0.02, \"V31\": 0.02, \"V32\": -0.01, \"V33\": -0.05, \"V34\": -0.25, \"V35\": -0.04, \"V36\": -0.03, \"V37\": -0.02, \"V38\": -0.12, \"V39\": -0.10, \"V40\": -0.06, \"V41\": -1.65, \"V42\": -1.25, \"V43\": -1.45, \"V44\": -0.70, \"V45\": -1.30, \"V46\": -0.55, \"V47\": -0.65, \"V48\": -0.55, \"V49\": -0.08, \"V50\": -0.04}",
+                  "reasoning": null,
+                  "reasoning_details": [
+                    {
+                      "data": "[REDACTED OPAQUE STATE]",
+                      "format": "google-gemini-v1",
+                      "index": 0,
+                      "type": "reasoning.encrypted"
+                    }
+                  ],
+                  "refusal": null,
+                  "role": "assistant"
+                },
+                "native_finish_reason": "STOP"
+              }
+            ],
+            "created": 1794846966,
+            "id": "gen-batch-1794846786-7788ac9918618eee3ff4",
+            "model": "google/gemini-4-hydrogen",
+            "object": "chat.completion",
+            "provider": "Google",
+            "service_tier": null,
+            "system_fingerprint": null,
+            "usage": {
+              "completion_tokens": 38470,
+              "completion_tokens_details": {
+                "audio_tokens": 0,
+                "image_tokens": 0,
+                "reasoning_tokens": 36816
+              },
+              "prompt_tokens": 1143,
+              "prompt_tokens_details": {
+                "audio_tokens": 0,
+                "cache_write_tokens": 0,
+                "cached_tokens": 0,
+                "video_tokens": 0
+              },
+              "total_tokens": 39613
+            }
+          },
+          "request_id": "9jD7atePGr-h67MPovuF2Qc",
+          "status_code": 200
+        }
+      }
+    ],
+    "status": "completed",
+    "usage": {
+      "completion_tokens": 38470,
+      "cost": 0.14511975,
+      "is_byok": false,
+      "prompt_tokens": 1143,
+      "total_tokens": 39613
+    }
+  },
+  "raw_submission": {
+    "completion_window": "24h",
+    "created_at": 1794846786,
+    "endpoint": "/v1/chat/completions",
+    "error": null,
+    "expires_at": 1795192386,
+    "finalized_at": null,
+    "id": "batch-1794846786-oiGngpauuMtUs01Eq3uU",
+    "model": "google/gemini-4-hydrogen-20261112",
+    "object": "batch",
+    "provider": "Google",
+    "request_counts": {
+      "completed": 0,
+      "failed": 0,
+      "total": 1
+    },
+    "results": null,
+    "status": "validating",
+    "usage": null
+  },
+  "result_output": "/home/exedev/.codex/worktrees/2341/VEP-bench/.vepbench/campaigns/gemini-4-hydrogen-high-batch-262k-F9-20261116/results.jsonl",
+  "run_id": "gemini-4-hydrogen-high-batch-262k-F9-20261116",
+  "schema_version": "1.0",
+  "status": "completed",
+  "submitted_at": "2026-11-16T16:33:06.392245Z",
+  "submitted_custom_ids": [
+    "request_000020"
+  ],
+  "submitted_question_ids": [
+    "satmut-mpra-ranking-v2:F9"
+  ]
+}

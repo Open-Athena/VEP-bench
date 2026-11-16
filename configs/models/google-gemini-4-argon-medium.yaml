@@ -1,0 +1,34 @@
+# Google recommends medium reasoning for most tasks and omitting temperature,
+# top_p, and top_k (these sampling controls are ignored by Argon).
+# https://ai.google.dev/gemini-api/docs/latest-model (checked 2026-10-13)
+# Context is 1048576 tokens shared by input, reasoning, and final output.
+# Google's default output budget is 65536; complex reasoning guidance suggests
+# 131072 or 262144 with long decode. Keep the existing task-owned 128000-token
+# budget for comparability; it is a benchmark choice, not Google's exact recipe.
+# Use Batch API with the canonical model ID. The advertised 943718-token batch
+# output cap is NOT a verified effective limit: the 2026-10-13 high-effort runs
+# stopped at 32768 completion tokens with native_finish_reason=CONTINUATION,
+# normalized to length, for both 128000 and 262144 requested max_tokens.
+# Increasing max_tokens alone did not enable continuation. Verify long-decode
+# support before another high-effort campaign or a change to direct routing.
+# Vertex direct returned a token, but replay failed with "Unknown name
+# continuationToken" (2026-10-14). Google documents long decode as v1beta1-only;
+# this suggests an upstream API-version mismatch, not exhausted model context.
+# https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/guides/gemini-4-argon#long-decodes
+# AI Studio direct completed the F9 diagnostic with a valid answer at 50630
+# output tokens (2026-10-14). This verifies passage beyond the batch boundary,
+# but not continuation replay: that request finished without needing a token.
+# Vertex direct continuation succeeded on F9 on 2026-10-30: a 262144-token
+# budget produced a valid answer over two hops, totaling 94489 output tokens.
+# The earlier Vertex replay failure is no longer reproduced. Batch continuation
+# remains unverified; this diagnostic is not part of the published benchmark.
+# https://ai.google.dev/gemini-api/docs/generate-content/long-decode
+# https://openrouter.ai/api/v1/models (checked 2026-10-13)
+# https://openrouter.ai/api/v1/models/google/gemini-4-argon/endpoints
+schema_version: "1.0"
+label: gemini-4-argon-medium
+model: google/gemini-4-argon
+generation:
+  reasoning:
+    effort: medium
+    exclude: false

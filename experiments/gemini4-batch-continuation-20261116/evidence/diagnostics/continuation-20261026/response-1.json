@@ -1,0 +1,61 @@
+{
+  "id": "gen-1793040246-WYYKrNiskbhSLLqJQ6KL",
+  "object": "chat.completion",
+  "created": 1793040246,
+  "model": "google/gemini-4-argon",
+  "provider": "Google",
+  "system_fingerprint": null,
+  "service_tier": "default",
+  "choices": [
+    {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "length",
+      "native_finish_reason": "MAX_TOKENS",
+      "message": {
+        "role": "assistant",
+        "content": null,
+        "refusal": null,
+        "reasoning": "**Calculating Expression Value**\n\nI am currently focused on accurately computing the value of $(127 \\times 349) + (563 \\times 811)$. The initial calculations for both products and their subsequent summation are underway. I will then re-verify each step to ensure absolute precision in the final integer result.\n\n**Performing Multiplication**\n\nMy current focus is on executing the initial multiplication steps. I am calculating the product of 127 and 349, and simultaneously computing the product of 563 and 811. These intermediate results will then be passed on for the next stage.\n\n",
+        "reasoning_details": [
+          {
+            "type": "reasoning.text",
+            "text": "**Calculating Expression Value**\n\nI am currently focused on accurately computing the value of $(127 \\times 349) + (563 \\times 811)$. The initial calculations for both products and their subsequent summation are underway. I will then re-verify each step to ensure absolute precision in the final integer result.\n\n**Performing Multiplication**\n\nMy current focus is on executing the initial multiplication steps. I am calculating the product of 127 and 349, and simultaneously computing the product of 563 and 811. These intermediate results will then be passed on for the next stage.\n\n",
+            "format": "google-gemini-v1",
+            "index": 0
+          },
+          {
+            "type": "reasoning.encrypted",
+            "data": "[REDACTED OPAQUE STATE]",
+            "format": "google-gemini-v1",
+            "id": "gemini-continuation",
+            "index": 1
+          }
+        ]
+      }
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 61,
+    "completion_tokens": 128,
+    "total_tokens": 189,
+    "cost": 0.001402,
+    "is_byok": false,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
+    },
+    "cost_details": {
+      "upstream_inference_cost": 0.001402,
+      "upstream_inference_prompt_cost": 0.000122,
+      "upstream_inference_completions_cost": 0.00128
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 125,
+      "image_tokens": 0,
+      "audio_tokens": 0
+    }
+  }
+}

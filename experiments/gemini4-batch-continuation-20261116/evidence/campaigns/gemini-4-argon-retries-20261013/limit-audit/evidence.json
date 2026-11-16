@@ -1,0 +1,500 @@
+{
+  "original": {
+    "source": ".vepbench/campaigns/gemini-4-argon-efforts-20261013/high/results.jsonl",
+    "sha256": "400811ceca47984d21af8ab022a6d2592d6ef4300221eb0f8577f12e26c41407",
+    "truncated_count": 27,
+    "native_finish_reasons": {
+      "CONTINUATION": 27
+    },
+    "completion_counts": {
+      "32768": 27
+    },
+    "max_observed_completion_tokens": 32768,
+    "details": [
+      {
+        "question_id": "opensplice-snv-ranking-v2:E01",
+        "requested_max_tokens": 128000,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 31993,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791927331-428f84d7a15a2653aaf6"
+      },
+      {
+        "question_id": "opensplice-snv-ranking-v2:E02",
+        "requested_max_tokens": 128000,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791927331-3b9c5924351848b345f8"
+      },
+      {
+        "question_id": "opensplice-snv-ranking-v2:E04",
+        "requested_max_tokens": 128000,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 31331,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791927331-26c6a5e7e502c812bddc"
+      },
+      {
+        "question_id": "opensplice-snv-ranking-v2:E07",
+        "requested_max_tokens": 128000,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32339,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791927331-62affa45bd8d69cefe0f"
+      },
+      {
+        "question_id": "opensplice-snv-ranking-v2:E08",
+        "requested_max_tokens": 128000,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791927331-cd81066d9b75227b2729"
+      },
+      {
+        "question_id": "opensplice-snv-ranking-v2:E11",
+        "requested_max_tokens": 128000,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791927331-f4fc1ea72b03c7796987"
+      },
+      {
+        "question_id": "opensplice-snv-ranking-v2:E12",
+        "requested_max_tokens": 128000,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791927331-2644b2e1a9d57ef0440f"
+      },
+      {
+        "question_id": "opensplice-snv-ranking-v2:E20",
+        "requested_max_tokens": 128000,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791927331-5529c1278cd24e6a6615"
+      },
+      {
+        "question_id": "satmut-mpra-ranking-v2:F9",
+        "requested_max_tokens": 128000,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791927331-eb774db6d989fc029466"
+      },
+      {
+        "question_id": "satmut-mpra-ranking-v2:GP1BA",
+        "requested_max_tokens": 128000,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32763,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791927331-5b96f64650467474a478"
+      },
+      {
+        "question_id": "satmut-mpra-ranking-v2:HBB",
+        "requested_max_tokens": 128000,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791927331-19931e6ead80230aee88"
+      },
+      {
+        "question_id": "satmut-mpra-ranking-v2:HNF4A",
+        "requested_max_tokens": 128000,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791927331-b2f1b960028b034ead83"
+      },
+      {
+        "question_id": "satmut-mpra-ranking-v2:IRF4",
+        "requested_max_tokens": 128000,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791927331-ed22955a7395070dfd42"
+      },
+      {
+        "question_id": "satmut-mpra-ranking-v2:IRF6",
+        "requested_max_tokens": 128000,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791927331-ca3309b1cf1d3cb69c49"
+      },
+      {
+        "question_id": "satmut-mpra-ranking-v2:LDLR",
+        "requested_max_tokens": 128000,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791927331-c8767e66371981fa5440"
+      },
+      {
+        "question_id": "satmut-mpra-ranking-v2:MSMB",
+        "requested_max_tokens": 128000,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791927331-f78bb70eab0bda5262b2"
+      },
+      {
+        "question_id": "satmut-mpra-ranking-v2:MYCrs6983267",
+        "requested_max_tokens": 128000,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791927331-091a863bbf8698585d9c"
+      },
+      {
+        "question_id": "satmut-mpra-ranking-v2:PKLR",
+        "requested_max_tokens": 128000,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791927331-9a61ffe36b56a6444d3e"
+      },
+      {
+        "question_id": "satmut-mpra-ranking-v2:SORT1",
+        "requested_max_tokens": 128000,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791927331-1ec3efe361164064d17d"
+      },
+      {
+        "question_id": "satmut-mpra-ranking-v2:TCF7L2",
+        "requested_max_tokens": 128000,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791927331-d4520e7e87ee10f44f6c"
+      },
+      {
+        "question_id": "satmut-mpra-ranking-v2:TERT",
+        "requested_max_tokens": 128000,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791927331-e04901f10c4cf98f7e18"
+      },
+      {
+        "question_id": "satmut-mpra-ranking-v2:ZFAND3",
+        "requested_max_tokens": 128000,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791927331-dd43a047a7d0bcbfbccc"
+      },
+      {
+        "question_id": "satmut-mpra-ranking-v2:ZRSh13",
+        "requested_max_tokens": 128000,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791927331-875673f9da5db5016ff8"
+      },
+      {
+        "question_id": "sge-ranking-v2:CARD11",
+        "requested_max_tokens": 128000,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791927331-a3c3c19db0358bca109b"
+      },
+      {
+        "question_id": "sge-ranking-v2:DDX3X",
+        "requested_max_tokens": 128000,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 31456,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791927331-a58c252081f06bff5b74"
+      },
+      {
+        "question_id": "sge-ranking-v2:RAD51D",
+        "requested_max_tokens": 128000,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791927331-833f997440b1e0b9471b"
+      },
+      {
+        "question_id": "sge-ranking-v2:SFPQ",
+        "requested_max_tokens": 128000,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791927331-ae924e252998b309bd3b"
+      }
+    ]
+  },
+  "retry": {
+    "source": ".vepbench/campaigns/gemini-4-argon-retries-20261013/truncation/results.jsonl",
+    "sha256": "c2fcc29adaaf334f5cf095ce7cb6298af2c5ffb0fea49b30cef045a7b06df8f9",
+    "truncated_count": 20,
+    "native_finish_reasons": {
+      "CONTINUATION": 20
+    },
+    "completion_counts": {
+      "32768": 20
+    },
+    "max_observed_completion_tokens": 32768,
+    "details": [
+      {
+        "question_id": "opensplice-snv-ranking-v2:E01",
+        "requested_max_tokens": 262144,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791930801-7d9fdd97472c9b142b54"
+      },
+      {
+        "question_id": "opensplice-snv-ranking-v2:E02",
+        "requested_max_tokens": 262144,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791930801-bb8e10a12bd5d0d11add"
+      },
+      {
+        "question_id": "opensplice-snv-ranking-v2:E08",
+        "requested_max_tokens": 262144,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32054,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791930801-a9b9e0a63d497af10d3c"
+      },
+      {
+        "question_id": "opensplice-snv-ranking-v2:E11",
+        "requested_max_tokens": 262144,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791930801-a536b354ba171921e4cf"
+      },
+      {
+        "question_id": "satmut-mpra-ranking-v2:F9",
+        "requested_max_tokens": 262144,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791930801-b0f9b0d7332ef43cfbdb"
+      },
+      {
+        "question_id": "satmut-mpra-ranking-v2:HBB",
+        "requested_max_tokens": 262144,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791930801-237c29489fb22eecae0f"
+      },
+      {
+        "question_id": "satmut-mpra-ranking-v2:HNF4A",
+        "requested_max_tokens": 262144,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791930801-abd392308b7e720eb250"
+      },
+      {
+        "question_id": "satmut-mpra-ranking-v2:IRF4",
+        "requested_max_tokens": 262144,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791930801-1041a6e584f2584c1548"
+      },
+      {
+        "question_id": "satmut-mpra-ranking-v2:IRF6",
+        "requested_max_tokens": 262144,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791930801-b4b2781c04324fa90df0"
+      },
+      {
+        "question_id": "satmut-mpra-ranking-v2:MSMB",
+        "requested_max_tokens": 262144,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791930801-4a8a61aad553e7cdf2d2"
+      },
+      {
+        "question_id": "satmut-mpra-ranking-v2:MYCrs6983267",
+        "requested_max_tokens": 262144,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791930801-fdb738bbf5b0629841ee"
+      },
+      {
+        "question_id": "satmut-mpra-ranking-v2:PKLR",
+        "requested_max_tokens": 262144,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 31165,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791930801-346d28fe0e48cc0ee867"
+      },
+      {
+        "question_id": "satmut-mpra-ranking-v2:SORT1",
+        "requested_max_tokens": 262144,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791930801-7dca081d8378c9e42885"
+      },
+      {
+        "question_id": "satmut-mpra-ranking-v2:TCF7L2",
+        "requested_max_tokens": 262144,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791930801-5706a82cc3f9355aac26"
+      },
+      {
+        "question_id": "satmut-mpra-ranking-v2:TERT",
+        "requested_max_tokens": 262144,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791930801-1623e6bd20a899b1a804"
+      },
+      {
+        "question_id": "satmut-mpra-ranking-v2:ZFAND3",
+        "requested_max_tokens": 262144,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32488,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791930801-112ad74cae0accddb931"
+      },
+      {
+        "question_id": "satmut-mpra-ranking-v2:ZRSh13",
+        "requested_max_tokens": 262144,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791930801-52381853d378d826c626"
+      },
+      {
+        "question_id": "sge-ranking-v2:CARD11",
+        "requested_max_tokens": 262144,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791930801-185bc4d56dbd18110b0b"
+      },
+      {
+        "question_id": "sge-ranking-v2:RAD51D",
+        "requested_max_tokens": 262144,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791930801-e8eed6587a175084fed8"
+      },
+      {
+        "question_id": "sge-ranking-v2:SFPQ",
+        "requested_max_tokens": 262144,
+        "completion_tokens": 32768,
+        "reasoning_tokens": 32765,
+        "finish_reason": "length",
+        "native_finish_reason": "CONTINUATION",
+        "provider": "Google",
+        "response_id": "gen-batch-1791930801-8616bd2d8051dec406e1"
+      }
+    ]
+  }
+}

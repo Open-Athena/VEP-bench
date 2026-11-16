@@ -1,0 +1,47 @@
+High-effort Gemini 4 batch evaluation is blocked when a response reaches the first generation boundary: OpenRouter returns native_finish_reason=CONTINUATION but omits the continuation token. Increasing max_tokens to 262144 does not resolve this, and the client cannot resume the generation.
+
+## Reproductions
+
+All cases use the unchanged public F9 question (satmut-mpra-ranking-v2:F9), reasoning={"effort":"high","exclude":false}, and max_tokens=262144. Requests use the canonical model ID through the asynchronous Batch API with endpoint=/v1/chat/completions. The current client submits through /api/beta/batches.
+
+| Model | Date | Batch ID | Outcome |
+|---|---|---|---|
+| google/gemini-4-argon | 2026-10-30 | batch-1793380005-G9rxX71cfay4AmPO0Sso | 32768 output tokens; length / CONTINUATION; empty final content; no gemini-continuation item; $0.164983 |
+| google/gemini-4-carbon | 2026-11-16 | batch-1794846785-yehNTGFxNtP1oxwx2DH4 | Same outcome: 32768 output tokens; length / CONTINUATION; empty final content; no continuation item; $0.164983 |
+
+The absence was checked in the raw response body, not only the normalized result. The batch job itself is marked completed, but the answer is incomplete and fails the deterministic FINAL parser. These outcomes should not be interpreted as measured scientific reasoning performance.
+
+## Working controls and limits of the evidence
+
+- Argon high through the direct Vertex route completed F9 over two requests on 2026-10-30: 94489 total output tokens, valid final answer, $1.080632. Continuation replay succeeded.
+- Argon low and medium each completed all 52 questions through batch with valid answers and no truncation on 2026-10-30. Costs were $0.800135 and $0.913880 respectively.
+- Hydrogen high batch completed F9 on 2026-11-16 with STOP, 38470 output tokens, a valid final answer, and cost $0.14511975. It did not require continuation, so this does not verify Hydrogen batch continuation.
+- A fresh Argon batch (batch-1794846783-xufCrjhmYlTyKmAZjdNe) was still in progress at the last status check; no outcome is claimed for it here.
+
+## Impact
+
+We cannot complete a reliable high-effort Argon/Carbon batch comparison for questions that need more than one segment. Retrying unchanged questions starts a new paid generation and does not recover the discarded generation state. Direct continuation works for Argon but costs more than batch.
+
+## Resolution criteria
+
+- Establish whether Gemini long decode is supported by OpenRouter Batch API, including whether the stable /api/v1/batches submission path differs from the beta path.
+- For a truncated response, return the opaque continuation state and document how to resume it, or perform continuation internally up to the requested total budget.
+- Verify on F9 that a batch generation crosses its first segment boundary and produces a valid final answer, preserving all raw responses and per-hop usage.
+- If batch long decode is unsupported, document the effective limit and evaluate a separately validated alternative such as direct/Flex inference.
+
+The location of token loss (Google batch backend versus OpenRouter translation) is not established. Switching response formats or using Flex has not been validated as a workaround.
+
+## Evidence and upstream reference
+
+Local artifacts are retained under:
+- .vepbench/campaigns/gemini-4-argon-high-batch-262k-F9-20261030/
+- .vepbench/campaigns/gemini-4-carbon-high-batch-262k-F9-20261116/
+- .vepbench/campaigns/gemini-4-hydrogen-high-batch-262k-F9-20261116/
+- .vepbench/campaigns/gemini-4-argon-retries-20261013/limit-audit/vertex-262k-20261030/
+
+These are local evidence paths, not publicly hosted attachments. No credentials or opaque continuation tokens are included here.
+
+OpenRouter long-decode contract: https://openrouter.ai/docs/cookbook/evaluate-and-optimize/model-migrations/gemini-4
+Upstream support channel: https://openrouter.ai/support
+
+This issue tracks the VEP-bench blocker; an upstream support ticket has not yet been filed.

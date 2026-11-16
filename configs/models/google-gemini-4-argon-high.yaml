@@ -1,0 +1,13 @@
+# User-requested effort comparison; keep sampling controls unset as Google advises.
+# https://ai.google.dev/gemini-api/docs/latest-model (checked 2026-10-13)
+# See google-gemini-4-argon-medium.yaml for context, output, and route guidance.
+# The existing task-owned output budget is 128000 tokens.
+# Observed batch continuation stops at 32768 tokens despite this larger request;
+# see the medium profile's route caveat before launching more high-effort runs.
+schema_version: "1.0"
+label: gemini-4-argon-high
+model: google/gemini-4-argon
+generation:
+  reasoning:
+    effort: high
+    exclude: false

@@ -1,0 +1,38 @@
+{
+  "model": "google/gemini-4-argon",
+  "max_tokens": 256,
+  "reasoning": {
+    "effort": "high",
+    "exclude": false
+  },
+  "messages": [
+    {
+      "role": "user",
+      "content": "Calculate 127 times 349 plus 563 times 811. Check your arithmetic and give the exact integer."
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "reasoning_details": [
+        {
+          "type": "reasoning.encrypted",
+          "data": "[REDACTED OPAQUE STATE]",
+          "format": "google-gemini-v1",
+          "id": "gemini-continuation",
+          "index": 1
+        }
+      ]
+    }
+  ],
+  "provider": {
+    "only": [
+      "google-vertex/global"
+    ],
+    "allow_fallbacks": false,
+    "require_parameters": true,
+    "max_price": {
+      "prompt": 2,
+      "completion": 10
+    }
+  }
+}
